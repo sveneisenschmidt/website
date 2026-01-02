@@ -3,7 +3,7 @@ date = '2026-01-02'
 draft = false
 title = 'Death Stranding 2'
 topics = ['Video Games']
-thumbnail = 'IMG_0448.jpg'
+cover = 'IMG_0448.jpg'
 +++
 
 Over the Xmas period I managed to finish Death Stranding 2. I like it more than the Metal Gear Solid games.

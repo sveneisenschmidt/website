@@ -1,0 +1,11 @@
+{{ with .Params.cover }} {{ with $.Resources.GetMatch . }} {{ $small := .Fill
+"128x128" }} {{ $large := .Fill "768x768" }}
+<img
+    src="{{ $small.RelPermalink }}"
+    srcset="{{ $small.RelPermalink }} 128w, {{ $large.RelPermalink }} 768w"
+    sizes="(max-width: 768px) 100vw, 128px"
+    alt=""
+    loading="lazy"
+    class="cover"
+/>
+{{ end }} {{ end }}

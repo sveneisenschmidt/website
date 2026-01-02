@@ -10,17 +10,23 @@ body {
 img {
     border-radius: 0.25rem;
 
-    &.thumbnail {
+    &.cover {
         float: right;
         margin: 0rem 0.5rem;
         &::after {
             clear: both;
         }
+
+        @media (max-width: 768px) {
+            float: none;
+            width: 100%;
+            margin: 0 0 1rem 0;
+        }
     }
 
     &.hero {
-        width: 90%;
-        margin: 0 5%;
+        width: 100%;
+        margin: 0 auto;
     }
 }
 
@@ -66,4 +72,8 @@ a:hover {
 
 h2 {
     margin: 0;
+}
+
+h2 + h2 {
+    margin-top: 1rem;
 }
