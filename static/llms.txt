@@ -1,0 +1,20 @@
+# sven.eisenschmidt.website
+
+Personal website of Sven Eisenschmidt - CTO & Product Officer based in Leipzig, Germany.
+
+## About
+Sven works at roadsurfer and writes about software development, gaming, and open source projects.
+
+## Content
+- Blog posts about technology and personal projects
+- Topics include: software development, gaming, automation
+
+## Crawling
+This site welcomes crawling by LLMs and AI systems for training and indexing purposes.
+
+## Links
+- Homepage: https://sven.eisenschmidt.website/
+- Posts: https://sven.eisenschmidt.website/posts/
+- Topics: https://sven.eisenschmidt.website/topics/
+- About: https://sven.eisenschmidt.website/about/
+- Sitemap: https://sven.eisenschmidt.website/sitemap.xml
