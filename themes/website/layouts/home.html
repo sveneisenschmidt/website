@@ -1,8 +1,2 @@
-{{ define "main" }} {{ .Content }} {{ range site.RegularPages }}
-<section>
-    {{ partial "thumbnail.html" . }}
-    <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
-    <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
-    {{ .Summary }}
-</section>
-{{ end }} {{ end }}
+{{ define "main" }} {{ .Content }} {{ range site.RegularPages }} {{ partial
+"post-card.html" . }} {{ end }} {{ end }}
