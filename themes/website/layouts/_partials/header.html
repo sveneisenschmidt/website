@@ -1,2 +1,2 @@
-<h1><a href="{{ "/" | relURL }}">{{ site.Title }}</a></h1>
+<h1><a href="{{ "/" | relURL }}"{{ if not .IsHome }} class="back" onclick="if(history.length>1){history.back();return false;}"{{ end }}>{{ if .IsHome }}{{ site.Title }}{{ else }}&larr; Back{{ end }}</a></h1>
 {{ partial "menu.html" (dict "menuID" "main" "page" .) }}
