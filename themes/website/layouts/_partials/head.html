@@ -9,6 +9,20 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <link rel="manifest" href="/site.webmanifest" />
+<link
+    rel="preload"
+    href="/fonts/WorkSans-VariableFont_wght.ttf"
+    as="font"
+    type="font/ttf"
+    crossorigin
+/>
+<link
+    rel="preload"
+    href="/fonts/WorkSans-Italic-VariableFont_wght.ttf"
+    as="font"
+    type="font/ttf"
+    crossorigin
+/>
 {{ partialCached "head/meta.html" . }} {{ partialCached "head/css.html" . }} {{
 partialCached "head/js.html" . }} {{ if .IsHome }} {{ $firstPost := index
 site.RegularPages 0 }} {{ with $firstPost.Params.cover }} {{ with
