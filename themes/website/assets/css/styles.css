@@ -65,6 +65,11 @@ header {
 
         a.home {
             color: var(--color-text);
+            text-decoration: underline;
+
+            &:hover {
+                color: var(--color-link);
+            }
         }
     }
 
