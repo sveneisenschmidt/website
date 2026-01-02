@@ -13,6 +13,9 @@ img {
     &.cover {
         float: right;
         margin: 0rem 0.5rem;
+        aspect-ratio: 1;
+        width: 128px;
+        height: auto;
         &::after {
             clear: both;
         }
@@ -20,6 +23,7 @@ img {
         @media (max-width: 768px) {
             float: none;
             width: 100%;
+            height: auto;
             margin: 0 0 1rem 0;
         }
     }
