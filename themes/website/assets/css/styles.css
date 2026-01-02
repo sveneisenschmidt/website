@@ -27,6 +27,14 @@ header {
     }
 }
 
+main {
+    img {
+        width: 100%;
+        margin: 0 auto;
+        border-radius: 0.25rem;
+    }
+}
+
 footer {
     border-top: 1px solid #222;
     margin-top: 1rem;
