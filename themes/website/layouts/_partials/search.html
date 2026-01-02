@@ -1,0 +1,54 @@
+<div id="search">
+    <input
+        type="text"
+        id="search-input"
+        placeholder="What are you looking for?"
+        onkeydown="
+            if (event.key === 'Enter') {
+                doSearch();
+                return false;
+            }
+        "
+    />
+    <a
+        href="#"
+        onclick="
+            doSearch();
+            return false;
+        "
+        >Enter &#x23CE;</a
+    >
+    <div id="search-results"></div>
+</div>
+<script>
+    let pagefind;
+    async function initPagefind() {
+        pagefind = await import("/pagefind/pagefind.js");
+        await pagefind.init();
+    }
+    async function doSearch() {
+        if (!pagefind) await initPagefind();
+        const query = document.getElementById("search-input").value;
+        const results = await pagefind.search(query);
+        const list = document.getElementById("search-results");
+        list.innerHTML = "";
+        const items = [];
+        for (const result of results.results) {
+            if (result.score < 1) continue;
+            const data = await result.data();
+            items.push(
+                '<h2><a href="' +
+                    data.url +
+                    '">' +
+                    data.meta.title +
+                    "</a></h2>",
+            );
+        }
+        if (items.length > 0) {
+            list.innerHTML = "<hr><h1>Results</h1>" + items.join("");
+        } else if (query.length > 0) {
+            list.innerHTML = "<hr><p>No results found.</p>";
+        }
+    }
+    initPagefind();
+</script>

@@ -61,6 +61,11 @@ footer {
     margin-top: 1rem;
 }
 
+hr {
+    border: none;
+    border-top: 1px solid #222;
+}
+
 a {
     color: #00e;
     text-decoration: none;
@@ -76,4 +81,41 @@ h2 {
 
 h2 + h2 {
     margin-top: 1rem;
+}
+
+#search input {
+    font-size: 1rem;
+    padding: 0.5rem;
+    border: 1px solid #222;
+    border-radius: 0;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 0.5rem;
+    outline: none;
+}
+
+#search input:focus {
+    border-color: #00e;
+}
+
+#search > a {
+    display: block;
+    text-align: right;
+}
+
+#search button {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #222;
+    background: #fff;
+    cursor: pointer;
+}
+
+#search button:hover {
+    background: #222;
+    color: #fff;
+}
+
+#search-results {
+    margin: 1rem 0;
 }

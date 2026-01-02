@@ -9,6 +9,7 @@ dev:
 build:
 	rm -rf public/*
 	hugo --minify
+	npx pagefind --site public --glob 'posts/*/**/*.html'
 
 publish: build
 	git add -A
