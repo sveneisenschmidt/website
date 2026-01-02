@@ -1,5 +1,5 @@
 +++
-date = '2026-01-02T11:52:08+01:00'
+date = '2026-01-01'
 draft = false
 title = 'Hello'
 tags = ['general']
