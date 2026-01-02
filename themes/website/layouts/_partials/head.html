@@ -5,8 +5,20 @@
     site.Title }}{{ end }}
 </title>
 {{ partialCached "head/meta.html" . }} {{ partialCached "head/css.html" . }} {{
-partialCached "head/js.html" . }} {{ if .IsHome }} {{ with (index
-site.RegularPages 0) }} {{ with .Params.cover }} {{ with $.Resources.GetMatch .
-}} {{ $small := .Fill "128x128" }}
-<link rel="preload" as="image" href="{{ $small.RelPermalink }}" />
-{{ end }} {{ end }} {{ end }} {{ end }}
+partialCached "head/js.html" . }} {{ if .IsHome }} {{ $firstPost := index
+site.RegularPages 0 }} {{ with $firstPost.Params.cover }} {{ with
+$firstPost.Resources.GetMatch . }} {{ $small := .Fill "128x128" }} {{ $large :=
+.Fill "768x768" }}
+<link
+    rel="preload"
+    as="image"
+    href="{{ $small.RelPermalink }}"
+    media="(min-width: 769px)"
+/>
+<link
+    rel="preload"
+    as="image"
+    href="{{ $large.RelPermalink }}"
+    media="(max-width: 768px)"
+/>
+{{ end }} {{ end }} {{ end }}
