@@ -1,20 +1,22 @@
 +++
 date = '2026-01-02T11:52:08+01:00'
-draft = true
-title = 'Hello World'
+draft = false
+title = 'Hello'
 tags = ['general']
 +++
 
-This is my first blog post. Welcome to my website!
+Welcome to my website. I work as Chief Technology & Product Officer at [roadsurfer](https://roadsurfer.com), where we help people explore the world in campervans.
 
 <!--more-->
 
-## What to expect here?
+## Find me elsewhere
 
-I'll be writing about various topics:
+- [GitHub](https://github.com/sveneisenschmidt)
+- [LinkedIn](https://www.linkedin.com/in/sveneisenschmidt/)
+- [Strava](https://www.strava.com/athletes/sveneisenschmidt)
 
-- Technology
-- Software development
-- Personal projects
+## This website
 
-See you soon!
+- [Posts](/posts) - Blog posts
+- [Tags](/tags) - Posts by topic
+- [About](/about) - A bit about me

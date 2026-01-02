@@ -15,3 +15,5 @@ I work as Chief Technology & Product Officer at [roadsurfer](https://roadsurfer.
 Sometimes I build [open source tools](https://github.com/sveneisenschmidt) for fun.
 
 You can find me on [GitHub](https://github.com/sveneisenschmidt), [LinkedIn](https://www.linkedin.com/in/sveneisenschmidt/), or [Strava](https://www.strava.com/athletes/sveneisenschmidt).
+
+This is a private, non-commercial website. No business activities, no ads, no affiliate links, no monetization. Don't bother.

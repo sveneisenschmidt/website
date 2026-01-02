@@ -11,7 +11,7 @@ theme = 'website'
   [[menus.main]]
     name = 'About Me'
     pageRef = '/about'
-    weight = 10
+    weight = 99
 
   [[menus.main]]
     name = 'Posts'
