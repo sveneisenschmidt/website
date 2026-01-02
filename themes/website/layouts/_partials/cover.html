@@ -5,7 +5,8 @@
     srcset="{{ $small.RelPermalink }} 128w, {{ $large.RelPermalink }} 768w"
     sizes="(max-width: 768px) 100vw, 128px"
     alt=""
-    loading="lazy"
+    fetchpriority="high"
+    decoding="async"
     class="cover"
 />
 {{ end }} {{ end }}

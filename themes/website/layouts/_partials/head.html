@@ -5,4 +5,8 @@
     site.Title }}{{ end }}
 </title>
 {{ partialCached "head/meta.html" . }} {{ partialCached "head/css.html" . }} {{
-partialCached "head/js.html" . }}
+partialCached "head/js.html" . }} {{ if .IsHome }} {{ with (index
+site.RegularPages 0) }} {{ with .Params.cover }} {{ with $.Resources.GetMatch .
+}} {{ $small := .Fill "128x128" }}
+<link rel="preload" as="image" href="{{ $small.RelPermalink }}" />
+{{ end }} {{ end }} {{ end }} {{ end }}
