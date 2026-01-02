@@ -22,3 +22,8 @@ theme = 'website'
     name = 'Tags'
     pageRef = '/tags'
     weight = 30
+
+  [[menus.main]]
+    name = 'Feed'
+    url = '/index.xml'
+    weight = 50
