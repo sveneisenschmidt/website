@@ -8,27 +8,18 @@ description = "Personal website of Sven Eisenschmidt - CTO & Product Officer, ba
 author = "Sven Eisenschmidt"
 keywords = "Sven Eisenschmidt, CTO, technology, product, Leipzig, roadsurfer"
 
-[markup.goldmark.parser.attribute]
-block = true
-title = true
+[taxonomies]
+topic = "topics"
+
 [markup.goldmark.parser]
 wrapStandAloneImageWithinParagraph = false
 
+[markup.goldmark.parser.attribute]
+block = true
+title = true
+
 [caches.images]
 dir = ":cacheDir/images"
-
-[[menus.main]]
-name = "About Me"
-pageRef = "/about"
-weight = 99
-
-#[[menus.main]]
-#name = "Posts"
-#pageRef = "/posts"
-#weight = 20
-
-[taxonomies]
-topic = "topics"
 
 [[menus.main]]
 name = "Search"
@@ -40,8 +31,12 @@ name = "Topics"
 pageRef = "/topics"
 weight = 30
 
-
 [[menus.main]]
 name = "Blogroll"
 url = "/blogroll"
 weight = 40
+
+[[menus.main]]
+name = "About Me"
+pageRef = "/about"
+weight = 99
