@@ -6,6 +6,12 @@ title = 'About'
 _build.list = 'never'
 +++
 
+{{< figure
+  src="sven.jpg"
+  alt="A picture of Sven Eisenschmidt"
+  class="inline"
+>}}
+
 I'm Sven, and I live near Leipzig, Germany with my wife and two children.
 
 I like gaming, cycling, and building things that connect other things. I dislike cryptocurrencies, AI slop, and my Reddit filter list is 1000+ words and subreddits long.

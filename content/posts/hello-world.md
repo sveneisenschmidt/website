@@ -2,7 +2,6 @@
 date = '2026-01-01'
 draft = false
 title = 'Hello'
-tags = ['general']
 +++
 
 Welcome to my website. I work as Chief Technology & Product Officer at [roadsurfer](https://roadsurfer.com), where we help people explore the world in campervans.
