@@ -32,7 +32,8 @@ name = "Tags"
 pageRef = "/tags"
 weight = 30
 
+
 [[menus.main]]
-name = "Feed"
-url = "/index.xml"
-weight = 50
+name = "Blogroll"
+url = "/blogroll"
+weight = 40

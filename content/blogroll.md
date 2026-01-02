@@ -1,12 +1,7 @@
 +++
-date = '2026-01-02T12:03:26+01:00'
 showDate = false
 draft = false
 title = 'Blogroll'
 _build.list = 'never'
 +++
-
-1
-2
-3
-4
+[Jasper Tandy](https://jasper.tandy.is) - Monthly recaps, music, interesting links - my favorite  personal blog and inspiration for my personal blog.

@@ -3,12 +3,7 @@
   {{ .Content }}
   {{ range .Pages }}
     <section>
-      {{ with .Params.thumbnail }}
-      {{ with $.Resources.GetMatch . }}
-      {{ $thumb := .Fill "128x128" }}
-      <img src="{{ $thumb.RelPermalink }}" alt="" loading="lazy" class="thumbnail">
-      {{ end }}
-      {{ end }}
+      {{ partial "thumbnail.html" . }}
       <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
       <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
       {{ .Summary }}
