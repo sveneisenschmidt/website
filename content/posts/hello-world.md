@@ -17,5 +17,5 @@ Welcome to my website. I work as Chief Technology & Product Officer at [roadsurf
 ## This website
 
 - [Posts](/posts) - Blog posts
-- [Tags](/tags) - Posts by topic
+- [Topics](/topics) - Posts by topic
 - [About](/about) - A bit about me

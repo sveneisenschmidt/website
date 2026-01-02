@@ -22,14 +22,17 @@ name = "About Me"
 pageRef = "/about"
 weight = 99
 
-[[menus.main]]
-name = "Posts"
-pageRef = "/posts"
-weight = 20
+#[[menus.main]]
+#name = "Posts"
+#pageRef = "/posts"
+#weight = 20
+
+[taxonomies]
+topic = "topics"
 
 [[menus.main]]
-name = "Tags"
-pageRef = "/tags"
+name = "Topics"
+pageRef = "/topics"
 weight = 30
 
 

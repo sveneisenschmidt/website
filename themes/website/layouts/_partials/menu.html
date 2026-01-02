@@ -12,6 +12,7 @@ Renders a menu for the given menu ID.
 
 {{- with index site.Menus $menuID }}
   <nav>
+    {{- if not $page.IsHome }}<a href="{{ "/" | relURL }}">&larr; Back</a> | {{ end }}
     {{- partial "inline/menu/walk.html" (dict "page" $page "menuEntries" .) }}
   </nav>
 {{- end }}

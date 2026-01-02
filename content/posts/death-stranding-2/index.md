@@ -2,7 +2,7 @@
 date = '2026-01-02'
 draft = false
 title = 'Death Stranding 2'
-tags = ['gaming']
+topics = ['Video Games']
 thumbnail = 'IMG_0448.jpg'
 +++
 
