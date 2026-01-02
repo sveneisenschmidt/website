@@ -3,52 +3,80 @@
         type="text"
         id="search-input"
         placeholder="What are you looking for?"
-        onkeydown="
-            if (event.key === 'Enter') {
-                doSearch();
-                return false;
-            }
-        "
     />
-    <a
-        href="#"
-        onclick="
-            doSearch();
-            return false;
-        "
-        >Enter &#x23CE;</a
-    >
+    <a href="#">Enter &#x23CE;</a>
     <div id="search-results"></div>
 </div>
 <script>
-    let pagefind;
-    async function initPagefind() {
-        pagefind = await import("/pagefind/pagefind.js");
-        await pagefind.init();
-    }
-    async function doSearch() {
-        if (!pagefind) await initPagefind();
-        const query = document.getElementById("search-input").value;
-        const results = await pagefind.search(query);
-        const list = document.getElementById("search-results");
-        list.innerHTML = "";
-        const items = [];
-        for (const result of results.results) {
-            if (result.score < 1) continue;
-            const data = await result.data();
-            items.push(
-                '<h2><a href="' +
-                    data.url +
-                    '">' +
-                    data.meta.title +
-                    "</a></h2>",
-            );
+    (function () {
+        let pagefind;
+        let searchPending = false;
+
+        async function init() {
+            if (pagefind) return;
+            pagefind = await import("/pagefind/pagefind.js");
+            await pagefind.init();
         }
-        if (items.length > 0) {
-            list.innerHTML = "<hr><h1>Results</h1>" + items.join("");
-        } else if (query.length > 0) {
-            list.innerHTML = "<hr><p>No results found.</p>";
+
+        function escapeHtml(text) {
+            const div = document.createElement("div");
+            div.textContent = text;
+            return div.innerHTML;
         }
-    }
-    initPagefind();
+
+        async function doSearch() {
+            if (searchPending) return;
+            searchPending = true;
+
+            try {
+                await init();
+                const query = document.getElementById("search-input").value;
+                const results = await pagefind.search(query);
+                const list = document.getElementById("search-results");
+
+                const items = [];
+                for (const result of results.results) {
+                    if (result.score < 1) continue;
+                    const data = await result.data();
+                    items.push(
+                        '<h2><a href="' +
+                            escapeHtml(data.url) +
+                            '">' +
+                            escapeHtml(data.meta.title) +
+                            "</a></h2>",
+                    );
+                }
+
+                if (items.length > 0) {
+                    list.innerHTML = "<hr><h1>Results</h1>" + items.join("");
+                } else if (query.length > 0) {
+                    list.innerHTML = "<hr><p>No results found.</p>";
+                } else {
+                    list.innerHTML = "";
+                }
+            } catch (e) {
+                console.error("Search failed:", e);
+                document.getElementById("search-results").innerHTML =
+                    "<hr><p>Search unavailable.</p>";
+            } finally {
+                searchPending = false;
+            }
+        }
+
+        document
+            .getElementById("search-input")
+            .addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    doSearch();
+                }
+            });
+
+        document
+            .querySelector("#search > a")
+            .addEventListener("click", function (e) {
+                e.preventDefault();
+                doSearch();
+            });
+    })();
 </script>
