@@ -36,7 +36,6 @@
 
                 const items = [];
                 for (const result of results.results) {
-                    console.log("Score:", result.score);
                     if (result.score < 0.5) continue;
                     const data = await result.data();
                     items.push(

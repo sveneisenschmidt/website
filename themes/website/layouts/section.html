@@ -1,4 +1,1 @@
-{{ define "main" }}
-<h1>{{ .Title }}</h1>
-{{ .Content }} {{ range .Pages }} {{ partial "post-card.html" . }} {{ end }} {{
-end }}
+{{ define "main" }} {{ partial "list.html" . }} {{ end }}
