@@ -1,34 +1,38 @@
-baseURL = 'https://sven.eisenschmidt.website/'
-languageCode = 'en-us'
-title = 'sven.eisenschmidt.website'
-theme = 'website'
+baseURL = "https://sven.eisenschmidt.website/"
+languageCode = "en-us"
+title = "sven.eisenschmidt.website"
+theme = "website"
 
 [params]
-  description = 'Personal website of Sven Eisenschmidt - CTO & Product Officer, based in Leipzig, Germany.'
-  author = 'Sven Eisenschmidt'
-  keywords = 'Sven Eisenschmidt, CTO, technology, product, Leipzig, roadsurfer'
+description = "Personal website of Sven Eisenschmidt - CTO & Product Officer, based in Leipzig, Germany."
+author = "Sven Eisenschmidt"
+keywords = "Sven Eisenschmidt, CTO, technology, product, Leipzig, roadsurfer"
 
-[caches]
-  [caches.images]
-    dir = ':cacheDir/images'
+[markup.goldmark.parser.attribute]
+block = true
+title = true
+[markup.goldmark.parser]
+wrapStandAloneImageWithinParagraph = false
 
-[menus]
-  [[menus.main]]
-    name = 'About Me'
-    pageRef = '/about'
-    weight = 99
+[caches.images]
+dir = ":cacheDir/images"
 
-  [[menus.main]]
-    name = 'Posts'
-    pageRef = '/posts'
-    weight = 20
+[[menus.main]]
+name = "About Me"
+pageRef = "/about"
+weight = 99
 
-  [[menus.main]]
-    name = 'Tags'
-    pageRef = '/tags'
-    weight = 30
+[[menus.main]]
+name = "Posts"
+pageRef = "/posts"
+weight = 20
 
-  [[menus.main]]
-    name = 'Feed'
-    url = '/index.xml'
-    weight = 50
+[[menus.main]]
+name = "Tags"
+pageRef = "/tags"
+weight = 30
+
+[[menus.main]]
+name = "Feed"
+url = "/index.xml"
+weight = 50

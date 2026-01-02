@@ -3,6 +3,11 @@
   {{ .Content }}
   {{ range .Pages }}
     <section>
+      {{ $images := .Resources.ByType "image" }}
+      {{ with index $images 0 }}
+      {{ $thumb := .Fill "128x128" }}
+      <img src="{{ $thumb.RelPermalink }}" alt="" loading="lazy" class="thumbnail">
+      {{ end }}
       <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
       <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
       {{ .Summary }}

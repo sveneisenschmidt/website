@@ -6,11 +6,8 @@ title = 'About'
 _build.list = 'never'
 +++
 
-{{< figure
-  src="sven.jpg"
-  alt="A picture of Sven Eisenschmidt"
-  class="inline"
->}}
+![A picture of Sven Eisenschmidt](sven.jpg)
+{class="inline"}
 
 I'm Sven, and I live near Leipzig, Germany with my wife and two children.
 
