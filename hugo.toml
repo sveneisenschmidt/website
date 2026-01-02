@@ -3,6 +3,10 @@ languageCode = 'en-us'
 title = 'sven.eisenschmidt.website'
 theme = 'website'
 
+[caches]
+  [caches.images]
+    dir = ':cacheDir/images'
+
 [menus]
   [[menus.main]]
     name = 'About Me'
