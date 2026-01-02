@@ -1,2 +1,6 @@
-<h1><a href="{{ "/" | relURL }}"{{ if not .IsHome }} class="back" onclick="if(history.length>1){history.back();return false;}" ondblclick="window.location.href='{{ "/" | relURL }}';return false;"{{ end }}>{{ if .IsHome }}{{ site.Title }}{{ else }}&larr; Back{{ end }}</a></h1>
+{{ if .IsHome }}
+<h1><a href="{{ "/" | relURL }}" class="home">{{ site.Title }}</a></h1>
+{{ else }}
+<h1><a href="{{ "/" | relURL }}">&larr; Back</a></h1>
+{{ end }}
 {{ partial "menu.html" (dict "menuID" "main" "page" .) }}

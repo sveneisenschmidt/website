@@ -45,7 +45,7 @@ header {
         font-size: clamp(1.2rem, 5vw, 2rem);
         word-break: break-word;
 
-        a:not(.back) {
+        a.home {
             color: black;
         }
     }
