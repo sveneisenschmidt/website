@@ -3,6 +3,11 @@ languageCode = 'en-us'
 title = 'sven.eisenschmidt.website'
 theme = 'website'
 
+[params]
+  description = 'Personal website of Sven Eisenschmidt - CTO & Product Officer, based in Leipzig, Germany.'
+  author = 'Sven Eisenschmidt'
+  keywords = 'Sven Eisenschmidt, CTO, technology, product, Leipzig, roadsurfer'
+
 [caches]
   [caches.images]
     dir = ':cacheDir/images'
