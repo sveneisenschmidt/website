@@ -9,6 +9,8 @@
     <body>
         <header>{{ partial "header.html" . }}</header>
         <main data-pagefind-body>{{ block "main" . }}{{ end }}</main>
-        <footer>{{ partial "footer.html" . }}</footer>
+        <footer>
+            {{ partial "pop.html" . }} {{ partial "footer.html" . }}
+        </footer>
     </body>
 </html>
