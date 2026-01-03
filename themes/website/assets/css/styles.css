@@ -133,6 +133,10 @@ strong {
 
 h1 {
     font-weight: 500;
+
+    &:has(+ time) {
+        margin-bottom: 0;
+    }
 }
 
 h2 {
