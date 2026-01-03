@@ -30,13 +30,14 @@ Built with [Hugo](https://gohugo.io/), a static site generator. Search powered b
 <script defer>
 document.addEventListener("DOMContentLoaded", () => {
     const d = location.origin;
+    const pl = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
     fetch("https://pop.eisenschmidt.website/api/stats").then(r => r.json()).then(data => {
         const p = data.pages.filter(x => x.pageId.startsWith(d));
         if (!p.length) return;
         const sum = (k) => p.reduce((s, x) => s + x[k], 0);
         const top = p.filter(x => x.pageId.includes("/posts/"))
             .sort((a, b) => b.totalVisits - a.totalVisits).slice(0, 3)
-            .map(x => `<li><a href="${x.pageId.replace(d, "")}">${x.pageId.replace(d, "")}</a> - ${x.totalVisits} visits, ${x.totalReactions} reactions</li>`).join("");
+            .map(x => `<li><a href="${x.pageId.replace(d, "")}">${x.pageId.replace(d, "")}</a> - ${pl(x.totalVisits, "visit")}, ${pl(x.totalReactions, "reaction")}</li>`).join("");
         document.getElementById("site-stats").innerHTML = `<h4>Statistics</h4>
             <p><strong>${sum("uniqueVisitors")}</strong> unique visitors, <strong>${sum("totalVisits")}</strong> total visits, <strong>${sum("totalReactions")}</strong> reactions across <strong>${p.length}</strong> pages.</p>
             <p>Most visited posts:</p><ul>${top}</ul>`;
