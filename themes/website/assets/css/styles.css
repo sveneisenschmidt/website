@@ -119,16 +119,20 @@ hr {
 }
 
 a {
-    color: var(--color-link);
-    text-decoration: none;
+    color: var(--color-text);
+    text-decoration: underline;
 }
 
 a:hover {
-    text-decoration: underline;
+    color: var(--color-link);
 }
 
 strong {
     font-weight: 500;
+}
+
+time {
+    font-style: italic;
 }
 
 h1 {
