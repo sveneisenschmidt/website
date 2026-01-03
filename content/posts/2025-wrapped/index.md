@@ -112,7 +112,7 @@ I also skipped [Call of Duty](https://www.metacritic.com/game/call-of-duty-black
 
 1. [Pluribus](https://www.imdb.com/title/tt22202452/) *Sci-Fi Drama* (TV Show) - 9.5/10. (Nice cinematography, focus on single persons over multiple parallel story arcs, solid foreshadowing, nothing over the top and no "we are so smart" 4-D chess. Very approachable and digestible. Excited for the new season in 2-3 years!)
 2. [One Battle After Another](https://www.imdb.com/title/tt30144839/) *Action Drama* (Movie) - 9/10. (Appreciated the overall length, felt nicely timed. Sean Penn's acting was great. It felt like a whole and well rounded movie.)
-3. [The Day of the Jackal](https://www.imdb.com/title/tt24053860/) *Thriller* (TV Show) - 9/10. (Not finished yet, halfway through. Too much emphasis on the family back in Spain/Portugal and them eventually foiling his plans. Eddie Redmayne's acting is awesome to watch.)
+3. [The Day of the Jackal](https://www.imdb.com/title/tt24053860/) *Thriller* (TV Show) - 9/10. (Not finished yet, halfway through. At this point it's too much emphasis his family back in Spain/Portugal for me. I suspect they will foil his plans. Eddie Redmayne's acting is awesome to watch.)
 4. [Midsommar](https://www.imdb.com/title/tt8772262/) *Horror* (Movie) - 8/10. (Just shocking.)
 5. [Foundation](https://www.imdb.com/title/tt0804484/) *Sci-Fi Drama* (TV Show) - 9/10. (The slow decline of the Empire, the hedonist Cleon and less focus on Hari Seldon and the Foundation. The twist at the end about the Mule was exciting but then felt rushed, as if scenes were missing.)
 6. [Sinners](https://www.imdb.com/title/tt31193180/) *Horror* (Movie) - 8/10. (Feels like a modern From Dusk Till Dawn.)
