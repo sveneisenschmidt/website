@@ -110,7 +110,7 @@ I also skipped [Call of Duty](https://www.metacritic.com/game/call-of-duty-black
 
 ## Movies and TV Shows
 
-1. [Pluribus](https://www.imdb.com/title/tt22202452/) *Sci-Fi Drama* (TV Show) - 9.5/10. (Nice cinematography, focus on single persons over multiple parallel story arcs, solid foreshadowing, nothing over the top and 4-D chess. Very approachable and digestible. Excited for the new season in 2-3 years!)
+1. [Pluribus](https://www.imdb.com/title/tt22202452/) *Sci-Fi Drama* (TV Show) - 9.5/10. (Nice cinematography, focus on single persons over multiple parallel story arcs, solid foreshadowing, nothing over the top and no "we are so smart" 4-D chess. Very approachable and digestible. Excited for the new season in 2-3 years!)
 2. [One Battle After Another](https://www.imdb.com/title/tt30144839/) *Action Drama* (Movie) - 9/10. (Appreciated the overall length, felt nicely timed. Sean Penn's acting was great. It felt like a whole and well rounded movie.)
 3. [The Day of the Jackal](https://www.imdb.com/title/tt24053860/) *Thriller* (TV Show) - 9/10. (Not finished yet, halfway through. Too much emphasis on the family back in Spain/Portugal and them eventually foiling his plans. Eddie Redmayne's acting is awesome to watch.)
 4. [Midsommar](https://www.imdb.com/title/tt8772262/) *Horror* (Movie) - 8/10. (Just shocking.)
