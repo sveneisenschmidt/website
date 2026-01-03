@@ -19,7 +19,7 @@ Renders a menu for the given menu ID.
 {{- define "_partials/inline/menu/walk.html" }}
   {{- $page := .page }}
   {{- range $index, $entry := .menuEntries }}
-    {{- if $index }} | {{ end }}
+    {{- if $index }} · {{ end }}
     {{- $attrs := dict "href" $entry.URL }}
     {{- if $page.IsMenuCurrent $entry.Menu $entry }}
       {{- $attrs = merge $attrs (dict "class" "active" "aria-current" "page") }}
