@@ -24,3 +24,23 @@ This is a private, non-commercial website. No business activities, no ads, no af
 ### About this Website
 
 Built with [Hugo](https://gohugo.io/), a static site generator. Search powered by [Pagefind](https://pagefind.app/). Reactions on posts via [Pop](https://github.com/sveneisenschmidt/pop), my own tiny feedback library. Custom theme, vanilla CSS, no JavaScript frameworks. Hosted on [All-Inkl](https://all-inkl.com/) in Germany.
+
+{{< rawhtml >}}
+<div id="site-stats"></div>
+<script defer>
+document.addEventListener("DOMContentLoaded", () => {
+    const d = location.origin;
+    fetch("https://pop.eisenschmidt.website/api/stats").then(r => r.json()).then(data => {
+        const p = data.pages.filter(x => x.pageId.startsWith(d));
+        if (!p.length) return;
+        const sum = (k) => p.reduce((s, x) => s + x[k], 0);
+        const top = p.filter(x => x.pageId.includes("/posts/"))
+            .sort((a, b) => b.totalVisits - a.totalVisits).slice(0, 3)
+            .map(x => `<li><a href="${x.pageId.replace(d, "")}">${x.pageId.replace(d, "")}</a> - ${x.totalVisits} visits, ${x.totalReactions} reactions</li>`).join("");
+        document.getElementById("site-stats").innerHTML = `<h4>Statistics</h4>
+            <p><strong>${sum("uniqueVisitors")}</strong> unique visitors, <strong>${sum("totalVisits")}</strong> total visits, <strong>${sum("totalReactions")}</strong> reactions across <strong>${p.length}</strong> pages.</p>
+            <p>Most visited posts:</p><ul>${top}</ul>`;
+    }).catch(() => {});
+});
+</script>
+{{< /rawhtml >}}

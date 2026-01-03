@@ -37,6 +37,6 @@ url = "/blogroll"
 weight = 40
 
 [[menus.main]]
-name = "About Me"
+name = "About"
 pageRef = "/about"
 weight = 99
