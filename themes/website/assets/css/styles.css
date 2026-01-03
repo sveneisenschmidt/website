@@ -121,6 +121,7 @@ hr {
 a {
     color: var(--color-text);
     text-decoration: underline;
+    text-underline-offset: 0.1em;
 }
 
 a:hover {
