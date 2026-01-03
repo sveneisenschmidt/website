@@ -1,15 +1,23 @@
 @font-face {
     font-family: "Work Sans";
-    src: url("/fonts/WorkSans-VariableFont_wght.ttf") format("truetype");
-    font-weight: 100 900;
+    src: url("/fonts/WorkSans-Regular.ttf") format("truetype");
+    font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 
 @font-face {
     font-family: "Work Sans";
-    src: url("/fonts/WorkSans-Italic-VariableFont_wght.ttf") format("truetype");
-    font-weight: 100 900;
+    src: url("/fonts/WorkSans-Medium.ttf") format("truetype");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Work Sans";
+    src: url("/fonts/WorkSans-Italic.ttf") format("truetype");
+    font-weight: 400;
     font-style: italic;
     font-display: swap;
 }
@@ -61,6 +69,11 @@ img {
     &.hero {
         width: 100%;
         margin: 0 auto;
+    }
+
+    &.hero + p,
+    &.hero + h2 {
+        margin-top: 2rem;
     }
 }
 
@@ -114,6 +127,10 @@ a:hover {
     text-decoration: underline;
 }
 
+strong {
+    font-weight: 500;
+}
+
 h1 {
     font-weight: 500;
 }
@@ -127,6 +144,11 @@ h2 {
     }
 }
 
+section {
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
 #pop-wrapper {
     margin: 1rem 0;
     .pop-reactions {
@@ -134,6 +156,12 @@ h2 {
     }
     .pop-btn {
         margin-right: 0.5rem;
+        background: var(--color-bg);
+        border: 1px solid var(--color-border);
+        color: var(--color-text);
+        border-radius: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        cursor: pointer;
     }
 }
 

@@ -20,3 +20,7 @@ Sometimes I build [open source tools](https://github.com/sveneisenschmidt) for f
 You can find me on [GitHub](https://github.com/sveneisenschmidt), [LinkedIn](https://www.linkedin.com/in/sveneisenschmidt/), or [Strava](https://www.strava.com/athletes/sveneisenschmidt).
 
 This is a private, non-commercial website. No business activities, no ads, no affiliate links, no monetization. Don't bother.
+
+### About this Website
+
+Built with [Hugo](https://gohugo.io/), a static site generator. Search powered by [Pagefind](https://pagefind.app/). Reactions on posts via [Pop](https://github.com/sveneisenschmidt/pop), my own tiny feedback library. Custom theme, vanilla CSS, no JavaScript frameworks. Hosted on [All-Inkl](https://all-inkl.com/) in Germany.
