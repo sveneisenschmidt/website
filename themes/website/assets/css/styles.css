@@ -132,6 +132,9 @@ h2 {
     .pop-reactions {
         display: inline-block;
     }
+    .pop-btn {
+        margin-right: 0.5rem;
+    }
 }
 
 #search {
