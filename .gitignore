@@ -3,3 +3,5 @@ AGENTS.md
 node_modules/
 public/
 resources/_gen/
+package.json
+package-lock.json

@@ -1,1 +1,17 @@
+{{ $isPost := and (eq .Kind "page") (eq .Section "posts") }} {{ if $isPost }}
+
+<div id="pop-wrapper">Leave a reaction: <span id="pop"></span></div>
+<hr />
+{{ end }}
+<script src="https://pop.eisenschmidt.website/pop.min.js"></script>
+<script>
+    Pop.init({
+        endpoint: "https://pop.eisenschmidt.website/api",
+        {{ if $isPost }}
+          el: "#pop",
+          emojis: ["❤️"],
+        {{ end }}
+        silent: {{ not $isPost }},
+    });
+</script>
 <p>All content is available via <a href="/index.xml">RSS</a></p>

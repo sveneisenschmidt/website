@@ -102,6 +102,7 @@ footer {
 hr {
     border: none;
     border-top: 1px solid var(--color-border);
+    margin-bottom: 1rem;
 }
 
 a {
@@ -123,6 +124,13 @@ h2 {
 
     & + h2 {
         margin-top: 1rem;
+    }
+}
+
+#pop-wrapper {
+    margin: 1rem 0;
+    .pop-reactions {
+        display: inline-block;
     }
 }
 
