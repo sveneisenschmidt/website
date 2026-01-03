@@ -1,3 +1,14 @@
+# Keep-Alive
+<IfModule mod_headers.c>
+    Header set Connection keep-alive
+</IfModule>
+
+# ETags deaktivieren (Cache-Control reicht)
+<IfModule mod_headers.c>
+    Header unset ETag
+</IfModule>
+FileETag None
+
 # Compression
 <IfModule mod_brotli.c>
     AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/xml text/css text/javascript application/javascript application/json application/xml image/svg+xml
