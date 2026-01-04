@@ -24,3 +24,5 @@ What kept me going:
 Then n8n released a built-in feature that does the same thing.
 
 I am happy about it. No more maintenance and no need to support it over the next years. Bugs are someone else's problem now. The infra team at roadsurfer has one less Helm chart to worry about. I get overly excited about new projects and quickly lose interest. This website will probably suffer the same fate.
+
+Update **January 4, 2026**: I launched a new open source project called [pop](https://github.com/sveneisenschmidt/pop).
