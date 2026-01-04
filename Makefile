@@ -16,7 +16,7 @@ dev: check-deps
 build:
 	rm -rf public/*
 	hugo --minify
-	npx pagefind --site public --glob '**/*.html' --exclude-selectors 'header,footer,nav'
+	npx pagefind --site public --glob 'posts/*/**/*.html'
 	rm -f public/pagefind/pagefind-ui.* public/pagefind/pagefind-modular-ui.* public/pagefind/pagefind-highlight.js
 
 publish: build
