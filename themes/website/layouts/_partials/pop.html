@@ -15,7 +15,7 @@
     document.addEventListener("DOMContentLoaded", function() {
         Pop.init({
             endpoint: "https://pop.eisenschmidt.website/api",
-            pageId: "{{  .Permalink | htmlUnescape }}",
+            pageId: {{ .Permalink }},
         {{ if $isPost }}
             el: "#pop",
             emojis: ["❤️", "👍", "💡"],
