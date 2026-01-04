@@ -14,9 +14,9 @@
     />
 </a>
 {{ end }} {{ else }} {{ $words := split .Title " " }} {{ $initials := "" }} {{
-range first 2 $words }} {{ $initials = printf "%s%s" $initials (substr . 0 1) }}
-{{ end }}
-<a href="{{ .RelPermalink }}" class="cover-placeholder"
-    >{{ upper $initials }}</a
->
+if ge (len $words) 2 }} {{ range first 2 $words }} {{ $initials = printf "%s%s"
+$initials (substr . 0 1) }} {{ end }} {{ $initials = upper $initials }} {{ else
+}} {{ $word := index $words 0 }} {{ $initials = printf "%s%s" (upper (substr
+$word 0 1)) (lower (substr $word 1 1)) }} {{ end }}
+<a href="{{ .RelPermalink }}" class="cover-placeholder">{{ $initials }}</a>
 {{ end }}
