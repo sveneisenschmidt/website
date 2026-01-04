@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .sort((a, b) => b.totalVisits - a.totalVisits).slice(0, 3)
             .map(x => `<li><a href="${x.pageId.replace(d, "")}">${x.pageId.replace(d, "")}</a> - ${pl(x.totalVisits, "visit")}, ${pl(x.totalReactions, "reaction")}</li>`).join("");
         document.getElementById("site-stats").innerHTML = `<h4>Statistics</h4>
-            <p><strong>${sum("uniqueVisitors")}</strong> unique visitors, <strong>${sum("totalVisits")}</strong> total visits, <strong>${sum("totalReactions")}</strong> reactions across <strong>${p.length}</strong> pages.</p>
+            <p><strong>${sum("uniqueVisitors")}</strong> unique visitors, <strong>${sum("totalVisits")}</strong> total visits, <strong>${sum("totalReactions")}</strong> reactions across <strong>${p.length}</strong> pages. Powered by <a href="https://github.com/sveneisenschmidt/pop">Pop</a>.</p>
             <p>Most visited posts:</p><ul>${top}</ul>`;
     }).catch(() => {});
 });
