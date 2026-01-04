@@ -2,8 +2,11 @@
     {{- $count := 0 -}} {{- range where site.RegularPages "Section" "posts" -}}
     {{- $post := . -}} {{- range .Resources.ByType "image" -}} {{- $thumb :=
     .Fill "256x256" -}}
-    <a href="{{ $post.Permalink }}"
-        ><img src="{{ $thumb.RelPermalink }}" alt="{{ .Title }}" loading="lazy"
+    <a href="{{ $post.Permalink }}" title="{{ $post.Title }}"
+        ><img
+            src="{{ $thumb.RelPermalink }}"
+            alt="Photo from {{ $post.Title }}"
+            loading="lazy"
     /></a>
     {{- $count = add $count 1 -}} {{- end -}} {{- end -}} {{- $rem3 := mod
     $count 3 -}} {{- $rem2 := mod $count 2 -}} {{- if ne $rem3 0 -}}
