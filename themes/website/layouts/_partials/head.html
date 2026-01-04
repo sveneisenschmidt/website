@@ -32,7 +32,7 @@
     type="font/woff2"
     crossorigin
 />
-{{ partialCached "head/meta.html" . }} {{ partialCached "head/css.html" . }} {{
+{{ partial "head/meta.html" . }} {{ partialCached "head/css.html" . }} {{
 partialCached "head/js.html" . }} {{ if .IsHome }} {{ $firstPost := index
 site.RegularPages 0 }} {{ with $firstPost.Params.cover }} {{ with
 $firstPost.Resources.GetMatch . }} {{ $small := .Fill "128x128 Center" }} {{
