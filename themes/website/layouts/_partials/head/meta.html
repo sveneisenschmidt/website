@@ -7,7 +7,7 @@
 <meta name="keywords" content="{{ . }}" />
 {{ end }}
 
-<meta property="og:title" content="{{ .Title | default .Site.Title }}" />
+<meta property="og:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ printf "%s | %s" .Title .Site.Title }}{{ end }}" />
 <meta
     property="og:description"
     content="{{ $description | plainify | truncate 160 }}"
