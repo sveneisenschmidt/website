@@ -13,7 +13,7 @@
 {{ if ge $rating 8.0 }}{{ $ratingClass = "high" }}{{ else if ge $rating 5.0 }}{{ $ratingClass = "mid" }}{{ end }}
 <p class="log-entry">
   <span class="log-labels"><span class="log-type">{{ .Params.type }}</span> <span class="log-rating {{ $ratingClass }}">{{ .Params.rating }}</span></span>
-  <span class="log-content"><a href="{{ .Params.link }}">{{ .Title }}</a><span class="separator"> · </span><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>{{ with .Params.description }}<span class="separator"> · </span>{{ . }}{{ end }}</span>
+  <span class="log-content"><a href="{{ .Params.link }}">{{ .Title }}</a> · <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>{{ with .Params.description }}<br>{{ . }}{{ end }}</span>
 </p>
 {{ end }}
 {{ end }}

@@ -312,6 +312,7 @@ section {
     display: inline-block;
     min-width: 3rem;
     text-align: center;
+    white-space: nowrap;
 }
 
 .log-rating {
@@ -322,6 +323,7 @@ section {
     min-width: 1.5rem;
     text-align: center;
     font-weight: 500;
+    white-space: nowrap;
 
     &.high {
         background: color-mix(in srgb, #22863a 25%, var(--color-bg));
@@ -339,24 +341,21 @@ section {
     }
 }
 
-.separator {
-    @media (max-width: 768px) {
-        display: block;
-        height: 0;
-        overflow: hidden;
-    }
-}
-
 .log-entry {
-    @media (max-width: 768px) {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        gap: 0.5rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem;
+    align-items: baseline;
 
+    .log-labels {
+        display: flex;
+        gap: 0.25rem;
+        align-self: start;
+    }
+
+    @media (max-width: 768px) {
         .log-labels {
-            display: flex;
             flex-direction: column;
-            gap: 0.25rem;
         }
     }
 }
