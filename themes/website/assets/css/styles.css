@@ -83,9 +83,23 @@ img.inline {
     width: 33%;
 }
 
+@keyframes header-shadow {
+    1%,
+    to {
+        box-shadow: 0 0.5rem 0 0 var(--color-bg);
+    }
+}
+
 header {
+    position: sticky;
+    top: 0;
+    background: var(--color-bg);
+    z-index: 100;
     border-bottom: 1px solid var(--color-border);
     margin-bottom: 1rem;
+    animation: header-shadow linear both;
+    animation-timeline: scroll();
+    animation-range: 0 150px;
 
     h1 {
         text-align: center;
