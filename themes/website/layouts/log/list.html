@@ -1,12 +1,19 @@
 {{ define "main" }}
 <h1>{{ .Title }}</h1>
 
+{{ $currentYear := "" }}
 {{ range .Pages.ByDate.Reverse }}
-<section class="log-entry">
-  <span class="log-type">{{ .Params.type }}</span>
-  <a href="{{ .Params.link }}">{{ .Title }}</a>
-  <span class="log-rating">{{ .Params.rating }}/10</span>
-  <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
-</section>
+{{ $year := .Date.Format "2006" }}
+{{ if ne $year $currentYear }}
+<h3>{{ $year }}</h3>
+{{ $currentYear = $year }}
+{{ end }}
+{{ $rating := .Params.rating }}
+{{ $ratingClass := "low" }}
+{{ if ge $rating 8.0 }}{{ $ratingClass = "high" }}{{ else if ge $rating 5.0 }}{{ $ratingClass = "mid" }}{{ end }}
+<p class="log-entry">
+  <span class="log-labels"><span class="log-type">{{ .Params.type }}</span> <span class="log-rating {{ $ratingClass }}">{{ .Params.rating }}</span></span>
+  <span class="log-content"><a href="{{ .Params.link }}">{{ .Title }}</a><span class="separator"> · </span><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>{{ with .Params.description }}<span class="separator"> · </span>{{ . }}{{ end }}</span>
+</p>
 {{ end }}
 {{ end }}
