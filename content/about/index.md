@@ -3,7 +3,7 @@ date = '2026-01-02T12:03:26+01:00'
 showDate = false
 draft = false
 title = 'About'
-_build.list = 'never'
+build.list = 'never'
 +++
 
 ![A picture of Sven Eisenschmidt](sven.jpg)

@@ -2,7 +2,7 @@
 showDate = false
 draft = false
 title = 'Photos'
-_build.list = 'never'
+build.list = 'never'
 +++
 
 {{< photos >}}

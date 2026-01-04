@@ -1,6 +1,6 @@
 baseURL = "https://sven.eisenschmidt.website/"
 languageCode = "en-us"
-title = "sven.eisenschmidt.website"
+title = "Sven Eisenschmidt - Personal Blog"
 theme = "website"
 
 [params]
