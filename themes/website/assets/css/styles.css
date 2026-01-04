@@ -378,12 +378,12 @@ section {
             flex-direction: column;
         }
 
-        .log-content time {
-            display: block;
-        }
-
         .log-separator {
             display: none;
+        }
+
+        .log-content a {
+            display: block;
         }
     }
 }
