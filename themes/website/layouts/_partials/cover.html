@@ -13,10 +13,7 @@
         class="cover"
     />
 </a>
-{{ end }} {{ else }} {{ $words := split .Title " " }} {{ $initials := "" }} {{
-if ge (len $words) 2 }} {{ range first 2 $words }} {{ $initials = printf "%s%s"
-$initials (substr . 0 1) }} {{ end }} {{ $initials = upper $initials }} {{ else
-}} {{ $word := index $words 0 }} {{ $initials = printf "%s%s" (upper (substr
-$word 0 1)) (lower (substr $word 1 1)) }} {{ end }}
-<a href="{{ .RelPermalink }}" class="cover-placeholder">{{ $initials }}</a>
+{{ end }} {{ else }} {{ $letters := printf "%s%s" (upper (substr .Title 0 1))
+(lower (substr .Title 1 1)) }}
+<a href="{{ .RelPermalink }}" class="cover-placeholder">{{ $letters }}</a>
 {{ end }}
