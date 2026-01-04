@@ -18,13 +18,11 @@ The highlight was attending the **Tour de France** in person. We watched the sta
 
 For the second stage we parked our camper van right at the roadside and had front row seats.
 
-![Tour de France 2025: Us standing at the side of the road](IMG_8193.jpg)
-{class="hero"}
+{{< img src="IMG_8193.jpg" alt="Tour de France 2025: Us standing at the side of the road" >}}
 
 Jonas Vingegaard passing by in [Moûtiers, France](https://www.coeurdetarentaise-tourisme.com/blog/articles/copie-de-tour-de-france-2025-18e-etape). He eventually won the race.
 
-![Tour de France 2025: Jonas Vingegaard](IMG_8224.jpg)
-{class="hero"}
+{{< img src="IMG_8224.jpg" alt="Tour de France 2025: Jonas Vingegaard" >}}
 
 None of this would have happened without Nadine, my wife, who plans all our trips. She is already organizing the next adventure: a road trip across Europe to the Asturias region in Spain for the solar eclipse in August 2026.
 
@@ -38,8 +36,7 @@ None of this would have happened without Nadine, my wife, who plans all our trip
 
 August was my month: 13 active days, 30 hours of riding. I was pushing for 100km+ each weekend and got into some kind of runner's high on the bike. Eventually I succumbed to being busy with other things. It's difficult to justify 4+ hours being away each weekend with everyone being busy at home. Still wondering how others manage to find the time for long rides.
 
-![Sunset ride around Altenburg](IMG_8328.jpg)
-{class="hero"}
+{{< img src="IMG_8328.jpg" alt="Sunset ride around Altenburg" >}}
 
 I am riding a Rose Reveal Plus 2024.
 
@@ -79,8 +76,7 @@ Data from [Steam Replay](https://store.steampowered.com/replay/).
 
 ### Top Games
 
-![Hades II on Steam Deck](IMG_0477.jpg)
-{class="hero"}
+{{< img src="IMG_0477.jpg" alt="Hades II on Steam Deck" >}}
 
 1. [Hades II](https://www.metacritic.com/game/hades-ii/) *Action Roguelike* - 18% playtime, 31 sessions, 9/10. (A better version of Hades I, not more and not less. The end game was long though. Repetitively fighting bosses without any progression, just to increase the internal counter of x times defeated to progress to the end.)
 2. [Deadzone: Rogue](https://www.metacritic.com/game/deadzone-rogue/) *Roguelike Shooter* - 17% playtime, 23 sessions, 8/10. (No idea why I played this so much. Very straightforward, ran well on the Deck and was a low effort shooter. I guess I used this to compensate for a missing Call of Duty experience this year.)
@@ -128,8 +124,7 @@ This year I started using [Infuse](https://firecore.com/infuse) for digitized me
 
 End of 2024 I bought a [Bambu A1 Mini](https://bambulab.com/en/a1-mini) with AMS. Since then I printed many small and large things for the household that always break: clothes hooks, curtain rod holders, IP camera mounts, gifts for kid birthdays, cable channels and mounts.
 
-![Bambu Labs A1 Mini](IMG_6346.jpg)
-{class="hero"}
+{{< img src="IMG_6346.jpg" alt="Bambu Labs A1 Mini" >}}
 
 I am most proud of designing a replacement hinge for our neighbour's pool robot. I use [TinkerCAD](https://www.tinkercad.com/) for all my 3D models when I can't find them on [MakerWorld](https://makerworld.com/). It is very accessible, way more than other CAD tools.
 

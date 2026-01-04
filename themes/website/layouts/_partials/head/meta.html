@@ -19,7 +19,7 @@
 <meta property="og:url" content="{{ .Permalink }}" />
 <meta property="og:site_name" content="{{ .Site.Title }}" />
 {{ with .Params.cover }}{{ with $.Resources.GetMatch . }} {{ $og := .Fill
-"1200x630 webp q80" }}
+"1200x630 Center webp q80" }}
 <meta property="og:image" content="{{ $og.Permalink }}" />
 {{ end }}{{ end }}
 
@@ -30,7 +30,7 @@
     content="{{ $description | plainify | truncate 160 }}"
 />
 {{ with .Params.cover }}{{ with $.Resources.GetMatch . }} {{ $twitter := .Fill
-"1200x630 webp q80" }}
+"1200x630 Center webp q80" }}
 <meta name="twitter:image" content="{{ $twitter.Permalink }}" />
 {{ end }}{{ end }}
 

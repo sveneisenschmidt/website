@@ -4,6 +4,8 @@
 {{ if ne .Params.showDate false }} {{ $dateMachine := .Date | time.Format
 "2006-01-02T15:04:05-07:00" }} {{ $dateHuman := .Date | time.Format ":date_long"
 }}
-<time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
+<time datetime="{{ $dateMachine }}"
+    >{{ $dateHuman }} · {{ .ReadingTime }} min read</time
+>
 {{ end }} {{ .Content }} {{ partial "terms.html" (dict "taxonomy" "topics"
 "page" .) }} {{ end }}

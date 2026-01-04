@@ -1,0 +1,6 @@
+{{- $src := .Get "src" -}}
+{{- $img := .Page.Resources.GetMatch $src -}}
+{{- if $img -}}
+{{- $resized := $img.Fit "1440x1440" -}}
+<img src="{{ $resized.RelPermalink }}" alt="{{ .Get "alt" | default "" }}" loading="lazy" class="hero">
+{{- end -}}
