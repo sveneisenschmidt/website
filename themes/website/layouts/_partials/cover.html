@@ -13,4 +13,10 @@
         class="cover"
     />
 </a>
-{{ end }} {{ end }}
+{{ end }} {{ else }} {{ $words := split .Title " " }} {{ $initials := "" }} {{
+range first 2 $words }} {{ $initials = printf "%s%s" $initials (substr . 0 1) }}
+{{ end }}
+<a href="{{ .RelPermalink }}" class="cover-placeholder"
+    >{{ upper $initials }}</a
+>
+{{ end }}

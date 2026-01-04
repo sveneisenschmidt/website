@@ -54,29 +54,53 @@ img {
     border-radius: 0.25rem;
 
     &.cover {
-        float: right;
-        margin: 0rem 0.5rem;
         aspect-ratio: 1;
         width: 128px;
-        height: auto;
+        height: 128px;
+        flex-shrink: 0;
+        margin-top: 0.5rem;
 
         @media (max-width: 768px) {
-            float: none;
             width: 100%;
             height: auto;
-            margin: 0 0 1rem 0;
+            margin-top: 0;
         }
     }
+}
 
-    &.hero {
-        width: 100%;
-        margin: 0 auto;
+.cover-placeholder {
+    display: none;
+    aspect-ratio: 1;
+    width: 128px;
+    height: 128px;
+    flex-shrink: 0;
+    margin-top: 0.5rem;
+    background: var(--color-bg-muted);
+    border-radius: 0.25rem;
+    text-decoration: none;
+    font-size: 2.5rem;
+    font-weight: 500;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text);
+
+    &:hover {
+        color: var(--color-text);
     }
 
-    &.hero + p,
-    &.hero + h2 {
-        margin-top: 2rem;
+    @media (min-width: 769px) {
+        display: flex;
     }
+}
+
+img.hero {
+    width: 100%;
+    margin: 0 auto;
+}
+
+img.hero + p,
+img.hero + h2 {
+    margin-top: 2rem;
 }
 
 img.inline {
@@ -170,8 +194,17 @@ h2 {
 }
 
 section {
-    overflow: hidden;
+    display: flex;
+    gap: 1rem;
     margin-bottom: 1rem;
+
+    &:has(.cover) > div {
+        flex: 1;
+    }
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+    }
 }
 
 #pop-wrapper {
