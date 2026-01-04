@@ -28,6 +28,9 @@
     --color-border: #222;
     --color-bg: #fff;
     --color-bg-muted: color-mix(in srgb, var(--color-bg) 95%, black);
+    --color-rating-high: #22863a;
+    --color-rating-mid: #b08800;
+    --color-rating-low: #cb2431;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -303,41 +306,58 @@ section {
     }
 }
 
-.log-type {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    background: var(--color-bg-muted);
-    padding: 0.125rem 0.375rem;
-    border-radius: 0.25rem;
-    display: inline-block;
-    min-width: 3rem;
-    text-align: center;
-    white-space: nowrap;
-}
-
+.log-type,
 .log-rating {
     font-size: 0.75rem;
     padding: 0.125rem 0.375rem;
     border-radius: 0.25rem;
     display: inline-block;
-    min-width: 1.5rem;
     text-align: center;
-    font-weight: 500;
     white-space: nowrap;
+}
 
-    &.high {
-        background: color-mix(in srgb, #22863a 25%, var(--color-bg));
-        color: #22863a;
+.log-type {
+    text-transform: uppercase;
+    background: var(--color-bg-muted);
+    min-width: 3rem;
+}
+
+.log-rating {
+    min-width: 1.5rem;
+    font-weight: 500;
+
+    &.rating-10,
+    &.rating-9,
+    &.rating-8 {
+        background: color-mix(
+            in srgb,
+            var(--color-rating-high) 25%,
+            var(--color-bg)
+        );
+        color: var(--color-rating-high);
     }
 
-    &.mid {
-        background: color-mix(in srgb, #b08800 25%, var(--color-bg));
-        color: #b08800;
+    &.rating-7,
+    &.rating-6,
+    &.rating-5 {
+        background: color-mix(
+            in srgb,
+            var(--color-rating-mid) 25%,
+            var(--color-bg)
+        );
+        color: var(--color-rating-mid);
     }
 
-    &.low {
-        background: color-mix(in srgb, #cb2431 25%, var(--color-bg));
-        color: #cb2431;
+    &.rating-4,
+    &.rating-3,
+    &.rating-2,
+    &.rating-1 {
+        background: color-mix(
+            in srgb,
+            var(--color-rating-low) 25%,
+            var(--color-bg)
+        );
+        color: var(--color-rating-low);
     }
 }
 
@@ -356,6 +376,14 @@ section {
     @media (max-width: 768px) {
         .log-labels {
             flex-direction: column;
+        }
+
+        .log-content time {
+            display: block;
+        }
+
+        .log-separator {
+            display: none;
         }
     }
 }
