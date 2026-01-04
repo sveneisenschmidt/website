@@ -6,7 +6,7 @@ topics = ['Video Games']
 cover = 'IMG_0448.jpg'
 +++
 
-Over the Xmas period I managed to finish Death Stranding 2. The game is a perfect mix between logistics, base building and shooter action for me. I like it more than the Metal Gear Solid games.
+Over the Xmas period I managed to finish Death Stranding 2. The game is a perfect mix between logistics, base building and shooter action for me.I like it more than the Metal Gear Solid games.
 
 <!--more-->
 
