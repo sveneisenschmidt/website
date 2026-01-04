@@ -1,10 +1,17 @@
-.PHONY: dev build publish
+.PHONY: dev build publish check-deps
 
 include .env
 export
 
-dev:
-	hugo server --buildDrafts
+check-deps:
+	@command -v hugo >/dev/null 2>&1 || { echo "hugo is required but not installed. Install with: brew install hugo"; exit 1; }
+	@command -v sips >/dev/null 2>&1 || { echo "sips is required but not installed (comes with macOS)"; exit 1; }
+	@command -v fswatch >/dev/null 2>&1 || { echo "fswatch is required but not installed. Install with: brew install fswatch"; exit 1; }
+	@command -v npx >/dev/null 2>&1 || { echo "npx is required but not installed. Install Node.js first"; exit 1; }
+	@command -v lftp >/dev/null 2>&1 || { echo "lftp is required but not installed. Install with: brew install lftp"; exit 1; }
+
+dev: check-deps
+	@trap 'kill 0' EXIT; ./scripts/convert-heic.sh --watch & hugo server --buildDrafts
 
 build:
 	rm -rf public/*
