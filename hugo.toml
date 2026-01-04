@@ -4,9 +4,9 @@ title = "Sven Eisenschmidt"
 theme = "website"
 
 [params]
-description = "Personal website of Sven Eisenschmidt - CTO & Product Officer, based in Leipzig, Germany."
+description = "Personal website of Sven Eisenschmidt, based in Leipzig, Germany."
 author = "Sven Eisenschmidt"
-keywords = "Sven Eisenschmidt, CTO, technology, product, Leipzig, roadsurfer"
+keywords = "Sven Eisenschmidt, Leipzig, Germany, video games, music, cycling, travel, software development, photography"
 
 [taxonomies]
 topic = "topics"
