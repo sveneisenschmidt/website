@@ -12,6 +12,12 @@ keywords = "Sven Eisenschmidt, Leipzig, Germany, video games, music, cycling, tr
 [taxonomies]
 topic = "topics"
 
+[outputs]
+home = ["HTML"]
+section = ["HTML", "RSS"]
+taxonomy = ["HTML"]
+term = ["HTML"]
+
 [markup.goldmark.parser]
 wrapStandAloneImageWithinParagraph = false
 

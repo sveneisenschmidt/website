@@ -1,4 +1,4 @@
 +++
 title = 'Log'
-build.list = 'never'
+outputs = ['HTML']
 +++
