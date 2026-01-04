@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!p.length) return;
         const sum = (k) => p.reduce((s, x) => s + x[k], 0);
         const top = p.filter(x => x.pageId.includes("/posts/"))
-            .sort((a, b) => b.totalVisits - a.totalVisits).slice(0, 3)
+            .sort((a, b) => b.totalVisits - a.totalVisits).slice(0, 5)
             .map(x => `<li><a href="${x.pageId.replace(d, "")}">${x.pageId.replace(d, "")}</a> - ${pl(x.totalVisits, "visit")}, ${pl(x.totalReactions, "reaction")}</li>`).join("");
         document.getElementById("site-stats").innerHTML = `<h4>Statistics</h4>
             <p><strong>${sum("uniqueVisitors")}</strong> unique visitors, <strong>${sum("totalVisits")}</strong> total visits, <strong>${sum("totalReactions")}</strong> reactions across <strong>${p.length}</strong> pages. Powered by <a href="https://github.com/sveneisenschmidt/pop">Pop</a>.</p>
