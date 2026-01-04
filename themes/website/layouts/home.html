@@ -1,2 +1,2 @@
-{{ define "main" }} {{ .Content }} {{ range site.RegularPages }} {{ partial
-"post-card.html" . }} {{ end }} {{ end }}
+{{ define "main" }} {{ .Content }} {{ range where site.RegularPages "Section"
+"posts" }} {{ partial "post-card.html" . }} {{ end }} {{ end }}

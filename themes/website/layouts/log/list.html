@@ -1,0 +1,12 @@
+{{ define "main" }}
+<h1>{{ .Title }}</h1>
+
+{{ range .Pages.ByDate.Reverse }}
+<section class="log-entry">
+  <span class="log-type">{{ .Params.type }}</span>
+  <a href="{{ .Params.link }}">{{ .Title }}</a>
+  <span class="log-rating">{{ .Params.rating }}/10</span>
+  <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+</section>
+{{ end }}
+{{ end }}

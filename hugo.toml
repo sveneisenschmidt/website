@@ -38,6 +38,11 @@ pageRef = "/photos"
 weight = 35
 
 [[menus.main]]
+name = "Log"
+pageRef = "/log"
+weight = 37
+
+[[menus.main]]
 name = "Blogroll"
 url = "/blogroll"
 weight = 40
