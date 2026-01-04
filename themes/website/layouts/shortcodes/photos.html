@@ -7,10 +7,10 @@
     /></a>
     {{- $count = add $count 1 -}} {{- end -}} {{- end -}} {{- $rem3 := mod
     $count 3 -}} {{- $rem2 := mod $count 2 -}} {{- if ne $rem3 0 -}}
-    <div class="photo-placeholder for-3-col"></div>
+    <span class="ph c3"></span>
     {{- if eq $rem3 1 -}}
-    <div class="photo-placeholder for-3-col"></div>
+    <span class="ph c3"></span>
     {{- end -}} {{- end -}} {{- if eq $rem2 1 -}}
-    <div class="photo-placeholder for-2-col"></div>
+    <span class="ph c2"></span>
     {{- end -}}
 </div>
