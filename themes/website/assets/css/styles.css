@@ -27,6 +27,7 @@
     --color-link: #00e;
     --color-border: #222;
     --color-bg: #fff;
+    --color-bg-muted: color-mix(in srgb, var(--color-bg) 95%, black);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -35,6 +36,7 @@
         --color-link: #99c3ff;
         --color-border: #444;
         --color-bg: #0d1117;
+        --color-bg-muted: color-mix(in srgb, var(--color-bg) 95%, white);
     }
 }
 
@@ -225,4 +227,49 @@ section {
 
 #search-results {
     margin: 1rem 0;
+}
+
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+
+    a {
+        display: block;
+        line-height: 0;
+    }
+
+    img {
+        width: 100%;
+    }
+
+    .photo-placeholder {
+        aspect-ratio: 1;
+        background: var(--color-bg-muted);
+        border-radius: 0.25rem;
+    }
+
+    .photo-placeholder.for-2-col {
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+
+        .photo-placeholder.for-3-col {
+            display: none;
+        }
+
+        .photo-placeholder.for-2-col {
+            display: block;
+        }
+    }
+
+    @media (max-width: 512px) {
+        grid-template-columns: 1fr;
+
+        .photo-placeholder {
+            display: none;
+        }
+    }
 }
