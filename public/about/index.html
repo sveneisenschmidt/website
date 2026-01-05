@@ -88,7 +88,7 @@ I like gaming, cycling, and building things that connect other things. I dislike
 <h1><a href="/">&larr; Back</a></h1>
 
 
-  <nav><a href="/search/">Search</a> · <a href="/topics/">Topics</a> · <a href="/photos/">Photos</a> · <a href="/log/">Log</a> · <a href="/blogroll">Blogroll</a> · <a aria-current="page" class="active" href="/about/">About</a>
+  <nav><a href="/search/">Search</a> · <a href="/topics/">Topics</a> · <a href="/photos/">Photos</a> · <a href="/log/">Log</a> · <a href="/blogroll">Blogroll</a> · <a href="/about/">About</a>
   </nav>
 
 </header>
@@ -112,8 +112,8 @@ I like gaming, cycling, and building things that connect other things. I dislike
 document.addEventListener("DOMContentLoaded", () => {
     const d = location.origin;
     const pl = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
-    fetch("https://pop.eisenschmidt.website/api/stats").then(r => r.json()).then(data => {
-    const p = data.pages.filter(x => x.pageId.startsWith(d));
+    fetch(`https://pop.eisenschmidt.website/api/stats?pageIdFilter=${d}`).then(r => r.json()).then(data => {
+    const p = data.pages;
         if (!p.length) return;
         const sum = (k) => p.reduce((s, x) => s + x[k], 0);
         const top = p.filter(x => x.pageId.includes("/posts/"))

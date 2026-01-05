@@ -33,8 +33,8 @@ Read more about how this site was built in the [building with Hugo](/posts/build
 document.addEventListener("DOMContentLoaded", () => {
     const d = location.origin;
     const pl = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
-    fetch("https://pop.eisenschmidt.website/api/stats").then(r => r.json()).then(data => {
-    const p = data.pages.filter(x => x.pageId.startsWith(d));
+    fetch(`https://pop.eisenschmidt.website/api/stats?pageIdFilter=${d}`).then(r => r.json()).then(data => {
+    const p = data.pages;
         if (!p.length) return;
         const sum = (k) => p.reduce((s, x) => s + x[k], 0);
         const top = p.filter(x => x.pageId.includes("/posts/"))
