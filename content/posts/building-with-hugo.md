@@ -220,7 +220,7 @@ publish: build
 
 I've been using [all-inkl](https://all-inkl.com/) since 2005 for free domains and FTP access. The threshold to get something static running was basically zero.
 
-First time in 10 years I'm touching Apache. My hoster runs it and I forgot how much goes into a `.htaccess`: compression, caching, content types. All the stuff CDNs usually handle for you. Speaking of which: no CDN. Feels like overhead for a static site. Also I'm terrified of DNS. Every time I touch nameservers something breaks.
+First time in 10 years I'm touching Apache. My hoster runs it and I forgot how much goes into a `.htaccess`: compression, caching, content types. All the stuff CDNs usually handle for you. Speaking of which: no CDN. Feels like overhead for a static site. Also I'm terrified of DNS. Every time I touch nameservers something breaks. (This is also why I did not use GitHub Pages, it would required adjsuting DNS on all-inkl side too.)
 
 Homepage is about 12KB (4KB gzipped).
 
