@@ -6,6 +6,8 @@ Guidelines for writing and reviewing content on this site.
 
 **Always read existing blog posts first.** The posts in `content/posts/` represent the current writing style. Read them before writing or reviewing new content. Style evolves - the existing posts are the source of truth.
 
+This guide is also used for programmatic review of articles. The patterns and rules here should be specific enough to catch common mistakes during automated checks.
+
 ## Tone & Voice
 
 - **Conversational**: Write like you're talking to a friend who knows tech. Not formal, not sloppy.
