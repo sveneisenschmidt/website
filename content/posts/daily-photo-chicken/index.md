@@ -1,5 +1,5 @@
 +++
-date = '2026-01-05T20:00:00'
+date = '2026-01-05T18:00:00'
 title = 'Daily Photo: Chicken'
 topics = ['Daily Photo']
 cover = 'IMG_0494.jpg'
