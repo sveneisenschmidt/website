@@ -6,7 +6,7 @@ cover = 'IMG_0494.jpg'
 draft = false
 +++
 
-When I went out with Aika, I caught two of our four chickens in the garden. We have two Silkie chickens and two Booted Bantams. The whole family loves them, and two eggs a day is a nice bonus.
+When I went out with Aika, I caught two of our four chickens in the garden. We have two Silkie chickens and two feather-footed dwarf chickens. The whole family loves them, and two eggs a day is a nice bonus.
 
 <!--more-->
 
