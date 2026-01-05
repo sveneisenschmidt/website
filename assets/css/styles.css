@@ -368,6 +368,17 @@ section {
     align-items: baseline;
     scroll-margin-top: 8rem;
 
+    &:target {
+        background: var(--color-bg-muted);
+        border-radius: 0.25rem;
+        padding: 0.5rem;
+        margin: -0.5rem;
+
+        .log-type {
+            background: var(--color-bg);
+        }
+    }
+
     .log-labels {
         display: flex;
         gap: 0.25rem;
