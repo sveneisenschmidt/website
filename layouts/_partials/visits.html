@@ -1,12 +1,7 @@
-{{- $visits := 0 -}}
-{{- if eq .Section "posts" -}}
-  {{- $visitsUrl := printf "https://pop.eisenschmidt.website/api/visits?pageId=%s" .Permalink -}}
-  {{- $opts := dict "headers" (dict "Origin" "https://sven.eisenschmidt.website") -}}
-  {{- $result := try (resources.GetRemote $visitsUrl $opts) -}}
-  {{- with $result.Value -}}
-    {{- with .Content | transform.Unmarshal -}}
-      {{- $visits = .totalVisits -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
-{{- return $visits -}}
+{{- $visits := 0 -}} {{- if eq .Section "posts" -}} {{- $visitsUrl := printf
+"https://pop.eisenschmidt.website/api/visits?pageId=%s" .Permalink -}} {{- $opts
+:= dict "headers" (dict "Origin" "https://sven.eisenschmidt.website") "caching"
+(dict "enabled" false) -}} {{- $result := try (resources.GetRemote $visitsUrl
+$opts) -}} {{- with $result.Value -}} {{- with .Content | transform.Unmarshal
+-}} {{- $visits = .totalVisits -}} {{- end -}} {{- end -}} {{- end -}} {{-
+return $visits -}}
