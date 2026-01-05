@@ -12,8 +12,6 @@ dev: check-deps
 build:
 	rm -rf public/*
 	hugo --minify
-	# HACK: Hugo has no native way to limit home RSS to specific sections
-	cp public/posts/index.xml public/index.xml
 	npx pagefind --site public --glob 'posts/*/**/*.html'
 	rm -f public/pagefind/pagefind-ui.* public/pagefind/pagefind-modular-ui.* public/pagefind/pagefind-highlight.js
 

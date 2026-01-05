@@ -13,7 +13,7 @@ keywords = "Sven Eisenschmidt, Leipzig, Germany, video games, music, cycling, tr
 topic = "topics"
 
 [outputs]
-home = ["HTML"]
+home = ["HTML", "RSS"]
 section = ["HTML", "RSS"]
 taxonomy = ["HTML"]
 term = ["HTML"]

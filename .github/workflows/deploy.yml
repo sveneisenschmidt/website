@@ -14,18 +14,17 @@ jobs:
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: 'latest'
+          hugo-version: "latest"
           extended: true
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Build
         run: |
           hugo --minify
-          cp public/posts/index.xml public/index.xml
           npx pagefind --site public --glob 'posts/*/**/*.html'
           rm -f public/pagefind/pagefind-ui.* public/pagefind/pagefind-modular-ui.* public/pagefind/pagefind-highlight.js
 
@@ -37,3 +36,4 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           local-dir: ./public/
           server-dir: ${{ secrets.FTP_PATH }}
+          log-level: minimal

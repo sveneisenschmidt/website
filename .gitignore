@@ -1,6 +1,7 @@
-AGENTS.md
+TONE_OF_VOICE.md
 node_modules/
 public/
 resources/_gen/
 package.json
 package-lock.json
+.hugo_build.lock

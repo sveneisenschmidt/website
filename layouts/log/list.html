@@ -13,7 +13,7 @@
 {{ $rating := .Params.rating | int }}
 <p class="log-entry">
   <span class="log-labels"><span class="log-type">{{ .Params.type }}</span> <span class="log-rating rating-{{ $rating }}">{{ .Params.rating }}</span></span>
-  <span class="log-content"><a href="{{ .Params.link }}">{{ .Title }}</a><span class="log-separator"> · </span><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>{{ with .Params.description }}<span class="log-description"> · {{ . }}</span>{{ end }}</span>
+  <span class="log-content"><a href="{{ .Params.link }}">{{ .Title }}</a><span class="log-separator"> · </span><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>{{ with .RawContent }}<span class="log-description"> · {{ . }}</span>{{ end }}</span>
 </p>
 {{ end }}
 {{ end }}

@@ -422,3 +422,8 @@ pre + p > em {
     display: block;
     text-align: center;
 }
+
+del {
+    text-decoration: line-through;
+    opacity: 0.5;
+}

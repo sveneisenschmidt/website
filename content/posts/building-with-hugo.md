@@ -39,11 +39,11 @@ content/
 
 ### Posts
 
-For posts I rely on Hugo's default content handling. Each post is either a single markdown file or a folder with an `index.md` and images. I use folders when I want to include photos. I drop the imagsnext to the markdown file, reference them in a shortcode, and Hugo resizes and optimizes them on build.
+For posts I rely on Hugo's default content handling. Each post is either a single markdown file or a folder with an `index.md` and images. I use folders when I want to include photos. I drop the images next to the markdown file, reference them in a shortcode, and Hugo resizes and optimizes them on build.
 
 ### Log
 
-I track movies, games, and TV shows in the media log. Each entry is a markdown file. `build.render = 'never'` prevents Hugo from creating individual pages. Entries only appear in lists.
+I track movies, games, and TV shows in the media log. Each entry is a markdown file with `build.render = 'never'` so Hugo doesn't create individual pages. The content is too short for standalone pages, they only make sense in lists.
 
 The log has subfolders for movies, games, and TV shows. Each subfolder becomes its own list page. The main log page uses `.RegularPagesRecursive` to show all entries and `.Sections` to generate filter links. Adding new categories like books or music would just be another subfolder.
 
@@ -112,6 +112,8 @@ for (const result of results.results) {
 
 I added emoji reactions at the bottom of posts. They come from [pop](https://github.com/sveneisenschmidt/pop), a cookie-less widget I built alongside this site. Self-hosted, PHP with SQLite, about 3KB on the frontend. Building both projects in parallel was fun, and seeing them come together at the end even more so.
 
+I also use pop for visit counts. A Hugo partial fetches the current count from the pop API at build time and writes it directly into the HTML. No JavaScript needed for displaying visits.
+
 ```html
 <script src="https://pop.eisenschmidt.website/pop.min.js" defer></script>
 <script defer>
@@ -130,16 +132,16 @@ I added emoji reactions at the bottom of posts. They come from [pop](https://git
 
 ## Development
 
-For the first time in years: no Docker. Not for local tooling, not for deployment. I was spending more time debugging Docker setups than writing actual code. Just node and hugo on my machine (and in future GitHub Actions, more below), done. Feels good.
+For the first time in years: no Docker. Not for local tooling, not for deployment. I was spending more time debugging Docker setups than writing actual code. Just node and hugo on my machine, and GitHub Actions for deployment.
 
 ### Customizations
 
 A few things required digging into the docs:
 
 **Content**
-- **`build.render = 'never'`** - Log entries don't get their own pages. They only show up in lists.
+- **`build.render = 'never'`** - I don't want log entries to have their own pages, the content is too short. They only show up in lists.
 - **Custom taxonomy** - I use `topics` instead of Hugo's default `tags` and `categories`. One taxonomy, simpler URLs.
-- **Page bundles** - Posts with images are folders instead of single files. The markdown goes in `index.md`, images sit next to it as page resources.
+- **Page bundles** - I put posts with images in folders instead of single files. The markdown goes in `index.md`, images sit next to it as page resources.
 
 **Templates**
 - **Shortcodes** - Custom `img` and `photos` shortcodes that wrap Hugo's image processing and keep the markdown clean.
@@ -198,9 +200,9 @@ convert_heic
 
 ### Build and Deploy
 
-A Makefile ties it together. HEIC converter runs in background during dev, RSS feed gets copied from posts to root (Hugo can't limit the home feed to one section), Pagefind indexes blog posts only, FTP upload with 10 parallel connections.
+A Makefile ties it together. HEIC converter runs in background during dev, Pagefind indexes blog posts only.
 
-No CI/CD, just `make publish` from my machine.
+**Update:** I moved deployment to GitHub Actions. `make publish` just commits and pushes now.
 
 ```makefile
 dev:
@@ -210,11 +212,13 @@ build:
     hugo --minify
     npx pagefind --site public --glob 'posts/*/**/*.html'
 
-publish: build
-    lftp -e "mirror -R --delete --parallel=10 public/ ..."
+publish:
+    git add -A
+    git commit -m "Update site"
+    git push origin main
 ```
 
-*Three commands: dev runs Hugo, build creates the site with Pagefind, publish uploads via FTP.*
+*dev runs Hugo, build creates the site with Pagefind, publish commits and pushes.*
 
 ### Hosting
 
@@ -256,7 +260,7 @@ topics = ['Software Development']
 
 ## What's Missing
 
-Publishing requires my machine. I could write drafts in the GitHub app and commit to the repo, but I still need my machine to deploy. GitHub Actions with FTP credentials in repository secrets would fix that. Once deployment runs there, I'll open source the whole site.
+~~Publishing requires my machine. I could write drafts in the GitHub app and commit to the repo, but I still need my machine to deploy. GitHub Actions with FTP credentials in repository secrets would fix that. Once deployment runs there, I'll open source the whole site.~~ **Done.** I set up GitHub Actions with FTP secrets. Push to main and it deploys. The site is now open source: [github.com/sveneisenschmidt/website](https://github.com/sveneisenschmidt/website).
 
 Scheduled posts are another thing. Hugo [won't render future-dated content by default](https://gohugo.io/getting-started/usage/), not even in the dev server. Posts only appear after their date has passed and the site is rebuilt. I'd need a GitHub Action that runs on a schedule and triggers a build. Not hard, just haven't done it yet.
 

@@ -55,6 +55,7 @@ Guidelines for writing and reviewing content on this site.
 - Empty disclaimers ("Nothing custom here, just how X works out of the box")
 - Unnecessary negations/justifications ("The site isn't just a blog")
 - Choppy noun-phrase sentences that should be one proper sentence ("The fix is GitHub Actions. FTP credentials in repository secrets.")
+- Impersonal descriptions without reasoning ("Log entries don't get their own pages" instead of "I don't want log entries to have their own pages, the content is too short")
 
 ## Content Issues (avoid)
 
