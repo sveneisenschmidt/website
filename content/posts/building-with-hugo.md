@@ -35,7 +35,7 @@ content/
 └── about/
 ```
 
-*Posts can be single files or folders with images, log entries are organized by type, standalone pages like photos and search are at the root.*
+*I organize posts as single files or folders with images. Log entries are organized by type. Standalone pages like photos and search sit at the root.*
 
 ### Posts
 
@@ -58,7 +58,7 @@ build.render = 'never'
 +++
 ```
 
-*Each entry has a type, rating, and external link. With `build.render = 'never'` Hugo skips rendering individual pages.*
+*Each entry has a type, rating, and external link. I use `build.render = 'never'` so Hugo doesn't create individual pages.*
 
 ```go-html-template
 {{ with .Sections }}
@@ -92,7 +92,7 @@ On `/photos` I display all images from my posts. I built a shortcode that loops 
 
 I use [Pagefind](https://pagefind.app/) for search. It indexes the HTML at build time and loads the index on demand. I replaced Pagefind's default UI with a simple input field and a list of results.
 
-I read Pagefind has a beta release coming up but could not find any specific information online. The current version works but I had trouble with advanced glob patterns, and search result quality is inconsistent (I used a score filter > 0.5 for this). The beta might fix some of this.
+I read Pagefind has a beta release coming up but could not find any specific information online. It works for me, but I had trouble with advanced glob patterns and search result quality is inconsistent. I added a score filter > 0.5 to help with that. The beta might improve things.
 
 ```javascript
 const pagefind = await import("/pagefind/pagefind.js");
@@ -171,7 +171,7 @@ Hugo puts templates in a `themes/` folder by default. I started there too, but m
 
 ### Image Handling
 
-I built a custom `img` shortcode that resizes images. Originals stay in the content folder, Hugo serves optimized versions.
+I built a custom `img` shortcode that resizes images. I keep the original JPEGs in the content folder. Hugo generates and serves optimized versions for different sizes.
 
 ```go-html-template
 {{- $img := .Page.Resources.GetMatch (.Get "src") -}}
@@ -183,7 +183,7 @@ I built a custom `img` shortcode that resizes images. Originals stay in the cont
 
 ### HEIC to JPEG Conversion
 
-My iPhone saves photos as HEIC, which Hugo doesn't support. A shell script finds them and converts to JPEG with `sips` (built into macOS, surprisingly useful). I commit images in original size, Hugo handles the rest.
+My iPhone saves photos as HEIC, which Hugo doesn't support. I wrote a shell script that finds them and converts to JPEG with `sips` (built into macOS, surprisingly useful). I commit images in original size. Hugo handles the rest.
 
 ```bash
 #!/bin/bash
@@ -245,7 +245,7 @@ Homepage is about 12KB (4KB gzipped).
 
 ### Writing
 
-Posts are markdown files with frontmatter. `make dev` to preview, drafts stay in git with `draft = true`.
+I write posts as markdown files with frontmatter. I run `make dev` to preview them. Drafts stay in git with `draft = true`.
 
 ```toml
 +++
@@ -256,7 +256,7 @@ topics = ['Software Development']
 +++
 ```
 
-*Title, date, topics, draft status. Drafts stay in git until ready.*
+*Title, date, topics, draft status. I keep drafts in git until they're ready.*
 
 ## What's Missing
 
