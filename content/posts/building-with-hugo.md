@@ -1,5 +1,5 @@
 +++
-date = '2026-01-05T08:45:00'
+date = '2026-01-05T07:00:00'
 draft = false
 title = 'Building This Website with Hugo'
 topics = ['Software Development']
@@ -17,7 +17,7 @@ I can't remember the last time I built something this quickly and was this happy
 
 ## Content Types
 
-The site isn't just a blog. I wanted different sections for different things: long-form posts, a media log, a photo gallery, and search. Hugo handles all of this with markdown files in folders.
+I wanted different sections for different things: long-form posts, a media log, a photo gallery, and search. Hugo handles all of this with markdown files in folders.
 
 ```
 content/
@@ -39,16 +39,13 @@ content/
 
 ### Posts
 
-Nothing custom here, just how Hugo works out of the box. Each post is either a single markdown file or a folder with an `index.md` and images. I use folders when I want to include photos. Drop them next to the markdown, reference them in a shortcode, and Hugo resizes and optimizes them on build.
+Hugo's default content handling. Each post is either a single markdown file or a folder with an `index.md` and images. I use folders when I want to include photos. Drop them next to the markdown, reference them in a shortcode, and Hugo resizes and optimizes them on build.
 
 ### Log
 
 I track movies, games, and TV shows in the media log. Each entry is a markdown file. `build.render = 'never'` prevents Hugo from creating individual pages. Entries only appear in lists.
 
 The log has subfolders for movies, games, and TV shows. Each subfolder becomes its own list page. The main log page uses `.RegularPagesRecursive` to show all entries and `.Sections` to generate filter links. Adding new categories like books or music would just be another subfolder.
-
-<details>
-<summary>Log entry frontmatter</summary>
 
 ```toml
 +++
@@ -62,10 +59,6 @@ build.render = 'never'
 ```
 
 *Each entry has a type, rating, and external link. Hugo skips rendering individual pages.*
-</details>
-
-<details>
-<summary>Log list template</summary>
 
 ```go-html-template
 {{ with .Sections }}
@@ -77,14 +70,10 @@ build.render = 'never'
 ```
 
 *Generates filter links from subfolders automatically.*
-</details>
 
 ### Photos
 
 The `/photos` page shows all images from my posts. A shortcode loops over all posts, grabs their images, and generates square thumbnails with `.Fill "768x768 Center"`.
-
-<details>
-<summary>Photos shortcode</summary>
 
 ```go-html-template
 {{ range where site.RegularPages "Section" "posts" }}
@@ -98,16 +87,12 @@ The `/photos` page shows all images from my posts. A shortcode loops over all po
 ```
 
 *Loops through all posts, grabs images, creates square thumbnails linking back to the post.*
-</details>
 
 ### Search
 
 I use [Pagefind](https://pagefind.app/) for search. It indexes the HTML at build time and loads the index on demand. I ripped out Pagefind's default UI and built a simple one: input field, Enter to search, results as links.
 
-Pagefind has a big beta release coming up. The current version works but I had trouble with advanced glob patterns, and search result quality is inconsistent. Hoping the beta fixes some of this.
-
-<details>
-<summary>Pagefind search</summary>
+I read Pagefind has a beta release coming up but could not find any specific information online. The current version works but I had trouble with advanced glob patterns, and search result quality is inconsistent (I used a score filter > 0.5for this). The beta might fix some of this.
 
 ```javascript
 const pagefind = await import("/pagefind/pagefind.js");
@@ -122,14 +107,10 @@ for (const result of results.results) {
 ```
 
 *Loads the search index on demand, filters low-score results.*
-</details>
 
 ### Reactions
 
-I added emoji reactions at the bottom of posts. They come from [pop](https://github.com/sveneisenschmidt/pop), a widget I built alongside this site. Self-hosted, PHP with SQLite, about 3KB on the frontend. Building both projects in parallel was fun, and seeing them come together at the end even more so.
-
-<details>
-<summary>Pop widget init</summary>
+I added emoji reactions at the bottom of posts. They come from [pop](https://github.com/sveneisenschmidt/pop), a cookie-less widget I built alongside this site. Self-hosted, PHP with SQLite, about 3KB on the frontend. Building both projects in parallel was fun, and seeing them come together at the end even more so.
 
 ```html
 <script src="https://pop.eisenschmidt.website/pop.min.js" defer></script>
@@ -146,7 +127,6 @@ I added emoji reactions at the bottom of posts. They come from [pop](https://git
 ```
 
 *Loads the widget, configures three emoji reactions, tracks visits per page.*
-</details>
 
 ## Development
 
@@ -154,7 +134,7 @@ For the first time in years: no Docker. Not for local tooling, not for deploymen
 
 ### Customizations
 
-Hugo does a lot out of the box, but I had to dig into the docs for a few things. Here's what I ended up using:
+A few things required digging into the docs:
 
 **Content**
 - **`build.render = 'never'`** - Log entries don't get their own pages. They only show up in lists.
@@ -173,9 +153,6 @@ Hugo does a lot out of the box, but I had to dig into the docs for a few things.
 
 Hugo puts templates in a `themes/` folder by default. I started that way but moved everything to the project root. I don't plan to switch themes, so the extra folder added nothing.
 
-<details>
-<summary>Before and after</summary>
-
 ```
 # Before                    # After
 ├── layouts/                ├── layouts/
@@ -188,15 +165,11 @@ Hugo puts templates in a `themes/` folder by default. I started that way but mov
 │           └── ...
 ```
 
-*Removed the theme layer. All templates now sit directly in `layouts/`.*
-</details>
+*Removed the theme layer. All templates now sit directly in layouts/.*
 
 ### Image Handling
 
 A custom `img` shortcode resizes images. Originals stay in the content folder, Hugo serves optimized versions.
-
-<details>
-<summary>Image shortcode</summary>
 
 ```go-html-template
 {{- $img := .Page.Resources.GetMatch (.Get "src") -}}
@@ -205,36 +178,23 @@ A custom `img` shortcode resizes images. Originals stay in the content folder, H
 ```
 
 *Finds the image by name, resizes to max 1440px, outputs an img tag.*
-</details>
 
 ### HEIC to JPEG Conversion
 
 My iPhone saves photos as HEIC, which Hugo doesn't support. A shell script finds them and converts to JPEG with `sips` (built into macOS, surprisingly useful). I commit images in original size, Hugo handles the rest.
 
-<details>
-<summary>HEIC conversion script</summary>
-
 ```bash
 #!/bin/bash
 convert_heic() {
     find content -type f \( -iname "*.heic" \) | while read f; do
-        sips -s format jpeg -Z 1440 "$f" --out "${f%.*}.jpg" && rm "$f"
+        sips -s format jpeg "$f" --out "${f%.*}.jpg" && rm "$f"
     done
 }
 
 convert_heic
-
-if [ "$1" = "--watch" ]; then
-    fswatch -0 content | while read -d "" event; do
-        if [[ "$event" =~ \.[hH][eE][iI][cC]$ ]]; then
-            convert_heic
-        fi
-    done
-fi
 ```
 
-*Finds HEIC files, converts to JPEG, deletes originals. Watch mode re-runs on new files.*
-</details>
+*Finds HEIC files, converts to JPEG, deletes originals.*
 
 ### Build and Deploy
 
@@ -242,38 +202,19 @@ A Makefile ties it together. HEIC converter runs in background during dev, RSS f
 
 No CI/CD. `make publish` from my machine.
 
-<details>
-<summary>Makefile</summary>
-
 ```makefile
-check-deps:
-    @command -v hugo >/dev/null 2>&1 || { echo "hugo required"; exit 1; }
-    @command -v sips >/dev/null 2>&1 || { echo "sips required"; exit 1; }
-    @command -v fswatch >/dev/null 2>&1 || { echo "fswatch required"; exit 1; }
-    @command -v npx >/dev/null 2>&1 || { echo "npx required"; exit 1; }
-    @command -v lftp >/dev/null 2>&1 || { echo "lftp required"; exit 1; }
-
-dev: check-deps
-    @trap 'kill 0' EXIT; \
-    ./scripts/convert-heic.sh --watch & \
+dev:
     hugo server --buildDrafts
 
 build:
-    rm -rf public/*
     hugo --minify
-    cp public/posts/index.xml public/index.xml
     npx pagefind --site public --glob 'posts/*/**/*.html'
-    rm -f public/pagefind/pagefind-ui.*
 
 publish: build
-    git add -A
-    git commit -m "Update site $(date +%Y-%m-%d\ %H:%M)"
-    git push origin main
-    lftp -e "mirror -R --delete --parallel=10 public/ ..." 
+    lftp -e "mirror -R --delete --parallel=10 public/ ..."
 ```
 
-*Three commands: dev runs Hugo with HEIC watcher, build creates the site with Pagefind, publish commits and uploads via FTP.*
-</details>
+*Three commands: dev runs Hugo, build creates the site with Pagefind, publish uploads via FTP.*
 
 ### Hosting
 
@@ -282,9 +223,6 @@ I've been using [all-inkl](https://all-inkl.com/) since 2005. Free domains, FTP 
 First time in 10 years I'm touching Apache. My hoster runs it and I forgot how much goes into a `.htaccess`: compression, caching, content types. All the stuff CDNs usually handle for you. Speaking of which: no CDN. Feels like overhead for a static site. Also I'm terrified of DNS. Every time I touch nameservers something breaks.
 
 Homepage is about 12KB (4KB gzipped).
-
-<details>
-<summary>Apache .htaccess</summary>
 
 ```apache
 # Compression
@@ -300,14 +238,10 @@ Homepage is about 12KB (4KB gzipped).
 ```
 
 *Enables gzip compression for text files, sets one-year cache headers for static assets.*
-</details>
 
 ### Writing
 
 Posts are markdown files with frontmatter. `make dev` to preview, drafts stay in git with `draft = true`.
-
-<details>
-<summary>Post frontmatter</summary>
 
 ```toml
 +++
@@ -318,8 +252,7 @@ topics = ['software-development']
 +++
 ```
 
-*Title, date, topics, draft status. The `<!--more-->` marker in the body sets where the excerpt ends.*
-</details>
+*Title, date, topics, draft status. Drafts stay in git until ready.*
 
 ## What's Missing
 
