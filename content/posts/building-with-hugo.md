@@ -248,7 +248,7 @@ Posts are markdown files with frontmatter. `make dev` to preview, drafts stay in
 date = '2026-01-05'
 draft = true
 title = 'Building This Website with Hugo'
-topics = ['software-development']
+topics = ['Software Development']
 +++
 ```
 
