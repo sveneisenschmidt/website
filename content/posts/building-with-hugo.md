@@ -200,7 +200,7 @@ convert_heic
 
 A Makefile ties it together. HEIC converter runs in background during dev, RSS feed gets copied from posts to root (Hugo can't limit the home feed to one section), Pagefind indexes blog posts only, FTP upload with 10 parallel connections.
 
-No CI/CD. `make publish` from my machine.
+No CI/CD, just `make publish` from my machine.
 
 ```makefile
 dev:
@@ -218,7 +218,7 @@ publish: build
 
 ### Hosting
 
-I've been using [all-inkl](https://all-inkl.com/) since 2005. Free domains, FTP access, done. The threshold to get something static running was basically zero.
+I've been using [all-inkl](https://all-inkl.com/) since 2005 for free domains and FTP access. The threshold to get something static running was basically zero.
 
 First time in 10 years I'm touching Apache. My hoster runs it and I forgot how much goes into a `.htaccess`: compression, caching, content types. All the stuff CDNs usually handle for you. Speaking of which: no CDN. Feels like overhead for a static site. Also I'm terrified of DNS. Every time I touch nameservers something breaks.
 
@@ -256,7 +256,7 @@ topics = ['software-development']
 
 ## What's Missing
 
-Publishing requires my machine. I could write drafts in the GitHub app and commit to the repo, but I still need my machine to deploy. The fix is GitHub Actions. FTP credentials in repository secrets, ftp upload in the workflow. Once deployment is on GitHub Actions, I'll open source the whole site.
+Publishing requires my machine. I could write drafts in the GitHub app and commit to the repo, but I still need my machine to deploy. GitHub Actions with FTP credentials in repository secrets would fix that. Once deployment runs there, I'll open source the whole site.
 
 Scheduled posts are another thing. Hugo [won't render future-dated content by default](https://gohugo.io/getting-started/usage/), not even in the dev server. Posts only appear after their date has passed and the site is rebuilt. I'd need a GitHub Action that runs on a schedule and triggers a build. Not hard, just haven't done it yet.
 
