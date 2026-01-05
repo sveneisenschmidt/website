@@ -1,7 +1,7 @@
 baseURL = "https://sven.eisenschmidt.website/"
 languageCode = "en-us"
 title = "Sven Eisenschmidt - Personal Blog"
-theme = "website"
+
 
 [params]
 description = "Personal website of Sven Eisenschmidt, based in Leipzig, Germany."
