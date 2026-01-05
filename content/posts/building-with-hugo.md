@@ -58,7 +58,7 @@ build.render = 'never'
 +++
 ```
 
-*Each entry has a type, rating, and external link. Hugo skips rendering individual pages.*
+*Each entry has a type, rating, and external link. With `build.render = 'never'` Hugo skips rendering individual pages.*
 
 ```go-html-template
 {{ with .Sections }}
@@ -130,7 +130,7 @@ I added emoji reactions at the bottom of posts. They come from [pop](https://git
 
 ## Development
 
-For the first time in years: no Docker. Not for local tooling, not for deployment. I was spending more time debugging Docker setups than writing actual code. node and hugo on the host, done. Feels good.
+For the first time in years: no Docker. Not for local tooling, not for deployment. I was spending more time debugging Docker setups than writing actual code. Just node and hugo on my machine (and in future GitHub Actions, more below), done. Feels good.
 
 ### Customizations
 
