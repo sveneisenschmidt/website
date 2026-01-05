@@ -5,3 +5,5 @@ type = 'movie'
 rating = 6
 build.render = 'never'
 +++
+
+Good cinematography, good acting, but felt rushed towards the end. I thought it was a TV pilot at first.
