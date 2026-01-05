@@ -1,8 +1,10 @@
 {{ define "main" }}
 <h1>{{ .Title }}</h1>
 
+{{ with .Sections }}<p>Browse: {{ range $i, $s := . }}{{ if $i }}, {{ end }}<a href="{{ $s.RelPermalink }}">{{ $s.Title }}</a>{{ end }}</p>{{ end }}
+
 {{ $currentYear := "" }}
-{{ range .Pages.ByDate.Reverse }}
+{{ range .RegularPagesRecursive.ByDate.Reverse }}
 {{ $year := .Date.Format "2006" }}
 {{ if ne $year $currentYear }}
 <h3>{{ $year }}</h3>

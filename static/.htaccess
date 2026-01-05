@@ -1,3 +1,13 @@
+# Content-Type
+AddDefaultCharset UTF-8
+AddType text/html .html
+AddType text/css .css
+AddType application/javascript .js
+AddType application/json .json
+AddType image/svg+xml .svg
+AddType font/woff2 .woff2
+AddType font/woff .woff
+
 # Keep-Alive
 <IfModule mod_headers.c>
     Header set Connection keep-alive
