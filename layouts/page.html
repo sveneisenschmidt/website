@@ -3,7 +3,7 @@
 
 {{ if ne .Params.showDate false }} {{ $dateMachine := .Date | time.Format
 "2006-01-02T15:04:05-07:00" }} {{ $dateHuman := .Date | time.Format ":date_long"
-}} {{ $visits := partial "visits.html" . }}
+}} {{ $visits := partial "visits.html" . | int }}
 <time datetime="{{ $dateMachine }}"
     >{{ $dateHuman }} · {{ .ReadingTime }} min read{{ if $visits }} · {{ $visits
     }} visit{{ if ne $visits 1 }}s{{ end }}{{ end }}</time
