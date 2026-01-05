@@ -45,7 +45,7 @@ For posts I rely on Hugo's default content handling. Each post is either a singl
 
 I track movies, games, and TV shows in the media log. Each entry is a markdown file with `build.render = 'never'` so Hugo doesn't create individual pages. The content is too short for standalone pages, they only make sense in lists.
 
-The log has subfolders for movies, games, and TV shows. Each subfolder becomes its own list page. The main log page uses `.RegularPagesRecursive` to show all entries and `.Sections` to generate filter links. Adding new categories like books or music would just be another subfolder.
+I organize the log with subfolders for movies, games, and TV shows. Each subfolder becomes its own list page. The main log page uses `.RegularPagesRecursive` to show all entries and `.Sections` to generate filter links. Adding new categories like books or music would just be another subfolder.
 
 ```toml
 +++
@@ -73,7 +73,7 @@ build.render = 'never'
 
 ### Photos
 
-The `/photos` page shows all images from my posts. A shortcode loops over all posts, grabs their images, and generates square thumbnails with `.Fill "768x768 Center"`.
+On `/photos` I display all images from my posts. I built a shortcode that loops through all posts, grabs images, and generates square thumbnails with `.Fill "768x768 Center"`.
 
 ```go-html-template
 {{ range where site.RegularPages "Section" "posts" }}
@@ -86,7 +86,7 @@ The `/photos` page shows all images from my posts. A shortcode loops over all po
 {{ end }}
 ```
 
-*Loops through all posts, grabs images, creates square thumbnails linking back to the post.*
+*Loops through all posts, grabs images, creates square thumbnails that link back to the post.*
 
 ### Search
 
@@ -110,9 +110,9 @@ for (const result of results.results) {
 
 ### Reactions
 
-I added emoji reactions at the bottom of posts. They come from [pop](https://github.com/sveneisenschmidt/pop), a cookie-less widget I built alongside this site. Self-hosted, PHP with SQLite, about 3KB on the frontend. Building both projects in parallel was fun, and seeing them come together at the end even more so.
+I added emoji reactions at the bottom of posts. I built [pop](https://github.com/sveneisenschmidt/pop) alongside this site—a cookie-less widget that handles reactions and visits. Self-hosted, PHP with SQLite, about 3KB on the frontend. Building both projects in parallel was fun, and seeing them come together at the end even more so.
 
-I also use pop for visit counts. A Hugo partial fetches the current count from the pop API at build time and writes it directly into the HTML. No JavaScript needed for displaying visits.
+I also use pop for visit counts. I built a Hugo partial that fetches the current count from the pop API at build time and writes it directly into the HTML. No JavaScript needed for displaying visits.
 
 ```html
 <script src="https://pop.eisenschmidt.website/pop.min.js" defer></script>
@@ -128,7 +128,7 @@ I also use pop for visit counts. A Hugo partial fetches the current count from t
 </script>
 ```
 
-*Loads the widget, configures three emoji reactions, tracks visits per page.*
+*The widget loads, configures three emoji reactions, and tracks visits per page.*
 
 ## Development
 
@@ -149,11 +149,11 @@ A few things required digging into the docs:
 - **Inline CSS and JS** - Instead of linking external files, I inline minified CSS and JS directly in the `<head>`. Hugo's `resources.Get` loads the asset, `minify` compresses it, `safeCSS`/`safeJS` outputs it inline.
 
 **Config**
-- **Syntax highlighting** - Disabled the default inline styles (`noClasses = false`) so I can style code blocks with CSS.
+- **Syntax highlighting** - I disabled the default inline styles (`noClasses = false`) so I can style code blocks with CSS instead.
 
 ### Project Structure
 
-Hugo puts templates in a `themes/` folder by default. I started that way but moved everything to the project root. I don't plan to switch themes, so the extra folder added nothing.
+Hugo puts templates in a `themes/` folder by default. I started there too, but moved everything to the project root. I don't plan to switch themes, so the extra folder added nothing.
 
 ```
 # Before                    # After
@@ -171,7 +171,7 @@ Hugo puts templates in a `themes/` folder by default. I started that way but mov
 
 ### Image Handling
 
-A custom `img` shortcode resizes images. Originals stay in the content folder, Hugo serves optimized versions.
+I built a custom `img` shortcode that resizes images. Originals stay in the content folder, Hugo serves optimized versions.
 
 ```go-html-template
 {{- $img := .Page.Resources.GetMatch (.Get "src") -}}
@@ -200,7 +200,7 @@ convert_heic
 
 ### Build and Deploy
 
-A Makefile ties it together. HEIC converter runs in background during dev, Pagefind indexes blog posts only.
+I use a Makefile to tie it together. The HEIC converter runs in background during dev, Pagefind indexes blog posts only.
 
 **Update:** I moved deployment to GitHub Actions. `make publish` just commits and pushes now.
 
