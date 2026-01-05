@@ -11,7 +11,7 @@ check-deps:
 	@command -v lftp >/dev/null 2>&1 || { echo "lftp is required but not installed. Install with: brew install lftp"; exit 1; }
 
 dev: check-deps
-	@trap 'kill 0' EXIT; ./scripts/convert-heic.sh --watch & hugo server --buildDrafts
+	@trap 'kill 0' EXIT; ./scripts/convert-heic.sh --watch & hugo server --buildDrafts --buildFuture
 
 build:
 	rm -rf public/*

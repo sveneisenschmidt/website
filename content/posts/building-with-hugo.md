@@ -1,23 +1,23 @@
 +++
-date = '2026-01-05T10:00:00'
-draft = true
+date = '2026-01-05T08:45:00'
+draft = false
 title = 'Building This Website with Hugo'
 topics = ['Software Development']
 +++
 
-This website runs on Hugo, a static site generator written in Go. I launched the website in early January 2026.
+This website runs on [Hugo](https://gohugo.io/), a static site generator written in Go. I launched it in early January 2026, so if you're reading this when it's fresh, this is all just a few days old.
 
 <!--more-->
 
 ## Why Hugo?
 
-I wanted something fast and simple without a CMS or database. Hugo generates static HTML files that I upload via FTP to a shared host. I looked at Jekyll too but didn't like the approach and Ruby never clicked for me. Hugo also showed up more in searches, so I went with it.
+I wanted something fast and simple without a CMS or database. Hugo generates static HTML files that I upload via FTP to a shared host. I looked at [Jekyll](https://jekyllrb.com/) too but didn't like the approach and Ruby never clicked for me. Hugo also showed up more in searches, so I went with it. Lazy, but it worked out.
 
-I can't remember the last time I built something this quickly and was this happy with it.
+I can't remember the last time I built something this quickly and was this happy with it. I hope Hugo is never going away. It's a joy to use.
 
 ## Content Types
 
-Four content types: blog posts, a media log, a photo gallery, and search.
+The site isn't just a blog. I wanted different sections for different things: long-form posts, a media log, a photo gallery, and search. Hugo handles all of this with markdown files in folders.
 
 ```
 content/
@@ -35,17 +35,17 @@ content/
 └── about/
 ```
 
-*Posts can be single files or folders with images, log entries are organized by type, standalone pages like photos and search sit at the root.*
+*Posts can be single files or folders with images, log entries are organized by type, standalone pages like photos and search are at the root.*
 
 ### Posts
 
-Each post is either a single markdown file or a folder with an `index.md` and images.
+Nothing custom here, just how Hugo works out of the box. Each post is either a single markdown file or a folder with an `index.md` and images. I use folders when I want to include photos. Drop them next to the markdown, reference them in a shortcode, and Hugo resizes and optimizes them on build.
 
 ### Log
 
 I track movies, games, and TV shows in the media log. Each entry is a markdown file. `build.render = 'never'` prevents Hugo from creating individual pages. Entries only appear in lists.
 
-The log has subfolders for movies, games, and TV shows. Each subfolder becomes its own list page. The main log page uses `.RegularPagesRecursive` to show all entries and `.Sections` to generate filter links.
+The log has subfolders for movies, games, and TV shows. Each subfolder becomes its own list page. The main log page uses `.RegularPagesRecursive` to show all entries and `.Sections` to generate filter links. Adding new categories like books or music would just be another subfolder.
 
 <details>
 <summary>Log entry frontmatter</summary>
@@ -150,7 +150,7 @@ I added emoji reactions at the bottom of posts. They come from [pop](https://git
 
 ## Development
 
-For the first time in years: no Docker. Not for local tooling, not for deployment. I was spending more time debugging Dockerfiles than writing actual code. node and hugo on the host, done. Feels good.
+For the first time in years: no Docker. Not for local tooling, not for deployment. I was spending more time debugging Docker setups than writing actual code. node and hugo on the host, done. Feels good.
 
 ### Customizations
 
@@ -321,10 +321,12 @@ topics = ['software-development']
 *Title, date, topics, draft status. The `<!--more-->` marker in the body sets where the excerpt ends.*
 </details>
 
-## Next Steps
+## What's Missing
 
-Publishing requires my machine. I could write drafts in the GitHub app and commit to the repo, but I still need my machine to deploy. The fix is GitHub Actions. FTP credentials in repository secrets, `lftp` in the workflow.
+Publishing requires my machine. I could write drafts in the GitHub app and commit to the repo, but I still need my machine to deploy. The fix is GitHub Actions. FTP credentials in repository secrets, ftp upload in the workflow. Once deployment is on GitHub Actions, I'll open source the whole site.
 
-Scheduled posts are another thing. Hugo is static, so posts with a future date won't appear until I rebuild. I'd need a GitHub Action that runs on a schedule and triggers a build. Not hard, just haven't done it yet.
+Scheduled posts are another thing. Hugo [won't render future-dated content by default](https://gohugo.io/getting-started/usage/), not even in the dev server. Posts only appear after their date has passed and the site is rebuilt. I'd need a GitHub Action that runs on a schedule and triggers a build. Not hard, just haven't done it yet.
+
+I also want to add books and music to the media log. 
 
 The whole setup took a weekend. Most of that went into design decisions and CSS, not Hugo. I'd do it again.
