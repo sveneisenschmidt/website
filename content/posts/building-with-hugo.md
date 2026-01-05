@@ -39,7 +39,7 @@ content/
 
 ### Posts
 
-Hugo's default content handling. Each post is either a single markdown file or a folder with an `index.md` and images. I use folders when I want to include photos. Drop them next to the markdown, reference them in a shortcode, and Hugo resizes and optimizes them on build.
+For posts I rely on Hugo's default content handling. Each post is either a single markdown file or a folder with an `index.md` and images. I use folders when I want to include photos. I drop the imagsnext to the markdown file, reference them in a shortcode, and Hugo resizes and optimizes them on build.
 
 ### Log
 
