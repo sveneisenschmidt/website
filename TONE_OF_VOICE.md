@@ -2,11 +2,11 @@
 
 Guidelines for writing and reviewing content on this site.
 
-## Before You Start
+## Overview
 
-**Always read existing blog posts first.** The posts in `content/posts/` represent the current writing style. Read them before writing or reviewing new content. Style evolves - the existing posts are the source of truth.
+Existing blog posts in `content/posts/` represent the current writing style. Style evolves - they are the source of truth for evaluation and review.
 
-This guide is also used for programmatic review of articles. The patterns and rules here should be specific enough to catch common mistakes during automated checks.
+This guide serves two purposes: manual review by humans and programmatic review of articles. The patterns and rules are specific enough to be useful in automated checks for common mistakes.
 
 ## Tone & Voice
 
