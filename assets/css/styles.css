@@ -439,3 +439,26 @@ del {
     text-decoration: line-through;
     opacity: 0.5;
 }
+
+h2,
+h3,
+h4 {
+    scroll-margin-top: 7.5rem;
+}
+
+.heading-anchor {
+    opacity: 0;
+    margin-left: 0.5rem;
+    text-decoration: none;
+    font-weight: 400;
+}
+
+h2:hover .heading-anchor,
+h3:hover .heading-anchor,
+h4:hover .heading-anchor {
+    opacity: 0.5;
+}
+
+.heading-anchor:hover {
+    opacity: 1;
+}
