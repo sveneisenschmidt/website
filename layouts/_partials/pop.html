@@ -13,12 +13,16 @@
 <script src="https://pop.eisenschmidt.website/pop.min.js" defer></script>
 <script defer>
     document.addEventListener("DOMContentLoaded", function() {
+        {{ $emojis := slice "❤️" }}
+        {{ if and $isPost .Params.emojis }}
+            {{ $emojis = append .Params.emojis $emojis  }}
+        {{ end }}
         Pop.init({
             endpoint: "https://pop.eisenschmidt.website/api",
             pageId: {{ .Permalink }},
         {{ if $isPost }}
             el: "#pop",
-            emojis: ["❤️", "👍", "💡"],
+            emojis: {{ $emojis | jsonify | safeJS }},
             renderReactions: true,
         {{ end }}
             trackVisits: true

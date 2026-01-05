@@ -3,6 +3,7 @@ date = '2026-01-04T16:00:00'
 title = 'Daily Photo: Winter Walk'
 topics = ['Daily Photo']
 cover = 'IMG_0490.jpg'
+emojis = ['❄️']
 +++
 
 A winter walk with Tilian and Aika. The fresh snow melted during the day but froze overnight, leaving icy patches everywhere. Plenty of slipping and sliding along the way, with the kids landing on their backsides more than once. Aika seemed completely unfazed. 

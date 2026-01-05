@@ -4,6 +4,7 @@ draft = false
 title = '2025 Wrapped'
 topics = ['Video Games', 'Music', 'Travel', 'Cycling']
 cover = 'IMG_8224.jpg'
+emojis = ['🎬']
 +++
 
 My year 2025 in numbers and highlights, wrapped-style. First attempt at summarizing an eventful year. More platforms offering wrapped/replay summaries obviously helped.
