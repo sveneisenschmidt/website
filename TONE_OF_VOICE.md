@@ -17,6 +17,7 @@ Guidelines for writing and reviewing content on this site.
 - **Self-deprecating**: Humble about achievements, honest about mistakes.
 - **Vulnerable without demanding sympathy**: Acknowledge difficulty or frustration honestly.
 - **Self-aware**: Acknowledge own limitations and knowledge gaps openly.
+- **First person and active voice**: Use "I" when describing decisions and actions. "I built a custom shortcode" not "A custom shortcode was built". "I keep originals in the folder" not "Originals stay in the folder". Show agency and ownership of choices.
 
 ## Structure
 
@@ -56,6 +57,10 @@ Guidelines for writing and reviewing content on this site.
 - Unnecessary negations/justifications ("The site isn't just a blog")
 - Choppy noun-phrase sentences that should be one proper sentence ("The fix is GitHub Actions. FTP credentials in repository secrets.")
 - Impersonal descriptions without reasoning ("Log entries don't get their own pages" instead of "I don't want log entries to have their own pages, the content is too short")
+- Passive voice without first person ("Originals stay in the folder, Hugo serves optimized versions" instead of "I keep originals in the folder. Hugo generates optimized versions.")
+- Missing agency ("A script converts images" instead of "I wrote a script that converts images")
+- Impersonal subject matter descriptions ("Posts are markdown files" instead of "I write posts as markdown files")
+- Impersonal passive constructions ("Drafts stay in git" instead of "I keep drafts in git")
 
 ## Content Issues (avoid)
 
