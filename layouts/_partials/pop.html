@@ -20,7 +20,10 @@
             el: "#pop",
             emojis: ["❤️", "👍", "💡"],
             renderReactions: true,
-            renderVisits: false,
+            renderVisits: true,
+            onLoad: function(pageInfo) {
+              console.log(pageInfo);
+            },
         {{ end }}
             trackVisits: true
         });
