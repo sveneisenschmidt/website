@@ -21,6 +21,11 @@ term = ["HTML"]
 [markup.goldmark.parser]
 wrapStandAloneImageWithinParagraph = false
 
+[markup.highlight]
+codeFences = true
+noClasses = false
+lineNos = false
+
 [markup.goldmark.parser.attribute]
 block = true
 title = true

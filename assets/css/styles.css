@@ -387,3 +387,38 @@ section {
         }
     }
 }
+
+pre {
+    background: var(--color-bg-muted);
+    padding: 1rem;
+    border-radius: 0.25rem;
+    overflow-x: auto;
+}
+
+code {
+    font-family: monospace;
+    color: var(--color-text);
+    background: var(--color-bg-muted);
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+}
+
+pre code {
+    background: none;
+    padding: 0;
+}
+
+.highlight pre {
+    background: var(--color-bg-muted);
+}
+
+.highlight span {
+    color: inherit !important;
+    background: none !important;
+}
+
+.highlight + p > em,
+pre + p > em {
+    display: block;
+    text-align: center;
+}

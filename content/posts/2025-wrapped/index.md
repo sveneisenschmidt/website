@@ -1,5 +1,5 @@
 +++
-date = '2026-01-03'
+date = '2026-01-03T12:00:00'
 draft = false
 title = '2025 Wrapped'
 topics = ['Video Games', 'Music', 'Travel', 'Cycling']

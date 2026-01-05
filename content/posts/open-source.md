@@ -1,5 +1,5 @@
 +++
-date = '2026-01-02'
+date = '2026-01-02T10:00:00'
 draft = false
 title = 'Open Source'
 topics = ['Software Development']
