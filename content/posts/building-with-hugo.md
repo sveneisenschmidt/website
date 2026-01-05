@@ -110,7 +110,7 @@ for (const result of results.results) {
 
 ### Reactions
 
-I added emoji reactions at the bottom of posts. I built [pop](https://github.com/sveneisenschmidt/pop) alongside this site—a cookie-less widget that handles reactions and visits. Self-hosted, PHP with SQLite, about 3KB on the frontend. Building both projects in parallel was fun, and seeing them come together at the end even more so.
+I added emoji reactions at the bottom of posts. I built [pop](https://github.com/sveneisenschmidt/pop) alongside this site. It's a cookie-less widget that handles reactions and visits. Self-hosted, PHP with SQLite, about 3KB on the frontend. Building both projects in parallel was fun, and seeing them come together at the end even more so.
 
 I also use pop for visit counts. I built a Hugo partial that fetches the current count from the pop API at build time and writes it directly into the HTML. No JavaScript needed for displaying visits.
 
@@ -149,11 +149,11 @@ A few things required digging into the docs:
 - **Inline CSS and JS** - Instead of linking external files, I inline minified CSS and JS directly in the `<head>`. Hugo's `resources.Get` loads the asset, `minify` compresses it, `safeCSS`/`safeJS` outputs it inline.
 
 **Config**
-- **Syntax highlighting** - I disabled the default inline styles (`noClasses = false`) so I can style code blocks with CSS instead.
+- **Syntax highlighting** - I disabled the default inline styles (`noClasses = false`) so I can style code blocks with my own CSS instead.
 
 ### Project Structure
 
-Hugo puts templates in a `themes/` folder by default. I started there too, but moved everything to the project root. I don't plan to switch themes, so the extra folder added nothing.
+Hugo puts templates in a `themes/` folder by default. I started there too, but moved everything to the project root. I don't plan to switch themes, so the extra folder added nothing. I used the default theme generator by Huho to create a starter theme.
 
 ```
 # Before                    # After
