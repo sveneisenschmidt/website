@@ -22,6 +22,10 @@
     font-display: swap;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 :root {
     --color-text: #222;
     --color-link: #00e;
@@ -116,6 +120,15 @@ img.inline {
     1%,
     to {
         box-shadow: 0 0.5rem 0 0 var(--color-bg);
+    }
+}
+
+@keyframes target-fade {
+    0% {
+        background: transparent;
+    }
+    100% {
+        background: var(--color-bg-muted);
     }
 }
 
@@ -369,15 +382,30 @@ section {
     scroll-margin-top: 8rem;
 
     &:target {
-        background: var(--color-bg-muted);
+        animation: target-fade 1s ease-out forwards;
         padding: 0.5rem 0;
         border-radius: 0.25rem;
+        margin: -0.5rem 0;
+
+        @media (max-width: 768px) {
+            margin: -0.5rem -1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0;
+
+            .log-type {
+                background: var(--color-bg);
+            }
+        }
     }
 
     .log-labels {
         display: flex;
         gap: 0.25rem;
         align-self: start;
+    }
+
+    .log-description {
+        display: block;
     }
 
     @media (max-width: 768px) {
@@ -389,7 +417,7 @@ section {
             display: none;
         }
 
-        .log-content a {
+        .log-meta {
             display: block;
         }
     }

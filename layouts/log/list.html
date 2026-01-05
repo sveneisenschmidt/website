@@ -13,7 +13,31 @@
 {{ $rating := .Params.rating | int }}
 <p class="log-entry" id="{{ .File.ContentBaseName }}">
   <span class="log-labels"><span class="log-type">{{ .Params.type }}</span> <span class="log-rating rating-{{ $rating }}">{{ .Params.rating }}</span></span>
-  <span class="log-content"><a href="{{ .Params.link }}">{{ .Title }}</a><span class="log-separator"> · </span><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>{{ with .Summary }}<span class="log-description"> · {{ . | plainify }}</span>{{ end }}</span>
+  <span class="log-content"><a href="#{{ .File.ContentBaseName }}" title="Link to this entry"><strong>{{ .Title }}</strong></a><span class="log-separator"> · </span><span class="log-meta">{{ with .Params.link }}<a href="{{ . }}" title="View on {{ (urls.Parse .).Host | replaceRE "^www\\." "" }}">{{ (urls.Parse .).Host | replaceRE "^www\\." "" }}</a> · {{ end }}<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>{{ with .Summary }}<span class="log-description">{{ . | plainify }}</span>{{ end }}</span></span>
 </p>
 {{ end }}
+
+<script>
+(function() {
+  var baseTitle = document.title;
+
+  function updateTitle() {
+    var hash = window.location.hash.slice(1);
+    if (!hash) {
+      document.title = baseTitle;
+      return;
+    }
+    var el = document.getElementById(hash);
+    if (!el) return;
+    var link = el.querySelector('.log-content a');
+    if (!link) return;
+    document.title = link.textContent + ' · ' + baseTitle;
+  }
+
+  updateTitle();
+  window.addEventListener('hashchange', updateTitle);
+
+
+})();
+</script>
 {{ end }}
