@@ -46,7 +46,7 @@ This guide serves two purposes: manual review by humans and programmatic review 
 - Parenthetical asides provide casual commentary and personality, used sparingly.
 - Technical explanation is mixed with personal reaction. Description alone is insufficient; reaction is present.
 
-## AI Slop Patterns (strongly avoided)
+## Low Quality Patterns (strongly avoided)
 
 - Rhetorical questions as transitions ("Retro or wise?", "But what does this mean?")
 - Generic summarizing statements ("Simple enough to understand, simple enough to maintain")

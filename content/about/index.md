@@ -25,6 +25,8 @@ This is a private, non-commercial website. No business activities, no ads, no af
 
 Built with [Hugo](https://gohugo.io/), a static site generator. Search powered by [Pagefind](https://pagefind.app/). Reactions on posts via [Pop](https://github.com/sveneisenschmidt/pop), my own tiny feedback library. Custom theme, vanilla CSS, no JavaScript frameworks. Hosted on [All-Inkl](https://all-inkl.com/) in Germany.
 
+Read more about how this site was built in the [building with Hugo](/posts/building-with-hugo/) post. The full source code is [available on GitHub](https://github.com/sveneisenschmidt/website).
+
 {{< rawhtml >}}
 <div id="site-stats"></div>
 <script defer>
