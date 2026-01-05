@@ -245,7 +245,7 @@ Posts are markdown files with frontmatter. `make dev` to preview, drafts stay in
 
 ```toml
 +++
-date = '2026-01-05'
+date = '2026-01-05T07:00:00'
 draft = true
 title = 'Building This Website with Hugo'
 topics = ['Software Development']
