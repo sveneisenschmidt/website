@@ -2,7 +2,7 @@
 
 My personal website, built with [Hugo](https://gohugo.io/).
 
-I use [`TONE_OF_VOICE.md`](TONE_OF_VOICE.md) to keep my writing consistent when working with AI tools.
+I use [`TONE_OF_VOICE.md`](TONE_OF_VOICE.md) to keep my writing consistent.
 
 ## Development
 
