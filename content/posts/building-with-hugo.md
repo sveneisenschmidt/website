@@ -251,12 +251,8 @@ title = 'Building This Website with Hugo'
 topics = ['Software Development']
 +++
 
-This website runs on [Hugo](https://gohugo.io/), a static site generator written in Go. I launched it in early January 2026, so if you're reading this when it's fresh, this is all just a few days old.
+This website runs ...
 
-<!--more-->
-
-## Why Hugo?
-...
 ```
 
 *Title, date, topics, draft status. Drafts stay in git until ready.*
