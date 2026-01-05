@@ -20,9 +20,15 @@
             el: "#pop",
             emojis: ["❤️", "👍", "💡"],
             renderReactions: true,
-            renderVisits: true,
-            onLoad: function(pageInfo) {
-              console.log(pageInfo);
+            onLoad: function() {
+                fetch(`${this.endpoint}/visits?pageId=${encodeURIComponent(this.pageId)}`)
+                  .then(res => res.json())
+                  .then(data => {
+                    if (!data.totalVisits) return;
+                    const time = document.querySelector('main h1 + time');
+                    const label = data.totalVisits === 1 ? 'visit' : 'visits';
+                    if (time) time.insertAdjacentText('beforeend', ' · ' + data.totalVisits + ' ' + label);
+                  });
             },
         {{ end }}
             trackVisits: true
