@@ -366,6 +366,7 @@ section {
     grid-template-columns: auto 1fr;
     gap: 0.5rem;
     align-items: baseline;
+    scroll-margin-top: 8rem;
 
     .log-labels {
         display: flex;

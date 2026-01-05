@@ -13,7 +13,7 @@
       <link>http://localhost:1313/posts/building-with-hugo/</link>
       <pubDate>Mon, 05 Jan 2026 07:00:00 &#43;0000</pubDate>
       <guid>http://localhost:1313/posts/building-with-hugo/</guid>
-      <description>&lt;p&gt;This website runs on &lt;a href=&#34;https://gohugo.io/&#34;&gt;Hugo&lt;/a&gt;, a static site generator written in Go. I launched it in early January 2026, so if you&amp;rsquo;re reading this when it&amp;rsquo;s fresh, this is all just a few days old.&lt;/p&gt;</description>
+      <description>&lt;p&gt;This website runs on &lt;a href=&#34;https://gohugo.io/&#34;&gt;Hugo&lt;/a&gt;, a static site generator written in Go. I launched it in early January 2026, so if you&amp;rsquo;re reading this when it&amp;rsquo;s fresh, this is all just a few days old. This post documents how I built it.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Daily Photo: Winter Walk</title>
@@ -24,9 +24,9 @@
     </item>
     <item>
       <title>Tron: Ares</title>
-      <link></link>
+      <link>http://localhost:1313/log/#tron-ares</link>
       <pubDate>Sun, 04 Jan 2026 00:00:00 &#43;0000</pubDate>
-      <guid></guid>
+      <guid>http://localhost:1313/log/#tron-ares</guid>
       <description>&lt;p&gt;Feels like they built a movie around a soundtrack. I knew it was questionable renting it and still left disappointed by its lack of substance. The 3D printing and digitization of matter was the coolest bit.&lt;/p&gt;</description>
     </item>
     <item>
@@ -59,9 +59,9 @@
     </item>
     <item>
       <title>Stranger Things (Season 5)</title>
-      <link></link>
+      <link>http://localhost:1313/log/#stranger-things-s5</link>
       <pubDate>Thu, 01 Jan 2026 00:00:00 &#43;0000</pubDate>
-      <guid></guid>
+      <guid>http://localhost:1313/log/#stranger-things-s5</guid>
       <description>&lt;p&gt;Each season felt like it had a different plan for the next. The finale was sentimental but without weight. Dark and 1899 did this better.&lt;/p&gt;</description>
     </item>
   </channel>

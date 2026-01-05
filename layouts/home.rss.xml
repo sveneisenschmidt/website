@@ -17,11 +17,16 @@
     <lastBuildDate>{{ (index $pages 0).Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" }}</lastBuildDate>
     <atom:link href="{{ .Permalink }}index.xml" rel="self" type="application/rss+xml" />
     {{- range $pages }}
+    {{- $link := .Permalink -}}
+    {{- $isLog := eq .Section "log" -}}
+    {{- if $isLog -}}
+      {{- $link = printf "%slog/#%s" $.Site.BaseURL .File.ContentBaseName -}}
+    {{- end }}
     <item>
       <title>{{ .Title }}</title>
-      <link>{{ .Permalink }}</link>
+      <link>{{ $link }}</link>
       <pubDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" }}</pubDate>
-      <guid>{{ .Permalink }}</guid>
+      <guid>{{ $link }}</guid>
       <description>{{ .Summary | html }}</description>
     </item>
     {{- end }}
