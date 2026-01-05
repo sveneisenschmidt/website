@@ -90,7 +90,7 @@ The `/photos` page shows all images from my posts. A shortcode loops over all po
 
 ### Search
 
-I use [Pagefind](https://pagefind.app/) for search. It indexes the HTML at build time and loads the index on demand. I ripped out Pagefind's default UI and built a simple one: input field, Enter to search, results as links.
+I use [Pagefind](https://pagefind.app/) for search. It indexes the HTML at build time and loads the index on demand. I replaced Pagefind's default UI with a simple input field and a list of results.
 
 I read Pagefind has a beta release coming up but could not find any specific information online. The current version works but I had trouble with advanced glob patterns, and search result quality is inconsistent (I used a score filter > 0.5for this). The beta might fix some of this.
 
