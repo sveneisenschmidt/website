@@ -16,10 +16,10 @@ I played it on a Steam Deck OLED via PS Remote Play connected to a PS5 Pro. The 
 
 {{< img src="IMG_0447.jpg" alt="Start screen of Chiaki4deck" >}}
 
- The story was emotionally draining. Typical for Kojima, he takes the liberty to add things for the sake of coolness, not because they make sense. "Sense" in the context of an already nuts story and universe. [This Reddit thread](https://www.reddit.com/r/DeathStranding/comments/1m7oqbq/death_stranding_2_a_beautiful_ending_wrapped_in/) tied up the loose ends for me and explained things that are never explicitly resolved in the game, at least to my understanding.
+ The story drained me emotionally. Kojima takes the liberty to add things for the sake of coolness, not because they make sense. "Sense" in the context of an already nuts story and universe. [This Reddit thread](https://www.reddit.com/r/DeathStranding/comments/1m7oqbq/death_stranding_2_a_beautiful_ending_wrapped_in/) tied up the loose ends for me and explained things that are never explicitly resolved in the game, at least to my understanding.
 
-Favorite performances: Lea Seydoux as Fragile and Troy Baker as Higgs. Baker's performance is nuts. Tommie Earl Jenkins deserves a mention too. Spoiler: his return at the end of the game and his unusual performance were a nice balance to the overall sad story.
+Favorite performances: Lea Seydoux as Fragile and Troy Baker as Higgs. Baker's performance is nuts. I want to mention Tommie Earl Jenkins too. Spoiler: his return at the end of the game and his unusual performance were a nice balance to the overall sad story.
 
-Also surprised by Kojima's thing for German actors and directors. Alissa Jung and Fatih Akin both have roles. I wonder what made him choose them.
+I was also surprised by Kojima's thing for German actors and directors. Alissa Jung and Fatih Akin both have roles. I wonder what made him choose them.
 
 Final rating: 9/10.
