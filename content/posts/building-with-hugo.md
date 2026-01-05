@@ -153,7 +153,7 @@ A few things required digging into the docs:
 
 ### Project Structure
 
-Hugo puts templates in a `themes/` folder by default. I started there too, but moved everything to the project root. I don't plan to switch themes, so the extra folder added nothing. I used the default theme generator by Huho to create a starter theme.
+Hugo puts templates in a `themes/` folder by default. I started there too, but moved everything to the project root. I don't plan to switch themes, so the extra folder added nothing. I used the default theme generator by Hugo to create a starter theme.
 
 ```
 # Before                    # After
