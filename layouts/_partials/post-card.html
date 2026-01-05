@@ -1,4 +1,4 @@
-<section>
+<section{{ with .Params.cover }} class="has-cover"{{ end }}>
   {{ partial "cover.html" . }}
   <div>
     <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>

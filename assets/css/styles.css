@@ -221,6 +221,17 @@ section {
     @media (max-width: 768px) {
         flex-direction: column;
     }
+
+    &:has(+ .has-cover)::after {
+        @media (max-width: 768px) {
+            content: "___";
+            display: block;
+            text-align: center;
+            margin-bottom: 1rem;
+            margin-top: -1.5rem;
+            opacity: 0.5;
+        }
+    }
 }
 
 #pop-wrapper {
