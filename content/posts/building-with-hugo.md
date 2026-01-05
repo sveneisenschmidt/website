@@ -92,7 +92,7 @@ The `/photos` page shows all images from my posts. A shortcode loops over all po
 
 I use [Pagefind](https://pagefind.app/) for search. It indexes the HTML at build time and loads the index on demand. I replaced Pagefind's default UI with a simple input field and a list of results.
 
-I read Pagefind has a beta release coming up but could not find any specific information online. The current version works but I had trouble with advanced glob patterns, and search result quality is inconsistent (I used a score filter > 0.5for this). The beta might fix some of this.
+I read Pagefind has a beta release coming up but could not find any specific information online. The current version works but I had trouble with advanced glob patterns, and search result quality is inconsistent (I used a score filter > 0.5 for this). The beta might fix some of this.
 
 ```javascript
 const pagefind = await import("/pagefind/pagefind.js");
@@ -224,7 +224,7 @@ publish:
 
 I've been using [all-inkl](https://all-inkl.com/) since 2005 for free domains and FTP access. The threshold to get something static running was basically zero.
 
-First time in 10 years I'm touching Apache. My hoster runs it and I forgot how much goes into a `.htaccess`: compression, caching, content types. All the stuff CDNs usually handle for you. Speaking of which: no CDN. Feels like overhead for a static site. Also I'm terrified of DNS. Every time I touch nameservers and DNS recod settings something breaks. (This is also why I decided to not use GitHub Pages for hosting for now, it would require adjsuting DNS on all-inkl side too. Nope!)
+First time in 10 years I'm touching Apache. My hoster runs it and I forgot how much goes into a `.htaccess`: compression, caching, content types. All the stuff CDNs usually handle for you. Speaking of which: no CDN. Feels like overhead for a static site. Also I'm terrified of DNS. Every time I touch nameservers and DNS recod settings something breaks. (This is also why I decided to not use GitHub Pages for hosting for now, it would require adjusting DNS on all-inkl side too. Nope!)
 
 Homepage is about 12KB (4KB gzipped).
 

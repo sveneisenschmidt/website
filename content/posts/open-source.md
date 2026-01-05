@@ -9,7 +9,7 @@ End of 2025 I spent 100 hours on a single open source project. I did similar thi
 
 <!--more-->
 
-My track record with open source is not great. A [gamification engine](https://github.com/sveneisenschmidt/yay) that no one used. [Symfony bundles](https://github.com/sveneisenschmidt/icecat) for Magento product catalogs. Who is using Magento still? PHP extensions for a microframework that died years ago (bye bye Silex). [Parallel test execution](https://codecept.io/changelog/#_1-2-0) for CodeceptJS. That one nearly broke me. Debugging parallel processes in someone else's JavaScript codebase. Never again and not part of the oriignal software anymore. 
+My track record with open source is not great. A [gamification engine](https://github.com/sveneisenschmidt/yay) that no one used. [Symfony bundles](https://github.com/sveneisenschmidt/icecat) for Magento product catalogs. Who is using Magento still? PHP extensions for a microframework that died years ago (bye bye Silex). [Parallel test execution](https://codecept.io/changelog/#_1-2-0) for CodeceptJS. That one nearly broke me. Debugging parallel processes in someone else's JavaScript codebase. Never again and not part of the original software anymore. 
 
 My super power: writing software no one uses.
 
