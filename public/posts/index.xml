@@ -13,7 +13,7 @@
       <link>http://localhost:1313/posts/building-with-hugo/</link>
       <pubDate>Mon, 05 Jan 2026 07:00:00 +0000</pubDate>
       <guid>http://localhost:1313/posts/building-with-hugo/</guid>
-      <description>&lt;p&gt;This website runs on &lt;a href=&#34;https://gohugo.io/&#34;&gt;Hugo&lt;/a&gt;, a static site generator written in Go. I launched it in early January 2026, so if you&amp;rsquo;re reading this when it&amp;rsquo;s fresh, this is all just a few days old.&lt;/p&gt;</description>
+      <description>&lt;p&gt;This website runs on &lt;a href=&#34;https://gohugo.io/&#34;&gt;Hugo&lt;/a&gt;, a static site generator written in Go. I launched it in early January 2026, so if you&amp;rsquo;re reading this when it&amp;rsquo;s fresh, this is all just a few days old. This post documents how I built it.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Daily Photo: Winter Walk</title>
