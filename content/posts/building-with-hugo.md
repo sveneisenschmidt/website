@@ -250,9 +250,6 @@ draft = true
 title = 'Building This Website with Hugo'
 topics = ['Software Development']
 +++
-
-This website runs ...
-
 ```
 
 *Title, date, topics, draft status. Drafts stay in git until ready.*
