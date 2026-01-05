@@ -1,6 +1,6 @@
 {{- $cutoff := time "2026-01-01" -}}
 {{- $posts := where .Site.RegularPages "Section" "posts" -}}
-{{- $logs := where (where (where .Site.RegularPages "Section" "log") ".Date" "ge" $cutoff) ".RawContent" "ne" "" -}}
+{{- $logs := where (where (where .Site.RegularPages "Section" "log") ".Date" "ge" $cutoff) ".Content" "ne" "" -}}
 {{- $pages := sort (union $posts $logs) ".Date" "desc" -}}
 {{- $limit := .Site.Config.Services.RSS.Limit -}}
 {{- if ge $limit 1 -}}
