@@ -26,8 +26,18 @@
       <title>{{ .Title }}{{ with .Params.rating }} ({{ . }}/10){{ end }}</title>
       <link>{{ $link }}</link>
       <pubDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" }}</pubDate>
-      <guid>{{ $link }}</guid>
-      <description>{{ .Summary | html }}</description>
+      <guid isPermaLink="true">{{ $link }}</guid>
+      <description>{{ printf "<![CDATA[" | safeHTML }}{{- if .Params.cover -}}
+          {{- $img := .Resources.GetMatch .Params.cover -}}
+          {{- if $img -}}
+            {{- $resized := $img.Fit "768x768 webp q80" -}}
+            <img src="{{ $resized.Permalink }}" width="{{ $resized.Width }}" height="{{ $resized.Height }}" alt="{{ .Title }} cover image" />
+          {{- end -}}
+        {{- end -}}
+        <p>{{ .Summary | plainify | htmlUnescape }}{{- $contentWords := countwords .Content -}}
+        {{- $summaryWords := countwords .Summary -}}
+        {{- $remainingWords := sub $contentWords $summaryWords -}}
+        {{- if gt $remainingWords 0 }} ({{ $remainingWords }} more words){{- end -}}</p>{{ printf "]]>" | safeHTML }}</description>
     </item>
     {{- end }}
   </channel>
