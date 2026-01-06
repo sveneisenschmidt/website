@@ -7,13 +7,13 @@ draft = false
 emojis = ['🍞']
 +++
 
-My wife started baking. This is her spelt (Deutsch: Dinkel) sourdough. The recipe is straightforward but needs patience.
+My wife started baking bread. Here's her spelt (Deutsch: Dinkel) sourdough recipe. It took quite a few iterations to get it right.
 
 <!--more-->
 
 {{< img src="IMG_0500.jpg" alt="Spelt sourdough bread on a ceramic plate" >}}
 
-We go through at least one loaf a week. Nadine spent quite some time experimenting to get it right. The ratio between preparation time and how long the bread lasts is roughly 100 to 1.
+We go through at least one loaf a week. The ratio between preparation time and how long the bread lasts is roughly 100 to 1. 
 
 ## Ingredients
 
@@ -33,5 +33,3 @@ We go through at least one loaf a week. Nadine spent quite some time experimenti
 6. Drop the dough in, score the top, add ice cubes for steam. Bake 20 minutes with the lid on, then 20 minutes at 210°C without.
 
 The starter is off-limits. For everyone except Nadine.
-
-*PS: Pizza works great with sourdough too, but that requires a completely different recipe.*
