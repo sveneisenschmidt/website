@@ -10,8 +10,8 @@ A winter walk with Tilian and Aika. The fresh snow melted during the day but fro
 
 <!--more-->
 
-I'm starting my daily photo journey, inspired by [Jasper's daily photos](https://jasper.tandy.is/daily) who is on a 337-day streak. I hope this will help me reflect more consciously on the past.
-
 {{< img src="IMG_0489.jpg" alt="Aika on the winter walk" >}}
+
+I'm starting my daily photo journey, inspired by [Jasper's daily photos](https://jasper.tandy.is/daily) who is on a 337-day streak. I hope this will help me reflect more consciously on the past.
 
 {{< img src="IMG_0490.jpg" alt="Tilian on the winter walk" >}}
