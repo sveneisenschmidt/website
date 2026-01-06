@@ -2,66 +2,66 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Sven Eisenschmidt - Personal Blog</title>
-    <link>https://sven.eisenschmidt.website/posts/</link>
+    <link>http://localhost:1313/posts/</link>
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 06 Jan 2026 19:00:00 +0000</lastBuildDate>
-    <atom:link href="https://sven.eisenschmidt.website/posts/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Daily Photo: Sourdough</title>
-      <link>https://sven.eisenschmidt.website/posts/daily-photo-sourdough/</link>
+      <link>http://localhost:1313/posts/daily-photo-sourdough/</link>
       <pubDate>Tue, 06 Jan 2026 19:00:00 +0000</pubDate>
-      <guid>https://sven.eisenschmidt.website/posts/daily-photo-sourdough/</guid>
+      <guid>http://localhost:1313/posts/daily-photo-sourdough/</guid>
       <description>&lt;p&gt;My wife started baking bread. Here&amp;rsquo;s her spelt (Deutsch: Dinkel) sourdough recipe. It took quite a few iterations to get it right.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Daily Photo: Chicken</title>
-      <link>https://sven.eisenschmidt.website/posts/daily-photo-chicken/</link>
+      <link>http://localhost:1313/posts/daily-photo-chicken/</link>
       <pubDate>Mon, 05 Jan 2026 17:00:00 +0000</pubDate>
-      <guid>https://sven.eisenschmidt.website/posts/daily-photo-chicken/</guid>
+      <guid>http://localhost:1313/posts/daily-photo-chicken/</guid>
       <description>&lt;p&gt;When I went out with Aika, I caught two of our four chickens in the garden. We have two Silkie chickens and two feather-footed dwarf chickens. The whole family loves them, and two eggs a day is a nice bonus.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Building This Website with Hugo</title>
-      <link>https://sven.eisenschmidt.website/posts/building-with-hugo/</link>
+      <link>http://localhost:1313/posts/building-with-hugo/</link>
       <pubDate>Mon, 05 Jan 2026 07:00:00 +0000</pubDate>
-      <guid>https://sven.eisenschmidt.website/posts/building-with-hugo/</guid>
+      <guid>http://localhost:1313/posts/building-with-hugo/</guid>
       <description>&lt;p&gt;This website runs on &lt;a href=&#34;https://gohugo.io/&#34;&gt;Hugo&lt;/a&gt;, a static site generator written in Go. I launched it in early January 2026, so if you&amp;rsquo;re reading this when it&amp;rsquo;s fresh, this is all just a few days old. This post documents how I built it.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Daily Photo: Winter Walk</title>
-      <link>https://sven.eisenschmidt.website/posts/daily-photo-winter-walk/</link>
+      <link>http://localhost:1313/posts/daily-photo-winter-walk/</link>
       <pubDate>Sun, 04 Jan 2026 16:00:00 +0000</pubDate>
-      <guid>https://sven.eisenschmidt.website/posts/daily-photo-winter-walk/</guid>
+      <guid>http://localhost:1313/posts/daily-photo-winter-walk/</guid>
       <description>&lt;p&gt;A winter walk with Tilian and Aika. The fresh snow melted during the day but froze overnight, leaving icy patches everywhere. Plenty of slipping and sliding along the way, with the kids landing on their backsides more than once. Aika seemed completely unfazed.&lt;/p&gt;</description>
     </item>
     <item>
       <title>2025 Wrapped</title>
-      <link>https://sven.eisenschmidt.website/posts/2025-wrapped/</link>
+      <link>http://localhost:1313/posts/2025-wrapped/</link>
       <pubDate>Sat, 03 Jan 2026 12:00:00 +0000</pubDate>
-      <guid>https://sven.eisenschmidt.website/posts/2025-wrapped/</guid>
+      <guid>http://localhost:1313/posts/2025-wrapped/</guid>
       <description>&lt;p&gt;My year 2025 in numbers and highlights, wrapped-style. First attempt at summarizing an eventful year. More platforms offering wrapped/replay summaries obviously helped.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Death Stranding 2</title>
-      <link>https://sven.eisenschmidt.website/posts/death-stranding-2/</link>
+      <link>http://localhost:1313/posts/death-stranding-2/</link>
       <pubDate>Fri, 02 Jan 2026 14:00:00 +0000</pubDate>
-      <guid>https://sven.eisenschmidt.website/posts/death-stranding-2/</guid>
+      <guid>http://localhost:1313/posts/death-stranding-2/</guid>
       <description>&lt;p&gt;Over the Xmas period I managed to finish Death Stranding 2. The game is a perfect mix between logistics, base building and shooter action for me.I like it more than the Metal Gear Solid games.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Open Source</title>
-      <link>https://sven.eisenschmidt.website/posts/open-source/</link>
+      <link>http://localhost:1313/posts/open-source/</link>
       <pubDate>Fri, 02 Jan 2026 10:00:00 +0000</pubDate>
-      <guid>https://sven.eisenschmidt.website/posts/open-source/</guid>
+      <guid>http://localhost:1313/posts/open-source/</guid>
       <description>&lt;p&gt;At the end of 2025 I spent 100 hours on a single open source project. I did similar things over the past twenty years but always lost interest. This time was different. The software is actually used at my company. Spoiler: I will happily discontinue it.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Hello</title>
-      <link>https://sven.eisenschmidt.website/posts/hello-world/</link>
+      <link>http://localhost:1313/posts/hello-world/</link>
       <pubDate>Thu, 01 Jan 2026 12:00:00 +0000</pubDate>
-      <guid>https://sven.eisenschmidt.website/posts/hello-world/</guid>
+      <guid>http://localhost:1313/posts/hello-world/</guid>
       <description>&lt;p&gt;Welcome to my website. I work as Chief Technology &amp;amp; Product Officer at &lt;a href=&#34;https://roadsurfer.com&#34;&gt;roadsurfer&lt;/a&gt;, where we help people explore the world in campervans.&lt;/p&gt;</description>
     </item>
   </channel>

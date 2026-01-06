@@ -2,89 +2,89 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Sven Eisenschmidt - Personal Blog</title>
-    <link>https://sven.eisenschmidt.website/</link>
+    <link>http://localhost:1313/</link>
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 06 Jan 2026 19:00:00 &#43;0000</lastBuildDate>
-    <atom:link href="https://sven.eisenschmidt.website/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Daily Photo: Sourdough</title>
-      <link>https://sven.eisenschmidt.website/posts/daily-photo-sourdough/</link>
+      <link>http://localhost:1313/posts/daily-photo-sourdough/</link>
       <pubDate>Tue, 06 Jan 2026 19:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">https://sven.eisenschmidt.website/posts/daily-photo-sourdough/</guid>
-      <description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/daily-photo-sourdough/IMG_0500_hu_fc6b5ace4b29d129.webp" width="768" height="576" alt="Daily Photo: Sourdough cover image" /><p>My wife started baking bread. Here’s her spelt (Deutsch: Dinkel) sourdough recipe. It took quite a few iterations to get it right.
- (<a href="https://sven.eisenschmidt.website/posts/daily-photo-sourdough/" title="Continue reading Daily Photo: Sourdough">174 more words</a>)</p>]]></description>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-sourdough/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-sourdough/IMG_0500_hu_fc6b5ace4b29d129.webp" width="768" height="576" alt="Daily Photo: Sourdough cover image" /><p>My wife started baking bread. Here’s her spelt (Deutsch: Dinkel) sourdough recipe. It took quite a few iterations to get it right.
+ (<a href="http://localhost:1313/posts/daily-photo-sourdough/" title="Continue reading Daily Photo: Sourdough">174 more words</a>)</p>]]></description>
     </item>
     <item>
       <title>Daily Photo: Chicken</title>
-      <link>https://sven.eisenschmidt.website/posts/daily-photo-chicken/</link>
+      <link>http://localhost:1313/posts/daily-photo-chicken/</link>
       <pubDate>Mon, 05 Jan 2026 17:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">https://sven.eisenschmidt.website/posts/daily-photo-chicken/</guid>
-      <description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/daily-photo-chicken/IMG_0494_hu_b22a8abe9b30e2d1.webp" width="768" height="575" alt="Daily Photo: Chicken cover image" /><p>When I went out with Aika, I caught two of our four chickens in the garden. We have two Silkie chickens and two feather-footed dwarf chickens. The whole family loves them, and two eggs a day is a nice bonus.
- (<a href="https://sven.eisenschmidt.website/posts/daily-photo-chicken/" title="Continue reading Daily Photo: Chicken">100 more words</a>)</p>]]></description>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-chicken/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-chicken/IMG_0494_hu_b22a8abe9b30e2d1.webp" width="768" height="575" alt="Daily Photo: Chicken cover image" /><p>When I went out with Aika, I caught two of our four chickens in the garden. We have two Silkie chickens and two feather-footed dwarf chickens. The whole family loves them, and two eggs a day is a nice bonus.
+ (<a href="http://localhost:1313/posts/daily-photo-chicken/" title="Continue reading Daily Photo: Chicken">100 more words</a>)</p>]]></description>
     </item>
     <item>
       <title>Building This Website with Hugo</title>
-      <link>https://sven.eisenschmidt.website/posts/building-with-hugo/</link>
+      <link>http://localhost:1313/posts/building-with-hugo/</link>
       <pubDate>Mon, 05 Jan 2026 07:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">https://sven.eisenschmidt.website/posts/building-with-hugo/</guid>
+      <guid isPermaLink="true">http://localhost:1313/posts/building-with-hugo/</guid>
       <description><![CDATA[<p>This website runs on Hugo, a static site generator written in Go. I launched it in early January 2026, so if you’re reading this when it’s fresh, this is all just a few days old. This post documents how I built it.
- (<a href="https://sven.eisenschmidt.website/posts/building-with-hugo/" title="Continue reading Building This Website with Hugo">1731 more words</a>)</p>]]></description>
+ (<a href="http://localhost:1313/posts/building-with-hugo/" title="Continue reading Building This Website with Hugo">1731 more words</a>)</p>]]></description>
     </item>
     <item>
       <title>Daily Photo: Winter Walk</title>
-      <link>https://sven.eisenschmidt.website/posts/daily-photo-winter-walk/</link>
+      <link>http://localhost:1313/posts/daily-photo-winter-walk/</link>
       <pubDate>Sun, 04 Jan 2026 16:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">https://sven.eisenschmidt.website/posts/daily-photo-winter-walk/</guid>
-      <description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/daily-photo-winter-walk/IMG_0490_hu_b2c9eed35b56f952.webp" width="576" height="768" alt="Daily Photo: Winter Walk cover image" /><p>A winter walk with Tilian and Aika. The fresh snow melted during the day but froze overnight, leaving icy patches everywhere. Plenty of slipping and sliding along the way, with the kids landing on their backsides more than once. Aika seemed completely unfazed.
- (<a href="https://sven.eisenschmidt.website/posts/daily-photo-winter-walk/" title="Continue reading Daily Photo: Winter Walk">29 more words</a>)</p>]]></description>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-winter-walk/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-winter-walk/IMG_0490_hu_b2c9eed35b56f952.webp" width="576" height="768" alt="Daily Photo: Winter Walk cover image" /><p>A winter walk with Tilian and Aika. The fresh snow melted during the day but froze overnight, leaving icy patches everywhere. Plenty of slipping and sliding along the way, with the kids landing on their backsides more than once. Aika seemed completely unfazed.
+ (<a href="http://localhost:1313/posts/daily-photo-winter-walk/" title="Continue reading Daily Photo: Winter Walk">29 more words</a>)</p>]]></description>
     </item>
     <item>
       <title>Tron: Ares (5/10)</title>
-      <link>https://sven.eisenschmidt.website/log/#tron-ares</link>
+      <link>http://localhost:1313/log/#tron-ares</link>
       <pubDate>Sun, 04 Jan 2026 00:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">https://sven.eisenschmidt.website/log/#tron-ares</guid>
+      <guid isPermaLink="true">http://localhost:1313/log/#tron-ares</guid>
       <description><![CDATA[<p>Feels like they built a movie around a soundtrack. I knew it was questionable renting it and still left disappointed by its lack of substance. The 3D printing and digitization of matter was the coolest bit.
 </p>]]></description>
     </item>
     <item>
       <title>2025 Wrapped</title>
-      <link>https://sven.eisenschmidt.website/posts/2025-wrapped/</link>
+      <link>http://localhost:1313/posts/2025-wrapped/</link>
       <pubDate>Sat, 03 Jan 2026 12:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">https://sven.eisenschmidt.website/posts/2025-wrapped/</guid>
-      <description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/2025-wrapped/IMG_8224_hu_cbca8f2d5454d726.webp" width="576" height="768" alt="2025 Wrapped cover image" /><p>My year 2025 in numbers and highlights, wrapped-style. First attempt at summarizing an eventful year. More platforms offering wrapped/replay summaries obviously helped.
- (<a href="https://sven.eisenschmidt.website/posts/2025-wrapped/" title="Continue reading 2025 Wrapped">1797 more words</a>)</p>]]></description>
+      <guid isPermaLink="true">http://localhost:1313/posts/2025-wrapped/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/2025-wrapped/IMG_8224_hu_cbca8f2d5454d726.webp" width="576" height="768" alt="2025 Wrapped cover image" /><p>My year 2025 in numbers and highlights, wrapped-style. First attempt at summarizing an eventful year. More platforms offering wrapped/replay summaries obviously helped.
+ (<a href="http://localhost:1313/posts/2025-wrapped/" title="Continue reading 2025 Wrapped">1797 more words</a>)</p>]]></description>
     </item>
     <item>
       <title>Death Stranding 2</title>
-      <link>https://sven.eisenschmidt.website/posts/death-stranding-2/</link>
+      <link>http://localhost:1313/posts/death-stranding-2/</link>
       <pubDate>Fri, 02 Jan 2026 14:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">https://sven.eisenschmidt.website/posts/death-stranding-2/</guid>
-      <description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/death-stranding-2/IMG_0448_hu_9ce7af84ed755a2f.webp" width="768" height="576" alt="Death Stranding 2 cover image" /><p>Over the Xmas period I managed to finish Death Stranding 2. The game is a perfect mix between logistics, base building and shooter action for me.I like it more than the Metal Gear Solid games.
- (<a href="https://sven.eisenschmidt.website/posts/death-stranding-2/" title="Continue reading Death Stranding 2">167 more words</a>)</p>]]></description>
+      <guid isPermaLink="true">http://localhost:1313/posts/death-stranding-2/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/death-stranding-2/IMG_0448_hu_9ce7af84ed755a2f.webp" width="768" height="576" alt="Death Stranding 2 cover image" /><p>Over the Xmas period I managed to finish Death Stranding 2. The game is a perfect mix between logistics, base building and shooter action for me.I like it more than the Metal Gear Solid games.
+ (<a href="http://localhost:1313/posts/death-stranding-2/" title="Continue reading Death Stranding 2">167 more words</a>)</p>]]></description>
     </item>
     <item>
       <title>Open Source</title>
-      <link>https://sven.eisenschmidt.website/posts/open-source/</link>
+      <link>http://localhost:1313/posts/open-source/</link>
       <pubDate>Fri, 02 Jan 2026 10:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">https://sven.eisenschmidt.website/posts/open-source/</guid>
+      <guid isPermaLink="true">http://localhost:1313/posts/open-source/</guid>
       <description><![CDATA[<p>At the end of 2025 I spent 100 hours on a single open source project. I did similar things over the past twenty years but always lost interest. This time was different. The software is actually used at my company. Spoiler: I will happily discontinue it.
- (<a href="https://sven.eisenschmidt.website/posts/open-source/" title="Continue reading Open Source">219 more words</a>)</p>]]></description>
+ (<a href="http://localhost:1313/posts/open-source/" title="Continue reading Open Source">219 more words</a>)</p>]]></description>
     </item>
     <item>
       <title>Hello</title>
-      <link>https://sven.eisenschmidt.website/posts/hello-world/</link>
+      <link>http://localhost:1313/posts/hello-world/</link>
       <pubDate>Thu, 01 Jan 2026 12:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">https://sven.eisenschmidt.website/posts/hello-world/</guid>
+      <guid isPermaLink="true">http://localhost:1313/posts/hello-world/</guid>
       <description><![CDATA[<p>Welcome to my website. I work as Chief Technology &amp; Product Officer at roadsurfer, where we help people explore the world in campervans.
- (<a href="https://sven.eisenschmidt.website/posts/hello-world/" title="Continue reading Hello">23 more words</a>)</p>]]></description>
+ (<a href="http://localhost:1313/posts/hello-world/" title="Continue reading Hello">23 more words</a>)</p>]]></description>
     </item>
     <item>
       <title>Stranger Things (Season 5) (6/10)</title>
-      <link>https://sven.eisenschmidt.website/log/#stranger-things-s5</link>
+      <link>http://localhost:1313/log/#stranger-things-s5</link>
       <pubDate>Thu, 01 Jan 2026 00:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">https://sven.eisenschmidt.website/log/#stranger-things-s5</guid>
+      <guid isPermaLink="true">http://localhost:1313/log/#stranger-things-s5</guid>
       <description><![CDATA[<p>Each season felt like it had a different plan for the next. The finale was sentimental but without weight. Dark and 1899 did this better.
 </p>]]></description>
     </item>
