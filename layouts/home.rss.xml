@@ -37,7 +37,7 @@
         <p>{{ .Summary | plainify | htmlUnescape }}{{- $contentWords := countwords .Content -}}
         {{- $summaryWords := countwords .Summary -}}
         {{- $remainingWords := sub $contentWords $summaryWords -}}
-        {{- if gt $remainingWords 0 }} ({{ $remainingWords }} more words){{- end -}}</p>{{ printf "]]>" | safeHTML }}</description>
+        {{- if gt $remainingWords 0 }} (<a href="{{ $link }}" title="Continue reading {{ .Title }}">{{ $remainingWords }} more words</a>){{- end -}}</p>{{ printf "]]>" | safeHTML }}</description>
     </item>
     {{- end }}
   </channel>
