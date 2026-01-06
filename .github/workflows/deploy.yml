@@ -5,8 +5,8 @@ on:
     branches:
       - main
   schedule:
-    # Every hour
-    - cron: "0 * * * *"
+    # Every 30 minutes
+    - cron: "0,30 * * * *"
 
 jobs:
   deploy:
@@ -24,6 +24,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+
+      - name: Show build time and scheduled posts
+        run: |
+          echo "Current time (Hugo's perspective): $(date -u '+%Y-%m-%dT%H:%M:%S+00:00')"
+          echo ""
+          echo "Scheduled posts (future):"
+          hugo list future || echo "No future posts"
+          echo ""
 
       - name: Build
         run: |
