@@ -33,3 +33,5 @@ We go through at least one loaf a week. The ratio between preparation time and h
 6. Drop the dough in, score the top, add ice cubes for steam. Bake 20 minutes with the lid on, then 20 minutes at 210°C without.
 
 The starter is off-limits. For everyone except Nadine.
+
+*PS: Pizza works great with sourdough too, but that requires a completely different recipe.*
