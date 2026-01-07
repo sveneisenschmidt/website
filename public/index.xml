@@ -6,8 +6,16 @@
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 06 Jan 2026 19:00:00 &#43;0000</lastBuildDate>
+    <lastBuildDate>Wed, 07 Jan 2026 19:00:00 &#43;0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Daily Photo: Reading</title>
+      <link>http://localhost:1313/posts/daily-photo-reading/</link>
+      <pubDate>Wed, 07 Jan 2026 19:00:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-reading/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-reading/IMG_0512_hu_d6822c651126aeb1.webp" width="768" height="576" alt="Daily Photo: Reading cover image" /><p>I don’t read enough books. I manage reading a few pages maybe one evening every two weeks. I can turn on something on Youtube or a podcast in the car without thinking. A book I have to actively pick up.
+ (<a href="http://localhost:1313/posts/daily-photo-reading/" title="Continue reading Daily Photo: Reading">317 more words</a>)</p>]]></description>
+    </item>
     <item>
       <title>Daily Photo: Sourdough</title>
       <link>http://localhost:1313/posts/daily-photo-sourdough/</link>
