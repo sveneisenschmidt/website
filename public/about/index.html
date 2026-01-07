@@ -120,9 +120,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const pl = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
     const apiBase = "https://pop.eisenschmidt.website/api/stats";
 
-    const buildAsciiGraph = (data) => {
+    const buildAsciiGraph = (data, container) => {
+        const colWidth = 32;
+        const containerWidth = container.offsetWidth;
+        const maxDays = Math.min(21, Math.max(3, Math.floor(containerWidth / colWidth)));
         const days = [];
-        for (let i = 0; i <= 13; i++) {
+        for (let i = 0; i < maxDays; i++) {
             const key = `day_${i}`;
             const visits = data[key]?.global?.totalVisits || 0;
             const date = new Date();
@@ -149,8 +152,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const top = p.filter(x => x.pageId.includes("/posts/"))
             .sort((a, b) => b.totalVisits - a.totalVisits).slice(0, 5)
             .map(x => `<li><a href="${x.pageId.replace(d, "")}">${x.pageId.replace(d, "")}</a> - ${pl(x.totalVisits, "visit")}, ${pl(x.totalReactions, "reaction")}</li>`).join("");
-        const graph = buildAsciiGraph(daily);
-        document.getElementById("site-stats").innerHTML = `<h4>Statistics</h4>
+        const container = document.getElementById("site-stats");
+        const graph = buildAsciiGraph(daily, container);
+        container.innerHTML = `<h4>Statistics</h4>
             <p><strong>${sum("uniqueVisitors")}</strong> unique visitors, <strong>${sum("totalVisits")}</strong> total visits, <strong>${sum("totalReactions")}</strong> reactions across <strong>${p.length}</strong> pages. Powered by <a href="https://github.com/sveneisenschmidt/pop">Pop</a>.</p>
             ${graph}
             <p>Most visited posts:</p><ul>${top}</ul>`;
