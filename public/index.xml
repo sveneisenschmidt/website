@@ -6,15 +6,23 @@
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 08 Jan 2026 19:00:00 &#43;0000</lastBuildDate>
+    <lastBuildDate>Thu, 08 Jan 2026 20:00:00 &#43;0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Daily Photo: Snow</title>
+      <link>http://localhost:1313/posts/daily-photo-snow/</link>
+      <pubDate>Thu, 08 Jan 2026 20:00:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-snow/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-snow/IMG_0530_hu_14c8ec79392f5708.webp" width="576" height="768" alt="Daily Photo: Snow cover image" /><p>First proper snow this season. The boys loved it. Aika was slightly annoyed.
+</p>]]></description>
+    </item>
     <item>
       <title>So I built an RSS Reader</title>
       <link>http://localhost:1313/posts/i-built-a-rss-reader/</link>
       <pubDate>Thu, 08 Jan 2026 19:00:00 &#43;0000</pubDate>
       <guid isPermaLink="true">http://localhost:1313/posts/i-built-a-rss-reader/</guid>
       <description><![CDATA[<p>So I built an RSS reader. I wanted something simple for myself. Read my feeds, mark things as read, move on.
- (<a href="http://localhost:1313/posts/i-built-a-rss-reader/" title="Continue reading So I built an RSS Reader">414 more words</a>)</p>]]></description>
+ (<a href="http://localhost:1313/posts/i-built-a-rss-reader/" title="Continue reading So I built an RSS Reader">434 more words</a>)</p>]]></description>
     </item>
     <item>
       <title>Reading</title>
