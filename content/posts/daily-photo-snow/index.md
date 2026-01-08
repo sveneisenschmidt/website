@@ -1,5 +1,5 @@
 +++
-date = '2026-01-08T19:00:00'
+date = '2026-01-08T20:00:00'
 title = "Snow"
 topics = ["Daily Photo"]
 emojis = ["❄️"]
