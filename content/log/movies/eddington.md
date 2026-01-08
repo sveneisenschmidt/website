@@ -7,5 +7,4 @@ link = 'https://www.imdb.com/title/tt31176520/'
 build.render = 'never'
 +++
 
-Chaotic like the last few years themselves. Surprisingly resonated with me, despite being very US-centric.
-
+Chaotic like the last few years themselves it tries to capture. Surprisingly resonated with me, despite being very US-centric.
