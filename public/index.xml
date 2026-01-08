@@ -6,8 +6,16 @@
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 07 Jan 2026 19:00:00 &#43;0000</lastBuildDate>
+    <lastBuildDate>Thu, 08 Jan 2026 19:00:00 &#43;0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>So I built a RSS Reader</title>
+      <link>http://localhost:1313/posts/i-built-a-rss-reader/</link>
+      <pubDate>Thu, 08 Jan 2026 19:00:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/i-built-a-rss-reader/</guid>
+      <description><![CDATA[<p>So I built an RSS reader. I wanted something simple for myself. Read my feeds, mark things as read, move on.
+ (<a href="http://localhost:1313/posts/i-built-a-rss-reader/" title="Continue reading So I built a RSS Reader">305 more words</a>)</p>]]></description>
+    </item>
     <item>
       <title>Reading</title>
       <link>http://localhost:1313/posts/daily-photo-reading/</link>
@@ -17,20 +25,20 @@
  (<a href="http://localhost:1313/posts/daily-photo-reading/" title="Continue reading Reading">317 more words</a>)</p>]]></description>
     </item>
     <item>
-      <title>Daily Photo: Sourdough</title>
+      <title>Sourdough</title>
       <link>http://localhost:1313/posts/daily-photo-sourdough/</link>
       <pubDate>Tue, 06 Jan 2026 19:00:00 &#43;0000</pubDate>
       <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-sourdough/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-sourdough/IMG_0500_hu_fc6b5ace4b29d129.webp" width="768" height="576" alt="Daily Photo: Sourdough cover image" /><p>My wife started baking bread. Here’s her spelt (Deutsch: Dinkel) sourdough recipe. It took quite a few iterations to get it right.
- (<a href="http://localhost:1313/posts/daily-photo-sourdough/" title="Continue reading Daily Photo: Sourdough">174 more words</a>)</p>]]></description>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-sourdough/IMG_0500_hu_fc6b5ace4b29d129.webp" width="768" height="576" alt="Sourdough cover image" /><p>My wife started baking bread. Here’s her spelt (Deutsch: Dinkel) sourdough recipe. It took quite a few iterations to get it right.
+ (<a href="http://localhost:1313/posts/daily-photo-sourdough/" title="Continue reading Sourdough">174 more words</a>)</p>]]></description>
     </item>
     <item>
-      <title>Daily Photo: Chicken</title>
+      <title>Chicken</title>
       <link>http://localhost:1313/posts/daily-photo-chicken/</link>
       <pubDate>Mon, 05 Jan 2026 17:00:00 &#43;0000</pubDate>
       <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-chicken/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-chicken/IMG_0494_hu_b22a8abe9b30e2d1.webp" width="768" height="575" alt="Daily Photo: Chicken cover image" /><p>When I went out with Aika, I caught two of our four chickens in the garden. We have two Silkie chickens and two feather-footed dwarf chickens. The whole family loves them, and two eggs a day is a nice bonus.
- (<a href="http://localhost:1313/posts/daily-photo-chicken/" title="Continue reading Daily Photo: Chicken">100 more words</a>)</p>]]></description>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-chicken/IMG_0494_hu_b22a8abe9b30e2d1.webp" width="768" height="575" alt="Chicken cover image" /><p>When I went out with Aika, I caught two of our four chickens in the garden. We have two Silkie chickens and two feather-footed dwarf chickens. The whole family loves them, and two eggs a day is a nice bonus.
+ (<a href="http://localhost:1313/posts/daily-photo-chicken/" title="Continue reading Chicken">100 more words</a>)</p>]]></description>
     </item>
     <item>
       <title>Building This Website with Hugo</title>
@@ -41,12 +49,12 @@
  (<a href="http://localhost:1313/posts/building-with-hugo/" title="Continue reading Building This Website with Hugo">1731 more words</a>)</p>]]></description>
     </item>
     <item>
-      <title>Daily Photo: Winter Walk</title>
+      <title>Winter Walk</title>
       <link>http://localhost:1313/posts/daily-photo-winter-walk/</link>
       <pubDate>Sun, 04 Jan 2026 16:00:00 &#43;0000</pubDate>
       <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-winter-walk/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-winter-walk/IMG_0490_hu_b2c9eed35b56f952.webp" width="576" height="768" alt="Daily Photo: Winter Walk cover image" /><p>A winter walk with Tilian and Aika. The fresh snow melted during the day but froze overnight, leaving icy patches everywhere. Plenty of slipping and sliding along the way, with the kids landing on their backsides more than once. Aika seemed completely unfazed.
- (<a href="http://localhost:1313/posts/daily-photo-winter-walk/" title="Continue reading Daily Photo: Winter Walk">29 more words</a>)</p>]]></description>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-winter-walk/IMG_0490_hu_b2c9eed35b56f952.webp" width="576" height="768" alt="Winter Walk cover image" /><p>A winter walk with Tilian and Aika. The fresh snow melted during the day but froze overnight, leaving icy patches everywhere. Plenty of slipping and sliding along the way, with the kids landing on their backsides more than once. Aika seemed completely unfazed.
+ (<a href="http://localhost:1313/posts/daily-photo-winter-walk/" title="Continue reading Winter Walk">29 more words</a>)</p>]]></description>
     </item>
     <item>
       <title>Tron: Ares (5/10)</title>

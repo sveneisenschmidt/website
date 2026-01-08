@@ -6,24 +6,31 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 07 Jan 2026 19:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 08 Jan 2026 19:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Daily Photo: Reading</title>
+      <title>I built a RSS Reader</title>
+      <link>http://localhost:1313/posts/i-built-a-rss-reader/</link>
+      <pubDate>Thu, 08 Jan 2026 19:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/i-built-a-rss-reader/</guid>
+      <description>&lt;p&gt;I built an RSS reader. I wanted something simple for myself. Read my feeds, mark things as read, move on.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Reading</title>
       <link>http://localhost:1313/posts/daily-photo-reading/</link>
       <pubDate>Wed, 07 Jan 2026 19:00:00 +0000</pubDate>
       <guid>http://localhost:1313/posts/daily-photo-reading/</guid>
       <description>&lt;p&gt;I don&amp;rsquo;t read enough books. I manage reading a few pages maybe one evening every two weeks. I can turn on something on Youtube or a podcast in the car without thinking. A book I have to actively pick up.&lt;/p&gt;</description>
     </item>
     <item>
-      <title>Daily Photo: Sourdough</title>
+      <title>Sourdough</title>
       <link>http://localhost:1313/posts/daily-photo-sourdough/</link>
       <pubDate>Tue, 06 Jan 2026 19:00:00 +0000</pubDate>
       <guid>http://localhost:1313/posts/daily-photo-sourdough/</guid>
       <description>&lt;p&gt;My wife started baking bread. Here&amp;rsquo;s her spelt (Deutsch: Dinkel) sourdough recipe. It took quite a few iterations to get it right.&lt;/p&gt;</description>
     </item>
     <item>
-      <title>Daily Photo: Chicken</title>
+      <title>Chicken</title>
       <link>http://localhost:1313/posts/daily-photo-chicken/</link>
       <pubDate>Mon, 05 Jan 2026 17:00:00 +0000</pubDate>
       <guid>http://localhost:1313/posts/daily-photo-chicken/</guid>
@@ -37,7 +44,7 @@
       <description>&lt;p&gt;This website runs on &lt;a href=&#34;https://gohugo.io/&#34;&gt;Hugo&lt;/a&gt;, a static site generator written in Go. I launched it in early January 2026, so if you&amp;rsquo;re reading this when it&amp;rsquo;s fresh, this is all just a few days old. This post documents how I built it.&lt;/p&gt;</description>
     </item>
     <item>
-      <title>Daily Photo: Winter Walk</title>
+      <title>Winter Walk</title>
       <link>http://localhost:1313/posts/daily-photo-winter-walk/</link>
       <pubDate>Sun, 04 Jan 2026 16:00:00 +0000</pubDate>
       <guid>http://localhost:1313/posts/daily-photo-winter-walk/</guid>
