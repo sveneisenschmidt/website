@@ -1,6 +1,6 @@
 +++
 date = '2026-01-05T17:00:00'
-title = 'Daily Photo: Chicken'
+title = 'Chicken'
 topics = ['Daily Photo']
 cover = 'IMG_0494.jpg'
 draft = false
