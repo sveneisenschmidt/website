@@ -1,6 +1,6 @@
 +++
 date = '2026-01-08T20:00:00'
-title = "Daily Photo: Snow"
+title = "Snow"
 topics = ["Daily Photo"]
 emojis = ["❄️"]
 cover = "IMG_0530.jpg"
