@@ -8,12 +8,12 @@ emojis = ["📰"]
 So I built an RSS reader. I wanted something simple for myself. Read my feeds, mark things as read, move on.
  
 <!--more-->
-
-{{< img src="reader.jpg" alt="Screenshot of Reader running as a web app" >}}
-
 I called it [Reader](https://github.com/sveneisenschmidt/reader). Yes, very creative, I know.
 
 I wrote it in PHP with SQLite. I've been enjoying working with a more traditional stack (PHP over Node.js) and server-side rendering over SPAs. PHP as a language and Symfony as a framework have developed pretty well over the last few years while I wasn't paying attention.
+
+{{< img src="reader.jpg" alt="Screenshot of Reader running as a web app" >}}
+
 
 Back to **Reader**. The interface has three columns. Feeds on the left, articles in the middle, reading pane on the right. I organize my subscriptions in folders and pull down to refresh. The latter has been fun to develop and it was a small challenge to get it working across devices and browsers.
 
