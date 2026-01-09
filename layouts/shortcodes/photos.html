@@ -1,15 +1,16 @@
 <div class="photo-grid">
     {{- $count := 0 -}} {{- range where site.RegularPages "Section" "posts" -}}
-    {{- $post := . -}} {{- range .Resources.ByType "image" -}} {{- $thumb :=
-    .Fill "768x768 Center" -}}
+    {{- $post := . -}} {{- with .Params.cover -}} {{- $img :=
+    $post.Resources.GetMatch . -}} {{- with $img -}} {{- $thumb := .Fill
+    "768x768 Center" -}}
     <a href="{{ $post.Permalink }}" title="{{ $post.Title }}"
         ><img
             src="{{ $thumb.RelPermalink }}"
             alt="Photo from {{ $post.Title }}"
             loading="lazy"
     /></a>
-    {{- $count = add $count 1 -}} {{- end -}} {{- end -}} {{- $rem3 := mod
-    $count 3 -}} {{- $rem2 := mod $count 2 -}} {{- if ne $rem3 0 -}}
+    {{- $count = add $count 1 -}} {{- end -}} {{- end -}} {{- end -}} {{- $rem3
+    := mod $count 3 -}} {{- $rem2 := mod $count 2 -}} {{- if ne $rem3 0 -}}
     <span class="ph c3"></span>
     {{- if eq $rem3 1 -}}
     <span class="ph c3"></span>

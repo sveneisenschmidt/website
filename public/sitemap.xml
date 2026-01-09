@@ -23,6 +23,12 @@
     <loc>http://localhost:1313/topics/software-development/</loc>
     <lastmod>2026-01-08T19:00:00+00:00</lastmod>
   </url><url>
+    <loc>http://localhost:1313/log/</loc>
+    <lastmod>2026-01-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/log/movies/</loc>
+    <lastmod>2026-01-08T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/topics/books/</loc>
     <lastmod>2026-01-07T19:00:00+00:00</lastmod>
   </url><url>
@@ -43,12 +49,6 @@
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-winter-walk/</loc>
     <lastmod>2026-01-04T16:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/log/</loc>
-    <lastmod>2026-01-04T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/log/movies/</loc>
-    <lastmod>2026-01-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/2025-wrapped/</loc>
     <lastmod>2026-01-03T12:00:00+00:00</lastmod>
