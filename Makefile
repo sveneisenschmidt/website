@@ -1,4 +1,4 @@
-.PHONY: dev build publish check-deps
+.PHONY: dev build publish check-deps logs
 
 check-deps:
 	@command -v hugo >/dev/null 2>&1 || { echo "hugo is required but not installed. Install with: brew install hugo"; exit 1; }
@@ -19,3 +19,13 @@ publish:
 	git add -A
 	git commit -m "Update site $$(date +%Y-%m-%d\ %H:%M)"
 	git push origin main
+
+logs:
+	@command -v goaccess >/dev/null 2>&1 || { echo "goaccess is required but not installed. Install with: brew install goaccess"; exit 1; }
+	@mkdir -p logs
+	@echo "Fetching logs from server..."
+	@ssh website 'zcat /www/htdocs/*/logs/access_log_sven_eisenschmidt_website*.gz' > logs/access.log
+	@echo "Analyzing logs with GoAccess..."
+	@goaccess logs/access.log -o logs/report.html --log-format='%h - - [%d:%t %^] "%r" %s %b "%R" "%u" "%^" "%^"' --date-format='%d/%b/%Y' --time-format='%H:%M:%S'
+	@echo "Report generated: logs/report.html"
+	@open logs/report.html
