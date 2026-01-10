@@ -1,6 +1,6 @@
 +++
 title = 'Almost Famous'
-date = '2026-01-10'
+date = '2026-01-09'
 type = 'movie'
 rating = 6
 link = 'https://www.imdb.com/title/tt0181875/'
