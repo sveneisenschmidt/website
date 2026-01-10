@@ -6,15 +6,23 @@
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 09 Jan 2026 18:00:00 &#43;0000</lastBuildDate>
+    <lastBuildDate>Sat, 10 Jan 2026 19:00:00 &#43;0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Craspedia globosa</title>
+      <link>http://localhost:1313/posts/daily-photo-craspedia-globosa/</link>
+      <pubDate>Sat, 10 Jan 2026 19:00:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-craspedia-globosa/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-craspedia-globosa/IMG_0573_hu_e11df43b3240d32a.webp" width="768" height="768" alt="Craspedia globosa cover image" /><p>Taken in our garden. […]Craspedia is a genus of flowering plants in the family Asteraceae commonly known as billy buttons, billy balls, and woollyheads. They are native to Australia and New Zealand where they grow in a variety of habitats from sea level to the Southern Alps.[…] (Wikipedia) - I’d would have called them yellow balls.
+</p>]]></description>
+    </item>
     <item>
       <title>Vet</title>
       <link>http://localhost:1313/posts/daily-photo-vet/</link>
       <pubDate>Fri, 09 Jan 2026 18:00:00 &#43;0000</pubDate>
       <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-vet/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-vet/IMG_0565_hu_8345738b9a9a203d.webp" width="768" height="768" alt="Vet cover image" /><p>Neither Aika or I wake up this mornining and thought “Hey let’s rip out a toe nail, that sounds like fun!”. Yet here we are and we spent this afternoon at the vet.
- (<a href="http://localhost:1313/posts/daily-photo-vet/" title="Continue reading Vet">49 more words</a>)</p>]]></description>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-vet/IMG_0565_hu_8345738b9a9a203d.webp" width="768" height="768" alt="Vet cover image" /><p>Neither Aika nor I woke up this morning and thought “Hey let’s rip out a toe nail, that sounds like fun!”. Yet here we are and we spent this afternoon at the vet.
+ (<a href="http://localhost:1313/posts/daily-photo-vet/" title="Continue reading Vet">52 more words</a>)</p>]]></description>
     </item>
     <item>
       <title>Snow</title>
