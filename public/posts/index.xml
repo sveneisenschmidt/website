@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 10 Jan 2026 19:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 11 Jan 2026 19:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Last Day Off</title>
+      <link>http://localhost:1313/posts/daily-photo-last-day-off/</link>
+      <pubDate>Sun, 11 Jan 2026 19:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/daily-photo-last-day-off/</guid>
+      <description>&lt;p&gt;Vacation is over and I&amp;rsquo;m officially back at work tomorrow. A few impressions from today.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Craspedia globosa</title>
       <link>http://localhost:1313/posts/daily-photo-craspedia-globosa/</link>

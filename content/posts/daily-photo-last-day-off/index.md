@@ -10,7 +10,7 @@ Vacation is over and I'm officially back at work tomorrow. A few impressions fro
 
 <!--more-->
 
-{{< img src="IMG_0596.jpg" alt="Hut" >}}
+{{< img src="IMG_0576.jpg" alt="Hut" >}}
 
 {{< img src="IMG_0583.jpg" alt="Sorbus aucuparia" >}}
 
@@ -18,4 +18,4 @@ Vacation is over and I'm officially back at work tomorrow. A few impressions fro
 
 {{< img src="IMG_0586.jpg" alt="Sorbus aucuparia" >}}
 
-{{< img src="IMG_0576.jpg" alt="Village of Gatzen" >}}
+{{< img src="IMG_0596.jpg" alt="Village of Gatzen" >}}
