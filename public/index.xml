@@ -6,8 +6,16 @@
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 10 Jan 2026 19:00:00 &#43;0000</lastBuildDate>
+    <lastBuildDate>Sun, 11 Jan 2026 19:00:00 &#43;0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Last Day Off</title>
+      <link>http://localhost:1313/posts/daily-photo-last-day-off/</link>
+      <pubDate>Sun, 11 Jan 2026 19:00:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-last-day-off/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-last-day-off/IMG_0576_hu_45172de84f62f85d.webp" width="576" height="768" alt="Last Day Off cover image" /><p>Vacation is over and I’m officially back at work tomorrow. A few impressions from today.
+</p>]]></description>
+    </item>
     <item>
       <title>Craspedia globosa</title>
       <link>http://localhost:1313/posts/daily-photo-craspedia-globosa/</link>
