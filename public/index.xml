@@ -6,8 +6,16 @@
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 12 Jan 2026 19:00:00 &#43;0000</lastBuildDate>
+    <lastBuildDate>Tue, 13 Jan 2026 19:00:00 &#43;0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Windpark</title>
+      <link>http://localhost:1313/posts/daily-photo-windpark/</link>
+      <pubDate>Tue, 13 Jan 2026 19:00:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-windpark/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-windpark/IMG_0601_hu_30c2be970f959e98.webp" width="576" height="768" alt="Windpark cover image" /><p>We have a new windpark north of our village. 250m high wind mills. The moon illusion hits hard with them, they overshadow the village from one end, and look tiny from the closer end. Strange to see.
+</p>]]></description>
+    </item>
     <item>
       <title>#77256</title>
       <link>http://localhost:1313/posts/daily-photo-77256/</link>
