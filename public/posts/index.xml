@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 12 Jan 2026 19:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 13 Jan 2026 19:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Windpark</title>
+      <link>http://localhost:1313/posts/daily-photo-windpark/</link>
+      <pubDate>Tue, 13 Jan 2026 19:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/daily-photo-windpark/</guid>
+      <description>&lt;p&gt;We have a new windpark north of our village. 250m high wind mills. The &lt;a href=&#34;https://en.wikipedia.org/wiki/Moon_illusion&#34;&gt;moon illusion&lt;/a&gt; hits hard with them, they overshadow the village from one end, and look tiny from the closer end. Strange to see.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>#77256</title>
       <link>http://localhost:1313/posts/daily-photo-77256/</link>
@@ -112,13 +119,6 @@
       <pubDate>Thu, 01 Jan 2026 12:00:00 +0000</pubDate>
       <guid>http://localhost:1313/posts/hello-world/</guid>
       <description>&lt;p&gt;Welcome to my website. I work as Chief Technology &amp;amp; Product Officer at &lt;a href=&#34;https://roadsurfer.com&#34;&gt;roadsurfer&lt;/a&gt;, where we help people explore the world in campervans.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title></title>
-      <link>http://localhost:1313/posts/daily-photo-windpark/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/daily-photo-windpark/</guid>
-      <description></description>
     </item>
   </channel>
 </rss>

@@ -6,8 +6,16 @@
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 13 Jan 2026 19:00:00 &#43;0000</lastBuildDate>
+    <lastBuildDate>Wed, 14 Jan 2026 19:00:00 &#43;0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Quarantine</title>
+      <link>http://localhost:1313/posts/daily-photo-away/</link>
+      <pubDate>Wed, 14 Jan 2026 19:00:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-away/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-away/IMG_0615_hu_5bab5169b94a0607.webp" width="576" height="768" alt="Quarantine cover image" /><p>Tilian is sick and Kellin has been quarantined as a precaution. I am on a work trip to Munich so it was extra difficult to leave them until tomorrow night.
+ (<a href="http://localhost:1313/posts/daily-photo-away/" title="Continue reading Quarantine">51 more words</a>)</p>]]></description>
+    </item>
     <item>
       <title>Windpark</title>
       <link>http://localhost:1313/posts/daily-photo-windpark/</link>
