@@ -6,8 +6,16 @@
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 15 Jan 2026 19:00:00 &#43;0000</lastBuildDate>
+    <lastBuildDate>Fri, 16 Jan 2026 19:00:00 &#43;0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Disappointed</title>
+      <link>http://localhost:1313/posts/daily-photo-disappointed/</link>
+      <pubDate>Fri, 16 Jan 2026 19:00:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-disappointed/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-disappointed/IMG_0658_hu_3b506bc674be89eb.webp" width="768" height="576" alt="Disappointed cover image" /><p>The Sony RX100 VII did not arrive today. I reschedule delivery from yesterday to today because of my work trip this week. Not sure what happened but I’m disappointed.
+ (<a href="http://localhost:1313/posts/daily-photo-disappointed/" title="Continue reading Disappointed">24 more words</a>)</p>]]></description>
+    </item>
     <item>
       <title>Back</title>
       <link>http://localhost:1313/posts/daily-photo-back/</link>
