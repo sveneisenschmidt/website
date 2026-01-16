@@ -7,7 +7,7 @@ draft = false
 emojis = ['📷']
 +++
 
-The Sony RX100 VII did not arrive today. I rescheduled delivery from yesterday to today because of my work trip this week. Not sure what happened but I'm disappointed. 
+The Sony RX100 VII did not arrive today. I rescheduled delivery from yesterday to today because of my work trip this week. Not sure what happened for it not to arrive but I'm disappointed. 
 
 <!--more-->
 
