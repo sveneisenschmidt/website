@@ -10,7 +10,7 @@ The Sony RX100 VII is here! I took it out for a spin with the kids to the forest
 
 <!--more-->
 
-I took the chance to add EXIF support to the website. Relevant metadata is now displayed on hover with each picture. All photos done with the Sony RX100 VII are using auto-focus and intelligent settings though. Don't let the numbers fromthe EXIF data fool you into thinking I know what I'm doing. I mostly have forgotten everything about photography I learned from my time at the [Gutenbergschule Frankfurt](https://www.gutenbergschule-fotografen.eu/start.html). That was 20 years ago.
+I took the chance to add EXIF support to the website. Relevant metadata is now displayed on hover with each picture on non-touch devices. All photos done with the Sony RX100 VII are using auto-focus and intelligent settings though. Don't let the numbers fromthe EXIF data fool you into thinking I know what I'm doing. I mostly have forgotten everything about photography I learned from my time at the [Gutenbergschule Frankfurt](https://www.gutenbergschule-fotografen.eu/start.html). That was 20 years ago.
 
 {{< img src="DSC00040.jpeg" alt="1948 Dodge Coupe" caption="This shot is of a 1948 Dodge Coupe. My father spent today tweaking the axis and replacing parts at the front left suspension." >}}
 

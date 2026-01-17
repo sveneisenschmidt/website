@@ -136,8 +136,10 @@ img.hero {
     opacity: 1;
 }
 
-.img-exif .exif.visible {
-    opacity: 1;
+@media (hover: none) {
+    .img-exif .exif {
+        display: none;
+    }
 }
 
 .img-exif figcaption {
