@@ -136,6 +136,10 @@ img.hero {
     opacity: 1;
 }
 
+.img-exif .exif.visible {
+    opacity: 1;
+}
+
 .img-exif figcaption {
     font-size: 0.9em;
     font-style: italic;
