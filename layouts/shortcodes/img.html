@@ -1,6 +1,27 @@
-{{- $src := .Get "src" -}}
-{{- $img := .Page.Resources.GetMatch $src -}}
-{{- if $img -}}
-{{- $resized := $img.Fit "1440x1440" -}}
-<img src="{{ $resized.RelPermalink }}" alt="{{ .Get "alt" | default "" }}" loading="lazy" class="hero">
+{{- $src := .Get "src" -}} {{- $alt := .Get "alt" | default "" -}} {{- $caption
+:= .Get "caption" | default "" -}} {{- $img := .Page.Resources.GetMatch $src -}}
+{{- if $img -}} {{- $resized := $img.Fit "2048x2048" -}}
+<figure class="img-exif">
+    <div class="img-wrapper">
+        <img
+            src="{{ $resized.RelPermalink }}"
+            alt="{{ $alt }}"
+            loading="lazy"
+            class="hero"
+        />
+        {{- with $img.Exif -}}
+        <span class="exif">
+            {{- with .Tags.Make }}{{ . }} {{ end -}}{{- with .Tags.Model }}{{ .
+            }}{{ end -}} {{- with .Tags.LensModel }} · {{ . }}{{ end -}} {{-
+            with .Tags.FocalLength }} · {{ lang.FormatNumber 0 . }}mm{{ end -}}
+            {{- with .Tags.FNumber }} · ƒ/{{ . }}{{ end -}} {{- with
+            .Tags.ExposureTime }} · {{ . }}s{{ end -}} {{- with
+            .Tags.ISOSpeedRatings }} · ISO {{ . }}{{ end -}}
+        </span>
+        {{- end -}}
+    </div>
+    {{- with $caption -}}
+    <figcaption>{{ . | markdownify }}</figcaption>
+    {{- end -}}
+</figure>
 {{- end -}}
