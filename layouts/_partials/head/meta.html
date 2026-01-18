@@ -35,3 +35,48 @@
 {{ end }}{{ end }}
 
 <link rel="canonical" href="{{ .Permalink }}" />
+
+{{/* JSON-LD Structured Data */}}
+{{ if .IsHome }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "{{ .Site.Params.author }}",
+  "url": "{{ .Site.BaseURL }}",
+  "jobTitle": "{{ .Site.Params.jobTitle }}",
+  "worksFor": {
+    "@type": "Organization",
+    "name": "{{ .Site.Params.employer }}",
+    "url": "{{ .Site.Params.employerUrl }}"
+  },
+  "sameAs": [
+    "{{ .Site.Params.githubUrl }}",
+    "{{ .Site.Params.linkedinUrl }}",
+    "{{ .Site.Params.stravaUrl }}"
+  ]
+}
+</script>
+{{ else if and .IsPage (eq .Section "posts") }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{ .Title }}",
+  "datePublished": "{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}",
+  {{ with .Lastmod }}"dateModified": "{{ .Format "2006-01-02T15:04:05Z07:00" }}",{{ end }}
+  "url": "{{ .Permalink }}",
+  "description": "{{ $description | plainify | truncate 160 }}",
+  "author": {
+    "@type": "Person",
+    "name": "{{ .Site.Params.author }}",
+    "url": "{{ .Site.BaseURL }}"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "{{ .Site.Params.author }}",
+    "url": "{{ .Site.BaseURL }}"
+  }
+}
+</script>
+{{ end }}

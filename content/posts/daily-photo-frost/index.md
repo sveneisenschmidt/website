@@ -16,6 +16,6 @@ I was afraid of losing access to iCloud and my photo library. I used an abandone
 
 {{< img src="DSC00056.jpeg" alt="Frost on neighbours bushes" >}}
 
-{{< img src="DSC00057.jpeg" alt="Random plan" >}}
+{{< img src="DSC00057.jpeg" alt="Random plant" >}}
 
-{{< img src="DSC00060.jpeg" alt="Old famr house opposite of my parent's" >}}
+{{< img src="DSC00060.jpeg" alt="Old fame house opposite of my parent's" >}}

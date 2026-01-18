@@ -11,6 +11,12 @@ description = "Personal website of Sven Eisenschmidt, based in Leipzig, Germany.
 siteHeading = "Sven Eisenschmidt"
 author = "Sven Eisenschmidt"
 keywords = "Sven Eisenschmidt, Leipzig, Germany, video games, music, cycling, travel, software development, photography"
+jobTitle = "Chief Technology & Product Officer"
+employer = "roadsurfer"
+employerUrl = "https://roadsurfer.com"
+githubUrl = "https://github.com/sveneisenschmidt"
+linkedinUrl = "https://linkedin.com/in/sveneisenschmidt"
+stravaUrl = "https://strava.com/athletes/sveneisenschmidt"
 
 [taxonomies]
 topic = "topics"
