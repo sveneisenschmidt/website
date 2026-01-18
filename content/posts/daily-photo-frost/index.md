@@ -3,7 +3,7 @@ date = '2026-01-18T12:00:00'
 title = "Frost"
 topics = ["Daily Photo", "Photography"]
 emojis = ["🥶"]
-cover = "DSC00056.jpeg"
+cover = "DSC00060.jpeg"
 +++
 
 Last night's frost laid a soft film over all surfaces.

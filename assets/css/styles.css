@@ -32,6 +32,8 @@ html {
     --color-border: #222;
     --color-bg: #fff;
     --color-bg-muted: color-mix(in srgb, var(--color-bg) 95%, black);
+    --color-bg-inverted: #222;
+    --color-text-inverted: #fff;
     --color-rating-high: #22863a;
     --color-rating-mid: #b08800;
     --color-rating-low: #cb2431;
@@ -44,6 +46,8 @@ html {
         --color-border: #444;
         --color-bg: #0d1117;
         --color-bg-muted: color-mix(in srgb, var(--color-bg) 95%, white);
+        --color-bg-inverted: #e0e0e0;
+        --color-text-inverted: #0d1117;
     }
 }
 
@@ -124,8 +128,8 @@ img.hero {
     left: 0;
     right: 0;
     padding: 0.5em;
-    background: rgba(255, 255, 255, 0.85);
-    color: #000;
+    background: var(--color-bg-inverted);
+    color: var(--color-text-inverted);
     font-size: 0.8em;
     border-radius: 0 0 0.25rem 0.25rem;
     opacity: 0;
