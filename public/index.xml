@@ -1,212 +1,26 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Sven Eisenschmidt - Personal Blog</title>
-    <link>http://localhost:1313/</link>
-    <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
-    <generator>Hugo</generator>
-    <language>en-us</language>
-    <lastBuildDate>Sun, 18 Jan 2026 12:00:00 &#43;0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Frost</title>
-      <link>http://localhost:1313/posts/daily-photo-frost/</link>
-      <pubDate>Sun, 18 Jan 2026 12:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-frost/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-frost/DSC00056_hu_a359cdf8d42cccdb.webp" width="768" height="512" alt="Frost cover image" /><p>Last night’s frost laid a soft film over all surfaces.
- (<a href="http://localhost:1313/posts/daily-photo-frost/" title="Continue reading Frost">137 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>New Camera Day</title>
-      <link>http://localhost:1313/posts/new-camera-day/</link>
-      <pubDate>Sat, 17 Jan 2026 16:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/new-camera-day/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/new-camera-day/DSC00040_hu_670b3754a616d517.webp" width="512" height="768" alt="New Camera Day cover image" /><p>The Sony RX100 VII is here! I took it out for a spin with the kids to the forest and the garage of my father. There is so much to learn about it.
- (<a href="http://localhost:1313/posts/new-camera-day/" title="Continue reading New Camera Day">173 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>Disappointed</title>
-      <link>http://localhost:1313/posts/daily-photo-disappointed/</link>
-      <pubDate>Fri, 16 Jan 2026 19:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-disappointed/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-disappointed/IMG_0658_hu_3b506bc674be89eb.webp" width="768" height="576" alt="Disappointed cover image" /><p>The Sony RX100 VII did not arrive today. I rescheduled delivery from yesterday to today because of my work trip this week. Not sure what happened for it not to arrive but I’m disappointed.
- (<a href="http://localhost:1313/posts/daily-photo-disappointed/" title="Continue reading Disappointed">40 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>Death of A Unicorn (6/10)</title>
-      <link>http://localhost:1313/log/#death-of-a-unicorn</link>
-      <pubDate>Fri, 16 Jan 2026 00:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/log/#death-of-a-unicorn</guid>
-      <description><![CDATA[<p>Spoon-fed satire. The film explains every joke and theme twice, just in case you weren’t paying attention. A24 on autopilot that would’ve worked better as a 20-minute short.
-</p>]]></description>
-    </item>
-    <item>
-      <title>Back</title>
-      <link>http://localhost:1313/posts/daily-photo-back/</link>
-      <pubDate>Thu, 15 Jan 2026 19:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-back/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-back/IMG_0632_hu_cb2ff831768be434.webp" width="768" height="576" alt="Back cover image" /><p>Completed my trip back home today. Did twice 450km within 24 hours. The VW California is such a comfortable car for long trips.
- (<a href="http://localhost:1313/posts/daily-photo-back/" title="Continue reading Back">101 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>Away</title>
-      <link>http://localhost:1313/posts/daily-photo-away/</link>
-      <pubDate>Wed, 14 Jan 2026 19:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-away/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-away/IMG_0615_hu_5bab5169b94a0607.webp" width="576" height="768" alt="Away cover image" /><p>Tilian is sick and Kellin has been quarantined as a precaution. I am on a work trip to Munich so it was extra difficult to leave them until tomorrow night.
- (<a href="http://localhost:1313/posts/daily-photo-away/" title="Continue reading Away">83 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>Windpark</title>
-      <link>http://localhost:1313/posts/daily-photo-windpark/</link>
-      <pubDate>Tue, 13 Jan 2026 19:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-windpark/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-windpark/IMG_0601_hu_30c2be970f959e98.webp" width="576" height="768" alt="Windpark cover image" /><p>We have a new windpark north of our village. 250m high wind mills. The moon illusion hits hard with them, they overshadow the village from one end, and look tiny from the closer end. Strange to see.
- (<a href="http://localhost:1313/posts/daily-photo-windpark/" title="Continue reading Windpark">16 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>#77256</title>
-      <link>http://localhost:1313/posts/daily-photo-77256/</link>
-      <pubDate>Mon, 12 Jan 2026 19:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-77256/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-77256/IMG_0605_hu_d3f6c81e36bbe87c.webp" width="768" height="575" alt="#77256 cover image" /><p>Got two Speed Champion BTTF sets (#77256) for the boys. We watched the first two movies over the holidays for the first time with them and they loved it. Coincidentally Lego released this set January 1st.
- (<a href="http://localhost:1313/posts/daily-photo-77256/" title="Continue reading #77256">41 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>Last Day Off</title>
-      <link>http://localhost:1313/posts/daily-photo-last-day-off/</link>
-      <pubDate>Sun, 11 Jan 2026 19:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-last-day-off/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-last-day-off/IMG_0576_hu_45172de84f62f85d.webp" width="576" height="768" alt="Last Day Off cover image" /><p>Vacation is over and I’m officially back at work tomorrow. A few impressions from today.
- (<a href="http://localhost:1313/posts/daily-photo-last-day-off/" title="Continue reading Last Day Off">80 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>Craspedia globosa</title>
-      <link>http://localhost:1313/posts/daily-photo-craspedia-globosa/</link>
-      <pubDate>Sat, 10 Jan 2026 19:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-craspedia-globosa/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-craspedia-globosa/IMG_0573_hu_e11df43b3240d32a.webp" width="768" height="768" alt="Craspedia globosa cover image" /><p>Taken in our garden. […]Craspedia is a genus of flowering plants in the family Asteraceae commonly known as billy buttons, billy balls, and woollyheads. They are native to Australia and New Zealand where they grow in a variety of habitats from sea level to the Southern Alps.[…] (Wikipedia) - I’d would have called them yellow balls.
- (<a href="http://localhost:1313/posts/daily-photo-craspedia-globosa/" title="Continue reading Craspedia globosa">16 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>Vet</title>
-      <link>http://localhost:1313/posts/daily-photo-vet/</link>
-      <pubDate>Fri, 09 Jan 2026 18:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-vet/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-vet/IMG_0565_hu_8345738b9a9a203d.webp" width="768" height="768" alt="Vet cover image" /><p>Neither Aika nor I woke up this morning and thought “Hey let’s rip out a toe nail, that sounds like fun!”. Yet here we are and we spent this afternoon at the vet.
- (<a href="http://localhost:1313/posts/daily-photo-vet/" title="Continue reading Vet">68 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>Snow</title>
-      <link>http://localhost:1313/posts/daily-photo-snow/</link>
-      <pubDate>Thu, 08 Jan 2026 20:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-snow/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-snow/IMG_0530_hu_14c8ec79392f5708.webp" width="576" height="768" alt="Snow cover image" /><p>First proper snow this season. The boys loved it. Aika was slightly annoyed.
- (<a href="http://localhost:1313/posts/daily-photo-snow/" title="Continue reading Snow">16 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>So I built an RSS Reader</title>
-      <link>http://localhost:1313/posts/i-built-a-rss-reader/</link>
-      <pubDate>Thu, 08 Jan 2026 19:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/i-built-a-rss-reader/</guid>
-      <description><![CDATA[<p>So I built an RSS reader. I wanted something simple for myself. Read my feeds, mark things as read, move on.
- (<a href="http://localhost:1313/posts/i-built-a-rss-reader/" title="Continue reading So I built an RSS Reader">434 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>Eddington (7/10)</title>
-      <link>http://localhost:1313/log/#eddington</link>
-      <pubDate>Thu, 08 Jan 2026 00:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/log/#eddington</guid>
-      <description><![CDATA[<p>Chaotic like the last few years themselves it tries to capture. Surprisingly resonated with me, despite being very US-centric.
-</p>]]></description>
-    </item>
-    <item>
-      <title>Reading</title>
-      <link>http://localhost:1313/posts/daily-photo-reading/</link>
-      <pubDate>Wed, 07 Jan 2026 19:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-reading/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-reading/IMG_0512_hu_d6822c651126aeb1.webp" width="768" height="576" alt="Reading cover image" /><p>I don’t read enough books. I manage reading a few pages maybe one evening every two weeks. I can turn on something on Youtube or a podcast in the car without thinking. A book I have to actively pick up.
- (<a href="http://localhost:1313/posts/daily-photo-reading/" title="Continue reading Reading">333 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>Sourdough</title>
-      <link>http://localhost:1313/posts/daily-photo-sourdough/</link>
-      <pubDate>Tue, 06 Jan 2026 19:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-sourdough/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-sourdough/IMG_0500_hu_fc6b5ace4b29d129.webp" width="768" height="576" alt="Sourdough cover image" /><p>My wife started baking bread. Here’s her spelt (Deutsch: Dinkel) sourdough recipe. It took quite a few iterations to get it right.
- (<a href="http://localhost:1313/posts/daily-photo-sourdough/" title="Continue reading Sourdough">190 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>Chicken</title>
-      <link>http://localhost:1313/posts/daily-photo-chicken/</link>
-      <pubDate>Mon, 05 Jan 2026 17:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-chicken/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-chicken/IMG_0494_hu_b22a8abe9b30e2d1.webp" width="768" height="575" alt="Chicken cover image" /><p>When I went out with Aika, I caught two of our four chickens in the garden. We have two Silkie chickens and two feather-footed dwarf chickens. The whole family loves them, and two eggs a day is a nice bonus.
- (<a href="http://localhost:1313/posts/daily-photo-chicken/" title="Continue reading Chicken">116 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>Building This Website with Hugo</title>
-      <link>http://localhost:1313/posts/building-with-hugo/</link>
-      <pubDate>Mon, 05 Jan 2026 07:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/building-with-hugo/</guid>
-      <description><![CDATA[<p>This website runs on Hugo, a static site generator written in Go. I launched it in early January 2026, so if you’re reading this when it’s fresh, this is all just a few days old. This post documents how I built it.
- (<a href="http://localhost:1313/posts/building-with-hugo/" title="Continue reading Building This Website with Hugo">1731 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>Winter Walk</title>
-      <link>http://localhost:1313/posts/daily-photo-winter-walk/</link>
-      <pubDate>Sun, 04 Jan 2026 16:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-winter-walk/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-winter-walk/IMG_0490_hu_b2c9eed35b56f952.webp" width="576" height="768" alt="Winter Walk cover image" /><p>A winter walk with Tilian and Aika. The fresh snow melted during the day but froze overnight, leaving icy patches everywhere. Plenty of slipping and sliding along the way, with the kids landing on their backsides more than once. Aika seemed completely unfazed.
- (<a href="http://localhost:1313/posts/daily-photo-winter-walk/" title="Continue reading Winter Walk">61 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>Tron: Ares (5/10)</title>
-      <link>http://localhost:1313/log/#tron-ares</link>
-      <pubDate>Sun, 04 Jan 2026 00:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/log/#tron-ares</guid>
-      <description><![CDATA[<p>Feels like they built a movie around a soundtrack. I knew it was questionable renting it and still left disappointed by its lack of substance. The 3D printing and digitization of matter was the coolest bit.
-</p>]]></description>
-    </item>
-    <item>
-      <title>2025 Wrapped</title>
-      <link>http://localhost:1313/posts/2025-wrapped/</link>
-      <pubDate>Sat, 03 Jan 2026 12:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/2025-wrapped/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/2025-wrapped/IMG_8224_hu_cbca8f2d5454d726.webp" width="576" height="768" alt="2025 Wrapped cover image" /><p>My year 2025 in numbers and highlights, wrapped-style. First attempt at summarizing an eventful year. More platforms offering wrapped/replay summaries obviously helped.
- (<a href="http://localhost:1313/posts/2025-wrapped/" title="Continue reading 2025 Wrapped">1889 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>Death Stranding 2</title>
-      <link>http://localhost:1313/posts/death-stranding-2/</link>
-      <pubDate>Fri, 02 Jan 2026 14:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/death-stranding-2/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/death-stranding-2/IMG_0448_hu_9ce7af84ed755a2f.webp" width="768" height="576" alt="Death Stranding 2 cover image" /><p>Over the Xmas period I managed to finish Death Stranding 2. The game is a perfect mix between logistics, base building and shooter action for me.I like it more than the Metal Gear Solid games.
- (<a href="http://localhost:1313/posts/death-stranding-2/" title="Continue reading Death Stranding 2">199 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>Open Source</title>
-      <link>http://localhost:1313/posts/open-source/</link>
-      <pubDate>Fri, 02 Jan 2026 10:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/open-source/</guid>
-      <description><![CDATA[<p>At the end of 2025 I spent 100 hours on a single open source project. I did similar things over the past twenty years but always lost interest. This time was different. The software is actually used at my company. Spoiler: I will happily discontinue it.
- (<a href="http://localhost:1313/posts/open-source/" title="Continue reading Open Source">219 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>Hello</title>
-      <link>http://localhost:1313/posts/hello-world/</link>
-      <pubDate>Thu, 01 Jan 2026 12:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/posts/hello-world/</guid>
-      <description><![CDATA[<p>Welcome to my website. I work as Chief Technology &amp; Product Officer at roadsurfer, where we help people explore the world in campervans.
- (<a href="http://localhost:1313/posts/hello-world/" title="Continue reading Hello">23 more words</a>)</p>]]></description>
-    </item>
-    <item>
-      <title>Stranger Things (Season 5) (6/10)</title>
-      <link>http://localhost:1313/log/#stranger-things-s5</link>
-      <pubDate>Thu, 01 Jan 2026 00:00:00 &#43;0000</pubDate>
-      <guid isPermaLink="true">http://localhost:1313/log/#stranger-things-s5</guid>
-      <description><![CDATA[<p>Each season felt like it had a different plan for the next. The finale was sentimental but without weight. Dark and 1899 did this better.
-</p>]]></description>
-    </item>
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sven Eisenschmidt - Personal Blog</title><link>https://sven.eisenschmidt.website/</link><description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Sun, 18 Jan 2026 12:00:00 +0000</lastBuildDate><atom:link href="https://sven.eisenschmidt.website/index.xml" rel="self" type="application/rss+xml"/><item><title>Frost</title><link>https://sven.eisenschmidt.website/posts/daily-photo-frost/</link><pubDate>Sun, 18 Jan 2026 12:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/daily-photo-frost/</guid><description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/daily-photo-frost/DSC00056_hu_a359cdf8d42cccdb.webp" width="768" height="512" alt="Frost cover image" /><p>Last night’s frost laid a soft film over all surfaces.
+ (<a href="https://sven.eisenschmidt.website/posts/daily-photo-frost/" title="Continue reading Frost">137 more words</a>)</p>]]></description></item><item><title>New Camera Day</title><link>https://sven.eisenschmidt.website/posts/new-camera-day/</link><pubDate>Sat, 17 Jan 2026 16:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/new-camera-day/</guid><description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/new-camera-day/DSC00040_hu_670b3754a616d517.webp" width="512" height="768" alt="New Camera Day cover image" /><p>The Sony RX100 VII is here! I took it out for a spin with the kids to the forest and the garage of my father. There is so much to learn about it.
+ (<a href="https://sven.eisenschmidt.website/posts/new-camera-day/" title="Continue reading New Camera Day">173 more words</a>)</p>]]></description></item><item><title>Disappointed</title><link>https://sven.eisenschmidt.website/posts/daily-photo-disappointed/</link><pubDate>Fri, 16 Jan 2026 19:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/daily-photo-disappointed/</guid><description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/daily-photo-disappointed/IMG_0658_hu_3b506bc674be89eb.webp" width="768" height="576" alt="Disappointed cover image" /><p>The Sony RX100 VII did not arrive today. I rescheduled delivery from yesterday to today because of my work trip this week. Not sure what happened for it not to arrive but I’m disappointed.
+ (<a href="https://sven.eisenschmidt.website/posts/daily-photo-disappointed/" title="Continue reading Disappointed">40 more words</a>)</p>]]></description></item><item><title>Death of A Unicorn (6/10)</title><link>https://sven.eisenschmidt.website/log/#death-of-a-unicorn</link><pubDate>Fri, 16 Jan 2026 00:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/log/#death-of-a-unicorn</guid><description>&lt;p>Spoon-fed satire. The film explains every joke and theme twice, just in case you weren’t paying attention. A24 on autopilot that would’ve worked better as a 20-minute short.
+&lt;/p></description></item><item><title>Back</title><link>https://sven.eisenschmidt.website/posts/daily-photo-back/</link><pubDate>Thu, 15 Jan 2026 19:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/daily-photo-back/</guid><description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/daily-photo-back/IMG_0632_hu_cb2ff831768be434.webp" width="768" height="576" alt="Back cover image" /><p>Completed my trip back home today. Did twice 450km within 24 hours. The VW California is such a comfortable car for long trips.
+ (<a href="https://sven.eisenschmidt.website/posts/daily-photo-back/" title="Continue reading Back">101 more words</a>)</p>]]></description></item><item><title>Away</title><link>https://sven.eisenschmidt.website/posts/daily-photo-away/</link><pubDate>Wed, 14 Jan 2026 19:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/daily-photo-away/</guid><description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/daily-photo-away/IMG_0615_hu_5bab5169b94a0607.webp" width="576" height="768" alt="Away cover image" /><p>Tilian is sick and Kellin has been quarantined as a precaution. I am on a work trip to Munich so it was extra difficult to leave them until tomorrow night.
+ (<a href="https://sven.eisenschmidt.website/posts/daily-photo-away/" title="Continue reading Away">83 more words</a>)</p>]]></description></item><item><title>Windpark</title><link>https://sven.eisenschmidt.website/posts/daily-photo-windpark/</link><pubDate>Tue, 13 Jan 2026 19:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/daily-photo-windpark/</guid><description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/daily-photo-windpark/IMG_0601_hu_30c2be970f959e98.webp" width="576" height="768" alt="Windpark cover image" /><p>We have a new windpark north of our village. 250m high wind mills. The moon illusion hits hard with them, they overshadow the village from one end, and look tiny from the closer end. Strange to see.
+ (<a href="https://sven.eisenschmidt.website/posts/daily-photo-windpark/" title="Continue reading Windpark">16 more words</a>)</p>]]></description></item><item><title>#77256</title><link>https://sven.eisenschmidt.website/posts/daily-photo-77256/</link><pubDate>Mon, 12 Jan 2026 19:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/daily-photo-77256/</guid><description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/daily-photo-77256/IMG_0605_hu_d3f6c81e36bbe87c.webp" width="768" height="575" alt="#77256 cover image" /><p>Got two Speed Champion BTTF sets (#77256) for the boys. We watched the first two movies over the holidays for the first time with them and they loved it. Coincidentally Lego released this set January 1st.
+ (<a href="https://sven.eisenschmidt.website/posts/daily-photo-77256/" title="Continue reading #77256">41 more words</a>)</p>]]></description></item><item><title>Last Day Off</title><link>https://sven.eisenschmidt.website/posts/daily-photo-last-day-off/</link><pubDate>Sun, 11 Jan 2026 19:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/daily-photo-last-day-off/</guid><description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/daily-photo-last-day-off/IMG_0576_hu_45172de84f62f85d.webp" width="576" height="768" alt="Last Day Off cover image" /><p>Vacation is over and I’m officially back at work tomorrow. A few impressions from today.
+ (<a href="https://sven.eisenschmidt.website/posts/daily-photo-last-day-off/" title="Continue reading Last Day Off">80 more words</a>)</p>]]></description></item><item><title>Craspedia globosa</title><link>https://sven.eisenschmidt.website/posts/daily-photo-craspedia-globosa/</link><pubDate>Sat, 10 Jan 2026 19:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/daily-photo-craspedia-globosa/</guid><description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/daily-photo-craspedia-globosa/IMG_0573_hu_e11df43b3240d32a.webp" width="768" height="768" alt="Craspedia globosa cover image" /><p>Taken in our garden. […]Craspedia is a genus of flowering plants in the family Asteraceae commonly known as billy buttons, billy balls, and woollyheads. They are native to Australia and New Zealand where they grow in a variety of habitats from sea level to the Southern Alps.[…] (Wikipedia) - I’d would have called them yellow balls.
+ (<a href="https://sven.eisenschmidt.website/posts/daily-photo-craspedia-globosa/" title="Continue reading Craspedia globosa">16 more words</a>)</p>]]></description></item><item><title>Vet</title><link>https://sven.eisenschmidt.website/posts/daily-photo-vet/</link><pubDate>Fri, 09 Jan 2026 18:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/daily-photo-vet/</guid><description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/daily-photo-vet/IMG_0565_hu_8345738b9a9a203d.webp" width="768" height="768" alt="Vet cover image" /><p>Neither Aika nor I woke up this morning and thought “Hey let’s rip out a toe nail, that sounds like fun!”. Yet here we are and we spent this afternoon at the vet.
+ (<a href="https://sven.eisenschmidt.website/posts/daily-photo-vet/" title="Continue reading Vet">68 more words</a>)</p>]]></description></item><item><title>Snow</title><link>https://sven.eisenschmidt.website/posts/daily-photo-snow/</link><pubDate>Thu, 08 Jan 2026 20:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/daily-photo-snow/</guid><description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/daily-photo-snow/IMG_0530_hu_14c8ec79392f5708.webp" width="576" height="768" alt="Snow cover image" /><p>First proper snow this season. The boys loved it. Aika was slightly annoyed.
+ (<a href="https://sven.eisenschmidt.website/posts/daily-photo-snow/" title="Continue reading Snow">16 more words</a>)</p>]]></description></item><item><title>So I built an RSS Reader</title><link>https://sven.eisenschmidt.website/posts/i-built-a-rss-reader/</link><pubDate>Thu, 08 Jan 2026 19:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/i-built-a-rss-reader/</guid><description>&lt;p>So I built an RSS reader. I wanted something simple for myself. Read my feeds, mark things as read, move on.
+ (&lt;a href="https://sven.eisenschmidt.website/posts/i-built-a-rss-reader/" title="Continue reading So I built an RSS Reader">434 more words&lt;/a>)&lt;/p></description></item><item><title>Eddington (7/10)</title><link>https://sven.eisenschmidt.website/log/#eddington</link><pubDate>Thu, 08 Jan 2026 00:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/log/#eddington</guid><description>&lt;p>Chaotic like the last few years themselves it tries to capture. Surprisingly resonated with me, despite being very US-centric.
+&lt;/p></description></item><item><title>Reading</title><link>https://sven.eisenschmidt.website/posts/daily-photo-reading/</link><pubDate>Wed, 07 Jan 2026 19:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/daily-photo-reading/</guid><description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/daily-photo-reading/IMG_0512_hu_d6822c651126aeb1.webp" width="768" height="576" alt="Reading cover image" /><p>I don’t read enough books. I manage reading a few pages maybe one evening every two weeks. I can turn on something on Youtube or a podcast in the car without thinking. A book I have to actively pick up.
+ (<a href="https://sven.eisenschmidt.website/posts/daily-photo-reading/" title="Continue reading Reading">333 more words</a>)</p>]]></description></item><item><title>Sourdough</title><link>https://sven.eisenschmidt.website/posts/daily-photo-sourdough/</link><pubDate>Tue, 06 Jan 2026 19:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/daily-photo-sourdough/</guid><description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/daily-photo-sourdough/IMG_0500_hu_fc6b5ace4b29d129.webp" width="768" height="576" alt="Sourdough cover image" /><p>My wife started baking bread. Here’s her spelt (Deutsch: Dinkel) sourdough recipe. It took quite a few iterations to get it right.
+ (<a href="https://sven.eisenschmidt.website/posts/daily-photo-sourdough/" title="Continue reading Sourdough">190 more words</a>)</p>]]></description></item><item><title>Chicken</title><link>https://sven.eisenschmidt.website/posts/daily-photo-chicken/</link><pubDate>Mon, 05 Jan 2026 17:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/daily-photo-chicken/</guid><description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/daily-photo-chicken/IMG_0494_hu_b22a8abe9b30e2d1.webp" width="768" height="575" alt="Chicken cover image" /><p>When I went out with Aika, I caught two of our four chickens in the garden. We have two Silkie chickens and two feather-footed dwarf chickens. The whole family loves them, and two eggs a day is a nice bonus.
+ (<a href="https://sven.eisenschmidt.website/posts/daily-photo-chicken/" title="Continue reading Chicken">116 more words</a>)</p>]]></description></item><item><title>Building This Website with Hugo</title><link>https://sven.eisenschmidt.website/posts/building-with-hugo/</link><pubDate>Mon, 05 Jan 2026 07:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/building-with-hugo/</guid><description>&lt;p>This website runs on Hugo, a static site generator written in Go. I launched it in early January 2026, so if you’re reading this when it’s fresh, this is all just a few days old. This post documents how I built it.
+ (&lt;a href="https://sven.eisenschmidt.website/posts/building-with-hugo/" title="Continue reading Building This Website with Hugo">1731 more words&lt;/a>)&lt;/p></description></item><item><title>Winter Walk</title><link>https://sven.eisenschmidt.website/posts/daily-photo-winter-walk/</link><pubDate>Sun, 04 Jan 2026 16:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/daily-photo-winter-walk/</guid><description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/daily-photo-winter-walk/IMG_0490_hu_b2c9eed35b56f952.webp" width="576" height="768" alt="Winter Walk cover image" /><p>A winter walk with Tilian and Aika. The fresh snow melted during the day but froze overnight, leaving icy patches everywhere. Plenty of slipping and sliding along the way, with the kids landing on their backsides more than once. Aika seemed completely unfazed.
+ (<a href="https://sven.eisenschmidt.website/posts/daily-photo-winter-walk/" title="Continue reading Winter Walk">61 more words</a>)</p>]]></description></item><item><title>Tron: Ares (5/10)</title><link>https://sven.eisenschmidt.website/log/#tron-ares</link><pubDate>Sun, 04 Jan 2026 00:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/log/#tron-ares</guid><description>&lt;p>Feels like they built a movie around a soundtrack. I knew it was questionable renting it and still left disappointed by its lack of substance. The 3D printing and digitization of matter was the coolest bit.
+&lt;/p></description></item><item><title>2025 Wrapped</title><link>https://sven.eisenschmidt.website/posts/2025-wrapped/</link><pubDate>Sat, 03 Jan 2026 12:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/2025-wrapped/</guid><description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/2025-wrapped/IMG_8224_hu_cbca8f2d5454d726.webp" width="576" height="768" alt="2025 Wrapped cover image" /><p>My year 2025 in numbers and highlights, wrapped-style. First attempt at summarizing an eventful year. More platforms offering wrapped/replay summaries obviously helped.
+ (<a href="https://sven.eisenschmidt.website/posts/2025-wrapped/" title="Continue reading 2025 Wrapped">1889 more words</a>)</p>]]></description></item><item><title>Death Stranding 2</title><link>https://sven.eisenschmidt.website/posts/death-stranding-2/</link><pubDate>Fri, 02 Jan 2026 14:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/death-stranding-2/</guid><description><![CDATA[<img src="https://sven.eisenschmidt.website/posts/death-stranding-2/IMG_0448_hu_9ce7af84ed755a2f.webp" width="768" height="576" alt="Death Stranding 2 cover image" /><p>Over the Xmas period I managed to finish Death Stranding 2. The game is a perfect mix between logistics, base building and shooter action for me.I like it more than the Metal Gear Solid games.
+ (<a href="https://sven.eisenschmidt.website/posts/death-stranding-2/" title="Continue reading Death Stranding 2">199 more words</a>)</p>]]></description></item><item><title>Open Source</title><link>https://sven.eisenschmidt.website/posts/open-source/</link><pubDate>Fri, 02 Jan 2026 10:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/open-source/</guid><description>&lt;p>At the end of 2025 I spent 100 hours on a single open source project. I did similar things over the past twenty years but always lost interest. This time was different. The software is actually used at my company. Spoiler: I will happily discontinue it.
+ (&lt;a href="https://sven.eisenschmidt.website/posts/open-source/" title="Continue reading Open Source">219 more words&lt;/a>)&lt;/p></description></item><item><title>Hello</title><link>https://sven.eisenschmidt.website/posts/hello-world/</link><pubDate>Thu, 01 Jan 2026 12:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/posts/hello-world/</guid><description><![CDATA[<p>Welcome to my website. I work as Chief Technology &amp; Product Officer at roadsurfer, where we help people explore the world in campervans.
+ (<a href="https://sven.eisenschmidt.website/posts/hello-world/" title="Continue reading Hello">23 more words</a>)</p>]]></description></item><item><title>Stranger Things (Season 5) (6/10)</title><link>https://sven.eisenschmidt.website/log/#stranger-things-s5</link><pubDate>Thu, 01 Jan 2026 00:00:00 +0000</pubDate><guid isPermaLink="true">https://sven.eisenschmidt.website/log/#stranger-things-s5</guid><description>&lt;p>Each season felt like it had a different plan for the next. The finale was sentimental but without weight. Dark and 1899 did this better.
+&lt;/p></description></item></channel></rss>

@@ -4,6 +4,8 @@ AddType text/html .html
 AddType text/css .css
 AddType application/javascript .js
 AddType application/json .json
+AddType application/xml .xml
+AddType text/xml .xml
 AddType image/svg+xml .svg
 AddType font/woff2 .woff2
 AddType font/woff .woff
