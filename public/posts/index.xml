@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 17 Jan 2026 16:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 18 Jan 2026 12:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Frost</title>
+      <link>http://localhost:1313/posts/daily-photo-frost/</link>
+      <pubDate>Sun, 18 Jan 2026 12:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/daily-photo-frost/</guid>
+      <description>&lt;p&gt;Last night&amp;rsquo;s frost laid a soft film over all surfaces.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>New Camera Day</title>
       <link>http://localhost:1313/posts/new-camera-day/</link>
@@ -147,13 +154,6 @@
       <pubDate>Thu, 01 Jan 2026 12:00:00 +0000</pubDate>
       <guid>http://localhost:1313/posts/hello-world/</guid>
       <description>&lt;p&gt;Welcome to my website. I work as Chief Technology &amp;amp; Product Officer at &lt;a href=&#34;https://roadsurfer.com&#34;&gt;roadsurfer&lt;/a&gt;, where we help people explore the world in campervans.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title></title>
-      <link>http://localhost:1313/posts/daily-photo-frost/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/daily-photo-frost/</guid>
-      <description>&lt;p&gt;testing photo import and touch up workflows, pretty happy with Photomator and a dedicated folder in icloud PHotos. As we speak I have 22972 photos in my library, going back to 2010. I was alfraid afraid of losing access to iCloud and my foto library, I was using an abandoned &lt;a href=&#34;https://github.com/icloud-photos-downloader/icloud_photos_downloader&#34;&gt;python script&lt;/a&gt; in the past to sync a few times a year al photos to my NAS. THis morning I discovered &lt;a href=&#34;https://apps.apple.com/de/app/parachute-backup/id6748614170&#34;&gt;Parachite Backup&lt;/a&gt; and it does it&amp;rsquo;s job. It only requred access to my iCloud Photo library in my mac and not the iCloud acocunt iself which is already an advantage to the python script I used previously&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

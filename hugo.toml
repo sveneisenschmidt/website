@@ -3,6 +3,9 @@ languageCode = "en-us"
 title = "Sven Eisenschmidt - Personal Blog"
 
 
+[pagination]
+pagerSize = 10
+
 [params]
 description = "Personal website of Sven Eisenschmidt, based in Leipzig, Germany."
 siteHeading = "Sven Eisenschmidt"

@@ -1,2 +1,16 @@
-{{ define "main" }} {{ .Content }} {{ range where site.RegularPages "Section"
-"posts" }} {{ partial "post-card.html" . }} {{ end }} {{ end }}
+{{ define "main" }} {{ .Content }} {{ $posts := where site.RegularPages
+"Section" "posts" }} {{ $paginator := .Paginate $posts }} {{ range
+$paginator.Pages }} {{ partial "post-card.html" . }} {{ end }} {{ if gt
+$paginator.TotalPages 1 }}
+<nav class="pagination">
+    {{ if $paginator.HasPrev }}
+    <a href="{{ $paginator.Prev.URL }}">&larr; Newer</a>
+    {{ end }}
+
+    <span>Page {{ $paginator.PageNumber }} of {{ $paginator.TotalPages }}</span>
+
+    {{ if $paginator.HasNext }}
+    <a href="{{ $paginator.Next.URL }}">Older &rarr;</a>
+    {{ end }}
+</nav>
+{{ end }} {{ end }}
