@@ -2,8 +2,6 @@
 
 My personal website, built with [Hugo](https://gohugo.io/).
 
-I use [`TONE_OF_VOICE.md`](TONE_OF_VOICE.md) to keep my writing consistent.
-
 ## Development
 
 ```bash
@@ -12,7 +10,7 @@ make dev
 
 ## Deploy
 
-Push to `main` and GitHub Actions builds and uploads via FTP.
+Push to `main` and GitHub Actions builds and uploads via SSH.
 
 ## License
 
