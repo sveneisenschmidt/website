@@ -11,6 +11,6 @@ The Sony RX100 VII did not arrive today. I rescheduled delivery from yesterday t
 
 <!--more-->
 
-So instead posting my first oicture from the Sony RX100 VII, this is from my iPhone during bedtime routine, watching Sandmänchen with the youngest.
+So instead posting my first picture from the Sony RX100 VII, this is from my iPhone during bedtime routine, watching Sandmänchen with the youngest.
 
 {{< img src="IMG_0658.jpg" alt="Bedtime" >}}
