@@ -17,6 +17,7 @@ employerUrl = "https://roadsurfer.com"
 githubUrl = "https://github.com/sveneisenschmidt"
 linkedinUrl = "https://linkedin.com/in/sveneisenschmidt"
 stravaUrl = "https://strava.com/athletes/sveneisenschmidt"
+email = "sven.eisenschmidt@gmail.com"
 
 [taxonomies]
 topic = "topics"

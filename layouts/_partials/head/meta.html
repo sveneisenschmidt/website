@@ -57,6 +57,63 @@
   ]
 }
 </script>
+{{ else if eq .RelPermalink "/cv/" }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Sven Eisenschmidt",
+  "url": "{{ .Site.BaseURL }}",
+  "jobTitle": "Chief Technology & Product Officer",
+  "description": "CTO and Product Leader based in Leipzig, Germany",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Leipzig",
+    "addressRegion": "Saxony",
+    "addressCountry": "DE"
+  },
+  "worksFor": {
+    "@type": "Organization",
+    "name": "roadsurfer",
+    "url": "https://roadsurfer.com"
+  },
+  "alumniOf": [
+    {
+      "@type": "Organization",
+      "name": "Delivery Hero",
+      "url": "https://www.deliveryhero.com/"
+    },
+    {
+      "@type": "Organization",
+      "name": "trivago",
+      "url": "https://www.trivago.com/"
+    },
+    {
+      "@type": "Organization",
+      "name": "Appsfactory",
+      "url": "https://www.appsfactory.de/"
+    },
+    {
+      "@type": "EducationalOrganization",
+      "name": "Gutenbergschule Frankfurt am Main",
+      "url": "https://www.gutenbergschule-fotografen.eu/"
+    }
+  ],
+  "knowsAbout": [
+    "Technology Leadership",
+    "Product Management",
+    "Software Engineering",
+    "Digital Transformation",
+    "E-Commerce",
+    "Travel Technology"
+  ],
+  "sameAs": [
+    "https://github.com/sveneisenschmidt",
+    "https://linkedin.com/in/sveneisenschmidt",
+    "https://strava.com/athletes/sveneisenschmidt"
+  ]
+}
+</script>
 {{ else if and .IsPage (eq .Section "posts") }}
 <script type="application/ld+json">
 {
