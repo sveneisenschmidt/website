@@ -31,7 +31,7 @@ What wasn't so clear to me initially is that I will use the app in different way
 
 Coming back to what I wrote earlier: I use **Reader** differently across iPhone and macOS. On desktop I scroll through the article list, click one to read it, and the list stays visible on the left. On mobile you only see the reading pane. Previously I had to tap *Mark as Read*, then *← Back* to return to the list, two taps for something I do constantly. I had the idea to use different behaviours for the app, there's a single *Mark as Read* button, but on mobile it also gets you back to the reading list.
 
-I am not sure if I will have more features like this in the future where there is a different behaviour for mobile and desktop. Certainly it is not difficult.
+I am not sure if I will have more features like this in the future where there is a different behaviour for mobile and desktop. Certainly it is not difficult to implement.
 
 ## Going beyond RSS
 
