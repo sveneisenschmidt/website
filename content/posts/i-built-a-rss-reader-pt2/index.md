@@ -24,7 +24,7 @@ What wasn't so clear to me initially is that I will use the app in different way
 - **Keyboard shortcuts** for desktop: Tab/Shift+Tab for subscriptions, arrows for articles, Space to toggle read, Enter to open, Escape to close. Optional and on by default.
 - **"Mark as Read & Back" button** for mobile. One tap to mark as read and go back to the list. I use this constantly on mobile but do not want to have it on Desktop.
 - **OPML import/export** to move subscriptions between RSS readers.
-- **Pull-to-refresh** on mobile but I personally disabled it and wait for the background refresh to run each five minutes.
+- **Pull-to-refresh** on mobile but I personally disabled it and wait for the background refresh to run each five minutes. I think it create a habbit of refreshing and always checking for something new.
 - **Status page** with background worker health, subscription stats, and processed queue messages like cleaning old feed items.
 - **Support for archive.is** per subscription to get around paywalls, super helpful for news articles from [Der Spiegel](https://www.spiegel.de/) for example. Sites load a bit slower but it's worth it.
 - **Word filter** to hide articles containing specific words, e.g. NFT.
