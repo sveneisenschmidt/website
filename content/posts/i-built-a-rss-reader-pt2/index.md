@@ -71,7 +71,7 @@ I load CSS and JavaScript inline via a custom Twig function from Symfony's Asset
 
 Using JavaScript to restore the scroll position led to flickering as the DOM rendered before the script could set the position. Loading it externally required `DOMContentLoaded`, which was too late. Inline in a sens eof having the script tag directly in the HTML where the element was located was better but Safari's parsing timing made it inconsistent.
 
-*But* I really wanted to have the scroll position locked in at the same place as before without any flickering or visual change. I would not have used the app anymore if that would have been a recurring issue.
+*But* I really wanted to have the scroll position locked in at the same place as before without any flickering or visual change. I would not have used the app anymore if that would have been a recurring issue. Little things like this can annoy the hell out of me.
 
 The solution was to embed CSS and JavaScript minified and inline directly in the HTML and for JavaScript use self-invoking functions. I wrote a [custom Twig extension](https://github.com/sveneisenschmidt/reader/blob/main/src/Twig/AssetInlineExtension.php) that pulls assets from the Asset Mapper and inlines them:
 
