@@ -8,9 +8,7 @@
     </head>
     <body>
         <header>{{ partial "header.html" . }}</header>
-        <main data-pagefind-body style="view-transition-name: main-content">
-            {{ block "main" . }}{{ end }}
-        </main>
+        <main data-pagefind-body>{{ block "main" . }}{{ end }}</main>
         <footer>
             {{ partial "pop.html" . }} {{ partial "footer.html" . }}
         </footer>
