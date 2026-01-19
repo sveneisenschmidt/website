@@ -69,7 +69,7 @@ Some RSS feeds are terribly built and send their entire history on every request
 ### Inline CSS and JavaScript
 I load CSS and JavaScript inline via a custom Twig function from Symfony's Asset Mapper. While with HTTP/2 multiple assets requests are not a problemnowadays, this avoids extra asset requests at all. Yes, there would have been a proper approach with HTTP/2, pre-fetching and -loading but I could not be bothered so I removed that part of the equation completely.
 
-JavaScript was particularly annoying as it lead to flickering when navigating between pages when I tried to restore the scroll position. Loading it as an external resource in the header required waiting for `DOMContentLoaded`, which caused it. Loading it inline was better but didn't work consistently in Safari. Waiting for `DOMContentLoaded` there produced the same result as loading it externally.
+UsingJavaScript to restore the scroll position in Safari was particularly annoying as it lead to flickering when navigating between pages when I tried to restore the scroll position. Loading it as an external resource in the header required waiting for `DOMContentLoaded`, which caused it. Loading it inline was better but didn't work again consistently in Safari. Waiting for `DOMContentLoaded` there produced the same result as loading it externally.
 
 The solution was to embed CSS and JavaScript minified and inline directly in the HTML and for JavaScript use self-invoking functions. I wrote a [custom Twig extension](https://github.com/sveneisenschmidt/reader/blob/main/src/Twig/AssetInlineExtension.php) that pulls assets from the Asset Mapper and inlines them:
 
