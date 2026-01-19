@@ -1,7 +1,7 @@
 {{- $src := .Get "src" -}} {{- $alt := .Get "alt" | default "" -}} {{- $caption
 := .Get "caption" | default "" -}} {{- $img := .Page.Resources.GetMatch $src -}}
 {{- if $img -}} {{- $resized := $img.Fit "2048x2048" -}}
-<figure class="img-exif">
+<figure{{ with $img.Exif }} class="img-exif"{{ end }}>
     <div class="img-wrapper">
         <img
             src="{{ $resized.RelPermalink }}"
