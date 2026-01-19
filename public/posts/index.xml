@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 18 Jan 2026 12:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 19 Jan 2026 11:45:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>So I built an RSS Reader (Pt.2)</title>
+      <link>http://localhost:1313/posts/i-built-a-rss-reader-pt2/</link>
+      <pubDate>Mon, 19 Jan 2026 11:45:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/i-built-a-rss-reader-pt2/</guid>
+      <description>&lt;p&gt;Two weeks ago I wrote about &lt;a href=&#34;http://localhost:1313/posts/i-built-a-rss-reader/&#34;&gt;building an RSS reader&lt;/a&gt;. I said it would probably crash with more than 20 feeds (or I lose &lt;a href=&#34;https://sven.eisenschmidt.website/posts/open-source/&#34;&gt;motivation&lt;/a&gt;). It didn&amp;rsquo;t crash but I needed to optimize it a bit.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Frost</title>
       <link>http://localhost:1313/posts/daily-photo-frost/</link>

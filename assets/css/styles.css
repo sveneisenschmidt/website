@@ -26,6 +26,23 @@ html {
     scroll-behavior: smooth;
 }
 
+/* View Transitions - disabled on mobile Safari due to performance */
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 0.15s;
+    animation-timing-function: ease-out;
+}
+
+@media (max-width: 768px) {
+    @view-transition {
+        navigation: none;
+    }
+}
+
 :root {
     --color-text: #222;
     --color-link: #00e;
