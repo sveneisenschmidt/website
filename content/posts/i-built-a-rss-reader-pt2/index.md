@@ -69,7 +69,7 @@ Some RSS feeds are terribly built and send their entire history on every request
 ### Inline CSS and JavaScript
 I load CSS and JavaScript inline via a custom Twig function from Symfony's Asset Mapper. While with HTTP/2 multiple assets requests are not a problem nowadays, this avoids extra asset requests at all. Yes, there would have been a proper approach with HTTP/2, pre-fetching and -loading but I could not be bothered so I removed that part of the equation completely.
 
-Using JavaScript to restore the scroll position led to flickering as the DOM rendered before the script could set the position. Loading it externally required `DOMContentLoaded`, which was too late. Inline was better but Safari's parsing timing made it inconsistent.
+Using JavaScript to restore the scroll position led to flickering as the DOM rendered before the script could set the position. Loading it externally required `DOMContentLoaded`, which was too late. Inline in a sens eof having the script tag directly in the HTML where the element was located was better but Safari's parsing timing made it inconsistent.
 
 *But* I really wanted to have the scroll position locked in at the same place as before without any flickering or visual change. I would not have used the app anymore if that would have been a recurring issue.
 
