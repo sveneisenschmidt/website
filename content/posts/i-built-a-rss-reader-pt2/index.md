@@ -46,7 +46,7 @@ But Reddit is even more complicated than just extracting the right feed URL. The
 ### Click handling
 Managing click-outs properly with read status was a nightmare with JavaScript. Getting it consistently working across browsers and devices annoyed me. I wanted to have an article marked as read when I click on the title or an inline link, but Safari mobile blocked the form submission triggered by JavaScript for the Mark as Read button while opening the article in a new tab. 
 
-Also opening articles consistently in a new tab was not working. The sanitizer configuration possiiblities are powerful and I was able to include with a config setting to rewrite all URLs to open in a new tab.
+Also opening articles consistently in a new tab was not working. The sanitizer configuration possibilities are powerful and I was able to include with a config setting to rewrite all URLs to open in a new tab.
 
 The solution was to introduce an `/open` route for article URLs and article content links, using a [sanitizer](https://github.com/sveneisenschmidt/reader/blob/main/src/Domain/Feed/Processor/HtmlSanitizerProcessor.php) ([config](https://github.com/sveneisenschmidt/reader/blob/main/config/packages/html_sanitizer.yaml)) and an [open controller action](https://github.com/sveneisenschmidt/reader/blob/main/src/Controller/FeedItemController.php#L286). It's so much fun seeing this working server-side only. It helped me to kill a bunch of JavaScript and has been working flawlessly since I introduced it.
 
@@ -67,9 +67,9 @@ I moved from multiple database connections and separate SQLite files to a single
 Some RSS feeds are terribly built and send their entire history on every request, which would be the case for my refresh every five minutes. I had one feed that delivered over 700 articles. Now I keep only the last 50 articles per subscription and apply the same limit on import. As a side note: I also observed that some feeds bump up old articles or change them so they show up again with a different GUID.
 
 ### Inline CSS and JavaScript
-I load CSS and JavaScript inline via a custom Twig function from Symfony's Asset Mapper. While with HTTP/2 multiple assets requests are not a problemnowadays, this avoids extra asset requests at all. Yes, there would have been a proper approach with HTTP/2, pre-fetching and -loading but I could not be bothered so I removed that part of the equation completely.
+I load CSS and JavaScript inline via a custom Twig function from Symfony's Asset Mapper. While with HTTP/2 multiple assets requests are not a problem nowadays, this avoids extra asset requests at all. Yes, there would have been a proper approach with HTTP/2, pre-fetching and -loading but I could not be bothered so I removed that part of the equation completely.
 
-UsingJavaScript to restore the scroll position in Safari was particularly annoying as it lead to flickering when navigating between pages when I tried to restore the scroll position. Loading it as an external resource in the header required waiting for `DOMContentLoaded`, which caused it. Loading it inline was better but didn't work again consistently in Safari. Waiting for `DOMContentLoaded` there produced the same result as loading it externally.
+Using JavaScript to restore the scroll position led to flickering as the DOM rendered before the script could set the position. Loading it externally required `DOMContentLoaded`, which was too late. Inline was better but Safari's parsing timing made it inconsistent.
 
 The solution was to embed CSS and JavaScript minified and inline directly in the HTML and for JavaScript use self-invoking functions. I wrote a [custom Twig extension](https://github.com/sveneisenschmidt/reader/blob/main/src/Twig/AssetInlineExtension.php) that pulls assets from the Asset Mapper and inlines them:
 
