@@ -26,13 +26,18 @@ html {
     scroll-behavior: smooth;
 }
 
-/* View Transitions - disabled on mobile Safari due to performance */
+/* View Transitions - disabled on mobile due to performance */
 @view-transition {
     navigation: auto;
 }
 
 ::view-transition-old(root),
 ::view-transition-new(root) {
+    animation: none;
+}
+
+::view-transition-old(main-content),
+::view-transition-new(main-content) {
     animation-duration: 0.2s;
     animation-timing-function: ease-out;
 }
