@@ -19,7 +19,7 @@ What wasn't so clear to me initially is that I will use the app in different way
 
 - **Auto mark-as-read** after 5 seconds. Optional and off by default.
 - **Bookmarks** to save articles for later, unfortunately still a bit buggy. Optional and off by default.
-- **Feed discovery** for YouTube and Reddit. I paste a channel or subreddit URL and Reader finds the RSS feed.
+- **Feed discovery** for YouTube and Reddit. I paste a channel or subreddit URL and Reader finds the RSS feed. Jasper suggested this feature.
 - **Folders** to organize subscriptions, a nice surprise was that this helped with OPML imports that have a nested structure.
 - **Keyboard shortcuts** for desktop: Tab/Shift+Tab for subscriptions, arrows for articles, Space to toggle read, Enter to open, Escape to close. Optional and on by default.
 - **"Mark as Read & Back" button** for mobile. One tap to mark as read and go back to the list. I use this constantly on mobile but do not want to have it on Desktop.

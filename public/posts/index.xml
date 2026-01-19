@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 19 Jan 2026 11:45:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 19 Jan 2026 18:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Mine</title>
+      <link>http://localhost:1313/posts/daily-photo-mine/</link>
+      <pubDate>Mon, 19 Jan 2026 18:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/daily-photo-mine/</guid>
+      <description>&lt;p&gt;Tilian and me went to take pictures of the &amp;lsquo;open-cast mining ground&amp;rsquo; close to our village.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>So I built an RSS Reader (Pt.2)</title>
       <link>http://localhost:1313/posts/i-built-a-rss-reader-pt2/</link>
