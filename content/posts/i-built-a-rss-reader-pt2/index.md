@@ -44,11 +44,11 @@ But Reddit is even more complicated than just extracting the right feed URL. The
 ## Fun with Server-Side
 
 ### Click handling
-Managing click-outs properly with read status was a nightmare with JavaScript. Getting it consistently working across browsers and devices annoyed me. I wanted to have an article marked as read when I click on the title or an inline link, but Safari mobile blocked the form submission triggered by JavaScript for the Mark as Read button while opening the article in a new tab. 
-
-Also opening articles consistently in a new tab was not working. The sanitizer configuration possibilities are powerful and I was able to include with a config setting to rewrite all URLs to open in a new tab.
+Managing click-outs properly with read status was a nightmare with JavaScript. Getting it consistently working across browsers and devices annoyed me. I wanted to have an article marked as read when I click on the title or an inline link, but Safari mobile blocked the form submission triggered by JavaScript for the Mark as Read button while opening the article in a new tab.  Also opening articles consistently in a new tab was not working. 
 
 The solution was to introduce an `/open` route for article URLs and article content links, using a [sanitizer](https://github.com/sveneisenschmidt/reader/blob/main/src/Domain/Feed/Processor/HtmlSanitizerProcessor.php) ([config](https://github.com/sveneisenschmidt/reader/blob/main/config/packages/html_sanitizer.yaml)) and an [open controller action](https://github.com/sveneisenschmidt/reader/blob/main/src/Controller/FeedItemController.php#L286). It's so much fun seeing this working server-side only. It helped me to kill a bunch of JavaScript and has been working flawlessly since I introduced it.
+
+The sanitizer configuration possibilities are powerful and I was able to include with a config setting to rewrite all URLs to open in a new tab.
 
 ### YouTube embeds
 YouTube RSS feeds only contain a link to the video, no embed code. I wrote a [processor](https://github.com/sveneisenschmidt/reader/blob/main/src/Domain/Feed/Processor/YouTubeEmbedProcessor.php) that automatically converts YouTube links to embedded video players during import. Now I can watch videos directly in the reader.
