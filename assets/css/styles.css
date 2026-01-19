@@ -33,7 +33,7 @@ html {
 
 ::view-transition-old(root),
 ::view-transition-new(root) {
-    animation-duration: 0.15s;
+    animation-duration: 0.2s;
     animation-timing-function: ease-out;
 }
 
