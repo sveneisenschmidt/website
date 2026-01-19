@@ -67,7 +67,7 @@ I moved from multiple database connections and separate SQLite files to a single
 Some RSS feeds are terribly built and send their entire history on every request, which would be the case for my refresh every five minutes. I had one feed that delivered over 700 articles. Now I keep only the last 50 articles per subscription and apply the same limit on import. As a side note: I also observed that some feeds bump up old articles or change them so they show up again with a different GUID.
 
 ### Inline CSS and JavaScript
-I load CSS and JavaScript inline via a custom Twig function from Symfony's Asset Mapper. Even with HTTP/2 nowadays, this prevents extra asset requests. Yes, there would have been a proper approach with HTTP/2, pre-fetching and -loading but I could not be bothered so I removed that part of the equation completely.
+I load CSS and JavaScript inline via a custom Twig function from Symfony's Asset Mapper. While with HTTP/2 multiple assets requests are not a problemnowadays, this avoids extra asset requests at all. Yes, there would have been a proper approach with HTTP/2, pre-fetching and -loading but I could not be bothered so I removed that part of the equation completely.
 
 JavaScript was particularly annoying as it lead to flickering when navigating between pages when I tried to restore the scroll position. Loading it as an external resource in the header required waiting for `DOMContentLoaded`, which caused it. Loading it inline was better but didn't work consistently in Safari. Waiting for `DOMContentLoaded` there produced the same result as loading it externally.
 
