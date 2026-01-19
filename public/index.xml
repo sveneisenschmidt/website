@@ -6,8 +6,16 @@
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 19 Jan 2026 11:45:00 &#43;0000</lastBuildDate>
+    <lastBuildDate>Mon, 19 Jan 2026 18:00:00 &#43;0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Mine</title>
+      <link>http://localhost:1313/posts/daily-photo-mine/</link>
+      <pubDate>Mon, 19 Jan 2026 18:00:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-mine/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-mine/DSC00087_hu_f1575ac0fe6e03b4.webp" width="768" height="512" alt="Mine cover image" /><p>Tilian and me went to take pictures of the ‘open-cast mining ground’ close to our village.
+ (<a href="http://localhost:1313/posts/daily-photo-mine/" title="Continue reading Mine">72 more words</a>)</p>]]></description>
+    </item>
     <item>
       <title>So I built an RSS Reader (Pt.2)</title>
       <link>http://localhost:1313/posts/i-built-a-rss-reader-pt2/</link>
