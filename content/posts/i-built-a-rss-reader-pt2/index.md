@@ -86,7 +86,7 @@ In the produced HTML:
 !function(){function e(e,t){if(!e)return;const s=sessionStorage.getItem(t);s&&window.requestAnimationFrame(()=>{e.scrollTop=parseInt(s,10)}),e.addEventListener("scroll",()=>{sessionStorage.setItem(t,e.scrollTop)})}const t=document.querySelector("[data-reading-list]");if(t){e(t,"scroll:"+(t.dataset.subscription||"all"))}e(document.querySelector("[data-sidebar] > ul"),"scroll:sidebar")}();</script>
 ```
 
-I understand that a lot of people think this is a hack, but does it really matter? It's a html page with lots of text, a few kb of inlined CSS and JavaScript for a far better user experience was an easy choice for me.
+I understand that a lot of people think this is a hack, but does it really matter? It's a HTML page with lots of text, a few kb of inlined CSS and JavaScript for a far better user experience was an easy choice for me.
 
 ### Page Transition Animations
 On desktop I use CSS page transitions for smooth navigation between views. Unfortunately this is very slow on mobile Safari, so I disabled it there.
