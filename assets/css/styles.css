@@ -158,7 +158,11 @@ img.hero {
     transition: opacity 0.2s ease;
 }
 
-.img-exif .img-wrapper:hover .exif {
+.img-exif .exif:empty {
+    display: none;
+}
+
+.img-exif .img-wrapper:has(.exif:not(:empty)):hover .exif {
     opacity: 1;
 }
 

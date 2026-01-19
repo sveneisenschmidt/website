@@ -2,164 +2,164 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Sven Eisenschmidt - Personal Blog</title>
-    <link>http://localhost:1313/posts/</link>
+    <link>http://localhost:63805/posts/</link>
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 19 Jan 2026 11:45:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:63805/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>So I built an RSS Reader (Pt.2)</title>
-      <link>http://localhost:1313/posts/i-built-a-rss-reader-pt2/</link>
+      <link>http://localhost:63805/posts/i-built-a-rss-reader-pt2/</link>
       <pubDate>Mon, 19 Jan 2026 11:45:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/i-built-a-rss-reader-pt2/</guid>
-      <description>&lt;p&gt;Two weeks ago I wrote about &lt;a href=&#34;http://localhost:1313/posts/i-built-a-rss-reader/&#34;&gt;building an RSS reader&lt;/a&gt;. I said it would probably crash with more than 20 feeds (or I lose &lt;a href=&#34;https://sven.eisenschmidt.website/posts/open-source/&#34;&gt;motivation&lt;/a&gt;). It didn&amp;rsquo;t crash but I needed to optimize it a bit.&lt;/p&gt;</description>
+      <guid>http://localhost:63805/posts/i-built-a-rss-reader-pt2/</guid>
+      <description>&lt;p&gt;Two weeks ago I wrote about &lt;a href=&#34;http://localhost:63805/posts/i-built-a-rss-reader/&#34;&gt;building an RSS reader&lt;/a&gt;. I said it would probably crash with more than 20 feeds (or I lose &lt;a href=&#34;https://sven.eisenschmidt.website/posts/open-source/&#34;&gt;motivation&lt;/a&gt;). It didn&amp;rsquo;t crash but I needed to optimize it a bit.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Frost</title>
-      <link>http://localhost:1313/posts/daily-photo-frost/</link>
+      <link>http://localhost:63805/posts/daily-photo-frost/</link>
       <pubDate>Sun, 18 Jan 2026 12:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/daily-photo-frost/</guid>
+      <guid>http://localhost:63805/posts/daily-photo-frost/</guid>
       <description>&lt;p&gt;Last night&amp;rsquo;s frost laid a soft film over all surfaces.&lt;/p&gt;</description>
     </item>
     <item>
       <title>New Camera Day</title>
-      <link>http://localhost:1313/posts/new-camera-day/</link>
+      <link>http://localhost:63805/posts/new-camera-day/</link>
       <pubDate>Sat, 17 Jan 2026 16:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/new-camera-day/</guid>
+      <guid>http://localhost:63805/posts/new-camera-day/</guid>
       <description>&lt;p&gt;The Sony RX100 VII is here! I took it out for a spin with the kids to the forest and the garage of my father. There is so much to learn about it.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Disappointed</title>
-      <link>http://localhost:1313/posts/daily-photo-disappointed/</link>
+      <link>http://localhost:63805/posts/daily-photo-disappointed/</link>
       <pubDate>Fri, 16 Jan 2026 19:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/daily-photo-disappointed/</guid>
+      <guid>http://localhost:63805/posts/daily-photo-disappointed/</guid>
       <description>&lt;p&gt;The Sony RX100 VII did not arrive today. I rescheduled delivery from yesterday to today because of my work trip this week. Not sure what happened for it not to arrive but I&amp;rsquo;m disappointed.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Back</title>
-      <link>http://localhost:1313/posts/daily-photo-back/</link>
+      <link>http://localhost:63805/posts/daily-photo-back/</link>
       <pubDate>Thu, 15 Jan 2026 19:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/daily-photo-back/</guid>
+      <guid>http://localhost:63805/posts/daily-photo-back/</guid>
       <description>&lt;p&gt;Completed my trip back home today. Did twice 450km within 24 hours. The VW California is such a comfortable car for long trips.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Away</title>
-      <link>http://localhost:1313/posts/daily-photo-away/</link>
+      <link>http://localhost:63805/posts/daily-photo-away/</link>
       <pubDate>Wed, 14 Jan 2026 19:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/daily-photo-away/</guid>
+      <guid>http://localhost:63805/posts/daily-photo-away/</guid>
       <description>&lt;p&gt;Tilian is sick and Kellin has been quarantined as a precaution. I am on a work trip to Munich so it was extra difficult to leave them until tomorrow night.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Windpark</title>
-      <link>http://localhost:1313/posts/daily-photo-windpark/</link>
+      <link>http://localhost:63805/posts/daily-photo-windpark/</link>
       <pubDate>Tue, 13 Jan 2026 19:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/daily-photo-windpark/</guid>
+      <guid>http://localhost:63805/posts/daily-photo-windpark/</guid>
       <description>&lt;p&gt;We have a new windpark north of our village. 250m high wind mills. The &lt;a href=&#34;https://en.wikipedia.org/wiki/Moon_illusion&#34;&gt;moon illusion&lt;/a&gt; hits hard with them, they overshadow the village from one end, and look tiny from the closer end. Strange to see.&lt;/p&gt;</description>
     </item>
     <item>
       <title>#77256</title>
-      <link>http://localhost:1313/posts/daily-photo-77256/</link>
+      <link>http://localhost:63805/posts/daily-photo-77256/</link>
       <pubDate>Mon, 12 Jan 2026 19:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/daily-photo-77256/</guid>
+      <guid>http://localhost:63805/posts/daily-photo-77256/</guid>
       <description>&lt;p&gt;Got two Speed Champion BTTF sets (&lt;a href=&#34;https://www.lego.com/en-de/product/time-machine-from-back-to-the-future-77256&#34;&gt;#77256&lt;/a&gt;) for the boys. We watched the first two movies over the holidays for the first time with them and they loved it. Coincidentally Lego released this set January 1st.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Last Day Off</title>
-      <link>http://localhost:1313/posts/daily-photo-last-day-off/</link>
+      <link>http://localhost:63805/posts/daily-photo-last-day-off/</link>
       <pubDate>Sun, 11 Jan 2026 19:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/daily-photo-last-day-off/</guid>
+      <guid>http://localhost:63805/posts/daily-photo-last-day-off/</guid>
       <description>&lt;p&gt;Vacation is over and I&amp;rsquo;m officially back at work tomorrow. A few impressions from today.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Craspedia globosa</title>
-      <link>http://localhost:1313/posts/daily-photo-craspedia-globosa/</link>
+      <link>http://localhost:63805/posts/daily-photo-craspedia-globosa/</link>
       <pubDate>Sat, 10 Jan 2026 19:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/daily-photo-craspedia-globosa/</guid>
+      <guid>http://localhost:63805/posts/daily-photo-craspedia-globosa/</guid>
       <description>&lt;p&gt;Taken in our garden. [&amp;hellip;]&lt;em&gt;Craspedia is a genus of flowering plants in the family Asteraceae commonly known as billy buttons, billy balls, and woollyheads. They are native to Australia and New Zealand where they grow in a variety of habitats from sea level to the Southern Alps.&lt;/em&gt;[&amp;hellip;] (&lt;a href=&#34;https://en.wikipedia.org/wiki/Craspedia&#34;&gt;Wikipedia&lt;/a&gt;) - I&amp;rsquo;d would have called them &lt;strong&gt;yellow balls&lt;/strong&gt;.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Vet</title>
-      <link>http://localhost:1313/posts/daily-photo-vet/</link>
+      <link>http://localhost:63805/posts/daily-photo-vet/</link>
       <pubDate>Fri, 09 Jan 2026 18:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/daily-photo-vet/</guid>
+      <guid>http://localhost:63805/posts/daily-photo-vet/</guid>
       <description>&lt;p&gt;Neither Aika nor I woke up this morning and thought &amp;ldquo;Hey let&amp;rsquo;s rip out a toe nail, that sounds like fun!&amp;rdquo;. Yet here we are and we spent this afternoon at the vet.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Snow</title>
-      <link>http://localhost:1313/posts/daily-photo-snow/</link>
+      <link>http://localhost:63805/posts/daily-photo-snow/</link>
       <pubDate>Thu, 08 Jan 2026 20:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/daily-photo-snow/</guid>
+      <guid>http://localhost:63805/posts/daily-photo-snow/</guid>
       <description>&lt;p&gt;First proper snow this season. The boys loved it. Aika was slightly annoyed.&lt;/p&gt;</description>
     </item>
     <item>
       <title>So I built an RSS Reader</title>
-      <link>http://localhost:1313/posts/i-built-a-rss-reader/</link>
+      <link>http://localhost:63805/posts/i-built-a-rss-reader/</link>
       <pubDate>Thu, 08 Jan 2026 19:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/i-built-a-rss-reader/</guid>
+      <guid>http://localhost:63805/posts/i-built-a-rss-reader/</guid>
       <description>&lt;p&gt;So I built an RSS reader. I wanted something simple for myself. Read my feeds, mark things as read, move on.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Reading</title>
-      <link>http://localhost:1313/posts/daily-photo-reading/</link>
+      <link>http://localhost:63805/posts/daily-photo-reading/</link>
       <pubDate>Wed, 07 Jan 2026 19:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/daily-photo-reading/</guid>
+      <guid>http://localhost:63805/posts/daily-photo-reading/</guid>
       <description>&lt;p&gt;I don&amp;rsquo;t read enough books. I manage reading a few pages maybe one evening every two weeks. I can turn on something on Youtube or a podcast in the car without thinking. A book I have to actively pick up.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Sourdough</title>
-      <link>http://localhost:1313/posts/daily-photo-sourdough/</link>
+      <link>http://localhost:63805/posts/daily-photo-sourdough/</link>
       <pubDate>Tue, 06 Jan 2026 19:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/daily-photo-sourdough/</guid>
+      <guid>http://localhost:63805/posts/daily-photo-sourdough/</guid>
       <description>&lt;p&gt;My wife started baking bread. Here&amp;rsquo;s her spelt (Deutsch: Dinkel) sourdough recipe. It took quite a few iterations to get it right.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Chicken</title>
-      <link>http://localhost:1313/posts/daily-photo-chicken/</link>
+      <link>http://localhost:63805/posts/daily-photo-chicken/</link>
       <pubDate>Mon, 05 Jan 2026 17:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/daily-photo-chicken/</guid>
+      <guid>http://localhost:63805/posts/daily-photo-chicken/</guid>
       <description>&lt;p&gt;When I went out with Aika, I caught two of our four chickens in the garden. We have two Silkie chickens and two feather-footed dwarf chickens. The whole family loves them, and two eggs a day is a nice bonus.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Building This Website with Hugo</title>
-      <link>http://localhost:1313/posts/building-with-hugo/</link>
+      <link>http://localhost:63805/posts/building-with-hugo/</link>
       <pubDate>Mon, 05 Jan 2026 07:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/building-with-hugo/</guid>
+      <guid>http://localhost:63805/posts/building-with-hugo/</guid>
       <description>&lt;p&gt;This website runs on &lt;a href=&#34;https://gohugo.io/&#34;&gt;Hugo&lt;/a&gt;, a static site generator written in Go. I launched it in early January 2026, so if you&amp;rsquo;re reading this when it&amp;rsquo;s fresh, this is all just a few days old. This post documents how I built it.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Winter Walk</title>
-      <link>http://localhost:1313/posts/daily-photo-winter-walk/</link>
+      <link>http://localhost:63805/posts/daily-photo-winter-walk/</link>
       <pubDate>Sun, 04 Jan 2026 16:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/daily-photo-winter-walk/</guid>
+      <guid>http://localhost:63805/posts/daily-photo-winter-walk/</guid>
       <description>&lt;p&gt;A winter walk with Tilian and Aika. The fresh snow melted during the day but froze overnight, leaving icy patches everywhere. Plenty of slipping and sliding along the way, with the kids landing on their backsides more than once. Aika seemed completely unfazed.&lt;/p&gt;</description>
     </item>
     <item>
       <title>2025 Wrapped</title>
-      <link>http://localhost:1313/posts/2025-wrapped/</link>
+      <link>http://localhost:63805/posts/2025-wrapped/</link>
       <pubDate>Sat, 03 Jan 2026 12:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/2025-wrapped/</guid>
+      <guid>http://localhost:63805/posts/2025-wrapped/</guid>
       <description>&lt;p&gt;My year 2025 in numbers and highlights, wrapped-style. First attempt at summarizing an eventful year. More platforms offering wrapped/replay summaries obviously helped.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Death Stranding 2</title>
-      <link>http://localhost:1313/posts/death-stranding-2/</link>
+      <link>http://localhost:63805/posts/death-stranding-2/</link>
       <pubDate>Fri, 02 Jan 2026 14:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/death-stranding-2/</guid>
+      <guid>http://localhost:63805/posts/death-stranding-2/</guid>
       <description>&lt;p&gt;Over the Xmas period I managed to finish Death Stranding 2. The game is a perfect mix between logistics, base building and shooter action for me.I like it more than the Metal Gear Solid games.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Open Source</title>
-      <link>http://localhost:1313/posts/open-source/</link>
+      <link>http://localhost:63805/posts/open-source/</link>
       <pubDate>Fri, 02 Jan 2026 10:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/open-source/</guid>
+      <guid>http://localhost:63805/posts/open-source/</guid>
       <description>&lt;p&gt;At the end of 2025 I spent 100 hours on a single open source project. I did similar things over the past twenty years but always lost interest. This time was different. The software is actually used at my company. Spoiler: I will happily discontinue it.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Hello</title>
-      <link>http://localhost:1313/posts/hello-world/</link>
+      <link>http://localhost:63805/posts/hello-world/</link>
       <pubDate>Thu, 01 Jan 2026 12:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/hello-world/</guid>
+      <guid>http://localhost:63805/posts/hello-world/</guid>
       <description>&lt;p&gt;Welcome to my website. I work as Chief Technology &amp;amp; Product Officer at &lt;a href=&#34;https://roadsurfer.com&#34;&gt;roadsurfer&lt;/a&gt;, where we help people explore the world in campervans.&lt;/p&gt;</description>
     </item>
   </channel>
