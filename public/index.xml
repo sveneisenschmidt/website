@@ -6,8 +6,16 @@
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 19 Jan 2026 18:00:00 &#43;0000</lastBuildDate>
+    <lastBuildDate>Tue, 20 Jan 2026 12:30:00 &#43;0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bricks</title>
+      <link>http://localhost:1313/posts/daily-photo-bricks/</link>
+      <pubDate>Tue, 20 Jan 2026 12:30:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-bricks/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-bricks/DSC00093_hu_ee971e6536de2a59.webp" width="768" height="512" alt="Bricks cover image" /><p>Week started well at work and I can use the morning hours again for a longer walk with Aika before hitting the desk. Winter mornings don’t offer great light, yet it’s the only time I have to take pictures during week days.
+ (<a href="http://localhost:1313/posts/daily-photo-bricks/" title="Continue reading Bricks">85 more words</a>)</p>]]></description>
+    </item>
     <item>
       <title>Mine</title>
       <link>http://localhost:1313/posts/daily-photo-mine/</link>

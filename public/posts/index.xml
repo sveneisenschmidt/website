@@ -10,6 +10,13 @@
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Mine</title>
+      <link>http://localhost:1313/posts/daily-photo-bricks/</link>
+      <pubDate>Mon, 19 Jan 2026 18:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/daily-photo-bricks/</guid>
+      <description>&lt;p&gt;Week started well at work and I can use the morning hours again for a longer walk with Aika before htting the desk. The light in the morning hours are awful in winter yet it&amp;rsquo;s the only time to take pictures.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Mine</title>
       <link>http://localhost:1313/posts/daily-photo-mine/</link>
       <pubDate>Mon, 19 Jan 2026 18:00:00 +0000</pubDate>
       <guid>http://localhost:1313/posts/daily-photo-mine/</guid>
