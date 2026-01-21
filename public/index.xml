@@ -6,8 +6,16 @@
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 20 Jan 2026 12:30:00 &#43;0000</lastBuildDate>
+    <lastBuildDate>Wed, 21 Jan 2026 15:30:00 &#43;0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Tilian’s 8th Birthday</title>
+      <link>http://localhost:1313/posts/daily-photo-birthday/</link>
+      <pubDate>Wed, 21 Jan 2026 15:30:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-birthday/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-birthday/DSC00131_hu_20821556653dbd01.webp" width="768" height="768" alt="Tilian’s 8th Birthday cover image" /><p>Tilian turned 8! Time flies so fast. We’ll spent the day building a decomission LEGO (42097) set I have been hunting for him for a while
+ (<a href="http://localhost:1313/posts/daily-photo-birthday/" title="Continue reading Tilian’s 8th Birthday">8 more words</a>)</p>]]></description>
+    </item>
     <item>
       <title>Bricks</title>
       <link>http://localhost:1313/posts/daily-photo-bricks/</link>
