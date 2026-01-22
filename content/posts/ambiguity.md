@@ -20,7 +20,7 @@ People confuse ambiguity with the absence of strategy but that's not how it work
 
 Over the years I've seen people respond to ambiguity in different ways. Some hold on to old plans because the plan said X, so we're doing X. But if the business reality changed in the last four weeks, how can you not react to that? Seriously? The plan was based on assumptions, the assumptions changed, and the plan is now fiction. In the end it comes down to how open you are to change. That's true beyond work too.
 
-Others just figure it out. They make calls, they try things, they're wrong sometimes and adjust. Those are the people who ship things that weren't planned but solved real problems.
+Others just figure it out. They make calls, they try things, they're wrong sometimes and adjust. Those are the people who ship things that weren't planned but solved real problems. When I was working on a reviews integration for trivago Express Booking, I broke down features and suggested different ways of doing things that the product owner hadn't considered. I got praised for it. That's when I learned that proposing and solving proactively gets rewarded, and that hasn't changed to this day.
 
 There is no certainty in product development and I think a lot of people struggle with accepting that. We're building things for eight billion people, markets shift weekly, competitors do things you didn't anticipate, and users behave in ways that make no sense until suddenly they do. If you need everything nailed down before you start, you're too slow.
 
