@@ -51,7 +51,7 @@ If you find yourself complaining about ambiguity, stop waiting for clarity and c
 - Look at the business numbers
 - Form an opinion
 - Write it down
-- Share and validate it _<- This is where most people struggle: being open to feedback and being challenged on their ideas._
+- Share and validate it _<- This is where most people struggle: seeking feedback and being challenged on their ideas._
 - Make it happen
 
 Ambiguity is not something to manage or to complain about. It's the space where you actually get to decide things. Isn't that what people want, to actually decide?
