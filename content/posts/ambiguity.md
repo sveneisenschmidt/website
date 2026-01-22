@@ -50,6 +50,6 @@ If you find yourself complaining about ambiguity, stop waiting for clarity and c
 - Share and validate it _<- This is where I see most people struggle, myself included: seeking feedback and being challenged on their ideas._
 - Make it happen
 
-One more thing I learned: talk to founders, C-level, senior leaders as often as you can. Understand what's top of mind for them. It prevents surprises.
+One more thing I learned: talk to founders, C-level, senior leaders as often as you can. Understand what's top of mind for them. It prevents surprises by getting information first hand and might help you read between the gaps of ambiguity.
 
 Ambiguity is not something to manage or to complain about. It's the space where you actually get to decide things. Isn't that what people want, to actually decide?
