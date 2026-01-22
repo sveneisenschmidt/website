@@ -10,7 +10,7 @@ Ambiguity gets a bad reputation at work, and people treat it like a warning sign
 
 <!--more-->
 
-Ten years ago I would have agreed because back then I wanted clarity, defined requirements, a plan I could follow. I thought that's what good leadership looked like: removing uncertainty so people can execute.
+Ten years ago I would have agreed because back then I wanted clarity, defined requirements, a plan I could follow. I thought that's what good leadership looked like: removing uncertainty so people can execute. I expected my manager to do that for me. He didn't, and I'm grateful for it. Thanks [Daniel](https://www.flowplace.com/daniel-troeger).
 
 Then I got my first management role and suddenly complaining about unclear requirements wasn't useful anymore. As a developer I could point at the mess and say "this isn't defined well enough," but as a manager nobody cared. If I had kept saying "this isn't defined well enough" in that role, what would have happened in my next performance review? I probably wouldn't be where I am today. I wasn't measured by the code I wrote, I was measured by whether my team hit its goals, and hitting those goals isn't just some corporate phrase. It's often about whether a product survives or gets killed, whether a vision lives on or gets abandoned, whether the company makes it or doesn't. There was no option to not deliver.
 
