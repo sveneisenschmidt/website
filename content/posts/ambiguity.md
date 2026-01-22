@@ -26,7 +26,7 @@ There is no certainty in product development and I think a lot of people struggl
 
 We're not surgeons, pilots, or paramedics. Those jobs need fixed routines because mistakes kill people, but software development isn't like that. If we ship something wrong we can fix it, and if we make a bad call we learn and adjust. If we're wrong, we fix it. If we're slow, we lose.
 
-Two things help: looking at data and being fast. Looking at data doesn't mean having all the answers upfront, it means moving, measuring, and correcting course. You ship something small, you look at the numbers, you adjust. That's it. And speed matters more than people admit because the problem with software development is that it often takes forever. Weeks turn into months, months turn into quarters, and by the time you ship, the world moved on. The ones who do well are the ones who decide fast and accept being wrong sometimes.
+Two things help: looking at data and being fast. Looking at data doesn't mean having all the answers upfront, it means moving, measuring, and correcting course. You ship something small, you look at the numbers, you adjust. That's it. And speed matters more than people admit because the problem with product development is that it often takes forever. Weeks turn into months, months turn into quarters, and by the time you ship, the world moved on. The ones who do well are the ones who decide fast and accept being wrong sometimes.
 
 Moving first sounds obvious until you've spent three weeks in a planning loop that produced nothing but slides. I've been there, it's exhausting, and at the end you still have to build the thing anyway.
 
