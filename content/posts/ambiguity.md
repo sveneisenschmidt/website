@@ -34,7 +34,7 @@ I've seen growing companies try to establish behaviors, processes, and rules tha
 
 What helps is having a strong opinion on how things should be done. That opinion can come from experience, from data, or from both, but you need one. People with opinions propose things, and people who propose things lead. People who don't propose get led, by their manager, by stakeholders, or by the absence of company success. Choose an approach and ask yourself what makes you happier at work.
 
-When people don't lead with an opinion and don't move first, management gets nervous. It's not about a lack of trust, it's the fear that ambiguity leads to standstill instead of action. That's when questions about roadmaps, timelines, and aligned initiatives start coming in. And that kills innovation and ownership, the exact things people then complain about. We created that situation ourselves.
+When people don't lead with an opinion and don't move first, management gets nervous. It's not about a lack of trust, it's the fear that ambiguity leads to standstill instead of action. That's when questions about roadmaps, timelines, and aligned initiatives start coming in. And that kills innovation and ownership, the exact things people then complain about. We created that situation ourselves. I'm guilty of this myself. When I didn't see progress, I fell back to asking for roadmaps instead of helping people find their own direction.
 
 When I need to create alignment and take the lead on something ambiguous, I use a simple format that I also recommend to my teams. At Delivery Hero we used it for almost every decision. Five questions:
 
