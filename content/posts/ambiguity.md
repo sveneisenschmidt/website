@@ -6,7 +6,7 @@ topics = ['Work']
 emojis = ['🤷']
 +++
 
-Ambiguity gets a bad reputation at work, and people treat it like a warning sign. "There's no clear direction." "Leadership doesn't have a plan." I've sat in meetings where someone said exactly that, and everyone nodded along.
+Ambiguity gets a bad reputation at work, and people treat it like something is broken. "There's no clear direction." "Leadership doesn't have a plan." I've sat in meetings where someone said exactly that, and I still read the same feedback in employee surveys today.
 
 <!--more-->
 
