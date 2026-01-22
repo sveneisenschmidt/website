@@ -16,7 +16,7 @@ So when I got my first management role, suddenly complaining about unclear requi
 
 The projects where I made a difference weren't the ones with perfect specs and detailed plans, they were the ones where nobody had any idea how to even solve the problem. There was a goal and someone had to make it happen.
 
-People confuse ambiguity with the absence of strategy but that's not how it works. Strategy tells you what you're not going to do, it sets boundaries. It tells you what you're going to do. Principles tell you who you are. But neither hands you a playbook for Tuesday morning. The space in between is yours to fill. I don't know why people expect a detailed plan from the top, maybe it feels safer, but that's not how any of this works in practice. The higher up you go, the less detailed the guidance becomes. At some point it's just the business numbers that give you direction, not plans.
+People confuse ambiguity with the absence of strategy but that's not how it works. Strategy sets boundaries, principles tell you who you are. Neither tells you what to do tomorrow. The space in between is yours to fill. I don't know why people expect a detailed plan from the top, maybe it feels safer, but that's not how any of this works in practice. The higher up you go, the less detailed the guidance becomes. At some point it's just the business numbers that give you direction, not plans.
 
 Over the years I've seen people respond to ambiguity in different ways. Some hold on to old plans because the plan said X, so we're doing X. But if the business reality changed in the last four weeks, how can you not react to that? Seriously? The plan was based on assumptions, the assumptions changed, and the plan is now fiction.
 
