@@ -16,7 +16,7 @@ So when I got my first management role, suddenly complaining about unclear requi
 
 The projects where I made a difference weren't the ones with perfect specs and detailed plans, they were the ones where nobody had any idea how to even solve the problem. There was a goal and someone had to make it happen.
 
-People confuse ambiguity with the absence of strategy but that's not how it works. Strategy tells you what you're not going to do. It sets boundaries. Principles tell you who you are. But neither hands you a playbook for Tuesday morning. The space in between is yours to fill. I don't know why people expect a detailed plan from the top, maybe it feels safer, but that's not how any of this works in practice. The higher up you go, the less detailed the guidance becomes, and that's how it should be.
+People confuse ambiguity with the absence of strategy but that's not how it works. Strategy tells you what you're not going to do, it sets boundaries. It tells you what you're going to do. Principles tell you who you are. But neither hands you a playbook for Tuesday morning. The space in between is yours to fill. I don't know why people expect a detailed plan from the top, maybe it feels safer, but that's not how any of this works in practice. The higher up you go, the less detailed the guidance becomes, and that's how it should be.
 
 Over the years I've seen people respond to ambiguity in different ways. Some hold on to old plans because the plan said X, so we're doing X. But if the business reality changed in the last four weeks, how can you not react to that? Seriously? The plan was based on assumptions, the assumptions changed, and the plan is now fiction.
 
@@ -33,5 +33,15 @@ Moving first sounds obvious until you've spent three weeks in a planning loop th
 I've seen growing companies try to establish behaviors, processes, and rules that would kill any startup within weeks. More approvals, more sign-offs, more alignment meetings. The desire to play it safe, to wait for clarity, to not move until everything is defined. And then you wonder why nothing ships. If you don't move first, you're just waiting for someone else to outrun you.
 
 What helps is having a strong opinion on how things should be done. That opinion can come from experience, from data, or from both, but you need one. People with opinions propose things, and people who propose things lead. People who don't propose get led, by their manager, by stakeholders, or by the absence of company success. Choose an approach and ask yourself what makes you happier at work.
+
+When I need to create alignment and take the lead on something ambiguous, I use a simple format that I also recommend to my teams. At Delivery Hero we used it for almost every decision. Five questions:
+
+- What is the problem we are trying to solve?
+- How do we measure success?
+- What did we learn about this topic and ourselves in the last 6-12 months?
+- What did we try already and what did it tell us?
+- What are solutions (2-3) and what is the recommendation?
+
+What I like about this: you don't jump to a solution first. You get clear on the problem and how you'll measure success before thinking about what to build. Write it down and share it. People can disagree, but at least there's something to disagree with.
 
 Ambiguity is not something to manage or to complain about. It's the space where you actually get to decide things. Isn't that what people want, to actually decide?
