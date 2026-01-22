@@ -49,7 +49,7 @@ What I like about this: you don't jump to a solution first. You get clear on the
 If you find yourself complaining about ambiguity, stop waiting for clarity and create it:
 
 - Look at the business numbers
-- Form an opinion
+- Form an opinion _<- And why your opinion is not in line with the business numbers, ask yourself why is that? I think people usually start here and not with the previous step._
 - Write it down
 - Share and validate it _<- This is where most people struggle: seeking feedback and being challenged on their ideas._
 - Make it happen
