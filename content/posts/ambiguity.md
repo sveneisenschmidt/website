@@ -18,7 +18,7 @@ The projects where I made a difference weren't the ones with perfect specs and d
 
 People confuse ambiguity with the absence of strategy but that's not how it works. Strategy sets boundaries, principles tell you who you are. Neither tells you what to do tomorrow. The space in between is yours to fill. I don't know why people expect a detailed plan from the top, maybe it feels safer, but that's not how any of this works in practice. The higher up you go, the less detailed the guidance becomes. At some point it's just the business numbers that give you direction, not plans.
 
-Over the years I've seen people respond to ambiguity in different ways. Some hold on to old plans because the plan said X, so we're doing X. But if the business reality changed in the last four weeks, how can you not react to that? Seriously? The plan was based on assumptions, the assumptions changed, and the plan is now fiction.
+Over the years I've seen people respond to ambiguity in different ways. Some hold on to old plans because the plan said X, so we're doing X. But if the business reality changed in the last four weeks, how can you not react to that? Seriously? The plan was based on assumptions, the assumptions changed, and the plan is now fiction. In the end it comes down to how open you are to change. That's true beyond work too.
 
 Others just figure it out. They make calls, they try things, they're wrong sometimes and adjust. Those are the people who ship things that weren't planned but solved real problems.
 
@@ -45,5 +45,13 @@ When I need to create alignment and take the lead on something ambiguous, I use 
 - What are solutions (2-3) and what is the recommendation?
 
 What I like about this: you don't jump to a solution first. You get clear on the problem and how you'll measure success before thinking about what to build. Write it down and share it. People can disagree, but at least there's something to disagree with.
+
+If you find yourself complaining about ambiguity, stop waiting for clarity and create it:
+
+- Look at the business numbers
+- Form an opinion
+- Write it down
+- Share and validate it
+- Make it happen
 
 Ambiguity is not something to manage or to complain about. It's the space where you actually get to decide things. Isn't that what people want, to actually decide?
