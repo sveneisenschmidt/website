@@ -3,6 +3,7 @@ date = '2026-01-22T08:00:00'
 draft = false
 title = 'Ambiguity'
 topics = ['Work']
+emojis = ['🤷']
 +++
 
 Ambiguity gets a bad reputation at work, and people treat it like a warning sign. "There's no clear direction." "Leadership doesn't have a plan." I've sat in meetings where someone said exactly that, and everyone nodded along.
