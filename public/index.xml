@@ -6,15 +6,23 @@
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 23 Jan 2026 16:15:00 &#43;0000</lastBuildDate>
+    <lastBuildDate>Sat, 24 Jan 2026 17:00:00 &#43;0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Mine</title>
+      <title>Cake</title>
+      <link>http://localhost:1313/posts/daily-photo-cake/</link>
+      <pubDate>Sat, 24 Jan 2026 17:00:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-cake/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-cake/DSC00223_hu_34d8e289e78fa8be.webp" width="768" height="476" alt="Cake cover image" /><p>We needed to cancel Tilian’s kids birthday party on short notice due to last-minute guest-to-be cancellations of 66% of participants. Fortunately the cake was already prepared and needed to be taken care of appropriately.
+ (<a href="http://localhost:1313/posts/daily-photo-cake/" title="Continue reading Cake">27 more words</a>)</p>]]></description>
+    </item>
+    <item>
+      <title>Mine (Pt.2)</title>
       <link>http://localhost:1313/posts/daily-photo-mine-pt2/</link>
       <pubDate>Fri, 23 Jan 2026 16:15:00 &#43;0000</pubDate>
       <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-mine-pt2/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-mine-pt2/DSC00191_hu_998a64e890b5f2e4.webp" width="768" height="474" alt="Mine cover image" /><p>I went back to the open-cast mining ground and found a great spot to photograph these massive steel giants that have scarred the landscape.
- (<a href="http://localhost:1313/posts/daily-photo-mine-pt2/" title="Continue reading Mine">62 more words</a>)</p>]]></description>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-mine-pt2/DSC00191_hu_998a64e890b5f2e4.webp" width="768" height="474" alt="Mine (Pt.2) cover image" /><p>I went back to the open-cast mining ground and found a great spot to photograph these massive steel giants that have scarred the landscape.
+ (<a href="http://localhost:1313/posts/daily-photo-mine-pt2/" title="Continue reading Mine (Pt.2)">62 more words</a>)</p>]]></description>
     </item>
     <item>
       <title>Windpark (Pt.2)</title>
