@@ -13,4 +13,4 @@ We needed to cancel Tilian's kids birthday party on short notice due to last-min
 
 {{< img src="DSC00223.jpeg" alt="Birthday cake" >}}
 
-The party has been moved by one week and will be supported by a surprise visit to the cinema.
+The party has been moved by one week and will be supported by a surprise visit to the cinema tomorrow.
