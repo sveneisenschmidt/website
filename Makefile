@@ -15,10 +15,15 @@ build:
 	npx pagefind --site public --glob 'posts/*/**/*.html'
 	rm -f public/pagefind/pagefind-ui.* public/pagefind/pagefind-modular-ui.* public/pagefind/pagefind-highlight.js
 
-publish:
+push:
 	git add -A
 	git commit -m "Update site $$(date +%Y-%m-%d\ %H:%M)"
 	git push origin main
+
+pull:
+	git fetch --all
+	git checkout main
+
 
 logs:
 	@command -v goaccess >/dev/null 2>&1 || { echo "goaccess is required but not installed. Install with: brew install goaccess"; exit 1; }
