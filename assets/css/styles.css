@@ -131,7 +131,9 @@ img.hero {
     padding: 0.5em;
     background: var(--color-bg-inverted);
     color: var(--color-text-inverted);
-    font-size: 0.8em;
+    font-family: monospace;
+    font-size: 0.7em;
+    font-weight: 400;
     border-radius: 0 0 0.25rem 0.25rem;
     opacity: 0;
     transition: opacity 0.2s ease;
