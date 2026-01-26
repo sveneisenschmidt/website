@@ -1,8 +1,7 @@
 {{ define "main" }} {{ .Content }} {{ $posts := where site.RegularPages
-"Section" "posts" }} {{ $paginator := .Paginate $posts }} {{ range $index, $page
-:= $paginator.Pages }} {{ $featured := and (eq $paginator.PageNumber 1) (eq
-$index 0) $page.Params.cover }} {{ partial "post-card.html" (dict "Page" $page
-"Featured" $featured) }} {{ end }} {{ if gt $paginator.TotalPages 1 }}
+"Section" "posts" }} {{ $paginator := .Paginate $posts }} {{ range
+$paginator.Pages }} {{ partial "post-card.html" . }} {{ end }} {{ if gt
+$paginator.TotalPages 1 }}
 <nav class="pagination">
     {{ if $paginator.HasPrev }}
     <a href="{{ $paginator.Prev.URL }}">&larr; Newer</a>

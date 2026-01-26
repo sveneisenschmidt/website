@@ -289,17 +289,6 @@ section {
     }
 }
 
-section.featured {
-    @media (min-width: 769px) {
-        flex-direction: column;
-
-        .cover {
-            width: 100%;
-            height: auto;
-        }
-    }
-}
-
 #pop-wrapper {
     margin: 1rem 0;
     .pop-reactions {
