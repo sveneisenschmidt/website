@@ -1,8 +1,14 @@
-<section{{ with .Params.cover }} class="has-cover"{{ end }}>
-  {{ partial "cover.html" . }}
+{{ $page := . }}
+{{ $featured := false }}
+{{ if reflect.IsMap . }}
+  {{ $page = .Page }}
+  {{ $featured = .Featured }}
+{{ end }}
+<section class="{{ if $page.Params.cover }}has-cover{{ end }}{{ if $featured }} featured{{ end }}">
+  {{ partial "cover.html" $page }}
   <div>
-    <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
-    <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
-    {{ .Summary }}
+    <h2><a href="{{ $page.RelPermalink }}">{{ $page.LinkTitle }}</a></h2>
+    <time datetime="{{ $page.Date.Format "2006-01-02" }}">{{ $page.Date.Format "January 2, 2006" }}</time>
+    {{ $page.Summary }}
   </div>
 </section>
