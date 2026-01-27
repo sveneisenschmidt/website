@@ -3,18 +3,24 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://localhost:1313/topics/daily-photo/</loc>
-    <lastmod>2026-01-26T10:30:00+00:00</lastmod>
+    <lastmod>2026-01-27T18:41:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/daily-photo-kohlmeise/</loc>
+    <lastmod>2026-01-27T18:41:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/topics/photography/</loc>
+    <lastmod>2026-01-27T18:41:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/</loc>
-    <lastmod>2026-01-26T10:30:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/daily-photo-soft/</loc>
-    <lastmod>2026-01-26T10:30:00+00:00</lastmod>
+    <lastmod>2026-01-27T18:41:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/</loc>
-    <lastmod>2026-01-26T10:30:00+00:00</lastmod>
+    <lastmod>2026-01-27T18:41:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/topics/</loc>
+    <lastmod>2026-01-27T18:41:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/daily-photo-soft/</loc>
     <lastmod>2026-01-26T10:30:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-imagination/</loc>
@@ -51,9 +57,6 @@
     <lastmod>2026-01-19T11:45:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-frost/</loc>
-    <lastmod>2026-01-18T12:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/topics/photography/</loc>
     <lastmod>2026-01-18T12:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/cv/</loc>

@@ -6,8 +6,16 @@
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 26 Jan 2026 10:30:00 &#43;0000</lastBuildDate>
+    <lastBuildDate>Tue, 27 Jan 2026 18:41:00 &#43;0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Kohlmeise</title>
+      <link>http://localhost:1313/posts/daily-photo-kohlmeise/</link>
+      <pubDate>Tue, 27 Jan 2026 18:41:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-kohlmeise/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-kohlmeise/DSC00280_hu_f5ed4b8ba5a30ad0.webp" width="768" height="512" alt="Kohlmeise cover image" /><p>I thought this is a decent picture of a Kohlmeise (google the english name yourself - not going to use it here) but then remembered Jasper’s pictures of birds (1, 2) he took and felt ashamed.
+ (<a href="http://localhost:1313/posts/daily-photo-kohlmeise/" title="Continue reading Kohlmeise">8 more words</a>)</p>]]></description>
+    </item>
     <item>
       <title>Soft</title>
       <link>http://localhost:1313/posts/daily-photo-soft/</link>
