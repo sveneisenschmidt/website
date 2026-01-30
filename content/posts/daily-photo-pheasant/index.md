@@ -6,7 +6,7 @@ emojis = ["🐦"]
 cover = "DSC00482.jpeg"
 +++
 
-Went for a long walk and did some meetings from the phone while the light was grat outside. Saw a pheasant, a young buck and heron. 
+Went for a long walk and did some meetings from the phone while the light was great outside. Saw a pheasant, a young buck and heron. 
 
 <!--more-->
 
