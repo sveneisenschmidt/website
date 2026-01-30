@@ -6,8 +6,32 @@
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 27 Jan 2026 18:41:00 &#43;0000</lastBuildDate>
+    <lastBuildDate>Fri, 30 Jan 2026 19:00:00 &#43;0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Pheasant</title>
+      <link>http://localhost:1313/posts/daily-photo-pheasant/</link>
+      <pubDate>Fri, 30 Jan 2026 19:00:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-pheasant/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-pheasant/DSC00482_hu_20f5ef8d85f598e8.webp" width="614" height="768" alt="Pheasant cover image" /><p>Went for a long walk and did some meetings from the phone while the light was grat outside. Saw a pheasant, a young buck and heron.
+ (<a href="http://localhost:1313/posts/daily-photo-pheasant/" title="Continue reading Pheasant">8 more words</a>)</p>]]></description>
+    </item>
+    <item>
+      <title>Two Dorks</title>
+      <link>http://localhost:1313/posts/daily-photo-dorks/</link>
+      <pubDate>Thu, 29 Jan 2026 19:45:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-dorks/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-dorks/DSC00423_hu_ce885550f068c7cf.webp" width="768" height="512" alt="Two Dorks cover image" /><p>Two dorks outside in our garden. Photo courtesy of Nadine.
+ (<a href="http://localhost:1313/posts/daily-photo-dorks/" title="Continue reading Two Dorks">8 more words</a>)</p>]]></description>
+    </item>
+    <item>
+      <title>Blue</title>
+      <link>http://localhost:1313/posts/daily-photo-blue/</link>
+      <pubDate>Wed, 28 Jan 2026 18:25:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-blue/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-blue/DSC00397_hu_6321ac8d98c3d9b.webp" width="768" height="512" alt="Blue cover image" /><p>I have been trying to be more active in the last days, averaging around 16.000 steps each day, both treadmill supported but also more walks with Aika. Today I came across this blue net hanging ourside of a barn and I just could not figure out what it’s supposed to do.
+ (<a href="http://localhost:1313/posts/daily-photo-blue/" title="Continue reading Blue">8 more words</a>)</p>]]></description>
+    </item>
     <item>
       <title>Kohlmeise</title>
       <link>http://localhost:1313/posts/daily-photo-kohlmeise/</link>
