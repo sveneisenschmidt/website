@@ -6,8 +6,16 @@
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 30 Jan 2026 19:00:00 &#43;0000</lastBuildDate>
+    <lastBuildDate>Sat, 31 Jan 2026 18:45:00 &#43;0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Melt</title>
+      <link>http://localhost:1313/posts/daily-photo-melt/</link>
+      <pubDate>Sat, 31 Jan 2026 18:45:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-melt/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-melt/IMG_0085_hu_633e5ec35398c4cf.webp" width="768" height="512" alt="Melt cover image" /><p>Nadine went to Czechia to learn about tracking of wolves and other animals. She took the Sony RX100 VII and I got to use her new Canon EOS 2000D. The kids kept me busy inside and outside, the only shot that I eventually kept was the one of snow slowly melting down our greenhouse.
+ (<a href="http://localhost:1313/posts/daily-photo-melt/" title="Continue reading Melt">29 more words</a>)</p>]]></description>
+    </item>
     <item>
       <title>Pheasant</title>
       <link>http://localhost:1313/posts/daily-photo-pheasant/</link>
