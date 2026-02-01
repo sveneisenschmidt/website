@@ -6,8 +6,16 @@
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 31 Jan 2026 18:45:00 &#43;0000</lastBuildDate>
+    <lastBuildDate>Sun, 01 Feb 2026 16:45:00 &#43;0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Overtaken</title>
+      <link>http://localhost:1313/posts/daily-photo-overtaken/</link>
+      <pubDate>Sun, 01 Feb 2026 16:45:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-overtaken/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-overtaken/DSC00606_hu_3d9208340118d865.webp" width="768" height="512" alt="Overtaken cover image" /><p>I went for a two-hour walk with Aika, didn’t get any good shots except the usual brick-buildings from across the river (51.140149, 12.230809). After two hours, a group of older road cyclists passed me, dropped a cheeky comment and sped off.
+ (<a href="http://localhost:1313/posts/daily-photo-overtaken/" title="Continue reading Overtaken">48 more words</a>)</p>]]></description>
+    </item>
     <item>
       <title>Melt</title>
       <link>http://localhost:1313/posts/daily-photo-melt/</link>
@@ -21,7 +29,7 @@
       <link>http://localhost:1313/posts/daily-photo-pheasant/</link>
       <pubDate>Fri, 30 Jan 2026 19:00:00 &#43;0000</pubDate>
       <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-pheasant/</guid>
-      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-pheasant/DSC00482_hu_20f5ef8d85f598e8.webp" width="614" height="768" alt="Pheasant cover image" /><p>Went for a long walk and did some meetings from the phone while the light was grat outside. Saw a pheasant, a young buck and heron.
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-pheasant/DSC00482_hu_20f5ef8d85f598e8.webp" width="614" height="768" alt="Pheasant cover image" /><p>Went for a long walk and did some meetings from the phone while the light was great outside. Saw a pheasant, a young buck and heron.
  (<a href="http://localhost:1313/posts/daily-photo-pheasant/" title="Continue reading Pheasant">8 more words</a>)</p>]]></description>
     </item>
     <item>
