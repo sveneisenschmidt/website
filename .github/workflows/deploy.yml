@@ -52,7 +52,7 @@ jobs:
       - name: Submit to IndexNow
         run: |
           INDEXNOW_KEY=$(basename static/*-*-*-*-*.txt .txt)
-          URLS=$(curl -s https://sven.eisenschmidt.website/sitemap.xml | sed -n 's/.*<loc>\(https:\/\/sven.eisenschmidt.website[^<]*\)<\/loc>.*/\1/p')
+          URLS=$(curl -s https://sven.eisenschmidt.website/sitemap.xml | grep -oE 'https://sven\.eisenschmidt\.website[^<]+')
           URL_LIST=$(echo "$URLS" | jq -R -s -c 'split("\n") | map(select(length > 0))')
           echo "Submitting $(echo "$URLS" | wc -l | tr -d ' ') URLs to IndexNow..."
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST "https://api.indexnow.org/indexnow" \
