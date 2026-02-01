@@ -17,12 +17,15 @@ build:
 
 push:
 	git add -A
-	git commit -m "Update site $$(date +%Y-%m-%d\ %H:%M)"
+	git commit -m "Update site $$(date +%Y-%m-%d\ %H:%M)" || true
+	git pull --rebase origin main
 	git push origin main
 
 pull:
 	git fetch --all
-	git checkout main
+	git stash
+	git pull --rebase origin main
+	git stash pop || true
 
 
 logs:
