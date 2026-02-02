@@ -6,8 +6,16 @@
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 01 Feb 2026 16:45:00 &#43;0000</lastBuildDate>
+    <lastBuildDate>Mon, 02 Feb 2026 14:30:00 &#43;0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Abandoned</title>
+      <link>http://localhost:1313/posts/daily-photo-abandoned/</link>
+      <pubDate>Mon, 02 Feb 2026 14:30:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-abandoned/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-abandoned/DSC00598_hu_88019720cf188f8c.webp" width="768" height="512" alt="Abandoned cover image" /><p>Came across this abandoned place. The window color (tm) gives it a nice contrast.
+ (<a href="http://localhost:1313/posts/daily-photo-abandoned/" title="Continue reading Abandoned">8 more words</a>)</p>]]></description>
+    </item>
     <item>
       <title>Overtaken</title>
       <link>http://localhost:1313/posts/daily-photo-overtaken/</link>

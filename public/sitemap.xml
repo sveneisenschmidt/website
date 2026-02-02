@@ -2,19 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/topics/daily-photo/</loc>
-    <lastmod>2026-02-01T16:45:00+00:00</lastmod>
+    <loc>http://localhost:1313/posts/daily-photo-abandoned/</loc>
+    <lastmod>2026-02-02T14:30:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/daily-photo-overtaken/</loc>
-    <lastmod>2026-02-01T16:45:00+00:00</lastmod>
+    <loc>http://localhost:1313/topics/daily-photo/</loc>
+    <lastmod>2026-02-02T14:30:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/</loc>
-    <lastmod>2026-02-01T16:45:00+00:00</lastmod>
+    <lastmod>2026-02-02T14:30:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/</loc>
-    <lastmod>2026-02-01T16:45:00+00:00</lastmod>
+    <lastmod>2026-02-02T14:30:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/topics/</loc>
+    <lastmod>2026-02-02T14:30:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/daily-photo-overtaken/</loc>
     <lastmod>2026-02-01T16:45:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-melt/</loc>
@@ -40,6 +43,12 @@
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-imagination/</loc>
     <lastmod>2026-01-25T18:05:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/log/</loc>
+    <lastmod>2026-01-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/log/movies/</loc>
+    <lastmod>2026-01-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-cake/</loc>
     <lastmod>2026-01-24T17:00:00+00:00</lastmod>
@@ -76,12 +85,6 @@
   </url><url>
     <loc>http://localhost:1313/cv/</loc>
     <lastmod>2026-01-18T12:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/log/</loc>
-    <lastmod>2026-01-18T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/log/movies/</loc>
-    <lastmod>2026-01-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/new-camera-day/</loc>
     <lastmod>2026-01-17T16:00:00+00:00</lastmod>
