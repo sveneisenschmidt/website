@@ -10,7 +10,7 @@ Nadine went _wolf tracking_ last weekend and took great shots. It took place acr
 
 <!--more-->
 
-A day in the woods learning to read animal tracks. Footprints, sleeping spots, droppings - all the signs animals leave behind. I like how much depth the Sony RX100 VII was able to capture. The shots turned out great, Nadine got talent!
+The group spent a day in the woods learning to read animal tracks. Footprints, sleeping spots, droppings. basicallyy the signs animals leave behind. I like how much depth the Sony RX100 VII was able to capture. The shots turned out great, Nadine got talent!
 
 {{< img src="DSC00531.jpeg" alt="Winter landscape in Czech Republic" >}}
 {{< img src="DSC00527.jpeg" alt="Forest scenery" >}}
