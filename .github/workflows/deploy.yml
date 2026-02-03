@@ -7,6 +7,7 @@ on:
   schedule:
     # Every 30 minutes
     - cron: "0,30 * * * *"
+  workflow_dispatch:
 
 jobs:
   deploy:
