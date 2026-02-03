@@ -10,9 +10,7 @@ Nadine went _wolf tracking_ last weekend and took great shots. It took place acr
 
 <!--more-->
 
-The workshop was about learning to read wolf tracks in the snow. How footprints form, what information they carry, and how to follow them through the landscape. The group spent the day outside, around a fire, learning trailing techniques and sharpening their senses for signs that usually go unnoticed.
-
-I like how much depth the Sony RX100 VII was able to capture. The shots turned out great, Nadine got talent!
+A day in the woods learning to read animal tracks. Footprints, sleeping spots, droppings - all the signs animals leave behind. I like how much depth the Sony RX100 VII was able to capture. The shots turned out great, Nadine got talent!
 
 {{< img src="DSC00531.jpeg" alt="Winter landscape in Czech Republic" >}}
 {{< img src="DSC00527.jpeg" alt="Forest scenery" >}}
