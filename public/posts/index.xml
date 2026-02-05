@@ -13,7 +13,7 @@
       <link>http://localhost:1313/posts/daily-photo-bubblegum-blue/</link>
       <pubDate>Wed, 04 Feb 2026 17:12:00 +0000</pubDate>
       <guid>http://localhost:1313/posts/daily-photo-bubblegum-blue/</guid>
-      <description>&lt;p&gt;Saw this bubblegum-blue tractor during my daily tour with Aika. Everything is brown and dark in winter and I am a sucker for some color during my walks.&lt;/p&gt;&#xA;&#xA;&lt;p&gt;Not much interesting happening in the last days. Work has been busy as always, it&amp;rsquo;s performance review time and I was hitting 20,000 steps a day for the last two weeks with the treadmill. Yet writing performance reviews for the team and walking on a shaky treadmill does not go well together. So I dropped below 10,000 steps today.&lt;/p&gt;</description>
+      <description>&lt;p&gt;Saw this bubblegum-blue tractor during my daily tour with Aika. Everything is brown and dark in winter and I am a sucker for some color during my walks.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Wolf Tracking</title>
@@ -287,6 +287,13 @@
       <pubDate>Thu, 01 Jan 2026 12:00:00 +0000</pubDate>
       <guid>http://localhost:1313/posts/hello-world/</guid>
       <description>&lt;p&gt;Welcome to my website. I work as Chief Technology &amp;amp; Product Officer at &lt;a href=&#34;https://roadsurfer.com&#34;&gt;roadsurfer&lt;/a&gt;, where we help people explore the world in campervans.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title></title>
+      <link>http://localhost:1313/posts/daily-photo-black-ice/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/daily-photo-black-ice/</guid>
+      <description></description>
     </item>
   </channel>
 </rss>
