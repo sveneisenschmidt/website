@@ -1,7 +1,7 @@
 +++
 date = '2026-02-06T16:15:00'
 title = "School's Out"
-topics = ['Family', 'Work']
+topics = ['Daily Photo', 'Family', 'Work']
 emojis = ['🏔️']
 draft = false
 cover = 'DSC00633.jpeg'
