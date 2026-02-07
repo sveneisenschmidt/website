@@ -23,6 +23,7 @@ push:
 
 pull:
 	git fetch --all
+	git checkout main
 	git stash
 	git pull --rebase origin main
 	git stash pop || true
