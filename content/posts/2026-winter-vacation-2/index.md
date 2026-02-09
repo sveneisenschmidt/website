@@ -11,9 +11,9 @@ Day two started at 4:30 in the morning. The older one couldn't sleep anymore. Gr
 
 <!--more-->
 
-We made the best of it and played a few rounds of Campo, Roadsurfer's version of Uno. 
+We made the best of it and played a few rounds of Campo, _roadsurfer's_ version of Uno. 
 
-I used the early hours to take a few shots of the white peaks in the dark. The old telephoto lens has a bloom problem though, more on that later. We're now working exclusively with the tripod and a 10-second self-timer to avoid any shake after pressing the shutter.
+I used the early hours to take a few shots of the white peaks in the dark. The old telephoto lens ([Canon EF80-200mm f/4.5-5.6 II](https://global.canon/en/c-museum/product/ef327.html)) has a bloom problem though, more on that later. We're now working exclusively with the tripod and a 10-second self-timer to avoid any shake after pressing the shutter.
 
 {{< img src="IMG_0334.jpg" alt="Playing Campo at 4:30 in the morning" >}}
 {{< img src="DSC00683.jpg" alt="Graffiti on a hillside" >}}
@@ -34,6 +34,6 @@ We picked up ski passes and stopped for lunch at the base station of the Ahornba
 {{< img src="IMG_0450.JPG" alt="Paraglider over the valley">}}
 {{< img src="DSC00764.jpg" alt="Aika sleeping after a long walk in the afternoon sun" >}}
 
-In the evening I finally had time to go through the day's shots. It's becoming a nice ritual, sitting down with Nadine and reviewing what we captured together. The daytime photos turned out well, but the early morning shots from the dark were a different story. The Canon EOS 2000D with the old telephoto lens keeps looking great in the small preview, but opening them in Photomator tells a different story. The mountains and details come out sharp, but any light source like the moon gets this heavy glow around it. From what I've read, the old glass scatters light on long exposures, which would explain the bloom. Either way, most of the night shots are unusable. We've already decided to invest in a proper telephoto lens up to 300mm. Ideally we'd test it before buying.
+In the evening I finally had time to go through the day's shots. It's becoming a nice ritual, sitting down with Nadine and reviewing what we captured together. The daytime photos turned out well, but the early morning shots from the dark disappointed me. The Canon EOS 2000D with the old telephoto lens keeps looking great in the small preview, but opening them in Photomator paints a different picture. The mountains and details come out sharp, but any light source like the moon gets this heavy glow around it. From what I've read, the old glass scatters light on long exposures, which would explain the bloom. Either way, most of the night shots are unusable. We've already decided to invest in a proper telephoto lens up to 300mm. Ideally we'd test it before buying.
 
 On top of everything, we're all battling a nasty cold. We called it an early night, which is why this post comes a day late.
