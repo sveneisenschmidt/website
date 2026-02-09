@@ -55,6 +55,22 @@ jobs:
           npx pagefind --site public --glob 'posts/*/**/*.html'
           rm -f public/pagefind/pagefind-ui.* public/pagefind/pagefind-modular-ui.* public/pagefind/pagefind-highlight.js
 
+      - name: Debug cache paths
+        run: |
+          echo "=== resources/_gen ==="
+          find resources/_gen -type f 2>/dev/null | head -20 || echo "NOT FOUND"
+          echo ""
+          echo "=== /tmp/hugo_cache ==="
+          find /tmp/hugo_cache -type f 2>/dev/null | head -20 || echo "NOT FOUND"
+          echo ""
+          echo "=== hugo env ==="
+          hugo env
+          echo ""
+          echo "=== all directories with _gen or cache in name ==="
+          find / -type d -name "_gen" 2>/dev/null || true
+          find / -type d -name "hugo_cache" 2>/dev/null || true
+          find / -type d -name "hugo*" 2>/dev/null | head -20 || true
+
       - name: Deploy via SSH
         uses: easingthemes/ssh-deploy@v4
         with:
