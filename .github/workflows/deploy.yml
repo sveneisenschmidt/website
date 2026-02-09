@@ -33,10 +33,10 @@ jobs:
       - name: Cache Hugo image processing
         uses: actions/cache@v4
         with:
-          path: /tmp/hugo_cache
-          key: hugo-cache-${{ runner.os }}-${{ hashFiles('content/**/*.jpg', 'content/**/*.jpeg', 'content/**/*.png', 'content/**/*.webp') }}
+          path: resources/_gen
+          key: hugo-resources-${{ runner.os }}-${{ hashFiles('content/**/*.jpg', 'content/**/*.jpeg', 'content/**/*.png', 'content/**/*.webp') }}
           restore-keys: |
-            hugo-cache-${{ runner.os }}-
+            hugo-resources-${{ runner.os }}-
 
       - name: Install dependencies
         run: npm ci
