@@ -15,6 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
@@ -26,6 +28,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
+
+      - name: Cache Hugo image processing
+        uses: actions/cache@v4
+        with:
+          path: /tmp/hugo_cache
+          key: hugo-cache-${{ runner.os }}-${{ hashFiles('content/**/*.jpg', 'content/**/*.jpeg', 'content/**/*.png', 'content/**/*.webp') }}
+          restore-keys: |
+            hugo-cache-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Show build time and scheduled posts
         run: |
