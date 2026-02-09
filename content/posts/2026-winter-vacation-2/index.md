@@ -7,9 +7,11 @@ cover = "DSC00739.jpg"
 draft = false
 +++
 
-Day two started at 4:30 in the morning. The older one couldn't sleep anymore. Great start to a vacation day. We made the best of it and played a few rounds of Campo, Roadsurfer's version of Uno.
+Day two started at 4:30 in the morning. The older one couldn't sleep anymore. Great start to a vacation day. 
 
 <!--more-->
+
+We made the best of it and played a few rounds of Campo, Roadsurfer's version of Uno. 
 
 I used the early hours to take a few shots of the white peaks in the dark. The old telephoto lens has a bloom problem though — more on that later. We're now working exclusively with the tripod and a 10-second self-timer to avoid any shake after pressing the shutter.
 
