@@ -13,7 +13,7 @@ Day two started at 4:30 in the morning. The older one couldn't sleep anymore. Gr
 
 We made the best of it and played a few rounds of Campo, Roadsurfer's version of Uno. 
 
-I used the early hours to take a few shots of the white peaks in the dark. The old telephoto lens has a bloom problem though — more on that later. We're now working exclusively with the tripod and a 10-second self-timer to avoid any shake after pressing the shutter.
+I used the early hours to take a few shots of the white peaks in the dark. The old telephoto lens has a bloom problem though, more on that later. We're now working exclusively with the tripod and a 10-second self-timer to avoid any shake after pressing the shutter.
 
 {{< img src="IMG_0334.jpg" alt="Playing Campo at 4:30 in the morning" >}}
 {{< img src="DSC00683.jpg" alt="Graffiti on a hillside" >}}
