@@ -52,8 +52,10 @@ jobs:
       - name: Build
         env:
           HUGO_CACHEDIR: /tmp/hugo_cache
+        run: hugo --minify
+
+      - name: Build search index
         run: |
-          hugo --minify
           npx pagefind --site public --glob 'posts/*/**/*.html'
           rm -f public/pagefind/pagefind-ui.* public/pagefind/pagefind-modular-ui.* public/pagefind/pagefind-highlight.js
 
