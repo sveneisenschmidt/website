@@ -6,28 +6,22 @@ emojis = ['🛠️']
 draft = true
 +++
 
-My Hugo builds on GitHub Actions were taking over two minutes. The site has 273 processed images and growing. Every push meant waiting. Here's how I got the image processing step from ~103 seconds down to under 1 second.
+I keep original camera JPEGs in my Git repo. A Sony RX100 VII and a Canon EOS 2000D, files between 4 and 8 MB each, sitting right next to the markdown. Hugo resizes all of them on every build. 273 images at last count. On GitHub Actions that meant over two minutes per deploy, most of it spent on image processing that produced the exact same output every time.
 
 <!--more-->
 
-## The Problem
+The problem is simple: GitHub Actions runners are ephemeral. Hugo caches processed images locally, but on CI that cache is gone after every run. So Hugo starts from zero, every single time.
 
-I keep original camera JPEGs in the Git repo, right next to my markdown files. Hugo resizes them on build using a custom shortcode:
+The fix is also simple, once you know where Hugo actually puts its cache. And that's where I wasted time. Hugo's docs mention `:cacheDir` as a token in the [cache configuration](https://gohugo.io/configuration/caches/), but they don't tell you where that resolves to on a GitHub Actions runner. I assumed `resources/_gen` first because that's where Hugo caches things locally. Pushed it, didn't work. Tried `/tmp/hugo_cache` next. Pushed again, still nothing saved. I went through four CI runs before I did what I should have done from the start: added a debug step to look at what actually exists after the build.
 
-```go-html-template
-{{- $img := .Page.Resources.GetMatch (.Get "src") -}}
-{{- $resized := $img.Fit "2048x2048" -}}
+```yaml
+- name: Debug
+  run: |
+    find /tmp/hugo_cache -type f 2>/dev/null | head -20 || echo "NOT FOUND"
+    find resources/_gen -type f 2>/dev/null | head -20 || echo "NOT FOUND"
 ```
 
-Locally this works fine because Hugo caches the processed images in `resources/_gen`. But on GitHub Actions, every run starts fresh. No cache, no history. Hugo processes all 273 images from scratch, every single time. That's where the 103 seconds went.
-
-## The Fix
-
-Three changes to `.github/workflows/deploy.yml`. One of them does most of the heavy lifting.
-
-### 1. Cache Hugo's Image Processing
-
-The key insight: Hugo stores its image cache in a directory controlled by the `HUGO_CACHEDIR` environment variable. On GitHub Actions, this defaults to somewhere in `/tmp` — but the exact path varies depending on your setup. Set it explicitly so you know what to cache.
+`/tmp/hugo_cache` had all the processed images. `resources/_gen` was empty. The missing piece was setting `HUGO_CACHEDIR` explicitly in the build step so Hugo uses a predictable path, and then caching that path with `actions/cache`.
 
 ```yaml
 - name: Cache Hugo resources
@@ -41,64 +35,13 @@ The key insight: Hugo stores its image cache in a directory controlled by the `H
 - name: Build
   env:
     HUGO_CACHEDIR: /tmp/hugo_cache
-  run: |
-    hugo --minify
+  run: hugo --minify
 ```
 
-The cache key is a hash of all image files in `content/`. When you add or change an image, the key changes. The `restore-keys` fallback ensures the old cache is still restored, so Hugo only processes the new images and skips the rest.
+The cache key hashes all image files. When you add a new photo, the key changes, but the `restore-keys` fallback still restores the old cache. Hugo then only processes the new image and skips the rest.
 
-This single change took the build from 103 seconds to under 1 second.
+That single change took the Hugo build from 103 seconds to under 1 second. I also added `fetch-depth: 1` to the checkout step and npm caching for Pagefind, but those are minor compared to the image cache. The checkout still takes about 16 seconds because even a shallow clone has to download ~280MB of images. That's the bottleneck now, and the only way to fix it would be moving images out of the repo. I'm not going to do that. I like having everything in one place.
 
-### 2. Shallow Clone
+Total deploy time went from over two minutes to 38 seconds. Most of that is the checkout and the SSH deploy. The actual build is negligible now.
 
-The repo is over 200MB because of all the images. A full clone with history is pointless for a static site build.
-
-```yaml
-- uses: actions/checkout@v4
-  with:
-    fetch-depth: 1
-```
-
-Saves 5–15 seconds depending on repo size. Only safe if you don't use `--enableGitInfo` or `.GitInfo` in your templates.
-
-### 3. npm Cache
-
-I use [Pagefind](https://pagefind.app/) for search, which runs via `npx`. Caching npm avoids re-downloading the binary on every run.
-
-```yaml
-- name: Setup Node
-  uses: actions/setup-node@v4
-  with:
-    node-version: "20"
-    cache: "npm"
-
-- name: Install dependencies
-  run: npm ci
-```
-
-Saves another 3–8 seconds.
-
-## Results
-
-| | Before | After |
-|---|---|---|
-| Hugo build | ~103s | <1s |
-| Git checkout | ~15s | ~5s |
-| npm install | ~8s | ~3s |
-
-The first run after adding the cache is still slow — the cache needs to be built. Every subsequent run benefits from it. Since my workflow runs on a cron schedule every 30 minutes, the cache stays warm.
-
-## The Gotcha
-
-Finding the right cache path was harder than it should have been. Hugo's documentation mentions `:cacheDir` as a token in cache configuration, but doesn't make it obvious where that resolves to on different systems. I wasted several CI runs caching the wrong directory before adding a debug step to find out where Hugo actually puts its files.
-
-The lesson: don't assume. Add a debug step, check what exists after the build, then configure your cache.
-
-```yaml
-- name: Debug cache paths
-  run: |
-    find /tmp/hugo_cache -type f 2>/dev/null | head -20 || echo "NOT FOUND"
-    find resources/_gen -type f 2>/dev/null | head -20 || echo "NOT FOUND"
-```
-
-In my case, `HUGO_CACHEDIR` pointed to `/tmp/hugo_cache` and that's where all the processed images ended up. `resources/_gen` was empty on the CI runner. Setting `HUGO_CACHEDIR` explicitly in the build step removes any ambiguity.
+The lesson I took away from this is boring but worth repeating: don't assume where tools put their files. Check. Especially on CI where the environment is different from your machine. A five-line debug step would have saved me an hour of pushing broken configs.

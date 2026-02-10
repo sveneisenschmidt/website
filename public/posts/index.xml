@@ -6,14 +6,28 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 08 Feb 2026 20:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 09 Feb 2026 23:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Winter Vacation (Pt. 3)</title>
+      <link>http://localhost:1313/posts/2026-winter-vacation-3/</link>
+      <pubDate>Mon, 09 Feb 2026 23:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/2026-winter-vacation-3/</guid>
+      <description>&lt;p&gt;Up at 5. Getting better.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Optimizing Hugo Builds</title>
+      <link>http://localhost:1313/posts/optimizing-hugo-builds/</link>
+      <pubDate>Mon, 09 Feb 2026 10:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/optimizing-hugo-builds/</guid>
+      <description>&lt;p&gt;I keep original camera JPEGs in my Git repo. A Sony RX100 VII and a Canon EOS 2000D, files between 4 and 8 MB each, sitting right next to the markdown. Hugo resizes all of them on every build. 273 images at last count. On GitHub Actions that meant over two minutes per deploy, most of it spent on image processing that produced the exact same output every time.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Winter Vacation (Pt. 2)</title>
       <link>http://localhost:1313/posts/2026-winter-vacation-2/</link>
-      <pubDate>Sun, 08 Feb 2026 20:00:00 +0000</pubDate>
+      <pubDate>Sun, 08 Feb 2026 23:30:00 +0000</pubDate>
       <guid>http://localhost:1313/posts/2026-winter-vacation-2/</guid>
-      <description>&lt;p&gt;Day two started at 4:30 in the morning. The older one couldn&amp;rsquo;t sleep anymore. Great start to a vacation day. We made the best of it and played a few rounds of Campo, Roadsurfer&amp;rsquo;s version of Uno.&lt;/p&gt;</description>
+      <description>&lt;p&gt;Day two started at 4:30 in the morning. The older one couldn&amp;rsquo;t sleep anymore. Great start to a vacation day.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Winter Vacation (Pt. 1)</title>

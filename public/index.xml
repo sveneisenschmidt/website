@@ -6,8 +6,24 @@
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 08 Feb 2026 23:30:00 &#43;0000</lastBuildDate>
+    <lastBuildDate>Mon, 09 Feb 2026 23:00:00 &#43;0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Winter Vacation (Pt. 3)</title>
+      <link>http://localhost:1313/posts/2026-winter-vacation-3/</link>
+      <pubDate>Mon, 09 Feb 2026 23:00:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/2026-winter-vacation-3/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/2026-winter-vacation-3/DSC00776_hu_ef1521b032ad4933.webp" width="512" height="768" alt="Winter Vacation (Pt. 3) cover image" /><p>Up at 5. Getting better.
+ (<a href="http://localhost:1313/posts/2026-winter-vacation-3/" title="Continue reading Winter Vacation (Pt. 3)">354 more words</a>)</p>]]></description>
+    </item>
+    <item>
+      <title>Optimizing Hugo Builds</title>
+      <link>http://localhost:1313/posts/optimizing-hugo-builds/</link>
+      <pubDate>Mon, 09 Feb 2026 10:00:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/optimizing-hugo-builds/</guid>
+      <description><![CDATA[<p>I keep original camera JPEGs in my Git repo. A Sony RX100 VII and a Canon EOS 2000D, files between 4 and 8 MB each, sitting right next to the markdown. Hugo resizes all of them on every build. 273 images at last count. On GitHub Actions that meant over two minutes per deploy, most of it spent on image processing that produced the exact same output every time.
+ (<a href="http://localhost:1313/posts/optimizing-hugo-builds/" title="Continue reading Optimizing Hugo Builds">421 more words</a>)</p>]]></description>
+    </item>
     <item>
       <title>Winter Vacation (Pt. 2)</title>
       <link>http://localhost:1313/posts/2026-winter-vacation-2/</link>
