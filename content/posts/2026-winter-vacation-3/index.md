@@ -32,4 +32,4 @@ Quick stop at the pharmacy to stock up on cold medicine. Prices here are roughly
 
 {{< img src="DSC00801.jpg" alt="Aika resting on the couch" >}}
 
-Nadine booked something for Wednesday evening at the [Vosorium](https://www.vosorium.at/) in Mayrhofen. I know what it is but I'm not telling yet. More on that soon.
+Nadine booked something for Wednesday evening at the [Visorium](https://www.visorium.at/) in Mayrhofen. I know what it is but I'm not telling yet. More on that soon.
