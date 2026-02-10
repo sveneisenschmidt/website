@@ -11,7 +11,7 @@ Up at 5. Getting better.
 
 <!--more-->
 
-The morning went into picking photos for the [day two](/posts/2026-winter-vacation-2/) post and getting it out. I also spent some time before breakfast fixing the blog's deploy pipeline. The GitHub Action was running almost four minutes per build because Hugo kept regenerating all images from scratch. Missing cache, as always. Got it down to about 45 seconds. Not bad for a vacation morning.
+The morning went into picking photos for the [day two](/posts/2026-winter-vacation-2/) post and getting it out. I also spent some time before breakfast fixing the blog's deploy pipeline. The GitHub Action was running almost four minutes per build because Hugo kept regenerating all images from scratch. Missing cache, as always, but I got it down to about 45 seconds which felt pretty good for a vacation morning.
 
 Nadine, her mom and Tilian headed to the slopes after breakfast. It's Tilian's first day in ski school this week and he's in the advanced group. The course runs until Thursday, when there's a final race at the top of the mountain for all the school groups. I'm already planning the shots.
 
