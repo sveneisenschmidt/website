@@ -7,11 +7,11 @@ draft = false
 cover = "DSC00817.jpg"
 +++
 
-Kellin woke up with a fever. We spent most of the day on the couch with him.
+Kellin woke up with a fever, so my father-in-law and I stayed back with him while the others hit the slopes.
 
 <!--more-->
 
-We were up at 6 and started the morning with _fever syrup_. After a long breakfast, the others headed to the slopes while my father-in-law and I took Kellin for a walk through Mayrhofen. I picked up a small toy car for him along the way, twice the price it would be at home, vacation tax? He spent the rest of the afternoon playing with it between naps.
+We started the morning early with _fever syrup_ and a long breakfast. Then the three of us headed out for a walk through Mayrhofen. I picked up a small toy car for Kellin along the way, twice the price it would be at home, vacation tax? He spent the rest of the afternoon playing with it between naps.
 
 {{< img src="DSC00817.jpg" alt="Old power pole with a warning sign" >}}
 
@@ -26,8 +26,8 @@ The apartment owner's dog Paula is the complete opposite of Aika. They avoid eye
 
 {{< img src="DSC00848.jpg" alt="Paula off leash" >}}
 
-Tilian is having a great time at ski school. It was his first day with poles. In the early evening the two boys ended up with Mario Kart, Tilian playing and Kellin watching from the couch.
+Tilian is having a great time at ski school, today was his first day with poles. In the early evening the two boys ended up with Mario Kart, Tilian playing and Kellin watching from the couch.
 
 {{< img src="DSC00856.jpg" alt="Kellin and Tilian playing Mario Kart" >}}
 
-Another early night. At least Nadine, her mother and Tilian are getting the most out of the slopes.
+Nadine, her mother and Tilian are getting the most out of the slopes. The rest of us had a quiet day, which was nice in its own way.
