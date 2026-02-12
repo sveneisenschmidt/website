@@ -27,7 +27,7 @@ The weather up top was partly cloudy with some sun breaking through, good enough
 {{< img src="DSC01009.jpg" alt="Snow covered slopes seen from the Penkenbahn gondola" >}}
 {{< img src="IMG_0631.jpg" alt="Aika enjoying the sun" >}}
 
-After the race we stopped at the Stieralm for a quick break. Nadine and her mom headed back to the slopes after lunch. My father-in-law, Kellin and I took the gondola back down to the valley. In the late afternoon we picked up Nadine, her mom and Tilian from the Penkenbahn, dropped off the rental skis and headed back to the apartment to freshen up. On the walk over I spotted a sparrow sitting still long enough for a shot. Maximum zoom on the Sony RX100 VII, and the grain turned out really nice.
+After the race we stopped at the Stieralm for a quick break. Nadine and her mom headed back to the slopes after the contest. My father-in-law, Kellin and I took the gondola back down to the valley. In the late afternoon we picked up Nadine, her mom and Tilian from the Penkenbahn, dropped off the rental skis and headed back to the apartment to freshen up. On the walk over I spotted a sparrow sitting still long enough for a shot. Maximum zoom on the Sony RX100 VII, and the grain turned out really nice.
 
 {{< img src="DSC01080.jpg" alt="Sparrow perched on a branch at maximum zoom" >}}
 
