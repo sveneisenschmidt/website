@@ -7,7 +7,7 @@ draft = false
 cover = "IMG_0679.jpg"
 +++
 
-Today was mountain day for everyone. After breakfast we headed to the Penkenbahn base station and rode up together.
+Mountain day for everyone. We rode up the Penken together, Tilian took second place in his ski school race, Aika had her five minutes of fame and we closed out the evening at Goldkind.
 
 <!--more-->
 
