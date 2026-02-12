@@ -11,7 +11,7 @@ Mountain day for everyone. We rode up the Penken together, Tilian took second pl
 
 <!--more-->
 
-Kellin rode a gondola for the first time, properly aware of what was happening. He loved every second of it. I was surprised how little fear he showed, honestly I was more nervous than he was.
+Kellin rode a gondola for the first time and properly aware of what was happening. He loved every second of it. I was surprised how little fear he showed, honestly I was more nervous than he was.
 
 {{< img src="DSC01042.jpg" alt="Portrait at the summit with mountains in the background" >}}
 {{< img src="DSC01069.jpg" alt="Snow covered mountain panorama from the Penken" >}}
