@@ -32,7 +32,7 @@ On the way back we took the Zillertalbahn. It's a great way to get around the va
 {{< img src="DSC00939.jpg" alt="Zillertalbahn arriving at the station" >}}
 {{< img src="DSC00951.jpg" alt="Zillertalbahn on the tracks" >}}
 
-The afternoon was quiet and relaxed. We watched bobsled, the Olympion and a few other disciplines on TV. Nadine's parents watched the boys for the evening, so the two of us could head out on our own.
+The afternoon was quiet and relaxed. We watched the Olympic Winter Games on TV, bobsled and a few other disciplines. Nadine's parents watched the boys for the evening, so the two of us could head out on our own.
 
 In the evening Nadine and I went to the Visorium and played their escape room ["Verdammt"](https://www.visorium.at/bookable/verdammt/). Unfortunately no photos allowed and you can't find much online. We're both skeptical of escape rooms that rely on horror, but this one didn't focus on any of that, no jump scares, no dark corridors. It was set in the office and control room of a pumped storage power plant and dam, all puzzles based on technical and electromechanical challenges. We both had a great time. The atmosphere felt like the HBO Chernobyl series right before the meltdown, alarms going off, dials spinning. The room is rated 4 out of 5 in difficulty for 2 to 6 players, and the two of us were sweating by the end. We finished in 63 minutes. Our host was great, thanks again! It wouldn't make much sense to do it again, but going back with a group just to watch them struggle sounds tempting.
 
