@@ -14,7 +14,7 @@
             {{- with .Tags.Make }}{{ . }} {{ end -}}{{- with .Tags.Model }}{{ .
             }}{{ end -}} {{- with .Tags.LensModel }} · {{ . }}{{ end -}} {{-
             with .Tags.FocalLength }} · {{ lang.FormatNumber 0 . }}mm{{ end -}}
-            {{- with .Tags.FNumber }} · ƒ/{{ . }}{{ end -}} {{- with
+            {{- with .Tags.FNumber }} · ƒ/{{ lang.FormatNumber 1 . }}{{ end -}} {{- with
             .Tags.ExposureTime }} · {{ . }}s{{ end -}} {{- with
             .Tags.ISOSpeedRatings }} · ISO {{ . }}{{ end -}}
         </span>
