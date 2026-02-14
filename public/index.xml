@@ -6,8 +6,16 @@
     <description>Personal website of Sven Eisenschmidt, based in Leipzig, Germany.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 13 Feb 2026 19:42:00 &#43;0000</lastBuildDate>
+    <lastBuildDate>Sat, 14 Feb 2026 16:12:00 &#43;0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Back Home</title>
+      <link>http://localhost:1313/posts/daily-photo-back-home/</link>
+      <pubDate>Sat, 14 Feb 2026 16:12:00 &#43;0000</pubDate>
+      <guid isPermaLink="true">http://localhost:1313/posts/daily-photo-back-home/</guid>
+      <description><![CDATA[<img src="http://localhost:1313/posts/daily-photo-back-home/DSC01174_hu_d070a268b6a94554.webp" width="768" height="512" alt="Back Home cover image" /><p>We made it back from Mayrhofen. Around 550 km, about six and a half hours with one break and a short traffic jam along the way, which is pretty reasonable for that distance.
+ (<a href="http://localhost:1313/posts/daily-photo-back-home/" title="Continue reading Back Home">54 more words</a>)</p>]]></description>
+    </item>
     <item>
       <title>Winter Vacation (Pt. 7)</title>
       <link>http://localhost:1313/posts/2026-winter-vacation-7/</link>
@@ -22,7 +30,7 @@
       <pubDate>Thu, 12 Feb 2026 19:00:00 &#43;0000</pubDate>
       <guid isPermaLink="true">http://localhost:1313/posts/2026-winter-vacation-6/</guid>
       <description><![CDATA[<img src="http://localhost:1313/posts/2026-winter-vacation-6/IMG_0679_hu_5c989436e105d688.webp" width="768" height="512" alt="Winter Vacation (Pt. 6) cover image" /><p>Mountain day for everyone. We rode up the Penken together, Tilian took second place in his ski school race, Aika had her five minutes of fame and we closed out the evening at Goldkind.
- (<a href="http://localhost:1313/posts/2026-winter-vacation-6/" title="Continue reading Winter Vacation (Pt. 6)">470 more words</a>)</p>]]></description>
+ (<a href="http://localhost:1313/posts/2026-winter-vacation-6/" title="Continue reading Winter Vacation (Pt. 6)">472 more words</a>)</p>]]></description>
     </item>
     <item>
       <title>Mayrhofen at Night</title>
