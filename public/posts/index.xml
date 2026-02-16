@@ -6,8 +6,22 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 14 Feb 2026 16:12:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 16 Feb 2026 16:38:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>New Games</title>
+      <link>http://localhost:1313/posts/new-games/</link>
+      <pubDate>Mon, 16 Feb 2026 16:38:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/new-games/</guid>
+      <description>&lt;p&gt;Last week brought a bunch of new games and demos. Pragmata was my favorite and a day one purchase for me.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Spare Parts</title>
+      <link>http://localhost:1313/posts/daily-photo-spare-parts/</link>
+      <pubDate>Sun, 15 Feb 2026 20:37:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/daily-photo-spare-parts/</guid>
+      <description>&lt;p&gt;The front bumper of Tilian&amp;rsquo;s RC car broke off today. Kellin broke it, but to keep the peace I told Tilian it was me.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Back Home</title>
       <link>http://localhost:1313/posts/daily-photo-back-home/</link>

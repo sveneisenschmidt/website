@@ -2,22 +2,40 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/posts/daily-photo-back-home/</loc>
-    <lastmod>2026-02-14T16:12:00+00:00</lastmod>
+    <loc>http://localhost:1313/posts/new-games/</loc>
+    <lastmod>2026-02-16T16:38:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/</loc>
+    <lastmod>2026-02-16T16:38:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/</loc>
+    <lastmod>2026-02-16T16:38:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/topics/</loc>
+    <lastmod>2026-02-16T16:38:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/topics/video-games/</loc>
+    <lastmod>2026-02-16T16:38:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/topics/daily-photo/</loc>
+    <lastmod>2026-02-15T20:37:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/daily-photo-spare-parts/</loc>
+    <lastmod>2026-02-15T20:37:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/log/</loc>
+    <lastmod>2026-02-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/log/movies/</loc>
+    <lastmod>2026-02-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/daily-photo-back-home/</loc>
     <lastmod>2026-02-14T16:12:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/topics/family/</loc>
     <lastmod>2026-02-14T16:12:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/</loc>
-    <lastmod>2026-02-14T16:12:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/</loc>
-    <lastmod>2026-02-14T16:12:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/topics/</loc>
+    <loc>http://localhost:1313/topics/music/</loc>
     <lastmod>2026-02-14T16:12:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/topics/travel/</loc>
@@ -97,12 +115,6 @@
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-imagination/</loc>
     <lastmod>2026-01-25T18:05:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/log/</loc>
-    <lastmod>2026-01-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/log/movies/</loc>
-    <lastmod>2026-01-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-cake/</loc>
     <lastmod>2026-01-24T17:00:00+00:00</lastmod>
@@ -195,12 +207,6 @@
     <lastmod>2026-01-03T12:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/topics/cycling/</loc>
-    <lastmod>2026-01-03T12:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/topics/music/</loc>
-    <lastmod>2026-01-03T12:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/topics/video-games/</loc>
     <lastmod>2026-01-03T12:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/death-stranding-2/</loc>
