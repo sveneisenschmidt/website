@@ -7,7 +7,7 @@ draft = false
 cover = 'DSC01204.jpg'
 +++
 
-Last week brought a bunch of new games and demos. Pragmata was my favorite and a day one purchase for me.
+Last week brought a bunch of new games and demos. Pragmata was my favorite and will be a day one purchase for me.
 
 <!--more-->
 
