@@ -6,14 +6,21 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 16 Feb 2026 16:38:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 17 Feb 2026 20:43:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Strump</title>
+      <link>http://localhost:1313/posts/daily-photo-stripes/</link>
+      <pubDate>Tue, 17 Feb 2026 20:43:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/daily-photo-stripes/</guid>
+      <description></description>
+    </item>
     <item>
       <title>New Games</title>
       <link>http://localhost:1313/posts/new-games/</link>
       <pubDate>Mon, 16 Feb 2026 16:38:00 +0000</pubDate>
       <guid>http://localhost:1313/posts/new-games/</guid>
-      <description>&lt;p&gt;Last week brought a bunch of new games and demos. Pragmata was my favorite and a day one purchase for me.&lt;/p&gt;</description>
+      <description>&lt;p&gt;Last week brought a bunch of new games and demos. Pragmata was my favorite and will be a day one purchase for me.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Spare Parts</title>
