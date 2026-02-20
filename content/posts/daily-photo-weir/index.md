@@ -6,7 +6,7 @@ cover = 'DSC01267.jpg'
 emojis = ['🌊']
 +++
 
-Nadine and I went out on a photo walk today. We saw a few animals but didn't get any good shots of them. The weir on the Weiße Elster made the trip worth it either way.
+Nadine and I went out on a photo walk today. We spotted a few animals but couldn't get any good shots. We ended up at Weiße Elster weir (51.124943, 12.236676).
 
 <!--more-->
 
