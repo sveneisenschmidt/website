@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 20 Feb 2026 18:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 21 Feb 2026 18:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Woods</title>
+      <link>http://localhost:1313/posts/daily-photo-woods/</link>
+      <pubDate>Sat, 21 Feb 2026 18:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/daily-photo-woods/</guid>
+      <description>&lt;p&gt;I went back to the woods looking for the &lt;a href=&#34;http://localhost:1313/posts/daily-photo-dawn/&#34;&gt;white albino deer&lt;/a&gt;, and found a white albino doe instead.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Weir</title>
       <link>http://localhost:1313/posts/daily-photo-weir/</link>
