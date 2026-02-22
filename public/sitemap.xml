@@ -3,22 +3,31 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://localhost:1313/topics/daily-photo/</loc>
-    <lastmod>2026-02-21T18:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/topics/photography/</loc>
-    <lastmod>2026-02-21T18:00:00+00:00</lastmod>
+    <lastmod>2026-02-22T18:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/</loc>
-    <lastmod>2026-02-21T18:00:00+00:00</lastmod>
+    <lastmod>2026-02-22T18:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/</loc>
-    <lastmod>2026-02-21T18:00:00+00:00</lastmod>
+    <lastmod>2026-02-22T18:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/topics/</loc>
-    <lastmod>2026-02-21T18:00:00+00:00</lastmod>
+    <lastmod>2026-02-22T18:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/daily-photo-zootopia-2/</loc>
+    <lastmod>2026-02-22T18:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/log/</loc>
+    <lastmod>2026-02-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/log/movies/</loc>
+    <lastmod>2026-02-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/topics/photography/</loc>
+    <lastmod>2026-02-21T17:39:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-woods/</loc>
-    <lastmod>2026-02-21T18:00:00+00:00</lastmod>
+    <lastmod>2026-02-21T17:39:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-weir/</loc>
     <lastmod>2026-02-20T18:00:00+00:00</lastmod>
@@ -40,12 +49,6 @@
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-spare-parts/</loc>
     <lastmod>2026-02-15T20:37:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/log/</loc>
-    <lastmod>2026-02-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/log/movies/</loc>
-    <lastmod>2026-02-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-back-home/</loc>
     <lastmod>2026-02-14T16:12:00+00:00</lastmod>
