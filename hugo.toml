@@ -1,6 +1,7 @@
 baseURL = "https://sven.eisenschmidt.website/"
 languageCode = "en-us"
 title = "Sven Eisenschmidt - Personal Blog"
+timeZone = "Europe/Berlin"
 
 
 [pagination]

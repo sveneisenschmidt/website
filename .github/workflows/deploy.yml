@@ -52,6 +52,7 @@ jobs:
       - name: Build
         env:
           HUGO_CACHEDIR: /tmp/hugo_cache
+          TZ: Europe/Berlin
         run: hugo --minify
 
       - name: Build search index
