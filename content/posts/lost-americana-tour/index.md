@@ -23,4 +23,4 @@ The show was great and had a thorough choreography. I acknowledge for myself tha
 
 I do not mind that MGK did different types of music in the past, yet I pretty much prefer not to hear songs from that era. Having said that, it was less than 10% of the 2h show he dedicated to this time span of his career. Most songs played were from _Tickets to My Downfall_ and it is my favorite album of his, and I think it came out of nowhere at the time. 
 
-We arrived at 3am in the morning and got up at 6am with the kids. We are very lucky to have Nadine's parents often eager to help, and their support opens up more and more opportunities like this for us. Nights out together like this are just really nice.
+We arrived at 3am in the morning and got up at 6am with the kids. Which means I am already done with the day before it even started - it's going to feel like a very long one. We are very lucky to have Nadine's parents often eager to help, and their support opens up more and more opportunities like this for us. Nights out together like this are just really nice.
