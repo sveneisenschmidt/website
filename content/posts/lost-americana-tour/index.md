@@ -17,7 +17,7 @@ We took the EV to Berlin which meant a 2 1/2h drive and one recharge to be able 
 
 We had a vegan Burrito at East Side Mall before the show, which was forgettable at best.
 
-Security and waiting times at the [venue](https://www.uber-arena.de/events/detail/mgk/2026-02-24-2000) were efficient, and arriving 15 minutes before the opening act we were at our seats sharp on time. The security controls were subtle, they did not check pockets but had sort of body scanners. They said beforehand no professional cameras were allowed, but I am certain I could have brought the Sony RX100 VII, it does not count as a professional camera.
+Security and waiting times at the [venue](https://www.uber-arena.de/events/detail/mgk/2026-02-24-2000) were efficient, and arriving 15 minutes before the opening act we were at our seats sharp on time. The security controls were subtle, they did not check pockets but had sort of body scanners. They said beforehand no professional cameras were allowed, but I am certain I could have brought the Sony RX100 VII, it fits in my pockets and with some arguing I can convince it does not count as a professional camera.
 
 The show was great and had a thorough choreography. I acknowledge for myself that I enjoy both types of shows, it's less about small venue vs big venue shows, but about shows with a strong stage and story concept, and in contrast bands crushing through their setlist and setting everything on fire, such as _Neaera_, _La Dispute_, _Darkest Hour_ to name a few.
 
