@@ -2,244 +2,250 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/topics/daily-photo/</loc>
-    <lastmod>2026-02-22T18:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/</loc>
-    <lastmod>2026-02-22T18:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/</loc>
-    <lastmod>2026-02-22T18:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/topics/</loc>
-    <lastmod>2026-02-22T18:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/daily-photo-zootopia-2/</loc>
-    <lastmod>2026-02-22T18:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/log/</loc>
-    <lastmod>2026-02-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/log/movies/</loc>
-    <lastmod>2026-02-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/topics/photography/</loc>
-    <lastmod>2026-02-21T17:39:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/daily-photo-woods/</loc>
-    <lastmod>2026-02-21T17:39:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/daily-photo-weir/</loc>
-    <lastmod>2026-02-20T18:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/daily-photo-dawn/</loc>
-    <lastmod>2026-02-19T15:48:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/daily-photo-after-burner/</loc>
-    <lastmod>2026-02-18T20:07:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/topics/video-games/</loc>
-    <lastmod>2026-02-18T20:07:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/daily-photo-stripes/</loc>
-    <lastmod>2026-02-17T20:43:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/new-games/</loc>
-    <lastmod>2026-02-16T16:38:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/daily-photo-spare-parts/</loc>
-    <lastmod>2026-02-15T20:37:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/daily-photo-back-home/</loc>
-    <lastmod>2026-02-14T16:12:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/topics/family/</loc>
-    <lastmod>2026-02-14T16:12:00+00:00</lastmod>
+    <loc>http://localhost:1313/posts/lost-americana-tour/</loc>
+    <lastmod>2026-02-24T20:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/topics/music/</loc>
-    <lastmod>2026-02-14T16:12:00+00:00</lastmod>
+    <lastmod>2026-02-24T20:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/</loc>
+    <lastmod>2026-02-24T20:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/</loc>
+    <lastmod>2026-02-24T20:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/topics/</loc>
+    <lastmod>2026-02-24T20:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/topics/daily-photo/</loc>
+    <lastmod>2026-02-23T18:10:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/daily-photo-emma/</loc>
+    <lastmod>2026-02-23T18:10:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/daily-photo-zootopia-2/</loc>
+    <lastmod>2026-02-22T17:35:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/log/</loc>
+    <lastmod>2026-02-22T00:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/log/movies/</loc>
+    <lastmod>2026-02-22T00:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/topics/photography/</loc>
+    <lastmod>2026-02-21T17:39:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/daily-photo-woods/</loc>
+    <lastmod>2026-02-21T17:39:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/daily-photo-weir/</loc>
+    <lastmod>2026-02-20T18:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/daily-photo-dawn/</loc>
+    <lastmod>2026-02-19T15:48:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/daily-photo-after-burner/</loc>
+    <lastmod>2026-02-18T20:07:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/topics/video-games/</loc>
+    <lastmod>2026-02-18T20:07:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/daily-photo-stripes/</loc>
+    <lastmod>2026-02-17T20:43:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/new-games/</loc>
+    <lastmod>2026-02-16T16:38:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/daily-photo-spare-parts/</loc>
+    <lastmod>2026-02-15T20:37:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/daily-photo-back-home/</loc>
+    <lastmod>2026-02-14T16:12:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/topics/family/</loc>
+    <lastmod>2026-02-14T16:12:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/topics/travel/</loc>
-    <lastmod>2026-02-14T16:12:00+00:00</lastmod>
+    <lastmod>2026-02-14T16:12:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/2026-winter-vacation-7/</loc>
-    <lastmod>2026-02-13T19:42:00+00:00</lastmod>
+    <lastmod>2026-02-13T19:42:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/2026-winter-vacation-6/</loc>
-    <lastmod>2026-02-12T19:00:00+00:00</lastmod>
+    <lastmod>2026-02-12T19:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/mayrhofen-at-night/</loc>
-    <lastmod>2026-02-11T23:30:00+00:00</lastmod>
+    <lastmod>2026-02-11T23:30:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/2026-winter-vacation-5/</loc>
-    <lastmod>2026-02-11T23:00:00+00:00</lastmod>
+    <lastmod>2026-02-11T23:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/2026-winter-vacation-4/</loc>
-    <lastmod>2026-02-10T23:00:00+00:00</lastmod>
+    <lastmod>2026-02-10T23:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/2026-winter-vacation-3/</loc>
-    <lastmod>2026-02-09T23:00:00+00:00</lastmod>
+    <lastmod>2026-02-09T23:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/optimizing-hugo-builds/</loc>
-    <lastmod>2026-02-09T10:00:00+00:00</lastmod>
+    <lastmod>2026-02-09T10:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/topics/software-development/</loc>
-    <lastmod>2026-02-09T10:00:00+00:00</lastmod>
+    <lastmod>2026-02-09T10:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/2026-winter-vacation-2/</loc>
-    <lastmod>2026-02-08T23:30:00+00:00</lastmod>
+    <lastmod>2026-02-08T23:30:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/2026-winter-vacation-1/</loc>
-    <lastmod>2026-02-07T19:15:00+00:00</lastmod>
+    <lastmod>2026-02-07T19:15:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/schools-out/</loc>
-    <lastmod>2026-02-06T16:15:00+00:00</lastmod>
+    <lastmod>2026-02-06T16:15:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/topics/work/</loc>
-    <lastmod>2026-02-06T16:15:00+00:00</lastmod>
+    <lastmod>2026-02-06T16:15:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-black-ice/</loc>
-    <lastmod>2026-02-05T16:15:00+00:00</lastmod>
+    <lastmod>2026-02-05T16:15:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-bubblegum-blue/</loc>
-    <lastmod>2026-02-04T17:12:00+00:00</lastmod>
+    <lastmod>2026-02-04T17:12:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/wolfs-tracking/</loc>
-    <lastmod>2026-02-03T15:45:00+00:00</lastmod>
+    <lastmod>2026-02-03T15:45:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-abandoned/</loc>
-    <lastmod>2026-02-02T14:30:00+00:00</lastmod>
+    <lastmod>2026-02-02T14:30:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-overtaken/</loc>
-    <lastmod>2026-02-01T16:45:00+00:00</lastmod>
+    <lastmod>2026-02-01T16:45:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-melt/</loc>
-    <lastmod>2026-01-31T18:45:00+00:00</lastmod>
+    <lastmod>2026-01-31T18:45:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-pheasant/</loc>
-    <lastmod>2026-01-30T19:00:00+00:00</lastmod>
+    <lastmod>2026-01-30T19:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-dorks/</loc>
-    <lastmod>2026-01-29T19:45:00+00:00</lastmod>
+    <lastmod>2026-01-29T19:45:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-blue/</loc>
-    <lastmod>2026-01-28T18:25:00+00:00</lastmod>
+    <lastmod>2026-01-28T18:25:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-kohlmeise/</loc>
-    <lastmod>2026-01-27T18:41:00+00:00</lastmod>
+    <lastmod>2026-01-27T18:41:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-soft/</loc>
-    <lastmod>2026-01-26T10:30:00+00:00</lastmod>
+    <lastmod>2026-01-26T10:30:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-imagination/</loc>
-    <lastmod>2026-01-25T18:05:00+00:00</lastmod>
+    <lastmod>2026-01-25T18:05:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-cake/</loc>
-    <lastmod>2026-01-24T17:00:00+00:00</lastmod>
+    <lastmod>2026-01-24T17:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-mine-pt2/</loc>
-    <lastmod>2026-01-23T16:15:00+00:00</lastmod>
+    <lastmod>2026-01-23T16:15:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-windpark-pt2/</loc>
-    <lastmod>2026-01-22T20:00:00+00:00</lastmod>
+    <lastmod>2026-01-22T20:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/ambiguity/</loc>
-    <lastmod>2026-01-22T08:00:00+00:00</lastmod>
+    <lastmod>2026-01-22T08:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-birthday/</loc>
-    <lastmod>2026-01-21T15:30:00+00:00</lastmod>
+    <lastmod>2026-01-21T15:30:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-bricks/</loc>
-    <lastmod>2026-01-20T12:30:00+00:00</lastmod>
+    <lastmod>2026-01-20T12:30:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-mine/</loc>
-    <lastmod>2026-01-19T18:00:00+00:00</lastmod>
+    <lastmod>2026-01-19T18:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/i-built-a-rss-reader-pt2/</loc>
-    <lastmod>2026-01-19T11:45:00+00:00</lastmod>
+    <lastmod>2026-01-19T11:45:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-frost/</loc>
-    <lastmod>2026-01-18T12:00:00+00:00</lastmod>
+    <lastmod>2026-01-18T12:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/cv/</loc>
-    <lastmod>2026-01-18T12:00:00+00:00</lastmod>
+    <lastmod>2026-01-18T12:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/new-camera-day/</loc>
-    <lastmod>2026-01-17T16:00:00+00:00</lastmod>
+    <lastmod>2026-01-17T16:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-disappointed/</loc>
-    <lastmod>2026-01-16T19:00:00+00:00</lastmod>
+    <lastmod>2026-01-16T19:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-back/</loc>
-    <lastmod>2026-01-15T19:00:00+00:00</lastmod>
+    <lastmod>2026-01-15T19:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-away/</loc>
-    <lastmod>2026-01-14T19:00:00+00:00</lastmod>
+    <lastmod>2026-01-14T19:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-windpark/</loc>
-    <lastmod>2026-01-13T19:00:00+00:00</lastmod>
+    <lastmod>2026-01-13T19:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-77256/</loc>
-    <lastmod>2026-01-12T19:00:00+00:00</lastmod>
+    <lastmod>2026-01-12T19:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-last-day-off/</loc>
-    <lastmod>2026-01-11T19:00:00+00:00</lastmod>
+    <lastmod>2026-01-11T19:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-craspedia-globosa/</loc>
-    <lastmod>2026-01-10T19:00:00+00:00</lastmod>
+    <lastmod>2026-01-10T19:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/topics/flowers/</loc>
-    <lastmod>2026-01-10T19:00:00+00:00</lastmod>
+    <lastmod>2026-01-10T19:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-vet/</loc>
-    <lastmod>2026-01-09T18:00:00+00:00</lastmod>
+    <lastmod>2026-01-09T18:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-snow/</loc>
-    <lastmod>2026-01-08T20:00:00+00:00</lastmod>
+    <lastmod>2026-01-08T20:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/i-built-a-rss-reader/</loc>
-    <lastmod>2026-01-08T19:00:00+00:00</lastmod>
+    <lastmod>2026-01-08T19:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/topics/books/</loc>
-    <lastmod>2026-01-07T19:00:00+00:00</lastmod>
+    <lastmod>2026-01-07T19:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-reading/</loc>
-    <lastmod>2026-01-07T19:00:00+00:00</lastmod>
+    <lastmod>2026-01-07T19:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/topics/food/</loc>
-    <lastmod>2026-01-06T19:00:00+00:00</lastmod>
+    <lastmod>2026-01-06T19:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-sourdough/</loc>
-    <lastmod>2026-01-06T19:00:00+00:00</lastmod>
+    <lastmod>2026-01-06T19:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-chicken/</loc>
-    <lastmod>2026-01-05T17:00:00+00:00</lastmod>
+    <lastmod>2026-01-05T17:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/building-with-hugo/</loc>
-    <lastmod>2026-01-05T07:00:00+00:00</lastmod>
+    <lastmod>2026-01-05T07:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/daily-photo-winter-walk/</loc>
-    <lastmod>2026-01-04T16:00:00+00:00</lastmod>
+    <lastmod>2026-01-04T16:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/2025-wrapped/</loc>
-    <lastmod>2026-01-03T12:00:00+00:00</lastmod>
+    <lastmod>2026-01-03T12:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/topics/cycling/</loc>
-    <lastmod>2026-01-03T12:00:00+00:00</lastmod>
+    <lastmod>2026-01-03T12:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/death-stranding-2/</loc>
-    <lastmod>2026-01-02T14:00:00+00:00</lastmod>
+    <lastmod>2026-01-02T14:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/open-source/</loc>
-    <lastmod>2026-01-02T10:00:00+00:00</lastmod>
+    <lastmod>2026-01-02T10:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/hello-world/</loc>
-    <lastmod>2026-01-01T12:00:00+00:00</lastmod>
+    <lastmod>2026-01-01T12:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/log/tv/</loc>
-    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
+    <lastmod>2026-01-01T00:00:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/log/games/</loc>
-    <lastmod>2025-12-28T00:00:00+00:00</lastmod>
+    <lastmod>2025-12-28T00:00:00+01:00</lastmod>
   </url>
 </urlset>
