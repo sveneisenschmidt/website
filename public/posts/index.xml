@@ -6,14 +6,21 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 24 Feb 2026 20:00:00 +0100</lastBuildDate>
+    <lastBuildDate>Wed, 25 Feb 2026 20:42:00 +0100</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Deer</title>
+      <link>http://localhost:1313/posts/daily-photo-deer/</link>
+      <pubDate>Wed, 25 Feb 2026 20:42:00 +0100</pubDate>
+      <guid>http://localhost:1313/posts/daily-photo-deer/</guid>
+      <description>&lt;p&gt;Managed to capture a young deer in the nature reserve yesterday.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Lost Americana Tour</title>
       <link>http://localhost:1313/posts/lost-americana-tour/</link>
-      <pubDate>Tue, 24 Feb 2026 20:00:00 +0100</pubDate>
+      <pubDate>Tue, 24 Feb 2026 23:59:00 +0100</pubDate>
       <guid>http://localhost:1313/posts/lost-americana-tour/</guid>
-      <description>&lt;p&gt;Nadine and I went to Berlin to see MGK&amp;rsquo;s Lost Americana tour. I did not bring a proper camera. In hindsight I could have.&lt;/p&gt;</description>
+      <description>&lt;p&gt;Nadine and I went to Berlin to see &lt;a href=&#34;https://www.last.fm/music/Machine+Gun+Kelly&#34;&gt;MGK&lt;/a&gt;&amp;rsquo;s Lost Americana tour. I did not bring a proper camera. In hindsight I could have.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Emma</title>
