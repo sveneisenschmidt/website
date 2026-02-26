@@ -3,21 +3,24 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://localhost:1313/topics/daily-photo/</loc>
-    <lastmod>2026-02-25T20:42:00+01:00</lastmod>
+    <lastmod>2026-02-26T20:47:00+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/daily-photo-deer/</loc>
-    <lastmod>2026-02-25T20:42:00+01:00</lastmod>
+    <loc>http://localhost:1313/posts/daily-photo-moon/</loc>
+    <lastmod>2026-02-26T20:47:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/topics/photography/</loc>
-    <lastmod>2026-02-25T20:42:00+01:00</lastmod>
+    <lastmod>2026-02-26T20:47:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/</loc>
-    <lastmod>2026-02-25T20:42:00+01:00</lastmod>
+    <lastmod>2026-02-26T20:47:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/</loc>
-    <lastmod>2026-02-25T20:42:00+01:00</lastmod>
+    <lastmod>2026-02-26T20:47:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/topics/</loc>
+    <lastmod>2026-02-26T20:47:00+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/daily-photo-deer/</loc>
     <lastmod>2026-02-25T20:42:00+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/lost-americana-tour/</loc>

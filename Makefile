@@ -7,7 +7,7 @@ check-deps:
 	@command -v npx >/dev/null 2>&1 || { echo "npx is required but not installed. Install Node.js first"; exit 1; }
 
 dev: check-deps
-	@trap 'kill 0' EXIT; ./scripts/convert-heic.sh --watch & hugo server --buildDrafts --buildFuture
+	@trap 'kill 0' EXIT; ./scripts/convert-heic.sh --watch & (until curl -s http://localhost:1313 >/dev/null 2>&1; do sleep 0.5; done; open http://localhost:1313) & hugo server --buildDrafts --buildFuture
 
 build:
 	rm -rf public/*
