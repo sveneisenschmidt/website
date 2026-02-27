@@ -7,7 +7,9 @@ check-deps:
 	@command -v npx >/dev/null 2>&1 || { echo "npx is required but not installed. Install Node.js first"; exit 1; }
 
 dev: check-deps
-	@trap 'kill 0' EXIT; ./scripts/convert-heic.sh --watch & (until curl -s http://localhost:1313 >/dev/null 2>&1; do sleep 0.5; done; open http://localhost:1313) & hugo server --buildDrafts --buildFuture
+	$(eval IP := $(shell ipconfig getifaddr en0))
+	@echo "Mobile: http://$(IP):1313"
+	@trap 'kill 0' EXIT; ./scripts/convert-heic.sh --watch & (until curl -s http://localhost:1313 >/dev/null 2>&1; do sleep 0.5; done; open http://localhost:1313) & hugo server --buildDrafts --buildFuture --bind 0.0.0.0 --baseURL http://$(IP):1313
 
 build:
 	rm -rf public/*

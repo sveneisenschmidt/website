@@ -106,13 +106,17 @@ img {
     }
 }
 
+figure {
+    margin: 0;
+}
+
 img.hero {
     width: 100%;
     margin: 0 auto;
 }
 
 .img-exif {
-    display: inline-block;
+    display: block;
 }
 
 .img-exif .img-wrapper {
@@ -121,6 +125,7 @@ img.hero {
 
 .img-exif img {
     display: block;
+    cursor: pointer;
 }
 
 .img-exif .exif {
@@ -149,7 +154,11 @@ img.hero {
 
 @media (hover: none) {
     .img-exif .exif {
-        display: none;
+        opacity: 0;
+    }
+
+    .img-exif .img-wrapper.exif-visible .exif {
+        opacity: 1;
     }
 }
 
