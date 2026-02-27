@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 26 Feb 2026 20:47:00 +0100</lastBuildDate>
+    <lastBuildDate>Fri, 27 Feb 2026 19:00:00 +0100</lastBuildDate>
     <atom:link href="http://192.168.178.120:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Upgrade</title>
+      <link>http://192.168.178.120:1313/posts/2026-february-upgrade/</link>
+      <pubDate>Fri, 27 Feb 2026 19:00:00 +0100</pubDate>
+      <guid>http://192.168.178.120:1313/posts/2026-february-upgrade/</guid>
+      <description>&lt;p&gt;Upgraded from an iPad Air 13&amp;quot; and a Mac mini (M2) as my usage centered more and more around photo editing and agentic coding. The Mac mini feels too static and the iPad too limiting.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Moon</title>
       <link>http://192.168.178.120:1313/posts/daily-photo-moon/</link>
