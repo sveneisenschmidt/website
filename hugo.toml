@@ -44,6 +44,9 @@ title = true
 [caches.images]
 dir = ":cacheDir/images"
 
+[caches.getresource]
+maxAge = 0
+
 [[menus.main]]
 name = "Search"
 pageRef = "/search"
