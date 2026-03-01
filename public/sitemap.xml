@@ -14,8 +14,17 @@
     <loc>http://192.168.178.120:1313/topics/</loc>
     <lastmod>2026-02-28T19:18:00+01:00</lastmod>
   </url><url>
+    <loc>http://192.168.178.120:1313/posts/daily-photo-song-thrush/</loc>
+    <lastmod>2026-02-28T19:18:00+01:00</lastmod>
+  </url><url>
     <loc>http://192.168.178.120:1313/posts/wild-horeses/</loc>
     <lastmod>2026-02-28T19:18:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/log/</loc>
+    <lastmod>2026-02-28T00:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/log/movies/</loc>
+    <lastmod>2026-02-28T00:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/topics/apple/</loc>
     <lastmod>2026-02-27T19:00:00+01:00</lastmod>
@@ -43,12 +52,6 @@
   </url><url>
     <loc>http://192.168.178.120:1313/posts/daily-photo-zootopia-2/</loc>
     <lastmod>2026-02-22T17:35:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.120:1313/log/</loc>
-    <lastmod>2026-02-22T00:00:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.120:1313/log/movies/</loc>
-    <lastmod>2026-02-22T00:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/daily-photo-woods/</loc>
     <lastmod>2026-02-21T17:39:00+01:00</lastmod>
