@@ -3,28 +3,31 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://192.168.178.120:1313/topics/daily-photo/</loc>
-    <lastmod>2026-02-28T19:18:00+01:00</lastmod>
+    <lastmod>2026-03-01T17:47:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/</loc>
-    <lastmod>2026-02-28T19:18:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.120:1313/</loc>
-    <lastmod>2026-02-28T19:18:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.120:1313/topics/</loc>
-    <lastmod>2026-02-28T19:18:00+01:00</lastmod>
+    <lastmod>2026-03-01T17:47:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/daily-photo-song-thrush/</loc>
-    <lastmod>2026-02-28T19:18:00+01:00</lastmod>
+    <lastmod>2026-03-01T17:47:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/</loc>
+    <lastmod>2026-03-01T17:47:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/topics/</loc>
+    <lastmod>2026-03-01T17:47:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/log/</loc>
+    <lastmod>2026-03-01T00:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/log/movies/</loc>
+    <lastmod>2026-03-01T00:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/log/tv/</loc>
+    <lastmod>2026-03-01T00:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/wild-horeses/</loc>
     <lastmod>2026-02-28T19:18:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.120:1313/log/</loc>
-    <lastmod>2026-02-28T00:00:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.120:1313/log/movies/</loc>
-    <lastmod>2026-02-28T00:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/topics/apple/</loc>
     <lastmod>2026-02-27T19:00:00+01:00</lastmod>
@@ -259,9 +262,6 @@
   </url><url>
     <loc>http://192.168.178.120:1313/posts/hello-world/</loc>
     <lastmod>2026-01-01T12:00:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.120:1313/log/tv/</loc>
-    <lastmod>2026-01-01T00:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/log/games/</loc>
     <lastmod>2025-12-28T00:00:00+01:00</lastmod>
