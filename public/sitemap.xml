@@ -23,9 +23,6 @@
     <loc>http://192.168.178.120:1313/log/movies/</loc>
     <lastmod>2026-03-01T00:00:00+01:00</lastmod>
   </url><url>
-    <loc>http://192.168.178.120:1313/log/tv/</loc>
-    <lastmod>2026-03-01T00:00:00+01:00</lastmod>
-  </url><url>
     <loc>http://192.168.178.120:1313/posts/wild-horeses/</loc>
     <lastmod>2026-02-28T19:18:00+01:00</lastmod>
   </url><url>
@@ -34,6 +31,9 @@
   </url><url>
     <loc>http://192.168.178.120:1313/posts/2026-february-upgrade/</loc>
     <lastmod>2026-02-27T19:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/log/tv/</loc>
+    <lastmod>2026-02-27T00:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/daily-photo-moon/</loc>
     <lastmod>2026-02-26T20:47:00+01:00</lastmod>
@@ -211,6 +211,9 @@
   </url><url>
     <loc>http://192.168.178.120:1313/posts/daily-photo-last-day-off/</loc>
     <lastmod>2026-01-11T19:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/posts/daily-photo-coloss/</loc>
+    <lastmod>2026-01-10T19:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/daily-photo-craspedia-globosa/</loc>
     <lastmod>2026-01-10T19:00:00+01:00</lastmod>
