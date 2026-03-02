@@ -4,7 +4,7 @@ title = 'Coloss'
 topics = ['Daily Photo']
 cover = 'IMG_1786.jpeg'
 draft = false
-emojis = ['🌼']
+emojis = ['🚜']
 +++
 
 Did a late-afteroon trip with TIlian to the big bucket-wheel excavator. He was mesmerized by the size, unfortunately it stopped operating for the day. 
