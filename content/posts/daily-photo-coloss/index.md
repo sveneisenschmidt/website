@@ -7,7 +7,7 @@ draft = false
 emojis = ['🚜']
 +++
 
-Did a late-afteroon trip with TIlian to the big bucket-wheel excavator. He was mesmerized by the size, unfortunately it stopped operating for the day. 
+Did a late-afteroon trip with Tilian to the big bucket-wheel excavator. He was mesmerized by the size, unfortunately it stopped operating for the day. 
 
 <!--more-->
 
