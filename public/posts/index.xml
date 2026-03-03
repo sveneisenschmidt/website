@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 01 Mar 2026 17:47:00 +0100</lastBuildDate>
+    <lastBuildDate>Mon, 02 Mar 2026 16:49:00 +0100</lastBuildDate>
     <atom:link href="http://192.168.178.120:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Coloss</title>
+      <link>http://192.168.178.120:1313/posts/daily-photo-coloss/</link>
+      <pubDate>Mon, 02 Mar 2026 16:49:00 +0100</pubDate>
+      <guid>http://192.168.178.120:1313/posts/daily-photo-coloss/</guid>
+      <description>&lt;p&gt;Did a late-afteroon trip with Tilian to the big bucket-wheel excavator. He was mesmerized by the size, unfortunately it stopped operating for the day.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Song Thrush</title>
       <link>http://192.168.178.120:1313/posts/daily-photo-song-thrush/</link>
@@ -49,6 +56,13 @@
       <pubDate>Tue, 24 Feb 2026 23:59:00 +0100</pubDate>
       <guid>http://192.168.178.120:1313/posts/lost-americana-tour/</guid>
       <description>&lt;p&gt;Nadine and I went to Berlin to see &lt;a href=&#34;https://www.last.fm/music/Machine+Gun+Kelly&#34;&gt;MGK&lt;/a&gt;&amp;rsquo;s Lost Americana tour. I did not bring a proper camera. In hindsight I could have.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>No One Was Driving The Car Tour</title>
+      <link>http://192.168.178.120:1313/posts/no-one-was-driving-the-car-tour/</link>
+      <pubDate>Tue, 24 Feb 2026 23:59:00 +0100</pubDate>
+      <guid>http://192.168.178.120:1313/posts/no-one-was-driving-the-car-tour/</guid>
+      <description>&lt;p&gt;Went to see La Dispute playing their No One Was Driving The Car Tour in Leipzig today.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Emma</title>
@@ -385,13 +399,6 @@
       <pubDate>Sun, 11 Jan 2026 19:00:00 +0100</pubDate>
       <guid>http://192.168.178.120:1313/posts/daily-photo-last-day-off/</guid>
       <description>&lt;p&gt;Vacation is over and I&amp;rsquo;m officially back at work tomorrow. A few impressions from today.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Craspedia globosa</title>
-      <link>http://192.168.178.120:1313/posts/daily-photo-coloss/</link>
-      <pubDate>Sat, 10 Jan 2026 19:00:00 +0100</pubDate>
-      <guid>http://192.168.178.120:1313/posts/daily-photo-coloss/</guid>
-      <description></description>
     </item>
     <item>
       <title>Craspedia globosa</title>
