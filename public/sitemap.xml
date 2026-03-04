@@ -2,19 +2,31 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://192.168.178.120:1313/posts/daily-photo-coloss/</loc>
-    <lastmod>2026-03-02T16:49:00+01:00</lastmod>
-  </url><url>
     <loc>http://192.168.178.120:1313/topics/daily-photo/</loc>
-    <lastmod>2026-03-02T16:49:00+01:00</lastmod>
+    <lastmod>2026-03-04T18:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/posts/daily-photo-orange/</loc>
+    <lastmod>2026-03-04T18:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/topics/photography/</loc>
+    <lastmod>2026-03-04T18:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/</loc>
-    <lastmod>2026-03-02T16:49:00+01:00</lastmod>
+    <lastmod>2026-03-04T18:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/</loc>
-    <lastmod>2026-03-02T16:49:00+01:00</lastmod>
+    <lastmod>2026-03-04T18:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/topics/</loc>
+    <lastmod>2026-03-04T18:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/topics/music/</loc>
+    <lastmod>2026-03-03T23:42:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/posts/no-one-was-driving-the-car-tour/</loc>
+    <lastmod>2026-03-03T23:42:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/posts/daily-photo-coloss/</loc>
     <lastmod>2026-03-02T16:49:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/daily-photo-song-thrush/</loc>
@@ -41,19 +53,10 @@
     <loc>http://192.168.178.120:1313/posts/daily-photo-moon/</loc>
     <lastmod>2026-02-26T20:47:00+01:00</lastmod>
   </url><url>
-    <loc>http://192.168.178.120:1313/topics/photography/</loc>
-    <lastmod>2026-02-26T20:47:00+01:00</lastmod>
-  </url><url>
     <loc>http://192.168.178.120:1313/posts/daily-photo-deer/</loc>
     <lastmod>2026-02-25T20:42:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/lost-americana-tour/</loc>
-    <lastmod>2026-02-24T23:59:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.120:1313/topics/music/</loc>
-    <lastmod>2026-02-24T23:59:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.120:1313/posts/no-one-was-driving-the-car-tour/</loc>
     <lastmod>2026-02-24T23:59:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/daily-photo-emma/</loc>
