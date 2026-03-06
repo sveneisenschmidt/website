@@ -7,7 +7,7 @@ draft = false
 emojis = ['✈️']
 +++
 
-A plane passing overhead I saw today while taking the dog out for a long afternoon walk. Much like me, flying into the weekend after an eventful week. The vignette effect in the picture was not intentiona and I like how it came out naturally.
+A plane passing overhead I saw today while taking the dog out for a long afternoon walk. Much like me, flying into the weekend after an eventful week. The vignette effect in the picture was not intentional and I like how it came out naturally.
 
 <!--more-->
 
