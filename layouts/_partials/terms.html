@@ -6,7 +6,7 @@ $taxonomy }} {{- $label := (index . 0).Parent.LinkTitle }}
 <hr />
 <div>
     <span>{{ $label }}: </span>
-    {{- range $i, $term := . }} {{- if $i }}, {{ end }}¶ <a
+    {{- range $i, $term := . }} {{- if $i }}, {{ end }}<a
         href="{{ $term.RelPermalink }}"
         >{{ $term.LinkTitle }}</a
     >
