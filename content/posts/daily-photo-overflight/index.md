@@ -7,7 +7,7 @@ draft = false
 emojis = ['✈️']
 +++
 
-A plane passing overhead. Much like me, flying into the weekend after a good week. The vignette was not intentional. I like how it came about naturally.
+A plane passing overhead. Much like me, flying into the weekend after an eventful week. The vignette effect in the picture was not intentiona and I like how it came out naturally.
 
 <!--more-->
 
