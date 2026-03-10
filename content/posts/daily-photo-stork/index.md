@@ -6,7 +6,7 @@ emojis = ["📷"]
 cover = "IMG_2252.JPG"
 +++
 
-I am trying really hard to let this website not become a bird-blog. But the storks are back!
+I am trying really hard not to let this website become a bird-blog. But the storks are back!
 
 <!--more-->
 
@@ -14,7 +14,7 @@ Last week we saw a pair of storks back in the neighbouring village. I tried a fe
 
 {{< img src="IMG_2252.JPG" alt="Stork" >}}
 
-Later we visited a friend of Nadine with the kids. They are renovating a barn from 1914 and just moved in. The once-barn-now-house turned out great and the property has such a potential. I am sure it will turn out great too. I snapped a few pictures of the area including the old chicken shed:
+Later we visited a friend of Nadine with the kids. They are renovating a barn from 1914 and just moved in. The once-barn-now-house turned out great and the property has a lot of potential. I snapped a few pictures of the area including the old chicken shed:
 
 {{< img src="IMG_2307.JPG" alt="Chicken Shed"  >}}
 
