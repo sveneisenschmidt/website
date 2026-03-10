@@ -6,14 +6,21 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 09 Mar 2026 21:00:00 +0100</lastBuildDate>
+    <lastBuildDate>Tue, 10 Mar 2026 19:10:00 +0100</lastBuildDate>
     <atom:link href="http://192.168.178.120:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Night Shots</title>
-      <link>http://192.168.178.120:1313/posts/daily-photo-afterwork/</link>
+      <title>Stork</title>
+      <link>http://192.168.178.120:1313/posts/daily-photo-stork/</link>
+      <pubDate>Tue, 10 Mar 2026 19:10:00 +0100</pubDate>
+      <guid>http://192.168.178.120:1313/posts/daily-photo-stork/</guid>
+      <description>&lt;p&gt;I am trying really hard to let this website not become a bird-blog. But the storks are back!&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Night Shot</title>
+      <link>http://192.168.178.120:1313/posts/daily-photo-nightshot/</link>
       <pubDate>Mon, 09 Mar 2026 21:00:00 +0100</pubDate>
-      <guid>http://192.168.178.120:1313/posts/daily-photo-afterwork/</guid>
-      <description>&lt;p&gt;Inspired by Jasper&amp;rsquo;s &lt;a href=&#34;https://jasper.tandy.is/blogging/natures-dof&#34;&gt;night shots &lt;/a&gt; and a &lt;a href=&#34;https://youtu.be/-OO6Qrw6NWE?si=_wBK7B0nhsGU8ylQ&#34;&gt;video&lt;/a&gt; I saw on youtube that had a nice segment on post-processing night shots I tried to see what I can get out of the Sony RX100 VII.&lt;/p&gt;</description>
+      <guid>http://192.168.178.120:1313/posts/daily-photo-nightshot/</guid>
+      <description>&lt;p&gt;Inspired by Jasper&amp;rsquo;s &lt;a href=&#34;https://jasper.tandy.is/blogging/natures-dof&#34;&gt;night shots &lt;/a&gt; and a &lt;a href=&#34;https://youtu.be/-OO6Qrw6NWE?si=_wBK7B0nhsGU8ylQ&#34;&gt;video&lt;/a&gt; I saw on youtube last week that had a nice segment on post-processing night shots I tried to see what I can get out of the Sony RX100 VII.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Honeybee</title>

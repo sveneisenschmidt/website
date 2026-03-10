@@ -1,6 +1,6 @@
 +++
 date = '2026-03-09T21:00:00'
-title = "Night Shots"
+title = "Night Shot"
 topics = ["Daily Photo", "Photography"]
 emojis = ["📷"]
 cover = "DSC01598.jpeg"
