@@ -3,22 +3,37 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://192.168.178.120:1313/topics/daily-photo/</loc>
-    <lastmod>2026-03-14T18:00:00+01:00</lastmod>
+    <lastmod>2026-03-14T21:00:00+01:00</lastmod>
   </url><url>
-    <loc>http://192.168.178.120:1313/posts/muehltal/</loc>
-    <lastmod>2026-03-14T18:00:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.120:1313/topics/photography/</loc>
-    <lastmod>2026-03-14T18:00:00+01:00</lastmod>
+    <loc>http://192.168.178.120:1313/topics/games/</loc>
+    <lastmod>2026-03-14T21:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/</loc>
-    <lastmod>2026-03-14T18:00:00+01:00</lastmod>
+    <lastmod>2026-03-14T21:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/posts/daily-photo-requiem/</loc>
+    <lastmod>2026-03-14T21:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/</loc>
-    <lastmod>2026-03-14T18:00:00+01:00</lastmod>
+    <lastmod>2026-03-14T21:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/topics/</loc>
-    <lastmod>2026-03-14T18:00:00+01:00</lastmod>
+    <lastmod>2026-03-14T21:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/posts/muehltal/</loc>
+    <lastmod>2026-03-14T18:16:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/topics/photography/</loc>
+    <lastmod>2026-03-14T18:16:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/log/games/</loc>
+    <lastmod>2026-03-14T00:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/log/</loc>
+    <lastmod>2026-03-14T00:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/log/movies/</loc>
+    <lastmod>2026-03-14T00:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/topics/family/</loc>
     <lastmod>2026-03-13T18:45:00+01:00</lastmod>
@@ -64,12 +79,6 @@
   </url><url>
     <loc>http://192.168.178.120:1313/posts/daily-photo-song-thrush/</loc>
     <lastmod>2026-03-01T17:47:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.120:1313/log/</loc>
-    <lastmod>2026-03-01T00:00:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.120:1313/log/movies/</loc>
-    <lastmod>2026-03-01T00:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/wild-horeses/</loc>
     <lastmod>2026-02-28T19:18:00+01:00</lastmod>
@@ -301,8 +310,5 @@
   </url><url>
     <loc>http://192.168.178.120:1313/posts/hello-world/</loc>
     <lastmod>2026-01-01T12:00:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.120:1313/log/games/</loc>
-    <lastmod>2025-12-28T00:00:00+01:00</lastmod>
   </url>
 </urlset>
