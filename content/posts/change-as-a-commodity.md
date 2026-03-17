@@ -10,7 +10,9 @@ I've been asking myself the wrong question about AI and software development for
 
 <!--more-->
 
-The question many keep asking is: **what happens to the developers?** When I talk to friends who have been building software for fifteen or twenty years and watch them ship things in an afternoon that used to take a sprint, or read stories online of people one-shotting implementations that would have needed a small team and weeks of back-and-forth, it's hard not to wonder what this means for the people doing this work.
+The question many keep asking is: **what happens to the developers?**
+
+When I talk to friends who have been building software for fifteen or twenty years and watch them ship things in an afternoon that used to take a sprint, or read stories online of people one-shotting implementations that would have needed a small team and weeks of back-and-forth, it's hard not to wonder what this means for the people doing this work.
 
 But that's mostly a generational question, about what happens as one way of working gives way to another, and I think the more interesting one is about what comes after that transition and how we can navigate in a psycholigcal safe way without losing a lot of talented people along the way.
 
