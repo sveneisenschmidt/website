@@ -6,11 +6,11 @@ topics = ['Software Development']
 emojis = ['🤖']
 +++
 
-I've been asking myself the wrong question about AI and software development for a while, and I suspect many people in tech have been doing the same.
+I've been trying to answer a question about AI and software development for a while now, and I don't think I've been looking far enough for an answer.
 
 <!--more-->
 
-The question many keep asking is: **what happens to the developers?** (and their careers?)
+The question I started with: **what happens to the developers?** (and their careers?)
 
 When I talk to friends who have been building software for fifteen or twenty years and watch them ship things in an afternoon that used to take a sprint, or read stories online of people one-shotting implementations that would have needed a small team and weeks of back-and-forth, it's hard not to wonder what this means for the people doing this work.
 
