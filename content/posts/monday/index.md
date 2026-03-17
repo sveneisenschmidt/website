@@ -11,6 +11,6 @@ This is what a successfull Monday looks like: Booked my flights for April to see
 
 <!--more-->
 
-{{< img src="IMG_2874.jpeg" alt="Bird nest built from twigs and green plastic netting in a dead tree" >}}
+{{< img src="IMG_2874.jpeg" alt="Bird nest built from twigs and green plastic netting in a dead tree" caption="Trash in the tree">}}
 
 I have a new morning route with Aika. It is more open than the forest, which means the birds are more cautious. Agricultural tracks run through it and a lot of people seem to pass through. There is rubbish everywhere, and as the photo shows, the animals use it too.
