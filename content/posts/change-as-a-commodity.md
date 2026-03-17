@@ -34,7 +34,7 @@ We're already seeing early signals of what happens when that changes. The first 
 
 For me it comes down to this: things are getting built that simply wouldn't have been built before, by people who couldn't have built them before, and that changes who gets to participate in creating software.
 
-We've seen this pattern before, let's think about digital photography: professional cameras and film development were expensive and specialized, so photography stayed in the hands of professionals and dedicated hobbyists. When digital cameras and then smartphones made it essentially free, the volume of photos taken didn't double or triple, it became practically uncountable and new platforms like Flickr or Instagram (the initial platform, not the ad- and influencer-infested one we have today.) emerged. Access to a tool that was previously scarce doesn't just serve existing demand. It reveals demand that was always there but had no way to express itself.
+We've seen this pattern before, let's think about digital photography: professional cameras and film development were expensive and specialized, so photography stayed in the hands of professionals and dedicated hobbyists. When digital cameras and then smartphones made it essentially free, the volume of photos taken didn't double or triple, it became practically uncountable and new platforms like Flickr or Instagram (the initial platform, not the ad- and influencer-infested one we have today) emerged. Access to a tool that was previously scarce doesn't just serve existing demand. It reveals demand that was always there but had no way to express itself.
 
 **Change is becoming a commodity.**
 
