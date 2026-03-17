@@ -12,7 +12,7 @@ I've been asking myself the wrong question about AI and software development for
 
 The question many keep asking is: **what happens to the developers?** When I talk to friends who have been building software for fifteen or twenty years and watch them ship things in an afternoon that used to take a sprint, or read stories online of people one-shotting implementations that would have needed a small team and weeks of back-and-forth, it's hard not to wonder what this means for the people doing this work.
 
-But that's mostly a generational question, about what happens as one way of working gives way to another, and I think the more interesting one is about what comes after that transition.
+But that's mostly a generational question, about what happens as one way of working gives way to another, and I think the more interesting one is about what comes after that transition and how we can navigate in a psycholigcal safe way without losing a lot of talented people along the way.
 
 I've been writing code for more than twenty years, so I understand the concerns. A new generation of developers is entering the field and they've never coded any other way. They don't have ten years of production incidents behind them. They've never been paged at 2am because a slow-burning regression quietly degraded checkout conversion for three days before anyone noticed, or rebuilt a service from scratch because the original architecture couldn't handle the load. All that knowledge, the kind you accumulate through actual failure at scale, they're not going to pick that up the same way we did.
 

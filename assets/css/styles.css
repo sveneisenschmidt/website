@@ -68,7 +68,7 @@ blockquote {
     margin: 1.5rem 0;
     padding: 0.25rem 1.25rem;
     opacity: 0.8;
-    font-size: 0.95rem;
+    font-size: inherit;
 
     p {
         margin: 0.5rem 0;
