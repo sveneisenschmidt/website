@@ -3,34 +3,37 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://192.168.178.120:1313/topics/daily-photo/</loc>
-    <lastmod>2026-03-14T21:00:00+01:00</lastmod>
+    <lastmod>2026-03-16T19:00:00+01:00</lastmod>
   </url><url>
-    <loc>http://192.168.178.120:1313/topics/games/</loc>
-    <lastmod>2026-03-14T21:00:00+01:00</lastmod>
+    <loc>http://192.168.178.120:1313/posts/daily-photo-monday/</loc>
+    <lastmod>2026-03-16T19:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/topics/photography/</loc>
+    <lastmod>2026-03-16T19:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/</loc>
+    <lastmod>2026-03-16T19:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/</loc>
+    <lastmod>2026-03-16T19:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/topics/</loc>
+    <lastmod>2026-03-16T19:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/log/games/</loc>
+    <lastmod>2026-03-15T00:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/log/</loc>
+    <lastmod>2026-03-15T00:00:00+01:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/topics/games/</loc>
     <lastmod>2026-03-14T21:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/daily-photo-requiem/</loc>
     <lastmod>2026-03-14T21:00:00+01:00</lastmod>
   </url><url>
-    <loc>http://192.168.178.120:1313/</loc>
-    <lastmod>2026-03-14T21:00:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.120:1313/topics/</loc>
-    <lastmod>2026-03-14T21:00:00+01:00</lastmod>
-  </url><url>
     <loc>http://192.168.178.120:1313/posts/muehltal/</loc>
     <lastmod>2026-03-14T18:16:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.120:1313/topics/photography/</loc>
-    <lastmod>2026-03-14T18:16:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.120:1313/log/games/</loc>
-    <lastmod>2026-03-14T00:00:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.120:1313/log/</loc>
-    <lastmod>2026-03-14T00:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/log/movies/</loc>
     <lastmod>2026-03-14T00:00:00+01:00</lastmod>
