@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 17 Mar 2026 18:00:00 +0100</lastBuildDate>
+    <lastBuildDate>Wed, 18 Mar 2026 18:00:00 +0100</lastBuildDate>
     <atom:link href="http://192.168.178.120:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Sponsored Post</title>
+      <link>http://192.168.178.120:1313/posts/daily-photo-sponsored-post/</link>
+      <pubDate>Wed, 18 Mar 2026 18:00:00 +0100</pubDate>
+      <guid>http://192.168.178.120:1313/posts/daily-photo-sponsored-post/</guid>
+      <description>&lt;p&gt;Today was back to back, morning to evening. Today&amp;rsquo;s photo is sponsored by Nadine from her photo tour. If you look closely you see two sparrows.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Pigeon</title>
       <link>http://192.168.178.120:1313/posts/daily-photo-pigeon/</link>
