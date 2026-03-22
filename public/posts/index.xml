@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 21 Mar 2026 20:03:00 +0100</lastBuildDate>
+    <lastBuildDate>Sun, 22 Mar 2026 12:47:00 +0100</lastBuildDate>
     <atom:link href="http://192.168.178.120:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Dodge</title>
+      <link>http://192.168.178.120:1313/posts/dodge/</link>
+      <pubDate>Sun, 22 Mar 2026 12:47:00 +0100</pubDate>
+      <guid>http://192.168.178.120:1313/posts/dodge/</guid>
+      <description>&lt;p&gt;My father restores vintage cars as a hobby, and today we did a photo shoot together. The car is a 1932 Dodge Eight Series DK, fully restored by him.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Fog</title>
       <link>http://192.168.178.120:1313/posts/daily-photo-fog/</link>
