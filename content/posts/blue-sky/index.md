@@ -7,7 +7,7 @@ cover = 'IMG_3607.jpeg'
 emojis = ['🦅']
 +++
 
-A starling on the roof, a sparrow on a cable, and a red kite overhead. All three in the same blue sky. Nadine catched a great shot of a red kite today, I feel we are both pishing what we can get out of the 90D and the 250mm lens.
+A starling on the roof, a sparrow on a cable, and a red kite overhead, all three on the same blue day. Nadine caught a great shot of the red kite. I think we are both pushing what we can get out of the 90D and the 250mm lens.
 
 <!--more-->
 
