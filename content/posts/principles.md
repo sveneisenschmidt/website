@@ -12,7 +12,7 @@ One of my team leads came to me today with a proposal. I gave feedback, we talke
 
 So I tried to write my positions down, not as advice but as a skill for Claude, an interactive piece that captures the principles I work from, specific enough that someone could use it to support or challenge an idea the way I would. 
 
-None of these principles stand alone, and they all point at the same thing: fewer situations where someone has to ask before they can move. (Or simply said, it's me being lazy and removing myself from the decision-making process.) I have grouped them into three areas below.
+None of these principles stand alone, and they all point at the same thing: fewer situations where someone has to ask before they can move. (Or simply said, it's me being lazy and removing myself from the decision-making process.)
 
 ## Working on ideas and solutions
 
@@ -28,8 +28,6 @@ Good ideas are not enough to justify the work: what matters is whether something
 ## Working with people
 
 I start from the assumption that everyone acts from good motives. Nobody does something badly on purpose, and nobody is trying to work against someone else. When something goes wrong, I look for the system or the situation before I look for the person.
-
-I am genuinely happy when people ask for my opinion, and I tend to overshare when I do. But that only works when the other person treats it as input and not as instruction.
 
 - **Have a view, defend it when challenged, update it when the data changes**: people with opinions propose things, and waiting for direction is a choice, even if it does not feel like one.
 - **Bring the problem, not a finished solution**: thinking it through together is usually where the better decisions get made. When someone flags a risk, I want the options and a recommendation, not just the risk.
@@ -51,18 +49,12 @@ The way I think about leadership is mostly structural: what conditions you creat
 
 ## The full skill
 
-This post covers only the first layer of the skill: the principles that apply to everything, regardless of domain.
-
-Beyond these principles, the full Claude skill covers what I actually think about the topics that come up most often: systems and simplification, budget and investment, hiring, roadmap and prioritization, engineering, data, and AI. Each part is concrete enough to be useful for a real decision, something you can actually apply.
-
-There is also a section on the key people in my organization and the stakeholders I work with most, so whoever uses it understands how I think and who the relevant people are and what drives them. Including the people section means the skill can also point you toward the right person to talk to, not only the right answer.
+This post covers only the first layer of the skill. The full document goes deeper into the topics that come up most often: systems and simplification, budget and investment, hiring, roadmap and prioritization, engineering, data, and AI. There is also a section on the key people in my organization and the stakeholders I work with most, so whoever uses it understands how I think and who the relevant people are and what drives them.
 
 ## Writing it down
 
 Writing this as a Claude skill was more useful than I expected. In a meeting I can fill gaps as I go, but writing forced me to say things I had only ever implied.
 
-If you are thinking about writing something similar (I have seen leaders coming in with a PPT labeles "This is how to work with me"), one question will tell you when you are done: could someone who has not worked with you use it to anticipate your thinking? If yes, you have made your thinking reproducable, and the people around you can use it, push back against it, and move without needing you in the room.
-
-The first day of using it with some of my team, the skill came across as judgmental and directive, which is exactly the opposite of how I try to lead. A Claude skill can capture what you think but not easily how you hold it. The principles are meant to challenge the idea, not the person bringing it, and writing that down does not automatically preserve the distinction. I do not think a skill like this replaces real conversations with my team, and I would not want it to. At most it is one small tool among many, and right now it is not even that yet.
+The first day of using it with some of my team, the skill came across as judgmental and directive, which is exactly the opposite of how I try to lead. A document can capture what you think but not easily how you hold it. I do not think a skill like this replaces real conversations with my team, and I would not want it to. At most it is one small tool among many, and right now it is not even that yet.
 
 I hold these expectations for others because I hold them for myself, and I give myself the least room to ignore them. I pull myself back when I want to go deep into a detail, or when I want something done a specific way, or when I am swallowing frustration about something. The principles do not get easier just because I wrote them down. So I might be the one that will be using that Claude skill the most.
