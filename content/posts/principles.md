@@ -61,7 +61,7 @@ There is also a section on the key people in my organization and the stakeholder
 
 Writing this as a Claude skill was more useful than I expected. In a meeting I can fill gaps as I go, but writing forced me to say things I had only ever implied.
 
-If you are thinking about writing something similar, one question will tell you when you are done: could someone who has not worked with you use it to anticipate your thinking? If yes, you have made your thinking reproducable, and the people around you can use it, push back against it, and move without needing you in the room.
+If you are thinking about writing something similar (I have seen leaders coming in with a PPT labeles "This is how to work with me"), one question will tell you when you are done: could someone who has not worked with you use it to anticipate your thinking? If yes, you have made your thinking reproducable, and the people around you can use it, push back against it, and move without needing you in the room.
 
 The first day of using it with some of my team, the skill came across as judgmental and directive, which is exactly the opposite of how I try to lead. A Claude skill can capture what you think but not easily how you hold it. The principles are meant to challenge the idea, not the person bringing it, and writing that down does not automatically preserve the distinction. I do not think a skill like this replaces real conversations with my team, and I would not want it to. At most it is one small tool among many, and right now it is not even that yet.
 
