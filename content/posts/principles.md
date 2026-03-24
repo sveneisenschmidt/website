@@ -12,7 +12,7 @@ One of my team leads came to me today with a proposal. I gave feedback, we talke
 
 So I tried to write my positions down, not as advice but as a skill for Claude, an interactive piece that captures the principles I work from, specific enough that someone could use it to support or challenge an idea the way I would. 
 
-None of these principles stand alone, and they all point at the same thing: fewer situations where someone has to ask before they can move. (Or simply said, it's me being lazy and removing myself from the decision-making process.)
+None of these principles stand alone, and they all point at the same thing: fewer situations where someone has to ask before they can move. (Or simply said, it's me being lazy and removing myself from the decision-making process.) I have grouped them into three areas below.
 
 ## Working on ideas and solutions
 
