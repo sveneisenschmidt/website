@@ -2,7 +2,7 @@
 slug = 'daily-photo-requiem'
 date = '2026-03-14T21:00:00'
 title = 'Requiem'
-topics = ['Daily Photo', 'Games']
+topics = ['Daily Photo', 'Video Games']
 cover = 'DSC01640.jpeg'
 emojis = ['🎮']
 +++
