@@ -74,10 +74,10 @@
     <loc>http://192.168.178.120:1313/log/games/</loc>
     <lastmod>2026-03-15T00:00:00+01:00</lastmod>
   </url><url>
-    <loc>http://192.168.178.120:1313/topics/games/</loc>
+    <loc>http://192.168.178.120:1313/posts/daily-photo-requiem/</loc>
     <lastmod>2026-03-14T21:00:00+01:00</lastmod>
   </url><url>
-    <loc>http://192.168.178.120:1313/posts/daily-photo-requiem/</loc>
+    <loc>http://192.168.178.120:1313/topics/video-games/</loc>
     <lastmod>2026-03-14T21:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/muehltal/</loc>
@@ -165,9 +165,6 @@
     <lastmod>2026-02-19T15:48:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/daily-photo-after-burner/</loc>
-    <lastmod>2026-02-18T20:07:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.120:1313/topics/video-games/</loc>
     <lastmod>2026-02-18T20:07:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/daily-photo-stripes/</loc>
