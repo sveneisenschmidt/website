@@ -6,14 +6,21 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 26 Mar 2026 19:58:00 +0100</lastBuildDate>
+    <lastBuildDate>Fri, 27 Mar 2026 17:00:00 +0100</lastBuildDate>
     <atom:link href="http://192.168.178.120:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Dragon Touch</title>
+      <link>http://192.168.178.120:1313/posts/daily-photo-dragon-touch/</link>
+      <pubDate>Fri, 27 Mar 2026 17:00:00 +0100</pubDate>
+      <guid>http://192.168.178.120:1313/posts/daily-photo-dragon-touch/</guid>
+      <description>&lt;p&gt;We got a Dragon Touch 27&amp;quot; digital display to use as a family calendar. My original plan was to build something with an e-ink display and a Raspberry Pi Zero, but this felt like the faster path.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Grace</title>
       <link>http://192.168.178.120:1313/posts/daily-photo-grace/</link>
       <pubDate>Thu, 26 Mar 2026 19:58:00 +0100</pubDate>
       <guid>http://192.168.178.120:1313/posts/daily-photo-grace/</guid>
-      <description>&lt;p&gt;Jasper sent me the &lt;a href=&#34;https://www.amazon.com/salp/projecthailmary?hhf&#34;&gt;STL file&lt;/a&gt; for a Ryland Grace figure from &lt;a href=&#34;http://192.168.178.120:1313/log/movies/project-hail-mary&#34;&gt;Project Hail Mary&lt;/a&gt;. Project Hail Mary is, for me, the best film I have seen in years, and I can barely wait for the home cinema premiere.&lt;/p&gt;</description>
+      <description>&lt;p&gt;Jasper sent me the &lt;a href=&#34;https://www.amazon.com/salp/projecthailmary?hhf&#34;&gt;STL file&lt;/a&gt; for a Ryland Grace figure from &lt;a href=&#34;http://192.168.178.120:1313/log/#project-hail-mary&#34;&gt;Project Hail Mary&lt;/a&gt;. Project Hail Mary is, for me, the best film I have seen in years, and I can barely wait for the home cinema premiere.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Kite</title>
