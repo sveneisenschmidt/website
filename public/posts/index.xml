@@ -6,12 +6,19 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 27 Mar 2026 17:00:00 +0100</lastBuildDate>
+    <lastBuildDate>Sat, 28 Mar 2026 17:00:00 +0100</lastBuildDate>
     <atom:link href="http://192.168.178.120:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Packed</title>
+      <link>http://192.168.178.120:1313/posts/daily-photo-packed/</link>
+      <pubDate>Sat, 28 Mar 2026 17:00:00 +0100</pubDate>
+      <guid>http://192.168.178.120:1313/posts/daily-photo-packed/</guid>
+      <description>&lt;p&gt;Today was packed, in the morning I went out to use the fantastic weather to get some good shots of birds again, the usual Sparrow and a first time shot of a Goldfinch.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Dragon Touch</title>
       <link>http://192.168.178.120:1313/posts/daily-photo-dragon-touch/</link>
-      <pubDate>Fri, 27 Mar 2026 17:00:00 +0100</pubDate>
+      <pubDate>Fri, 27 Mar 2026 19:10:00 +0100</pubDate>
       <guid>http://192.168.178.120:1313/posts/daily-photo-dragon-touch/</guid>
       <description>&lt;p&gt;We got a Dragon Touch 27&amp;quot; digital display to use as a family calendar. My original plan was to build something with an e-ink display and a Raspberry Pi Zero, but this felt like the faster path.&lt;/p&gt;</description>
     </item>
