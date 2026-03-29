@@ -4,7 +4,7 @@ title = "Village Walk"
 topics = ['Daily Photo', 'Photography']
 emojis = ['🌿']
 draft = false
-cover = "IMG_4068.jpeg"
+cover = "IMG_4032.jpeg"
 +++
 
 A walk through the village with friends. Spring was showing up everywhere, the light has been so good again. 
