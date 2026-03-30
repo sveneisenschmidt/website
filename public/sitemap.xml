@@ -2,19 +2,25 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://192.168.178.120:1313/topics/daily-photo/</loc>
-    <lastmod>2026-03-29T18:39:00+02:00</lastmod>
-  </url><url>
     <loc>http://192.168.178.120:1313/topics/photography/</loc>
-    <lastmod>2026-03-29T18:39:00+02:00</lastmod>
+    <lastmod>2026-03-30T19:22:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/</loc>
-    <lastmod>2026-03-29T18:39:00+02:00</lastmod>
+    <lastmod>2026-03-30T19:22:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/posts/hypo/</loc>
+    <lastmod>2026-03-30T19:22:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/topics/software-development/</loc>
+    <lastmod>2026-03-30T19:22:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/</loc>
-    <lastmod>2026-03-29T18:39:00+02:00</lastmod>
+    <lastmod>2026-03-30T19:22:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/topics/</loc>
+    <lastmod>2026-03-30T19:22:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.120:1313/topics/daily-photo/</loc>
     <lastmod>2026-03-29T18:39:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/village-walk/</loc>
@@ -75,9 +81,6 @@
     <lastmod>2026-03-17T18:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/change-as-a-commodity/</loc>
-    <lastmod>2026-03-17T12:00:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.120:1313/topics/software-development/</loc>
     <lastmod>2026-03-17T12:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.120:1313/posts/building-with-hugo-pt2/</loc>

@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 29 Mar 2026 18:39:00 +0200</lastBuildDate>
+    <lastBuildDate>Mon, 30 Mar 2026 19:22:00 +0200</lastBuildDate>
     <atom:link href="http://192.168.178.120:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>So I Built a Mac App</title>
+      <link>http://192.168.178.120:1313/posts/hypo/</link>
+      <pubDate>Mon, 30 Mar 2026 19:22:00 +0200</pubDate>
+      <guid>http://192.168.178.120:1313/posts/hypo/</guid>
+      <description>&lt;p&gt;Nadine and I shoot a lot of photos. A lot in the sense that we are still beginners and have quite an amount to sort through every time. But the amount of pictures is not what this is about. After going out with the camera we go through the same routine: connect the camera, open Photos or Photomator, and start deciding what comes in and what gets deleted. The problem is that both apps only show tiny previews during import. It is impossible to tell how a photo actually turned out, so you end up importing everything and making decisions later, inside your library. Which means if you are as lazy as me, your library keeps growing with the same blurry shots.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Village Walk</title>
       <link>http://192.168.178.120:1313/posts/village-walk/</link>

@@ -7,7 +7,7 @@ draft = false
 cover = "DSC01685.jpeg"
 +++
 
-Nadine and I shoot a lot of photos. A lot in the sense that we are still beginners and have quite an amount to sort through every time. But the amount of pictures is not what this is about. After going out with the camera we go through the same routine: connect the camera, open Photos or Photomator, and start deciding what comes in and what gets deleted. The problem is that both apps only show tiny previews during import. It is impossible to tell how a photo actually turned out, so you end up importing everything and making decisions later, inside your library. Which means if you are as lazy as me, your library keeps growing with the same blurry shots.
+Nadine and I shoot a lot of photos. A lot in the sense that we are still beginners and have quite an amount to sort through every time. But the amount of pictures is not what this is about. After going out with the camera we go through the same routine: connect the camera, open Photos or Photomator, and start deciding what comes in and what gets deleted. The problem is that both apps only show tiny previews during import. It is impossible to tell how a photo actually turned out, so you end up importing everything and making decisions later, inside your library. Which means if you are as lazy as me, your library keeps growing with the same blurry photos.
 
 <!--more-->
 
@@ -25,7 +25,7 @@ You use arrow keys to navigate and the spacebar to select a photo and jump to th
 
 The name comes from hypo, the fixative used in darkroom photography. It is the chemical that makes a latent image visible for the first time. The idea felt right: before a photo belongs in your library, you should be able to see exactly what you captured. Half of the time building this app I was researching for a good name.
 
-{{< img src="hypo-welcome.png" alt="Hypo welcome screen with app icon and name explanation" caption="The welcome screen, shown when no device is connected." >}}
+{{< img src="hypo-welcome.png" alt="Hypo welcome screen with app icon and name explanation" caption="The welcome screen, shown when no device is connected or a filter does not return any photos." >}}
 
 I built it in about five hours over one evening and the next morning, using Claude Code. It is my first macOS app. I have written a lot of backend and web code over the years, but SwiftUI was new to me. Some things I expected to struggle with just worked: connecting to the camera as a mounted volume, reading EXIF, decoding RAWs progressively. Getting the layout to do exactly what I wanted took embarrassingly long. I have no idea how people do this with these crazy Swift layouts, also it seems the state management is similar to that of React Redux.
 
