@@ -1,5 +1,4 @@
 +++
-slug = 'daily-photo-dragon-touch'
 date = '2026-03-27T19:10:00'
 title = 'Dragon Touch'
 topics = ['Daily Photo']

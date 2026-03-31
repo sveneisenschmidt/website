@@ -6,8 +6,22 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 30 Mar 2026 19:22:00 +0200</lastBuildDate>
+    <lastBuildDate>Tue, 31 Mar 2026 20:50:00 +0200</lastBuildDate>
     <atom:link href="http://192.168.178.120:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Low</title>
+      <link>http://192.168.178.120:1313/posts/daily-photo-low/</link>
+      <pubDate>Tue, 31 Mar 2026 20:50:00 +0200</pubDate>
+      <guid>http://192.168.178.120:1313/posts/daily-photo-low/</guid>
+      <description>&lt;p&gt;Agentic coding demands something different from you than traditional software development, because the pace is so fast. Going from idea to result in hours is incredible, and after building Hypo and the &lt;a href=&#34;http://192.168.178.120:1313/posts/dragon-touch-pt2&#34;&gt;Dragon Touch&lt;/a&gt; setup over the last few evenings, that intensity has caught up with me a little. Bad weather and not many good motifs to photograph do not help. I feel it in the motivation to take good pictures. It is all positive though. I used &lt;a href=&#34;http://192.168.178.120:1313/posts/hypo&#34;&gt;Hypo*&lt;/a&gt; to import today&amp;rsquo;s photos, which feels like a nice reward for the effort.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Dragon Touch, Part Two</title>
+      <link>http://192.168.178.120:1313/posts/dragon-touch-pt2/</link>
+      <pubDate>Tue, 31 Mar 2026 19:00:00 +0200</pubDate>
+      <guid>http://192.168.178.120:1313/posts/dragon-touch-pt2/</guid>
+      <description>&lt;p&gt;A follow-up to the &lt;a href=&#34;http://192.168.178.120:1313/daily-photo-dragon-touch&#34;&gt;Dragon Touch post&lt;/a&gt; from a few days ago, about two things that bothered me enough to fix.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>So I Built a Mac App</title>
       <link>http://192.168.178.120:1313/posts/hypo/</link>
