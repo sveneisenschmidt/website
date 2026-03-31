@@ -1,7 +1,6 @@
 +++
 date = '2026-03-31T21:20:00'
 title = 'Dragon Touch (Pt.2)'
-cover = 'dragon-touch-capture.png'
 topics = ['Software Development']
 emojis = ['📅']
 +++
