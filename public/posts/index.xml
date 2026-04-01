@@ -6,21 +6,28 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 31 Mar 2026 20:50:00 +0200</lastBuildDate>
+    <lastBuildDate>Wed, 01 Apr 2026 10:00:00 +0200</lastBuildDate>
     <atom:link href="http://192.168.178.120:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Dissolve</title>
+      <link>http://192.168.178.120:1313/posts/daily-photo-dissolve/</link>
+      <pubDate>Wed, 01 Apr 2026 10:00:00 +0200</pubDate>
+      <guid>http://192.168.178.120:1313/posts/daily-photo-dissolve/</guid>
+      <description>&lt;p&gt;One of the new windmills north of the village, on a grey morning.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Low</title>
       <link>http://192.168.178.120:1313/posts/daily-photo-low/</link>
-      <pubDate>Tue, 31 Mar 2026 20:50:00 +0200</pubDate>
+      <pubDate>Tue, 31 Mar 2026 21:21:00 +0200</pubDate>
       <guid>http://192.168.178.120:1313/posts/daily-photo-low/</guid>
-      <description>&lt;p&gt;Agentic coding demands something different from you than traditional software development, because the pace is so fast. Going from idea to result in hours is incredible, and after building Hypo and the &lt;a href=&#34;http://192.168.178.120:1313/posts/dragon-touch-pt2&#34;&gt;Dragon Touch&lt;/a&gt; setup over the last few evenings, that intensity has caught up with me a little. Bad weather and not many good motifs to photograph do not help. I feel it in the motivation to take good pictures. It is all positive though. I used &lt;a href=&#34;http://192.168.178.120:1313/posts/hypo&#34;&gt;Hypo*&lt;/a&gt; to import today&amp;rsquo;s photos, which feels like a nice reward for the effort.&lt;/p&gt;</description>
+      <description>&lt;p&gt;The last few evenings went into building &lt;a href=&#34;http://192.168.178.120:1313/posts/hypo&#34;&gt;Hypo&lt;/a&gt; and the &lt;a href=&#34;http://192.168.178.120:1313/posts/dragon-touch-pt2&#34;&gt;Dragon Touch&lt;/a&gt; setup. Agentic coding is a different kind of effort: the cycles from idea to working product are so fast that you barely notice how much you are putting in.&lt;/p&gt;</description>
     </item>
     <item>
-      <title>Dragon Touch, Part Two</title>
+      <title>Dragon Touch (Pt.2)</title>
       <link>http://192.168.178.120:1313/posts/dragon-touch-pt2/</link>
-      <pubDate>Tue, 31 Mar 2026 19:00:00 +0200</pubDate>
+      <pubDate>Tue, 31 Mar 2026 21:20:00 +0200</pubDate>
       <guid>http://192.168.178.120:1313/posts/dragon-touch-pt2/</guid>
-      <description>&lt;p&gt;A follow-up to the &lt;a href=&#34;http://192.168.178.120:1313/daily-photo-dragon-touch&#34;&gt;Dragon Touch post&lt;/a&gt; from a few days ago, about two things that bothered me enough to fix.&lt;/p&gt;</description>
+      <description>&lt;p&gt;A follow-up to the &lt;a href=&#34;http://192.168.178.120:1313/posts/dragon-touch&#34;&gt;Dragon Touch post&lt;/a&gt; from a few days ago, about two things that bothered me enough to fix.&lt;/p&gt;</description>
     </item>
     <item>
       <title>So I Built a Mac App</title>
@@ -45,9 +52,9 @@
     </item>
     <item>
       <title>Dragon Touch</title>
-      <link>http://192.168.178.120:1313/posts/daily-photo-dragon-touch/</link>
+      <link>http://192.168.178.120:1313/posts/dragon-touch/</link>
       <pubDate>Fri, 27 Mar 2026 19:10:00 +0100</pubDate>
-      <guid>http://192.168.178.120:1313/posts/daily-photo-dragon-touch/</guid>
+      <guid>http://192.168.178.120:1313/posts/dragon-touch/</guid>
       <description>&lt;p&gt;We got a Dragon Touch 27&amp;quot; digital display to use as a family calendar. My original plan was to build something with an e-ink display and a Raspberry Pi Zero, but this felt like the faster path.&lt;/p&gt;</description>
     </item>
     <item>
