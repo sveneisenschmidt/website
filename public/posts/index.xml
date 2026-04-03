@@ -6,14 +6,21 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 02 Apr 2026 21:15:00 +0200</lastBuildDate>
+    <lastBuildDate>Fri, 03 Apr 2026 09:00:00 +0200</lastBuildDate>
     <atom:link href="http://192.168.178.120:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Instant Gratification</title>
+      <link>http://192.168.178.120:1313/posts/instant-gratification/</link>
+      <pubDate>Fri, 03 Apr 2026 09:00:00 +0200</pubDate>
+      <guid>http://192.168.178.120:1313/posts/instant-gratification/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Two Cameras</title>
       <link>http://192.168.178.120:1313/posts/two-cameras/</link>
       <pubDate>Thu, 02 Apr 2026 21:15:00 +0200</pubDate>
       <guid>http://192.168.178.120:1313/posts/two-cameras/</guid>
-      <description>&lt;p&gt;I went out this morning with both cameras. The two bird shots are from the Canon, the frost on the bridge from the Sony.&lt;/p&gt;</description>
+      <description>&lt;p&gt;I went out this morning with both cameras, the two bird shots from the Canon and the frost on the bridge from the Sony.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Dissolve</title>
