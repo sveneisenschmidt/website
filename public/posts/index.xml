@@ -6,14 +6,21 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 03 Apr 2026 09:00:00 +0200</lastBuildDate>
+    <lastBuildDate>Sat, 04 Apr 2026 20:00:00 +0200</lastBuildDate>
     <atom:link href="http://192.168.178.120:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Instant Gratification</title>
-      <link>http://192.168.178.120:1313/posts/instant-gratification/</link>
-      <pubDate>Fri, 03 Apr 2026 09:00:00 +0200</pubDate>
-      <guid>http://192.168.178.120:1313/posts/instant-gratification/</guid>
-      <description></description>
+      <title>Experimental</title>
+      <link>http://192.168.178.120:1313/posts/experimental/</link>
+      <pubDate>Sat, 04 Apr 2026 20:00:00 +0200</pubDate>
+      <guid>http://192.168.178.120:1313/posts/experimental/</guid>
+      <description>&lt;p&gt;I ran the photo import in an experimental Hypo branch today and I will learn from my mistakes: the photos never arrived in Apple Photos and got deleted from the card but.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Loop</title>
+      <link>http://192.168.178.120:1313/posts/daily-photo-loop/</link>
+      <pubDate>Fri, 03 Apr 2026 22:15:00 +0200</pubDate>
+      <guid>http://192.168.178.120:1313/posts/daily-photo-loop/</guid>
+      <description>&lt;p&gt;Working on Hypo and immediately using new features in my photo workflow is instant gratification, and it becomes a self-reinforcing loop.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Two Cameras</title>
