@@ -11,6 +11,6 @@ I ran the photo import in an experimental Hypo branch today and I will learn fro
 
 <!--more-->
 
-They were a photo of strawberry cheesecake and today's BBQ: **both gone**. Insteead I havean "artistic" shot of our interior door. That is it for today.
+They were a photo of strawberry cheesecake and today's BBQ: **both gone**. Instead I have an "artistic" shot of our interior door. That is it for today.
 
 {{< img src="DSC01720.jpeg" alt="Artistic close-up of an interior door" >}}
