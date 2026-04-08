@@ -1,0 +1,51 @@
+{{- $token := getenv "HUGO_HYPO_RELEASES_TOKEN" -}}
+{{- $url := "https://api.github.com/repos/sveneisenschmidt/hypo-src/releases?per_page=50" -}}
+{{- $opts := dict "headers" (dict "Authorization" (printf "token %s" $token) "Accept" "application/vnd.github+json") -}}
+{{- $releases := slice -}}
+{{- $result := try (resources.GetRemote $url $opts) -}}
+{{- with $result.Err -}}
+  {{- warnf "Failed to fetch Hypo releases: %s" . -}}
+{{- else -}}
+  {{- $all := unmarshal $result.Value.Content -}}
+  {{- range $all -}}
+    {{- $cutoff := time "2026-04-08" -}}
+    {{- $published := time .published_at -}}
+    {{- if and (not .draft) (not .prerelease) (ge $published $cutoff) -}}
+      {{- $releases = $releases | append . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $siteURL := site.BaseURL -}}
+{{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hypo Releases</title>
+    <link>{{ $siteURL }}posts/hypo/</link>
+    <description>Releases for Hypo, a macOS photo import app.</description>
+    <generator>Hugo</generator>
+    <language>{{ site.LanguageCode }}</language>
+    {{- with index $releases 0 }}
+    <lastBuildDate>{{ dateFormat "Mon, 02 Jan 2006 15:04:05 -0700" .published_at }}</lastBuildDate>
+    {{- end }}
+    <atom:link href="{{ $siteURL }}hypo.xml" rel="self" type="application/rss+xml" />
+    {{- range $releases }}
+    <item>
+      <title>{{ .name | default .tag_name }}</title>
+      <link>{{ .html_url }}</link>
+      <pubDate>{{ dateFormat "Mon, 02 Jan 2006 15:04:05 -0700" .published_at }}</pubDate>
+      <guid isPermaLink="true">{{ .html_url }}</guid>
+      <description>{{ printf "<![CDATA[" | safeHTML }}
+        {{- with .body }}{{ . | markdownify }}{{ end -}}
+        {{- with .assets }}
+        <h3>Downloads</h3>
+        <ul>
+          {{- range . }}
+          <li><a href="{{ .browser_download_url }}">{{ .name }}</a> ({{ lang.FormatNumber 1 (div (float .size) 1048576) }} MB)</li>
+          {{- end }}
+        </ul>
+        {{- end }}
+      {{ printf "]]>" | safeHTML }}</description>
+    </item>
+    {{- end }}
+  </channel>
+</rss>

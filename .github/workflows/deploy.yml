@@ -53,6 +53,7 @@ jobs:
         env:
           HUGO_CACHEDIR: /tmp/hugo_cache
           TZ: Europe/Berlin
+          HUGO_HYPO_RELEASES_TOKEN: ${{ secrets.HUGO_HYPO_RELEASES_TOKEN }}
         run: hugo --minify
 
       - name: Build search index
