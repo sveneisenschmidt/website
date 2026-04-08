@@ -7,7 +7,7 @@ emojis = ["🏁"]
 cover = "DSC01774.jpeg"
 +++
 
-I have been using the Sony more over the last days. The blurriness and zoom of the Canon distorts my perception of how good the Sony actually is. The variety is fun.
+I have been using the Sony more over the last days. The Canon's softness and zoom distort my perception of how good the Sony actually is, especially the finer and sensitive grain adds a nice character to the Sony. Switching between both is fun.
 
 <!--more-->
 
