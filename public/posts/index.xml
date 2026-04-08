@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 07 Apr 2026 17:52:00 +0200</lastBuildDate>
+    <lastBuildDate>Wed, 08 Apr 2026 21:30:00 +0200</lastBuildDate>
     <atom:link href="http://192.168.178.100:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Milestone</title>
+      <link>http://192.168.178.100:1313/posts/daily-photo-milestone/</link>
+      <pubDate>Wed, 08 Apr 2026 21:30:00 +0200</pubDate>
+      <guid>http://192.168.178.100:1313/posts/daily-photo-milestone/</guid>
+      <description>&lt;p&gt;&amp;hellip;&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Star</title>
       <link>http://192.168.178.100:1313/posts/daily-photo-star/</link>
