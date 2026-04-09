@@ -15,13 +15,6 @@ AddType font/woff .woff
     Header set Connection keep-alive
 </IfModule>
 
-# No-index for Hypo releases feed
-<IfModule mod_headers.c>
-    <Files "hypo.xml">
-        Header set X-Robots-Tag "noindex, nofollow"
-    </Files>
-</IfModule>
-
 # ETags deaktivieren (Cache-Control reicht)
 <IfModule mod_headers.c>
     Header unset ETag

@@ -23,12 +23,8 @@ email = "sven.eisenschmidt@gmail.com"
 [taxonomies]
 topic = "topics"
 
-[outputFormats.HypoRSS]
-mediaType = "application/rss+xml"
-baseName = "hypo"
-
 [outputs]
-home = ["HTML", "RSS", "HypoRSS"]
+home = ["HTML", "RSS"]
 section = ["HTML", "RSS"]
 taxonomy = ["HTML"]
 term = ["HTML"]

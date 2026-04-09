@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /hypo.xml
 
 Sitemap: https://sven.eisenschmidt.website/sitemap.xml
