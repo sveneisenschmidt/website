@@ -13,4 +13,4 @@ Jasper send me earlier a nice video '[Explaining the Most Important Artemis II P
 
 {{< img src="IMG_5441.jpeg" alt="Black and white photo of a chaffinch perched on a budding branch" photographer="Nadine" >}}
 
-PS: As Everything Unfolds new record is out today.
+PS: As Everything Unfolds [new record](https://www.youtube.com/watch?v=KvquC2tvqbs) is out today.
