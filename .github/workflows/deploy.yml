@@ -34,7 +34,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/hugo_cache
-          key: hugo-${{ runner.os }}-${{ hashFiles('content/**/*.jpg', 'content/**/*.jpeg', 'content/**/*.png', 'content/**/*.webp', 'content/**/*.JPG') }}
+          key: hugo-${{ runner.os }}-resources
           restore-keys: |
             hugo-${{ runner.os }}-
 
