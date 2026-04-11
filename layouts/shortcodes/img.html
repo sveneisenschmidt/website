@@ -5,8 +5,9 @@
 {{- $img := .Page.Resources.GetMatch $src -}}
 {{- if $img -}}
 {{- $resized := $img.Fit "2048x2048" -}}
-{{- $hasExif := $img.Exif -}}
-<figure{{ if or $hasExif $photographer }} class="img-exif"{{ end }}>
+{{- $meta := $img.Meta -}}
+{{- $exif := $meta.Exif -}}
+<figure{{ if or $exif $photographer }} class="img-exif"{{ end }}>
     <div class="img-wrapper">
         <img
             src="{{ $resized.RelPermalink }}"
@@ -15,9 +16,9 @@
             class="hero"
         />
         {{- $camera := "" -}}
-        {{- with $img.Exif -}}
-        {{- $make := .Tags.Make -}}
-        {{- $model := .Tags.Model -}}
+        {{- with $exif -}}
+        {{- $make := .Make -}}
+        {{- $model := .Model -}}
         {{- if and $make $model (strings.HasPrefix $model $make) -}}
             {{- $model = strings.TrimPrefix $make $model | strings.TrimLeft " " -}}
         {{- end -}}
@@ -27,10 +28,10 @@
         {{- if or $camera $photographer -}}
         <span class="exif">
             {{- $camera -}}
-            {{- with $img.Exif -}}
-            {{- with .Tags.FocalLength }} · {{ lang.FormatNumber 0 . }}mm{{ end -}}
-            {{- with .Tags.FNumber }} · ƒ/{{ lang.FormatNumber 1 . }}{{ end -}}
-            {{- with .Tags.ExposureTime -}}
+            {{- with $exif -}}
+            {{- with .FocalLength }} · {{ lang.FormatNumber 0 . }}mm{{ end -}}
+            {{- with .FNumber }} · ƒ/{{ lang.FormatNumber 1 . }}{{ end -}}
+            {{- with .ExposureTime -}}
               {{- $str := printf "%v" . -}}
               {{- if strings.Contains $str "/" -}}
                 {{- $parts := split $str "/" -}}
@@ -41,8 +42,8 @@
                 {{- else }} · {{ lang.FormatNumber 1 $val }}s{{ end -}}
               {{- else }} · {{ . }}s{{ end -}}
             {{- end -}}
-            {{- with .Tags.ISO }} · ISO {{ . }}{{ end -}}
-            {{- if not .Tags.ISO }}{{- with .Tags.ISOSpeedRatings }} · ISO {{ . }}{{ end -}}{{ end -}}
+            {{- with .ISO }} · ISO {{ . }}{{ end -}}
+            {{- if not .ISO }}{{- with .ISOSpeedRatings }} · ISO {{ . }}{{ end -}}{{ end -}}
             {{- end -}}
             {{- with $photographer }}{{ if $camera }} · {{ end }}📷 {{ . }}{{ end -}}
         </span>
