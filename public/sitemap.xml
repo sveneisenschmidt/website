@@ -3,22 +3,25 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://192.168.178.100:1313/topics/daily-photo/</loc>
-    <lastmod>2026-04-15T12:00:00+02:00</lastmod>
+    <lastmod>2026-04-16T23:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/topics/photography/</loc>
-    <lastmod>2026-04-15T12:00:00+02:00</lastmod>
+    <lastmod>2026-04-16T23:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/posts/</loc>
-    <lastmod>2026-04-15T12:00:00+02:00</lastmod>
+    <lastmod>2026-04-16T23:00:00+02:00</lastmod>
   </url><url>
-    <loc>http://192.168.178.100:1313/posts/daily-photo-redstart/</loc>
-    <lastmod>2026-04-15T12:00:00+02:00</lastmod>
+    <loc>http://192.168.178.100:1313/posts/daily-photo-station-visit/</loc>
+    <lastmod>2026-04-16T23:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/</loc>
-    <lastmod>2026-04-15T12:00:00+02:00</lastmod>
+    <lastmod>2026-04-16T23:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/topics/</loc>
-    <lastmod>2026-04-15T12:00:00+02:00</lastmod>
+    <lastmod>2026-04-16T23:00:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.100:1313/posts/daily-photo-redstart/</loc>
+    <lastmod>2026-04-15T22:15:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/posts/daily-photo-blossom/</loc>
     <lastmod>2026-04-14T21:15:00+02:00</lastmod>
