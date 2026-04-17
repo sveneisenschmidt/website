@@ -15,4 +15,4 @@ On the feet from 4am to 10pm. The founders of roadsurfer and us non-founding exe
 
 The team at our Nürnberg station won an internal raffle of folks from the HQ running the station for one day. We went there to clean cars, do post-winter preparation for the running season, damage detection for return vehicles and do user interviews with the local station manager and their team.
 
-Our throughput likely put a visible dent in their daily KPIs, but first hand exposure to operations and direct feedback from the teams on the ground is essential input for our work. Days like this keep you grounded and reduce the risk of optimising for the wrong things from behind a desk.
+Our throughput likely put a visible dent in their daily KPIs, but first hand exposure to operations and direct feedback from the teams on the ground is good input for our work. It is easy to lose sight of the daily reality of the operation when you spend most of your time in meetings and spreadsheets.
