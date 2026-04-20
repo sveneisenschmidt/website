@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 19 Apr 2026 21:00:00 +0200</lastBuildDate>
+    <lastBuildDate>Mon, 20 Apr 2026 21:00:00 +0200</lastBuildDate>
     <atom:link href="http://192.168.178.100:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Split</title>
+      <link>http://192.168.178.100:1313/posts/daily-photo-split/</link>
+      <pubDate>Mon, 20 Apr 2026 21:00:00 +0200</pubDate>
+      <guid>http://192.168.178.100:1313/posts/daily-photo-split/</guid>
+      <description>&lt;p&gt;Three days to my trip to the UK. The week is nicely split between wrapping up work and packing for it. Surprisingly it is also the busiest work week. I guess you can&amp;rsquo;t plan for that.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Rooster</title>
       <link>http://192.168.178.100:1313/posts/daily-photo-rooster/</link>
