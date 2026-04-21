@@ -7,7 +7,7 @@ emojis = ["📷"]
 cover = "A6400573.jpeg"
 +++
 
-Went with Tilian and Aika on a stroll through the fields and the local forest. Encountered a Heron, a Magpie and a pair of Starlings.
+Went with Tilian and Aika on a stroll through the fields and the local forest. Encountered a Heron, a Magpie and a pair of Starlings. I would love to get a good shot of a Magpie, one day!
 
 <!--more-->
 
