@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 20 Apr 2026 21:00:00 +0200</lastBuildDate>
+    <lastBuildDate>Tue, 21 Apr 2026 21:00:00 +0200</lastBuildDate>
     <atom:link href="http://192.168.178.100:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Rolling</title>
+      <link>http://192.168.178.100:1313/posts/daily-photo-rolling/</link>
+      <pubDate>Tue, 21 Apr 2026 21:00:00 +0200</pubDate>
+      <guid>http://192.168.178.100:1313/posts/daily-photo-rolling/</guid>
+      <description>&lt;p&gt;Went with Tilian and Aika on a stroll through the fields and the local forest.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Split</title>
       <link>http://192.168.178.100:1313/posts/daily-photo-split/</link>
