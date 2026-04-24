@@ -35,7 +35,7 @@ Same problem as [Jasper](https://jasper.tandy.is/blogging/sven-visit-2026-day-on
 
 ### Evening Walk
 
-To bridge the time until we picked up Jasper's daughter from training we spent the evening wakking around with cameras and had a stop in a local pub watching Premier League darts in Falmer. I love British pub culture, feels like a small slice of life: beer, darts, savoury snacks. Something that doesn't really exist anymore in the rural area where I live.
+To bridge the time until we picked up Jasper's daughter from training we spent the evening walking the town with cameras and had a stop in a local pub watching Premier League darts in Falmer. I love British pub culture, feels like a small slice of life: beer, darts, savoury snacks. Something that doesn't really exist anymore in the rural area where I live.
 
 {{< img src="A6400666.jpeg" alt="A flint stone village church with a square tower and slate roof, lit by low evening sun, gravestones scattered across the sloping lawn" >}}
 
