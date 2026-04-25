@@ -7,7 +7,7 @@ emojis = ["🇬🇧"]
 cover = "A6401036.jpeg"
 +++
 
-Jasper wanted to see the windfarm close to Brighton since a while. We went there today.
+Jasper and I wanted to see the windfarm close to Brighton since a while. We went there today.
 
 <!--more-->
 
