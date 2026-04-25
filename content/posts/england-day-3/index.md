@@ -27,7 +27,7 @@ We went with [Brighton Diver ](https://brightondiver.com) and my expectations ha
 
 {{< img src="A6400758.jpeg" alt="A red metal channel buoy floating in front of a stacked concrete sea wall, with chalk cliffs and the Brighton seafront visible behind" >}}
 
-### At the Windfarm
+### At The Windfarm
 
 {{< img src="A6400933.jpeg" alt="A full offshore wind turbine standing on a yellow transition piece in the sea, three white blades against a clear blue sky, the coast faintly visible on the horizon" >}}
 
@@ -39,7 +39,7 @@ We went with [Brighton Diver ](https://brightondiver.com) and my expectations ha
 
 {{< img src="A6400946.jpeg" alt="An offshore substation platform from below, blue steel deck supported by a yellow tubular jacket structure rising out of the sea" >}}
 
-### Back at the waterfront
+### Back At The Waterfront
 
 {{< img src="A6401174.jpeg" alt="Black and white view of a deserted concrete underpass at a station with two flights of stairs leading up into bright daylight" >}}
 
