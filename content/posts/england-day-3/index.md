@@ -11,7 +11,7 @@ Jasper and I wanted to see the windfarm close to Brighton since a while. We went
 
 <!--more-->
 
-We went with [Brighton Diver ](https://brightondiver.com) and my expectations have been excited. Once back from the tour we went strolling a long the pier and getting fries at BeFries.
+We went with [Brighton Diver ](https://brightondiver.com) and my expectations have been exceeded. Once back from the tour we went strolling a long the pier and getting fries at BeFries.
 
 ### At The Marina
 
