@@ -7,7 +7,7 @@ emojis = ["🇬🇧"]
 cover = "A6401342.jpeg"
 +++
 
-Back home after a great time at Jasper's and family. Will be coming during summer holidays with our campervan. Wiht the risk of repeating myself, flying has been becoming a very smooth experience, 20 minutes from touchdown to the train at BER.
+Back home after a great time at Jasper's and family. Will be coming back during summer holidays with our campervan. Wiht the risk of repeating myself, flying has been becoming a very smooth experience, 20 minutes from touchdown to the train at BER.
 
 <!--more-->
 
