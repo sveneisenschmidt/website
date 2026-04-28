@@ -7,8 +7,8 @@ emojis = ["🇬🇧"]
 cover = "A6401342.jpeg"
 +++
 
-Back home after a great time at Jasper's and family. Will be coming back during summer holidays with our campervan. Wiht the risk of repeating myself, flying has been becoming a very smooth experience, 20 minutes from touchdown to the train at BER.
+Back home after a great time with Jasper and his family. Will be coming back during the summer holidays with our campervan. With the risk of repeating myself, flying has become a very smooth experience, 20 minutes from touchdown to the train at BER.
 
 <!--more-->
 
-{{< img src="A6401342.jpeg" alt="Black and white photograph of a Deutsche Bahn ICE high-speed train standing at a covered platform, clean side profile of a single carriage with the rails and a slice of light on the platform in the foreground"  caption="Berlin Südkreuz">}}
+{{< img src="A6401342.jpeg" alt="Black and white photograph of a Deutsche Bahn ICE high-speed train standing at a covered platform, clean side profile of a single carriage with the rails and a slice of light on the platform in the foreground" caption="Berlin Südkreuz">}}
