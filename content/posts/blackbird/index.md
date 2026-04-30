@@ -7,7 +7,7 @@ emojis = ["📷"]
 cover = "A97I2075.jpeg"
 +++
 
-Got today's daily photo. A blackbird sitting on our garage, 2 meters away from my office window.
+Got today's daily photo. A blackbird sitting on our garage, 2 meters away from my office window. Easy and convenient.
 
 <!--more-->
 
