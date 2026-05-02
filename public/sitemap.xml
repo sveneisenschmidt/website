@@ -2,23 +2,26 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://192.168.178.100:1313/posts/daily-photo-blackbird/</loc>
-    <lastmod>2026-04-30T19:00:00+02:00</lastmod>
-  </url><url>
     <loc>http://192.168.178.100:1313/topics/daily-photo/</loc>
-    <lastmod>2026-04-30T19:00:00+02:00</lastmod>
+    <lastmod>2026-05-01T23:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/topics/photography/</loc>
-    <lastmod>2026-04-30T19:00:00+02:00</lastmod>
+    <lastmod>2026-05-01T23:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/posts/</loc>
-    <lastmod>2026-04-30T19:00:00+02:00</lastmod>
+    <lastmod>2026-05-01T23:00:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.100:1313/posts/daily-photo-stork-pt2/</loc>
+    <lastmod>2026-05-01T23:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/</loc>
-    <lastmod>2026-04-30T19:00:00+02:00</lastmod>
+    <lastmod>2026-05-01T23:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/topics/</loc>
-    <lastmod>2026-04-30T19:00:00+02:00</lastmod>
+    <lastmod>2026-05-01T23:00:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.100:1313/posts/daily-photo-blackbird/</loc>
+    <lastmod>2026-04-30T16:15:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/posts/daily-photo-long-day/</loc>
     <lastmod>2026-04-29T22:00:00+02:00</lastmod>
