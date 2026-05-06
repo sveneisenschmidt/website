@@ -6,12 +6,19 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 05 May 2026 19:00:00 +0200</lastBuildDate>
+    <lastBuildDate>Wed, 06 May 2026 22:30:00 +0200</lastBuildDate>
     <atom:link href="http://192.168.178.58:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Greenfinch</title>
+      <link>http://192.168.178.58:1313/posts/daily-photo-greenfinch/</link>
+      <pubDate>Wed, 06 May 2026 22:30:00 +0200</pubDate>
+      <guid>http://192.168.178.58:1313/posts/daily-photo-greenfinch/</guid>
+      <description>&lt;p&gt;Nadine got a shot of a greenfinch.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Forest Stroll</title>
       <link>http://192.168.178.58:1313/posts/daily-photo-forest-stroll/</link>
-      <pubDate>Tue, 05 May 2026 19:00:00 +0200</pubDate>
+      <pubDate>Tue, 05 May 2026 18:50:00 +0200</pubDate>
       <guid>http://192.168.178.58:1313/posts/daily-photo-forest-stroll/</guid>
       <description>&lt;p&gt;Went with the boys and the dog to the forest.&lt;/p&gt;</description>
     </item>
