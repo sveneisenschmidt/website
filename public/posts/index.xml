@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 06 May 2026 22:30:00 +0200</lastBuildDate>
+    <lastBuildDate>Thu, 07 May 2026 22:39:00 +0200</lastBuildDate>
     <atom:link href="http://192.168.178.58:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Puddle</title>
+      <link>http://192.168.178.58:1313/posts/daily-photo-puddle/</link>
+      <pubDate>Thu, 07 May 2026 22:39:00 +0200</pubDate>
+      <guid>http://192.168.178.58:1313/posts/daily-photo-puddle/</guid>
+      <description>&lt;p&gt;Nadine went out with the boys.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Greenfinch</title>
       <link>http://192.168.178.58:1313/posts/daily-photo-greenfinch/</link>
