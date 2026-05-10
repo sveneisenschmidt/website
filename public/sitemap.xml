@@ -3,28 +3,31 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://192.168.178.58:1313/topics/daily-photo/</loc>
-    <lastmod>2026-05-07T22:30:00+02:00</lastmod>
+    <lastmod>2026-05-09T23:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.58:1313/topics/photography/</loc>
-    <lastmod>2026-05-07T22:30:00+02:00</lastmod>
+    <lastmod>2026-05-09T23:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.58:1313/posts/</loc>
-    <lastmod>2026-05-07T22:30:00+02:00</lastmod>
+    <lastmod>2026-05-09T23:00:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.58:1313/</loc>
+    <lastmod>2026-05-09T23:00:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.58:1313/posts/daily-photo-jury-experience/</loc>
+    <lastmod>2026-05-09T23:00:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.58:1313/topics/</loc>
+    <lastmod>2026-05-09T23:00:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.58:1313/posts/daily-photo-fox-and-wagtail/</loc>
+    <lastmod>2026-05-08T23:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.58:1313/posts/daily-photo-puddle/</loc>
     <lastmod>2026-05-07T22:30:00+02:00</lastmod>
   </url><url>
-    <loc>http://192.168.178.58:1313/</loc>
-    <lastmod>2026-05-07T22:30:00+02:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.58:1313/topics/</loc>
-    <lastmod>2026-05-07T22:30:00+02:00</lastmod>
-  </url><url>
     <loc>http://192.168.178.58:1313/posts/daily-photo-greenfinch/</loc>
     <lastmod>2026-05-06T22:30:00+02:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.58:1313/posts/daily-photo-fox-and-wagtail/</loc>
-    <lastmod>2026-05-06T15:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.58:1313/posts/daily-photo-forest-stroll/</loc>
     <lastmod>2026-05-05T18:50:00+02:00</lastmod>
