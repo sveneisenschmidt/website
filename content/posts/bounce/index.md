@@ -11,6 +11,6 @@ Took a lucky shot today of a fox jumping 500m away from me through the tall gras
 
 <!--more-->
 
-{{< img src="A97I3438.jpeg" alt="A red fox mid-pounce in a green meadow" caption="Red fox" >}}
+{{< img src="A97I3438.jpeg" alt="A red fox mid-pounce in a green meadow" >}}
 
-{{< img src="A97I3439.jpeg" alt="A red fox sitting in tall grass, only the head and ears visible" caption="Red fox" >}}
+{{< img src="A97I3439.jpeg" alt="A red fox sitting in tall grass, only the head and ears visible" >}}
