@@ -2,20 +2,26 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://192.168.178.100:1313/posts/knights-games-trebsen/</loc>
-    <lastmod>2026-05-24T19:00:00+02:00</lastmod>
+    <loc>http://192.168.178.100:1313/log/</loc>
+    <lastmod>2026-05-25T00:00:00+02:00</lastmod>
   </url><url>
-    <loc>http://192.168.178.100:1313/topics/photography/</loc>
-    <lastmod>2026-05-24T19:00:00+02:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.100:1313/posts/</loc>
-    <lastmod>2026-05-24T19:00:00+02:00</lastmod>
+    <loc>http://192.168.178.100:1313/log/movies/</loc>
+    <lastmod>2026-05-25T00:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/</loc>
-    <lastmod>2026-05-24T19:00:00+02:00</lastmod>
+    <lastmod>2026-05-25T00:00:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.100:1313/posts/knights-games-trebsen/</loc>
+    <lastmod>2026-05-24T21:00:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.100:1313/topics/photography/</loc>
+    <lastmod>2026-05-24T21:00:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.100:1313/posts/</loc>
+    <lastmod>2026-05-24T21:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/topics/</loc>
-    <lastmod>2026-05-24T19:00:00+02:00</lastmod>
+    <lastmod>2026-05-24T21:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/topics/daily-photo/</loc>
     <lastmod>2026-05-23T21:00:00+02:00</lastmod>
@@ -44,12 +50,6 @@
     <loc>http://192.168.178.100:1313/posts/daily-photo-cistern/</loc>
     <lastmod>2026-05-16T18:45:00+02:00</lastmod>
   </url><url>
-    <loc>http://192.168.178.100:1313/log/</loc>
-    <lastmod>2026-05-16T00:00:00+02:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.100:1313/log/movies/</loc>
-    <lastmod>2026-05-16T00:00:00+02:00</lastmod>
-  </url><url>
     <loc>http://192.168.178.100:1313/posts/daily-photo-big-friday/</loc>
     <lastmod>2026-05-15T20:00:00+02:00</lastmod>
   </url><url>
@@ -61,6 +61,9 @@
   </url><url>
     <loc>http://192.168.178.100:1313/posts/daily-photo-hotel/</loc>
     <lastmod>2026-05-12T21:30:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.100:1313/log/games/</loc>
+    <lastmod>2026-05-12T00:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/posts/daily-photo-nadines-birthday/</loc>
     <lastmod>2026-05-11T18:00:00+02:00</lastmod>
@@ -259,9 +262,6 @@
   </url><url>
     <loc>http://192.168.178.100:1313/posts/daily-photo-monday/</loc>
     <lastmod>2026-03-16T23:00:00+01:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.100:1313/log/games/</loc>
-    <lastmod>2026-03-15T00:00:00+01:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/posts/daily-photo-requiem/</loc>
     <lastmod>2026-03-14T21:00:00+01:00</lastmod>
