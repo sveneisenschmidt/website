@@ -6,12 +6,19 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 28 May 2026 18:00:00 +0200</lastBuildDate>
+    <lastBuildDate>Fri, 29 May 2026 20:00:00 +0200</lastBuildDate>
     <atom:link href="http://192.168.178.100:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Blackcap</title>
+      <link>http://192.168.178.100:1313/posts/daily-photo-blackcap/</link>
+      <pubDate>Fri, 29 May 2026 20:00:00 +0200</pubDate>
+      <guid>http://192.168.178.100:1313/posts/daily-photo-blackcap/</guid>
+      <description>&lt;p&gt;An early start at work and a late finish. Before work I took a long walk above the meadows, hoping to find the red-backed shrike again. He kept out of sight, but a blackcap sat still long enough for me to photograph it instead.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Fledgling</title>
       <link>http://192.168.178.100:1313/posts/daily-photo-fledgling/</link>
-      <pubDate>Thu, 28 May 2026 18:00:00 +0200</pubDate>
+      <pubDate>Thu, 28 May 2026 22:00:00 +0200</pubDate>
       <guid>http://192.168.178.100:1313/posts/daily-photo-fledgling/</guid>
       <description>&lt;p&gt;It is a good day when I manage a sharp picture of a bird, even better when Jasper and I send each other sharp wildlife photos on the same day.&lt;/p&gt;</description>
     </item>
