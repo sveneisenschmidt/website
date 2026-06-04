@@ -7,7 +7,7 @@ emojis = ["📷"]
 cover = "A97I4430.jpeg"
 +++
 
-Mother stork watching over her chicks. Locals shared the fledglings already leave the nest for a few minutes at a time.
+Saw mother stork watching over her chicks on my morning tour with Aika, someone locla, can't remember who, shared the fledglings already leave the nest for a few minutes at a time. That would make a great shot.
 
 <!--more-->
 
