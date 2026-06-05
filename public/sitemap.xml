@@ -3,21 +3,27 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://192.168.178.58:1313/topics/daily-photo/</loc>
-    <lastmod>2026-06-02T18:00:00+02:00</lastmod>
+    <lastmod>2026-06-03T19:00:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.58:1313/posts/daily-photo-hike/</loc>
+    <lastmod>2026-06-03T19:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.58:1313/topics/photography/</loc>
-    <lastmod>2026-06-02T18:00:00+02:00</lastmod>
+    <lastmod>2026-06-03T19:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.58:1313/posts/</loc>
-    <lastmod>2026-06-02T18:00:00+02:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.58:1313/posts/daily-photo-rose/</loc>
-    <lastmod>2026-06-02T18:00:00+02:00</lastmod>
+    <lastmod>2026-06-03T19:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.58:1313/</loc>
-    <lastmod>2026-06-02T18:00:00+02:00</lastmod>
+    <lastmod>2026-06-03T19:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.58:1313/topics/</loc>
+    <lastmod>2026-06-03T19:00:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.58:1313/posts/daily-photo-stork-pt3/</loc>
+    <lastmod>2026-06-03T18:00:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.58:1313/posts/daily-photo-rose/</loc>
     <lastmod>2026-06-02T18:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.58:1313/posts/daily-photo-water/</loc>
