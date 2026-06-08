@@ -6,12 +6,19 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 06 Jun 2026 18:00:00 +0200</lastBuildDate>
+    <lastBuildDate>Sun, 07 Jun 2026 18:00:00 +0200</lastBuildDate>
     <atom:link href="http://192.168.178.100:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Mushrooms</title>
+      <link>http://192.168.178.100:1313/posts/daily-photo-mushrooms/</link>
+      <pubDate>Sun, 07 Jun 2026 18:00:00 +0200</pubDate>
+      <guid>http://192.168.178.100:1313/posts/daily-photo-mushrooms/</guid>
+      <description>&lt;p&gt;Nadine grew her first mushrooms, and they were good.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Kestrels</title>
       <link>http://192.168.178.100:1313/posts/daily-photo-kestrels/</link>
-      <pubDate>Sat, 06 Jun 2026 18:00:00 +0200</pubDate>
+      <pubDate>Sat, 06 Jun 2026 16:55:00 +0200</pubDate>
       <guid>http://192.168.178.100:1313/posts/daily-photo-kestrels/</guid>
       <description>&lt;p&gt;We spent the whole day in the garden on the old pond area, the sand pit is now officially fenced in with robinia logs and all the uneven ground around it is filled up with topsoil, and on Monday I order the next 1.5 tonnes of sand for the sandpit itself.&lt;/p&gt;</description>
     </item>
