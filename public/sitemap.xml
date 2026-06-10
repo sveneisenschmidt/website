@@ -2,22 +2,25 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://192.168.178.100:1313/posts/daily-photo-bumblebee/</loc>
-    <lastmod>2026-06-08T18:00:00+02:00</lastmod>
-  </url><url>
     <loc>http://192.168.178.100:1313/topics/daily-photo/</loc>
-    <lastmod>2026-06-08T18:00:00+02:00</lastmod>
+    <lastmod>2026-06-09T22:45:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/topics/photography/</loc>
-    <lastmod>2026-06-08T18:00:00+02:00</lastmod>
+    <lastmod>2026-06-09T22:45:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/posts/</loc>
-    <lastmod>2026-06-08T18:00:00+02:00</lastmod>
+    <lastmod>2026-06-09T22:45:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.100:1313/posts/daily-photo-sandkasten/</loc>
+    <lastmod>2026-06-09T22:45:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/</loc>
-    <lastmod>2026-06-08T18:00:00+02:00</lastmod>
+    <lastmod>2026-06-09T22:45:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/topics/</loc>
+    <lastmod>2026-06-09T22:45:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.100:1313/posts/daily-photo-bumblebee/</loc>
     <lastmod>2026-06-08T18:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.100:1313/posts/daily-photo-mushrooms/</loc>
