@@ -6,14 +6,21 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 13 Jun 2026 12:00:00 +0200</lastBuildDate>
+    <lastBuildDate>Sat, 13 Jun 2026 09:00:00 +0200</lastBuildDate>
     <atom:link href="http://192.168.178.100:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Gemma</title>
       <link>http://192.168.178.100:1313/posts/gemma/</link>
-      <pubDate>Sat, 13 Jun 2026 12:00:00 +0200</pubDate>
+      <pubDate>Sat, 13 Jun 2026 09:00:00 +0200</pubDate>
       <guid>http://192.168.178.100:1313/posts/gemma/</guid>
-      <description>&lt;p&gt;Anthropic pulled Fable and Mythos from the market following US intervention, a frustrating move considering Fable was performing like Opus was six months ago, before the steady performance degradation across versions 4.6, 4.7, and 4.8. It really makes me wonder where LLM usage needs to go to ensure we aren&amp;rsquo;t tied to these frontier labs.&lt;/p&gt;&#xA;&lt;p&gt;A viable path seems clear with the improvements in consumer hardware like the Apple M-series paired with MLX, the inevitable arrival of Apple foundation models, and the rapid growth of open-source coding harnesses, local agent platforms like OpenClaw and Hermes, and tools like Ollama and LM Studio. It is only a matter of time before we gain real independence.&lt;/p&gt;</description>
+      <description>&lt;p&gt;Anthropic pulled Fable and Mythos from the market following US intervention, a frustrating move considering Fable was performing for me like Opus was six months ago, before the steady performance degradation across versions 4.6, 4.7, and 4.8. It really makes me wonder where LLM usage needs to go to ensure we aren&amp;rsquo;t tied to these frontier labs.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>R5</title>
+      <link>http://192.168.178.100:1313/posts/daily-photo-r5/</link>
+      <pubDate>Fri, 12 Jun 2026 21:00:00 +0200</pubDate>
+      <guid>http://192.168.178.100:1313/posts/daily-photo-r5/</guid>
+      <description>&lt;p&gt;I finally settled on an R5 I. After a lot of fun with the 1D-X II, I had been thinking for a while about how to get around the limitation of its 20MP sensor, and shooting the Sigma at f/8, where it is sharpest, I kept hitting the limit of how much detail I can pull out of a single frame.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Archive</title>
