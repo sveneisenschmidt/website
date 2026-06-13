@@ -1,5 +1,5 @@
 +++
-date = 2026-06-13T12:00:00
+date = 2026-06-13T09:00:00
 draft = false
 title = "Gemma"
 topics = ["Open Source", "Software Engineering"]
