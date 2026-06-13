@@ -2,7 +2,7 @@
 date = '2026-06-05T12:00:00'
 draft = false
 title = 'Race to (No)where(?)'
-topics = ['Software Development']
+topics = ['Software Development', 'AI']
 emojis = ['🔋']
 +++
 

@@ -6,14 +6,21 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 11 Jun 2026 18:00:00 +0200</lastBuildDate>
+    <lastBuildDate>Sat, 13 Jun 2026 12:00:00 +0200</lastBuildDate>
     <atom:link href="http://192.168.178.100:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Gemma</title>
+      <link>http://192.168.178.100:1313/posts/gemma/</link>
+      <pubDate>Sat, 13 Jun 2026 12:00:00 +0200</pubDate>
+      <guid>http://192.168.178.100:1313/posts/gemma/</guid>
+      <description>&lt;p&gt;Anthropic pulled Fable and Mythos from the market following US intervention, a frustrating move considering Fable was performing like Opus was six months ago, before the steady performance degradation across versions 4.6, 4.7, and 4.8. It really makes me wonder where LLM usage needs to go to ensure we aren&amp;rsquo;t tied to these frontier labs.&lt;/p&gt;&#xA;&lt;p&gt;A viable path seems clear with the improvements in consumer hardware like the Apple M-series paired with MLX, the inevitable arrival of Apple foundation models, and the rapid growth of open-source coding harnesses, local agent platforms like OpenClaw and Hermes, and tools like Ollama and LM Studio. It is only a matter of time before we gain real independence.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Archive</title>
       <link>http://192.168.178.100:1313/posts/daily-photo-archive/</link>
       <pubDate>Thu, 11 Jun 2026 18:00:00 +0200</pubDate>
       <guid>http://192.168.178.100:1313/posts/daily-photo-archive/</guid>
-      <description>&lt;p&gt;I am consistently one day behind in posting a daily photo.&lt;/p&gt;</description>
+      <description>&lt;p&gt;I am consistently one day behind in posting a daily photo. This is from a second tour I made to see the kestrels in the barn across the street, this time with the Sigma TC-1401 1.4x teleconverter on the camera. My original plan was to find Nadine&amp;rsquo;s old BlackBerry Bold. I wanted to charge it and try it out after watching that &lt;a href=&#34;http://192.168.178.100:1313/log/#blackberry&#34;&gt;BlackBerry&lt;/a&gt; movie which surprisingly wasn&amp;rsquo;t too bad. Liked it more than The Social Network. Taking daily photos that inspire me and feel genuine became a chore, I am forcing myself to keep doing them.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Resting</title>

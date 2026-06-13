@@ -2,7 +2,7 @@
 date = '2026-01-22T08:00:00'
 draft = false
 title = 'Ambiguity'
-topics = ['Work']
+topics = ["Work", "AI"]
 emojis = ['🤷']
 +++
 

@@ -1,7 +1,7 @@
 +++
 date = '2026-03-24T19:00:00'
 title = 'Green'
-topics = ['Daily Photo', 'Photography']
+topics = ['Daily Photo', 'Photography', 'AI']
 emojis = ['📷']
 draft = false
 cover = "IMG_3169.jpeg"

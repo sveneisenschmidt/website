@@ -2,7 +2,7 @@
 slug = 'daily-photo-low'
 date = '2026-03-31T21:21:00'
 title = 'Low'
-topics = ['Daily Photo', 'Photography']
+topics = ['Daily Photo', 'Photography', 'AI']
 cover = 'IMG_4358.jpeg'
 emojis = ['🌧️']
 +++

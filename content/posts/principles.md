@@ -2,7 +2,7 @@
 date = '2026-03-24T19:00:00'
 draft = false
 title = 'Principles'
-topics = ['Work']
+topics = ['Work', 'AI']
 emojis = ['🧠']
 +++
 
