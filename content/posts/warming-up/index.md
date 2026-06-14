@@ -1,6 +1,6 @@
 +++
 slug = 'daily-photo-warming-up'
-date = '2026-06-14T09:00:00'
+date = '2026-06-14T19:00:00'
 title = "Warming Up"
 topics = ["Daily Photo", "Photography"]
 emojis = ["📷"]
