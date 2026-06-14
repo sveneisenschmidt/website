@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 13 Jun 2026 21:00:00 +0200</lastBuildDate>
+    <lastBuildDate>Sun, 14 Jun 2026 09:00:00 +0200</lastBuildDate>
     <atom:link href="http://192.168.178.100:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Warming Up</title>
+      <link>http://192.168.178.100:1313/posts/daily-photo-warming-up/</link>
+      <pubDate>Sun, 14 Jun 2026 09:00:00 +0200</pubDate>
+      <guid>http://192.168.178.100:1313/posts/daily-photo-warming-up/</guid>
+      <description>&lt;p&gt;Spent last night fine-tuning the settings of the Canon R5 and I see myself getting more out of it compared to yesterday. The Sigma telelens combined with the RF-EF dapter seems to have issues with AF. I learned there are likely two issues, first &lt;a href=&#34;https://www.youtube.com/watch?v=l7TEu1Tgq5I&amp;amp;t=1s&#34;&gt;AF pulsing&lt;/a&gt; and second a disconnect between the body image stabilization and the built-in lens one. Before trying out further I&amp;rsquo;ll update the firmware of the Sigma telelens, yes lenses have firmwares these days - what a time to be alive, and disable the body image stabilizer.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>First Steps</title>
       <link>http://192.168.178.100:1313/posts/daily-photo-first-steps/</link>
@@ -20,7 +27,7 @@
       <link>http://192.168.178.100:1313/posts/gemma/</link>
       <pubDate>Sat, 13 Jun 2026 09:00:00 +0200</pubDate>
       <guid>http://192.168.178.100:1313/posts/gemma/</guid>
-      <description>&lt;p&gt;Anthropic pulled Fable and Mythos from the market following US intervention, a frustrating move considering Fable was performing for me like Opus was six months ago, before the steady performance degradation across versions 4.6, 4.7, and 4.8. It really makes me wonder where LLM usage needs to go to ensure we aren&amp;rsquo;t tied to these frontier labs.&lt;/p&gt;</description>
+      <description>&lt;p&gt;Anthropic pulled Fable and Mythos from the market following US intervention, a frustrating move considering Fable was performing for me like Opus was six months ago, before the steady performance degradation across versions 4.6+. It really makes me wonder where LLM proliferation needs to go to ensure we aren&amp;rsquo;t tied to these frontier labs.&lt;/p&gt;</description>
     </item>
     <item>
       <title>R5</title>
