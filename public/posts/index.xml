@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 13 Jun 2026 09:00:00 +0200</lastBuildDate>
+    <lastBuildDate>Sat, 13 Jun 2026 21:00:00 +0200</lastBuildDate>
     <atom:link href="http://192.168.178.100:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>First Steps</title>
+      <link>http://192.168.178.100:1313/posts/daily-photo-first-steps/</link>
+      <pubDate>Sat, 13 Jun 2026 21:00:00 +0200</pubDate>
+      <guid>http://192.168.178.100:1313/posts/daily-photo-first-steps/</guid>
+      <description>&lt;p&gt;I did the first steps with the R5: firmware upgrade, settings, sooo many settings. Overall this is a new setup to learn and it will take a while to master. Especially the Sigma seems to behave slightly differently with the EF-RF ring.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Gemma</title>
       <link>http://192.168.178.100:1313/posts/gemma/</link>
