@@ -42,8 +42,13 @@
                 {{- else }} · {{ lang.FormatNumber 1 $val }}s{{ end -}}
               {{- else }} · {{ . }}s{{ end -}}
             {{- end -}}
-            {{- with .ISO }} · ISO {{ . }}{{ end -}}
-            {{- if not .ISO }}{{- with .ISOSpeedRatings }} · ISO {{ . }}{{ end -}}{{ end -}}
+            {{- $iso := .ISO -}}
+            {{- if not $iso }}{{ $iso = .ISOSpeedRatings }}{{ end -}}
+            {{- if not $iso }}{{ $iso = .RecommendedExposureIndex }}{{ end -}}
+            {{- if not $iso }}{{ $iso = .ISOSpeed }}{{ end -}}
+            {{- if not $iso }}{{ $iso = .PhotographicSensitivity }}{{ end -}}
+            {{- if reflect.IsSlice $iso }}{{ if gt (len $iso) 0 }}{{ $iso = index $iso 0 }}{{ end }}{{ end -}}
+            {{- with $iso }} · ISO {{ . }}{{ end -}}
             {{- end -}}
             {{- with $photographer }}{{ if $camera }} · {{ end }}📷 {{ . }}{{ end -}}
         </span>
