@@ -6,14 +6,28 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 15 Jun 2026 12:45:00 +0200</lastBuildDate>
+    <lastBuildDate>Tue, 16 Jun 2026 21:00:00 +0200</lastBuildDate>
     <atom:link href="http://192.168.178.100:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hypo is Live</title>
+      <link>http://192.168.178.100:1313/posts/hypo-live/</link>
+      <pubDate>Tue, 16 Jun 2026 21:00:00 +0200</pubDate>
+      <guid>http://192.168.178.100:1313/posts/hypo-live/</guid>
+      <description>&lt;p&gt;Hypo got its first public release and goes live with a &lt;a href=&#34;https://hypo.eisenschmidt.website&#34;&gt;website&lt;/a&gt;. Grab Hypo for free there.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Sit-in</title>
       <link>http://192.168.178.100:1313/posts/daily-photo-sit-in/</link>
       <pubDate>Mon, 15 Jun 2026 12:45:00 +0200</pubDate>
       <guid>http://192.168.178.100:1313/posts/daily-photo-sit-in/</guid>
       <description>&lt;p&gt;Today I did my first sit-in at a pond. Nadine had reliably seen a grey wagtail on her commute over several days, so while Tilian was at sports, I used the time to settle down by a quiet stretch of water, with dead trees and slightly flowing water.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Sponsor Post: Nadine&#39;s Morning at the Pond</title>
+      <link>http://192.168.178.100:1313/posts/pond/</link>
+      <pubDate>Mon, 15 Jun 2026 09:00:00 +0200</pubDate>
+      <guid>http://192.168.178.100:1313/posts/pond/</guid>
+      <description>&lt;p&gt;Nadine visited the &amp;ldquo;magical&amp;rdquo; grey wagtail pond yesterday and was greeted with a variety of birds: red kite, grey wagtail, red-backed shrike, common redstart.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Warming Up</title>
