@@ -6,8 +6,29 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 16 Jun 2026 21:00:00 +0200</lastBuildDate>
+    <lastBuildDate>Thu, 18 Jun 2026 23:00:00 +0200</lastBuildDate>
     <atom:link href="http://192.168.178.100:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Excursion</title>
+      <link>http://192.168.178.100:1313/posts/daily-photo-excursion/</link>
+      <pubDate>Thu, 18 Jun 2026 23:00:00 +0200</pubDate>
+      <guid>http://192.168.178.100:1313/posts/daily-photo-excursion/</guid>
+      <description>&lt;p&gt;The local NABU chapter called me late in the afternoon, out of the blue, asking if I wanted to join a trip in their &amp;ldquo;Treffpunkt Naturschutzdienst&amp;rdquo; format, this time to the grazing project at the &amp;ldquo;Aufschlussgraben&amp;rdquo;, Werben. It is a closed-off area meant to restore local wildlife and serve as a compensation area for the heavily farmed fields around it. The big tease was the breeding ground of 50 bee-eater couples, a bird I aspire photographing.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Hypo 1.10</title>
+      <link>http://192.168.178.100:1313/posts/hypo-1-10/</link>
+      <pubDate>Thu, 18 Jun 2026 07:30:00 +0200</pubDate>
+      <guid>http://192.168.178.100:1313/posts/hypo-1-10/</guid>
+      <description>&lt;p&gt;Hypo 1.10 is out, with better support for Nikon cameras and it&amp;rsquo;s various MakerNote implementations, Fujifilm RAF files, and autofocus points on Canon bodies.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Sponsor Post: Nadine&#39;s Morning at the Pond</title>
+      <link>http://192.168.178.100:1313/posts/pond/</link>
+      <pubDate>Wed, 17 Jun 2026 18:00:00 +0200</pubDate>
+      <guid>http://192.168.178.100:1313/posts/pond/</guid>
+      <description>&lt;p&gt;Nadine visited the &amp;ldquo;magical&amp;rdquo; grey wagtail pond yesterday and was greeted with a variety of birds: red kite, grey wagtail, red-backed shrike, common redstart. She walked from one end to the other, chasing a golden oriole and a cuckoo, but neither sat for a photo.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Hypo is Live</title>
       <link>http://192.168.178.100:1313/posts/hypo-live/</link>
@@ -21,13 +42,6 @@
       <pubDate>Mon, 15 Jun 2026 12:45:00 +0200</pubDate>
       <guid>http://192.168.178.100:1313/posts/daily-photo-sit-in/</guid>
       <description>&lt;p&gt;Today I did my first sit-in at a pond. Nadine had reliably seen a grey wagtail on her commute over several days, so while Tilian was at sports, I used the time to settle down by a quiet stretch of water, with dead trees and slightly flowing water.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Sponsor Post: Nadine&#39;s Morning at the Pond</title>
-      <link>http://192.168.178.100:1313/posts/pond/</link>
-      <pubDate>Mon, 15 Jun 2026 09:00:00 +0200</pubDate>
-      <guid>http://192.168.178.100:1313/posts/pond/</guid>
-      <description>&lt;p&gt;Nadine visited the &amp;ldquo;magical&amp;rdquo; grey wagtail pond yesterday and was greeted with a variety of birds: red kite, grey wagtail, red-backed shrike, common redstart.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Warming Up</title>
