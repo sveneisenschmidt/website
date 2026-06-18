@@ -11,7 +11,7 @@ The local NABU chapter called me late in the afternoon, out of the blue, asking 
 
 <!--more-->
 
-{{< img src="1C4A1264.jpeg" alt="Sandy bank riddled with bee-eater nest holes, poppies at the base" >}}
+{{< img src="1C4A1264.jpeg" alt="Sandy bank riddled with bee-eater nest holes, poppies at the base" caption="One small stretch of the bee-eater colony's nesting bank." >}}
 
 In the end I saw a few of them chasing through the sky, but I never got a close one. What I did manage to capture was a long-tailed tit.
 
