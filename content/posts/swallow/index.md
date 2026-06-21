@@ -1,6 +1,6 @@
 +++
 slug = 'daily-photo-swallow'
-date = '2026-06-19T21:00:00'
+date = '2026-06-20T21:00:00'
 title = "Good Night, Swallow"
 topics = ["Daily Photo", "Photography"]
 emojis = ["📷"]
