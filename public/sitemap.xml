@@ -20,6 +20,12 @@
     <loc>http://192.168.178.58:1313/topics/</loc>
     <lastmod>2026-06-28T13:00:00+02:00</lastmod>
   </url><url>
+    <loc>http://192.168.178.58:1313/posts/hypo-1-12/</loc>
+    <lastmod>2026-06-28T09:00:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.58:1313/topics/software-development/</loc>
+    <lastmod>2026-06-28T09:00:00+02:00</lastmod>
+  </url><url>
     <loc>http://192.168.178.58:1313/posts/daily-photo-heat/</loc>
     <lastmod>2026-06-27T18:00:00+02:00</lastmod>
   </url><url>
@@ -51,9 +57,6 @@
     <lastmod>2026-06-18T23:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.58:1313/posts/hypo-1-10/</loc>
-    <lastmod>2026-06-18T07:30:00+02:00</lastmod>
-  </url><url>
-    <loc>http://192.168.178.58:1313/topics/software-development/</loc>
     <lastmod>2026-06-18T07:30:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.58:1313/posts/pond/</loc>
