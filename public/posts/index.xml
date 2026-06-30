@@ -6,21 +6,28 @@
     <description>Recent content in Posts on Sven Eisenschmidt - Personal Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 28 Jun 2026 13:00:00 +0200</lastBuildDate>
+    <lastBuildDate>Tue, 30 Jun 2026 16:00:00 +0200</lastBuildDate>
     <atom:link href="http://192.168.178.58:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Wander</title>
+      <link>http://192.168.178.58:1313/posts/daily-photo-wander/</link>
+      <pubDate>Tue, 30 Jun 2026 16:00:00 +0200</pubDate>
+      <guid>http://192.168.178.58:1313/posts/daily-photo-wander/</guid>
+      <description>&lt;p&gt;It&amp;rsquo;s the first time I&amp;rsquo;m publishing a photo taken on my phone, as I forgot to bring the camera to Tilian&amp;rsquo;s class end-of-year party for his second school year. We ordered 30 pizzas and spent the afternoon at the local lake. Kellin enjoyed the water and wandering around on his own.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Hypo 1.12</title>
+      <link>http://192.168.178.58:1313/posts/hypo-1-12/</link>
+      <pubDate>Sun, 28 Jun 2026 21:00:00 +0200</pubDate>
+      <guid>http://192.168.178.58:1313/posts/hypo-1-12/</guid>
+      <description>&lt;p&gt;Hypo 1.12 is &lt;a href=&#34;https://hypo.eisenschmidt.website/downloads/Hypo-1.12.0.dmg&#34;&gt;out&lt;/a&gt;, under the hood I focused on a modularized app architecture for plug-and-play support of new camera bodies and RAW formats to make my future life easier, a slightly refined UI and UX, a reworked autofocus and subject visualisation. The latter I think is pretty cool and unique, I haven&amp;rsquo;t seen that in other photo culling apps.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Burger</title>
       <link>http://192.168.178.58:1313/posts/daily-photo-burger-day/</link>
       <pubDate>Sun, 28 Jun 2026 13:00:00 +0200</pubDate>
       <guid>http://192.168.178.58:1313/posts/daily-photo-burger-day/</guid>
       <description>&lt;p&gt;Every weekend, Saturday or Sunday, is Burger Day. We&amp;rsquo;ve been on a plant-only diet for 15 years, last year we got chickens and a by-product is eggs. So that&amp;rsquo;s the only time we eat animal products. Burgers became a weekly tradition and we&amp;rsquo;ve nailed the recipe, it&amp;rsquo;s fun to prepare and a treat when friends are over.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Hypo 1.12</title>
-      <link>http://192.168.178.58:1313/posts/hypo-1-12/</link>
-      <pubDate>Sun, 28 Jun 2026 09:00:00 +0200</pubDate>
-      <guid>http://192.168.178.58:1313/posts/hypo-1-12/</guid>
-      <description>&lt;p&gt;Hypo 1.12 is &lt;a href=&#34;https://hypo.eisenschmidt.website/downloads/Hypo-1.12.0.dmg&#34;&gt;out&lt;/a&gt;, a new app architecture with a refined UI and UX, broader camera and format support, a reworked autofocus and subject visualisation.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Heat</title>
