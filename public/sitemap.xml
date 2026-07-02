@@ -3,19 +3,22 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://192.168.178.58:1313/topics/daily-photo/</loc>
-    <lastmod>2026-06-30T16:00:00+02:00</lastmod>
+    <lastmod>2026-07-01T18:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.58:1313/topics/photography/</loc>
-    <lastmod>2026-06-30T16:00:00+02:00</lastmod>
+    <lastmod>2026-07-01T18:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.58:1313/posts/</loc>
-    <lastmod>2026-06-30T16:00:00+02:00</lastmod>
+    <lastmod>2026-07-01T18:00:00+02:00</lastmod>
+  </url><url>
+    <loc>http://192.168.178.58:1313/posts/daily-photo-scratch/</loc>
+    <lastmod>2026-07-01T18:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.58:1313/</loc>
-    <lastmod>2026-06-30T16:00:00+02:00</lastmod>
+    <lastmod>2026-07-01T18:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.58:1313/topics/</loc>
-    <lastmod>2026-06-30T16:00:00+02:00</lastmod>
+    <lastmod>2026-07-01T18:00:00+02:00</lastmod>
   </url><url>
     <loc>http://192.168.178.58:1313/posts/daily-photo-wander/</loc>
     <lastmod>2026-06-30T16:00:00+02:00</lastmod>
