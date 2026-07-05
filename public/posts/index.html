@@ -101,16 +101,50 @@
 
 </header>
         <main data-pagefind-body> <h1>Posts</h1>
-  <section>
-   
-<a href="/posts/testing-macos-versions-i-dont-run/" class="cover-placeholder">Te</a>
-
+  <section class="has-cover">
+     
+<a href="/posts/daily-photo-spring-stone/">
+    <img
+        src="/posts/daily-photo-spring-stone/A6402661_hu_d9cb74a6a45b2fdd.webp"
+        srcset="/posts/daily-photo-spring-stone/A6402661_hu_d9cb74a6a45b2fdd.webp 128w, /posts/daily-photo-spring-stone/A6402661_hu_ba1d5db15af79fa6.webp 768w"
+        sizes="(max-width: 768px) 100vw, 128px"
+        width="768"
+        height="768"
+        alt="Spring Stone cover image"
+        fetchpriority="high"
+        decoding="async"
+        class="cover"
+    />
+</a>
+ 
 
   <div>
-    <h2><a href="/posts/testing-macos-versions-i-dont-run/">Testing Hypo on macOS Versions I Don&#39;t Run</a></h2>
-    <time datetime="2026-07-03">July 3, 2026</time>
-    <p>I recently lowered <a href="https://hypo.eisenschmidt.website/">Hypo</a>&rsquo;s deployment target from macOS 26 (Tahoe) down to macOS 15 (Sequoia), to reach users who have not upgraded yet. The change compiled, every unit test passed, and nobody had ever seen the app running on macOS 15. That is the trouble with deployment target changes: what actually differs between the two systems is visual, window chrome, toolbar materials, sidebar rendering, spacing, and SwiftUI resolves all of that per OS at runtime. My PR convention requires screenshots for UI changes, and a screenshot taken on my dev machine only proves the app on macOS 26.</p>
-<p>I had no macOS 15 hardware, and downgrading a Mac is impractical, Apple Silicon Macs often cannot go back below the OS they shipped with. What remained was a virtual machine on the same laptop. This post documents the tooling I built for that: Tart VMs, one bash script, a handful of make targets, and a few gotchas that cost real time.</p>
+    <h2><a href="/posts/daily-photo-spring-stone/">Spring Stone</a></h2>
+    <time datetime="2026-07-05">July 5, 2026</time>
+    <p>After two days, and in the end two extra pairs of hands, to get the 300kg spring stone into place along with its water inlet and pump, countless trips to the hardware store, concrete, pipes and hoses later, everything is finally in place. I&rsquo;m glad software development isn&rsquo;t as hard as this.</p>
+  </div>
+</section>
+  <section class="has-cover">
+     
+<a href="/posts/daily-photo-sandbox-pt3/">
+    <img
+        src="/posts/daily-photo-sandbox-pt3/A6402657_hu_30d5856fb7434517.webp"
+        srcset="/posts/daily-photo-sandbox-pt3/A6402657_hu_30d5856fb7434517.webp 128w, /posts/daily-photo-sandbox-pt3/A6402657_hu_b260e2d5e72265a1.webp 768w"
+        sizes="(max-width: 768px) 100vw, 128px"
+        width="768"
+        height="768"
+        alt="Sandbox cover image"
+        fetchpriority="high"
+        decoding="async"
+        class="cover"
+    />
+</a>
+ 
+
+  <div>
+    <h2><a href="/posts/daily-photo-sandbox-pt3/">Sandbox</a></h2>
+    <time datetime="2026-07-04">July 4, 2026</time>
+    <p>Aika is spending more time sleeping in the kids&rsquo; sandbox than the kids themselves, luckily the thing is big enough.</p>
   </div>
 </section>
   <section class="has-cover">
@@ -132,8 +166,20 @@
 
   <div>
     <h2><a href="/posts/daily-photo-strawberries/">Strawberries</a></h2>
-    <time datetime="2026-07-02">July 2, 2026</time>
+    <time datetime="2026-07-03">July 3, 2026</time>
     <p>Nadine&rsquo;s vertical strawberry farm. We have two of them. I asked Nadine to comment and provide a nice fact: No comment was provided.</p>
+  </div>
+</section>
+  <section>
+   
+<a href="/posts/testing-macos-versions-i-dont-run/" class="cover-placeholder">Te</a>
+
+
+  <div>
+    <h2><a href="/posts/testing-macos-versions-i-dont-run/">Testing Hypo on macOS Versions I Don&#39;t Run</a></h2>
+    <time datetime="2026-07-03">July 3, 2026</time>
+    <p>I recently lowered <a href="https://hypo.eisenschmidt.website/">Hypo</a>&rsquo;s deployment target from macOS 26 (Tahoe) down to macOS 15 (Sequoia), to reach users who have not upgraded yet. The change compiled, every unit test passed, and nobody had ever seen the app running on macOS 15. That is the trouble with deployment target changes: what actually differs between the two systems is visual, window chrome, toolbar materials, sidebar rendering, spacing, and SwiftUI resolves all of that per OS at runtime. My PR convention requires screenshots for UI changes, and a screenshot taken on my dev machine only proves the app on macOS 26.</p>
+<p>I had no macOS 15 hardware, and downgrading a Mac is impractical, Apple Silicon Macs often cannot go back below the OS they shipped with. What remained was a virtual machine on the same laptop. This post documents the tooling I built for that: Tart VMs, one bash script, a handful of make targets, and a few gotchas that cost real time.</p>
   </div>
 </section>
   <section>
