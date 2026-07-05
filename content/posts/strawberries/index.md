@@ -1,6 +1,6 @@
 +++
 slug = 'daily-photo-strawberries'
-date = '2026-07-02T22:45:00'
+date = '2026-07-03T22:45:00'
 title = "Strawberries"
 topics = ["Daily Photo", "Photography"]
 emojis = ["📷"]
