@@ -18,6 +18,7 @@ build:
 	rm -f public/pagefind/pagefind-ui.* public/pagefind/pagefind-modular-ui.* public/pagefind/pagefind-highlight.js
 
 push:
+	hugo --gc
 	git add -A
 	git commit -m "Update site $$(date +%Y-%m-%d\ %H:%M)" || true
 	git pull --rebase origin main
