@@ -44,9 +44,6 @@ lineNos = false
 block = true
 title = true
 
-[caches.images]
-dir = ":cacheDir/images"
-
 [caches.getresource]
 maxAge = 0
 

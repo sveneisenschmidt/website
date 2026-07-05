@@ -31,15 +31,6 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      - name: Cache Hugo resources
-        uses: actions/cache@v4
-        with:
-          path: /tmp/hugo_cache
-          key: hugo-${{ runner.os }}-resources
-          restore-keys: |
-            hugo-${{ runner.os }}-
-          save-always: true
-
       - name: Install dependencies
         run: npm ci
 
@@ -53,7 +44,6 @@ jobs:
 
       - name: Build
         env:
-          HUGO_CACHEDIR: /tmp/hugo_cache
           TZ: Europe/Berlin
         run: hugo --minify
 
