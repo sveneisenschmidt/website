@@ -11,7 +11,7 @@ Right before our summer break I pushed a new [release](https://hypo.eisenschmidt
 
 <!--more-->
 
-DNG is one of two feature requests I've implemented so far, and it feels fun to build software for people and see they actually can do something with it. Even so, I didn't feel like pushing it outside of a feature toggle.
+DNG conversion is a feature I implemented from a user request, and it feels fun to build software for people and see they actually can do something with it. Even so, I didn't feel like pushing it outside of a feature toggle.
 
 {{< img src="screenshot-import.png" alt="Hypo import screen with histogram overlay on a wood-fired pizza photo" caption="Jasper's famous Pizza - Taken in April" >}}
 
