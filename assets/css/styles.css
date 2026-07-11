@@ -137,6 +137,13 @@ img.hero {
     margin: 1rem auto;
 }
 
+.map {
+    height: 400px;
+    margin: 1rem auto;
+    border-radius: 0.25rem;
+    z-index: 0;
+}
+
 .img-exif {
     display: block;
 }

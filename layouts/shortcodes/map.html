@@ -1,0 +1,32 @@
+{{- $points := slice -}}
+{{- range split (trim .Inner "\n\r\t ") "\n" -}}
+    {{- $line := trim . " \t\r" -}}
+    {{- if $line -}}
+        {{- $parts := split $line "," -}}
+        {{- if lt (len $parts) 2 -}}
+            {{- errorf "map shortcode: invalid line %q, expected lat,lon,label (%s)" $line $.Position -}}
+        {{- end -}}
+        {{- $label := "" -}}
+        {{- if gt (len $parts) 2 -}}
+            {{- $label = trim (delimit (after 2 $parts) ",") " " -}}
+        {{- end -}}
+        {{- $points = $points | append (dict
+            "lat" (float (trim (index $parts 0) " "))
+            "lon" (float (trim (index $parts 1) " "))
+            "label" $label)
+        -}}
+    {{- end -}}
+{{- end -}}
+{{- $route := "" -}}
+{{- with .Get "route" -}}
+    {{- with $.Page.Resources.GetMatch . -}}
+        {{- $route = .Content -}}
+    {{- else -}}
+        {{- errorf "map shortcode: route resource %q not found (%s)" . $.Position -}}
+    {{- end -}}
+{{- end -}}
+<div class="map" data-points="{{ $points | jsonify }}">
+    {{- with $route -}}
+    <script type="application/json">{{ . | safeJS }}</script>
+    {{- end -}}
+</div>

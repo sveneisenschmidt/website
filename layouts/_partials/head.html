@@ -39,7 +39,19 @@
     crossorigin
 />
 {{ partial "head/meta.html" . }} {{ partialCached "head/css.html" . }} {{
-partialCached "head/js.html" . }} {{ if .IsHome }} {{ $firstPost := index
+partialCached "head/js.html" . }}
+{{ if .HasShortcode "map" }}
+{{ with resources.Get "leaflet/leaflet.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ .RelPermalink }}" />
+{{ end }}
+{{ with resources.Get "leaflet/leaflet.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" defer></script>
+{{ end }}
+{{ with resources.Get "js/map.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" defer></script>
+{{ end }}
+{{ end }}
+{{ if .IsHome }} {{ $firstPost := index
 site.RegularPages 0 }} {{ with $firstPost.Params.cover }} {{ with
 $firstPost.Resources.GetMatch . }} {{ $small := .Fill "128x128 Center" }} {{
 $large := .Fill "768x768 Center" }}
