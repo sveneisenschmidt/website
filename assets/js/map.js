@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
             tiles.setUrl(tileUrl());
         });
 
-        points.forEach(function (p) {
+        var markers = points.map(function (p) {
             var marker = L.circleMarker([p.lat, p.lon], {
                 radius: 6,
                 color: "#d63a2f",
@@ -40,14 +40,35 @@ document.addEventListener("DOMContentLoaded", function () {
                 fillOpacity: 1,
                 weight: 2,
             }).addTo(map);
-            if (p.label) {
-                marker.bindTooltip(p.label, {
-                    permanent: true,
-                    direction: "top",
-                    offset: [0, -8],
-                });
-            }
+            return { point: p, marker: marker };
         });
+
+        // Labels near the left/right edge open towards the map center so
+        // they do not get clipped by the container.
+        function bindLabels() {
+            var width = map.getSize().x;
+            markers.forEach(function (m) {
+                if (!m.point.label) return;
+                var x = map.latLngToContainerPoint([
+                    m.point.lat,
+                    m.point.lon,
+                ]).x;
+                var direction = "top";
+                var offset = [0, -8];
+                if (x > width * 0.75) {
+                    direction = "left";
+                    offset = [-10, 0];
+                } else if (x < width * 0.25) {
+                    direction = "right";
+                    offset = [10, 0];
+                }
+                m.marker.bindTooltip(m.point.label, {
+                    permanent: true,
+                    direction: direction,
+                    offset: offset,
+                });
+            });
+        }
 
         function draw(lines) {
             var line = L.polyline(lines, {
@@ -55,6 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 weight: 3,
             }).addTo(map);
             map.fitBounds(line.getBounds(), { padding: [30, 30] });
+            bindLabels();
         }
 
         var routeScript = el.querySelector('script[type="application/json"]');
