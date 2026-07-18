@@ -3,7 +3,7 @@ date = '2026-07-12T21:15:00'
 title = "Summer Vacation, Day 2: Tournai"
 topics = ["Travel", "Photography"]
 emojis = ["🏕️"]
-cover = "A6403384.jpeg"
+cover = "1C4A2825.jpeg"
 draft = false
 +++
 
