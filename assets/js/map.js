@@ -44,29 +44,91 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         // Labels near the left/right edge open towards the map center so
-        // they do not get clipped by the container.
+        // they do not get clipped by the container. When a label would
+        // overlap an earlier one (or stick out of the map), it tries the
+        // remaining directions until it finds a free spot.
         function bindLabels() {
-            var width = map.getSize().x;
+            var size = map.getSize();
+            var mapRect = el.getBoundingClientRect();
+            var placed = [];
+
+            var offsets = {
+                top: [0, -8],
+                bottom: [0, 8],
+                left: [-10, 0],
+                right: [10, 0],
+            };
+
+            function bind(m, direction) {
+                m.marker.unbindTooltip();
+                m.marker.bindTooltip(m.point.label, {
+                    permanent: true,
+                    direction: direction,
+                    offset: offsets[direction],
+                });
+                var r = m.marker
+                    .getTooltip()
+                    .getElement()
+                    .getBoundingClientRect();
+                return {
+                    left: r.left - mapRect.left,
+                    top: r.top - mapRect.top,
+                    right: r.right - mapRect.left,
+                    bottom: r.bottom - mapRect.top,
+                };
+            }
+
+            function fits(r) {
+                if (
+                    r.left < 0 ||
+                    r.top < 0 ||
+                    r.right > size.x ||
+                    r.bottom > size.y
+                ) {
+                    return false;
+                }
+                return !placed.some(function (p) {
+                    return (
+                        r.left < p.right &&
+                        p.left < r.right &&
+                        r.top < p.bottom &&
+                        p.top < r.bottom
+                    );
+                });
+            }
+
             markers.forEach(function (m) {
                 if (!m.point.label) return;
                 var x = map.latLngToContainerPoint([
                     m.point.lat,
                     m.point.lon,
                 ]).x;
-                var direction = "top";
-                var offset = [0, -8];
-                if (x > width * 0.75) {
-                    direction = "left";
-                    offset = [-10, 0];
-                } else if (x < width * 0.25) {
-                    direction = "right";
-                    offset = [10, 0];
+                var preferred = "top";
+                if (x > size.x * 0.75) {
+                    preferred = "left";
+                } else if (x < size.x * 0.25) {
+                    preferred = "right";
                 }
-                m.marker.bindTooltip(m.point.label, {
-                    permanent: true,
-                    direction: direction,
-                    offset: offset,
+
+                var candidates = [
+                    preferred,
+                    "top",
+                    "bottom",
+                    "right",
+                    "left",
+                ].filter(function (d, i, arr) {
+                    return arr.indexOf(d) === i;
                 });
+
+                var rect = null;
+                for (var i = 0; i < candidates.length; i++) {
+                    rect = bind(m, candidates[i]);
+                    if (fits(rect)) break;
+                    if (i === candidates.length - 1) {
+                        rect = bind(m, preferred);
+                    }
+                }
+                placed.push(rect);
             });
         }
 
