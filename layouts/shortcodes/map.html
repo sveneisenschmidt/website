@@ -25,7 +25,7 @@
         {{- errorf "map shortcode: route resource %q not found (%s)" . $.Position -}}
     {{- end -}}
 {{- end -}}
-<div class="map" data-points="{{ $points | jsonify }}">
+<div class="map{{ if eq (.Get "size") "tall" }} map--tall{{ end }}"{{ if eq (.Get "zoom") "true" }} data-zoomable="true"{{ end }} data-points="{{ $points | jsonify }}">
     {{- with $route -}}
     <script type="application/json">{{ . | safeJS }}</script>
     {{- end -}}

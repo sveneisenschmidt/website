@@ -5,14 +5,17 @@ document.addEventListener("DOMContentLoaded", function () {
             return [p.lat, p.lon];
         });
 
+        // Dense maps opt into panning and zooming, the scroll wheel stays
+        // with the page so the map never hijacks scrolling.
+        var zoomable = el.dataset.zoomable === "true";
         var map = L.map(el, {
-            zoomControl: false,
-            dragging: false,
+            zoomControl: zoomable,
+            dragging: zoomable,
             scrollWheelZoom: false,
-            doubleClickZoom: false,
-            touchZoom: false,
+            doubleClickZoom: zoomable,
+            touchZoom: zoomable,
             boxZoom: false,
-            keyboard: false,
+            keyboard: zoomable,
             zoomSnap: 0.25,
         });
         var scheme = window.matchMedia("(prefers-color-scheme: dark)");
@@ -28,17 +31,30 @@ document.addEventListener("DOMContentLoaded", function () {
             attribution:
                 '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
         }).addTo(map);
+        // Dots are black on the light tiles, white on the dark tiles. The
+        // container background matches the tiles so the hairline seams
+        // between tiles at fractional zoom stay invisible.
+        var ink = function () {
+            return scheme.matches ? "#ffffff" : "#000000";
+        };
+        var applyBackground = function () {
+            el.style.backgroundColor = scheme.matches ? "#0e1112" : "#f6f6f4";
+        };
+        applyBackground();
         scheme.addEventListener("change", function () {
             tiles.setUrl(tileUrl());
+            applyBackground();
+            markers.forEach(function (m) {
+                m.marker.setStyle({ fillColor: ink() });
+            });
         });
 
         var markers = points.map(function (p) {
             var marker = L.circleMarker([p.lat, p.lon], {
-                radius: 6,
-                color: "#d63a2f",
-                fillColor: "#fff",
+                radius: 4,
+                stroke: false,
+                fillColor: ink(),
                 fillOpacity: 1,
-                weight: 2,
             }).addTo(map);
             return { point: p, marker: marker };
         });
@@ -51,6 +67,18 @@ document.addEventListener("DOMContentLoaded", function () {
             var size = map.getSize();
             var mapRect = el.getBoundingClientRect();
             var placed = [];
+
+            // Marker dots are obstacles too, so a label never covers a
+            // neighbouring marker.
+            markers.forEach(function (m) {
+                var c = map.latLngToContainerPoint([m.point.lat, m.point.lon]);
+                m.rect = {
+                    left: c.x - 6,
+                    top: c.y - 6,
+                    right: c.x + 6,
+                    bottom: c.y + 6,
+                };
+            });
 
             var offsets = {
                 top: [0, -8],
@@ -78,23 +106,24 @@ document.addEventListener("DOMContentLoaded", function () {
                 };
             }
 
-            function fits(r) {
-                if (
-                    r.left < 0 ||
-                    r.top < 0 ||
-                    r.right > size.x ||
-                    r.bottom > size.y
-                ) {
-                    return false;
-                }
-                return !placed.some(function (p) {
-                    return (
-                        r.left < p.right &&
-                        p.left < r.right &&
-                        r.top < p.bottom &&
-                        p.top < r.bottom
-                    );
+            function overlapArea(a, b) {
+                var w = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+                var h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+                return w > 0 && h > 0 ? w * h : 0;
+            }
+
+            function badness(r, obstacles) {
+                var score = 0;
+                if (r.left < 0) score += (0 - r.left) * (r.bottom - r.top);
+                if (r.top < 0) score += (0 - r.top) * (r.right - r.left);
+                if (r.right > size.x)
+                    score += (r.right - size.x) * (r.bottom - r.top);
+                if (r.bottom > size.y)
+                    score += (r.bottom - size.y) * (r.right - r.left);
+                obstacles.forEach(function (p) {
+                    score += overlapArea(r, p);
                 });
+                return score;
             }
 
             markers.forEach(function (m) {
@@ -120,15 +149,35 @@ document.addEventListener("DOMContentLoaded", function () {
                     return arr.indexOf(d) === i;
                 });
 
-                var rect = null;
+                var obstacles = placed.concat(
+                    markers
+                        .filter(function (o) {
+                            return o !== m;
+                        })
+                        .map(function (o) {
+                            return o.rect;
+                        }),
+                );
+
+                var best = null;
                 for (var i = 0; i < candidates.length; i++) {
-                    rect = bind(m, candidates[i]);
-                    if (fits(rect)) break;
-                    if (i === candidates.length - 1) {
-                        rect = bind(m, preferred);
+                    var rect = bind(m, candidates[i]);
+                    var score = badness(rect, obstacles);
+                    if (!best || score < best.score) {
+                        best = {
+                            direction: candidates[i],
+                            rect: rect,
+                            score: score,
+                        };
                     }
+                    if (score === 0) break;
                 }
-                placed.push(rect);
+                if (
+                    m.marker.getTooltip().options.direction !== best.direction
+                ) {
+                    best.rect = bind(m, best.direction);
+                }
+                placed.push(best.rect);
             });
         }
 
@@ -138,7 +187,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 weight: 3,
             }).addTo(map);
             map.fitBounds(line.getBounds(), { padding: [30, 30] });
+            markers.forEach(function (m) {
+                m.marker.bringToFront();
+            });
             bindLabels();
+            if (zoomable) {
+                map.on("zoomend moveend", bindLabels);
+            }
         }
 
         var routeScript = el.querySelector('script[type="application/json"]');

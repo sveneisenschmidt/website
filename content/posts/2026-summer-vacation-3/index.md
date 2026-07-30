@@ -15,6 +15,8 @@ From Orcq we drove 140 km to Calais, took the ferry to Dover, 1 hour and 40 minu
 
 {{< map route="route.json" >}}
 50.6080,3.3390,Orcq
+50.9664,1.8631,Calais
+51.1244,1.3316,Dover
 50.9850,0.9450,New Romney
 {{< /map >}}
 

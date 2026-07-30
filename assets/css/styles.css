@@ -144,6 +144,15 @@ img.hero {
     z-index: 0;
 }
 
+.map--tall {
+    height: 700px;
+}
+
+.map .leaflet-tooltip {
+    line-height: 1.2;
+    text-align: center;
+}
+
 .img-exif {
     display: block;
 }
