@@ -1,5 +1,5 @@
 +++
-date = '2026-07-30T21:30:00'
+date = '2026-07-30T21:00:00'
 title = "Summer Vacation, Day 20: Venlo"
 topics = ["Travel", "Photography"]
 emojis = ["🏕️"]
