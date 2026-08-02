@@ -7,7 +7,7 @@ emojis = ["📷"]
 cover = "A6405041.jpeg"
 +++
 
-The garden looked like a mess and a few things were still left over from the remodeling, so today meant for Nadine and me: tearing down the old sandbox, moving soil, moving the big stones, clearing the new planting beds of unwanted newcomers, setting up the eufy E18 mowing robot from scratch because it couldn't orient itself after the changes, mowing, getting my bike going again after the repair, assembling the mini pool for the kids and the hot days ahead. 
+The garden looked like a mess and a few things were still left over from the remodeling, so today meant for Nadine and me: tearing down the old sandbox, moving soil, moving the big stones, clearing the new planting beds of unwanted newcomers, setting up the eufy E18 mowing robot from scratch because it couldn't orient itself after the changes, mowing, getting my bike going again after the repair, assembling the mini pool for the kids and the hot days ahead.
 
 <!--more-->
 
