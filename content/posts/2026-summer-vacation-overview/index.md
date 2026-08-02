@@ -1,32 +1,35 @@
 +++
-date = '2026-07-31T22:00:00'
+date = '2026-08-01T18:00:00'
 title = "Summer Vacation: The Whole Route"
 topics = ["Travel", "Photography"]
 emojis = ["🏕️"]
-draft = true
+cover = "A6405005.jpeg"
+draft = false
 +++
 
-Twenty-one days, around 3,200 km on the road plus two Channel crossings, from Groitzsch down to the tip of Cornwall and back. Every marker is a night on the road.
+Twenty-one days, around 3,200 km on the road plus two Channel crossings, from Groitzsch down to the tip of Cornwall and back. 
 
 <!--more-->
 
-{{< map route="route.json" size="tall" zoom="true" >}}
-51.1547,12.2823,11.07. & 31.07.
-51.3310,6.0950,11.07. & 30.07.
-50.6080,3.3390,12.07.
-50.9850,0.9450,13.07.
-50.8297,0.3924,14.07.
-50.8224,-0.0970,15.07.
-50.7403,-2.0490,16.07.
-50.6603,-3.2816,17.-18.07.
-50.3415,-4.2374,19.-20.07.
-50.2889,-4.8145,21.-22.07.
-50.1263,-5.5254,23.07.
-50.2015,-5.4146,24.07.
-50.3455,-5.1540,25.-26.07.
-50.5089,-5.0265,27.07.
-51.0947,-2.1266,28.07.
-51.1005,1.2117,29.07.
+{{< img src="A6405005.jpeg" alt="Woman in a car with a sleeping dog on the passenger seat" caption="Little dog chilling in the queue to the ferry from Dover." >}}
+
+{{< map route="route.json" zoom="true" >}}
+51.1547,12.2823,Start, #21
+51.3310,6.0950,#1, #20
+50.6080,3.3390,#2
+50.9850,0.9450,#3
+50.8297,0.3924,#4
+50.8224,-0.0970,#5
+50.7403,-2.0490,#6
+50.6603,-3.2816,#7, #8
+50.3415,-4.2374,#9, #10
+50.2889,-4.8145,#11, #12
+50.1263,-5.5254,#13
+50.2015,-5.4146,#14
+50.3455,-5.1540,#15, #16
+50.5089,-5.0265,#17
+51.0947,-2.1266,#18
+51.1005,1.2117,#19
 {{< /map >}}
 
 **Week 1**
