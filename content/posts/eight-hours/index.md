@@ -11,6 +11,6 @@ Back to work, eight hours back to back, and the only breaks I got I spent outsid
 
 <!--more-->
 
-{{< img src="1C4A5474.jpeg" alt="Juvenile female red-backed shrike perched on a concrete fence post" >}}
+{{< img src="1C4A5474.jpeg" alt="Juvenile female red-backed shrike perched on a concrete fence post" caption="Female red-backed shrike">}}
 
 Also on Saturday I went to Calumet in Leipzig to get the 1st gen Canon EF 24-105mm fixed, they told me one week earlier a customer with the same issue showed up and paid 400€ eventually for the same repair. I did not decide for the repairs but got as an intermediate solution a Canon RF 24-50mm lens. I think the EF 24-105mm is superior by far but I decided to invest my money rather into a Canon RF 200-800mm f/6.3-9. One expensive purchase is enough.
