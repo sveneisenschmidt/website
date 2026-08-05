@@ -2,10 +2,10 @@
 slug = 'daily-photo-sponsored-post'
 date = '2026-03-18T18:00:00'
 title = 'Sponsored Post'
-topics = ['Daily Photo']
+topics = ["Daily Photo", "Photography"]
 cover = 'IMG_2932.jpeg'
 draft = false
-emojis = ['🐦']
+emojis = ["🐦"]
 +++
 
 Today was back to back, morning to evening. Today's photo is sponsored by Nadine from her photo tour. If you look closely you see two sparrows.

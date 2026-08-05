@@ -2,9 +2,9 @@
 slug = 'daily-photo-black-ice'
 date = '2026-02-05T16:15:00'
 title = 'Black Ice'
-topics = ['Daily Photo']
+topics = ["Daily Photo", "Photography"]
 cover = 'DSC00623.jpeg'
-emojis = ['🧊']  
+emojis = ["🧊"]
 draft = false
 +++
 

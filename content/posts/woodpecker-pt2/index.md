@@ -3,7 +3,7 @@ slug = 'daily-photo-woodpecker-pt2'
 date = '2026-07-10T17:00:00'
 title = "Woodpecker"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["🐦"]
 cover = "1C4A2681.jpeg"
 +++
 

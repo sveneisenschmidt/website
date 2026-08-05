@@ -2,9 +2,9 @@
 slug = 'daily-photo-cake'
 date = '2026-01-24T17:00:00'
 title = 'Cake'
-topics = ['Daily Photo']
+topics = ["Daily Photo", "Family"]
 cover = 'DSC00223.jpeg'
-emojis = ['🎂']  
+emojis = ["🎂"]
 draft = false
 +++
 

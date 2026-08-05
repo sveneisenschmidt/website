@@ -2,10 +2,10 @@
 slug = 'daily-photo-disappointed'
 date = '2026-01-16T19:00:00'
 title = 'Disappointed'
-topics = ['Daily Photo']
+topics = ["Daily Photo", "Photography"]
 cover = 'IMG_0658.jpg'
 draft = false
-emojis = ['📷']
+emojis = ["📷"]
 +++
 
 The Sony RX100 VII did not arrive today. I rescheduled delivery from yesterday to today because of my work trip this week. Not sure what happened for it not to arrive but I'm disappointed. 

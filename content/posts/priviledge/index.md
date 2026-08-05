@@ -2,9 +2,9 @@
 slug = 'daily-photo-priviledge'
 date = '2026-03-13T18:45:00'
 title = 'Privilege'
-topics = ['Daily Photo', 'Family']
+topics = ["Daily Photo", "Family"]
 cover = 'IMG_2599.jpeg'
-emojis = ['🃏']
+emojis = ["🃏"]
 +++
 
 Every Friday afternoon, Nadine's parents pick up Tilian and Kellin. There is no fixed plan. Sometimes it is an outing, sometimes an hour of card games.

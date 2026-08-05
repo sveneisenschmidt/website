@@ -2,7 +2,7 @@
 slug = 'daily-photo-milestone'
 date = '2026-04-08T21:30:00'
 title = "Milestone"
-topics = ["Daily Photo", "Photography"]
+topics = ["Daily Photo", "Software Development"]
 emojis = ["🏁"]
 cover = "DSC01774.jpeg"
 +++

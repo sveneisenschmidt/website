@@ -1,8 +1,8 @@
 +++
 date = '2026-02-11T23:30:00'
 title = "Mayrhofen at Night"
-topics = ['Photography', 'Travel']
-emojis = ['🌙']
+topics = ["Photography", "Travel"]
+emojis = ["🌙"]
 draft = false
 cover = "DSC00959.jpg"
 +++

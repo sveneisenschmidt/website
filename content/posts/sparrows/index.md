@@ -3,7 +3,7 @@ slug = 'daily-photo-sparrows'
 date = '2026-05-04T21:57:00'
 title = "Sparrows"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["🐦"]
 cover = "A97I2516.jpeg"
 +++
 

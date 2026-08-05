@@ -2,8 +2,8 @@
 slug = 'daily-photo-starling'
 date = '2026-05-30T21:55:00'
 title = "Starling"
-topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+topics = ["Daily Photo", "Family"]
+emojis = ["🐦"]
 cover = "A97I4287.jpeg"
 +++
 

@@ -2,10 +2,10 @@
 slug = 'daily-photo-reading'
 date = '2026-01-07T19:00:00'
 title = 'Reading'
-topics = ['Daily Photo', 'Books']
+topics = ["Daily Photo", "Books"]
 cover = 'IMG_0512.jpg'
 draft = false
-emojis = ['📚']
+emojis = ["📚"]
 +++
 
 I don't read enough books. I manage reading a few pages maybe one evening every two weeks. I can turn on something on Youtube or a podcast in the car without thinking. A book I have to actively pick up.

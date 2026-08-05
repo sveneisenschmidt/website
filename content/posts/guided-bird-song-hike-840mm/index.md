@@ -3,7 +3,7 @@ slug = 'daily-photo-guided-bird-song-hike-840mm'
 date = '2026-05-10T13:45:00'
 title = "Guided Bird Song Hike & 840mm"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["🐦"]
 cover = "A97I2836.jpeg"
 +++
 

@@ -3,7 +3,7 @@ slug = 'daily-photo-stop-gap-swallow'
 date = '2026-06-24T05:30:00'
 title = "Stop Gap Swallow"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["🐦"]
 cover = "1C4A1726.jpeg"
 +++
 

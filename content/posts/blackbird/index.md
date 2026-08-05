@@ -3,7 +3,7 @@ slug = 'daily-photo-blackbird'
 date = '2026-04-30T16:15:00'
 title = "Blackbird"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["🐦"]
 cover = "A97I2075.jpeg"
 +++
 

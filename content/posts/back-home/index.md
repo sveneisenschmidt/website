@@ -2,8 +2,8 @@
 slug = 'daily-photo-back-home'
 date = '2026-02-14T16:12:00'
 title = "Back Home"
-topics = ['Daily Photo', 'Family', 'Travel', 'Music']
-emojis = ['🏠']
+topics = ["Daily Photo", "Music", "Travel"]
+emojis = ["🏠"]
 draft = false
 cover = 'DSC01174.jpeg'
 +++

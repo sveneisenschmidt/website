@@ -3,7 +3,7 @@ slug = 'daily-photo-overcast'
 date = '2026-05-21T18:00:00'
 title = "Overcast"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["☁️"]
 cover = "A6401463.jpeg"
 +++
 

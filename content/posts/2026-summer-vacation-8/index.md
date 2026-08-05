@@ -1,7 +1,7 @@
 +++
 date = '2026-07-18T21:00:00'
 title = "Summer Vacation, Day 8: Ladram Bay"
-topics = ["Travel", "Photography"]
+topics = ["Photography", "Travel"]
 emojis = ["🏕️"]
 cover = "1C4A3846.jpeg"
 draft = false

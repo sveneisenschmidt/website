@@ -1,9 +1,9 @@
 +++
 date = '2026-04-06T23:00:00'
 title = 'Flyby'
-topics = ['Daily Photo', 'Photography']
+topics = ["Daily Photo", "Photography"]
 cover = 'IMG_1346.jpeg'
-emojis = ['🦅']
+emojis = ["🦅"]
 draft = false
 +++
 

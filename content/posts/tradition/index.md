@@ -2,7 +2,7 @@
 slug = 'daily-photo-tradition'
 date = '2026-05-14T18:00:00'
 title = "Tradition"
-topics = ["Daily Photo", "Photography"]
+topics = ["Daily Photo", "Family"]
 emojis = ["📷"]
 cover = "A6401452.jpeg"
 +++

@@ -3,7 +3,7 @@ slug = 'daily-photo-climate'
 date = '2026-06-25T21:00:00'
 title = "Climate"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["🌡️"]
 cover = "A6402633.jpeg"
 +++
 

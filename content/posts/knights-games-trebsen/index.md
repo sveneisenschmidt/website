@@ -2,8 +2,8 @@
 slug = 'knights-games-trebsen'
 date = '2026-05-24T21:00:00'
 title = "Knights Games Trebsen"
-topics = ["Photography"]
-emojis = ["📷"]
+topics = ["Photography", "Family"]
+emojis = ["🏰"]
 cover = "A6401643.jpeg"
 +++
 

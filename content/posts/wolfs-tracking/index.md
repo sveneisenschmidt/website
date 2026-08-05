@@ -2,7 +2,7 @@
 date = '2026-02-03T15:45:00'
 title = "Wolf Tracking"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["🐺"]
 cover = "DSC00531.jpeg"
 +++
 

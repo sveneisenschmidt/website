@@ -2,8 +2,8 @@
 slug = 'daily-photo-munich'
 date = '2026-06-23T19:00:00'
 title = "Munich"
-topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+topics = ["Daily Photo", "Work"]
+emojis = ["🏢"]
 cover = "A6402632.jpeg"
 +++
 

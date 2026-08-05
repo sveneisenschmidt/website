@@ -3,7 +3,7 @@ slug = 'daily-photo-big-day'
 date = '2026-04-28T21:20:00'
 title = "Big Day"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["🐦"]
 cover = "A97I1773.jpeg"
 +++
 

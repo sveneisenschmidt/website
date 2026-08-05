@@ -1,7 +1,7 @@
 +++
 date = '2026-08-01T18:00:00'
 title = "Summer Vacation: The Whole Route"
-topics = ["Travel", "Photography"]
+topics = ["Travel"]
 emojis = ["🏕️"]
 cover = "A6405005.jpeg"
 draft = false

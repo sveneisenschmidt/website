@@ -2,9 +2,9 @@
 slug = 'daily-photo-bubblegum-blue'
 date = '2026-02-04T17:12:00'
 title = 'Bubblegum Blue'
-topics = ['Daily Photo']
+topics = ["Daily Photo", "Photography"]
 cover = 'DSC00610.jpeg'
-emojis = ['🚜']  
+emojis = ["🚜"]
 draft = false
 +++
 

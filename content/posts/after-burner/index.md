@@ -2,10 +2,10 @@
 slug = 'daily-photo-after-burner'
 date = '2026-02-18T20:07:00'
 title = 'Afterburner'
-topics = ['Daily Photo', 'Video Games']
+topics = ["Daily Photo", "Video Games"]
 cover = 'DSC01236.jpeg'
 draft = false
-emojis = ['✈︎']
+emojis = ["✈︎"]
 +++
 
 A few days ago, out of nowhere, I remembered a game I played at my cousins a lot, it was [After Burner II](https://segaretro.org/After_Burner_II) on their Sega Mega Drive. I have been looking to scratch that itch on a Steam Deck.

@@ -2,8 +2,8 @@
 slug = 'hypo-1-15'
 date = '2026-07-09T18:30:00'
 title = "Hypo 1.15"
-topics = ['Software Development', 'Photography']
-emojis = ['📷']
+topics = ["Photography", "Software Development"]
+emojis = ["🛠️"]
 draft = false
 +++
 

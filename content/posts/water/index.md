@@ -2,8 +2,8 @@
 slug = 'daily-photo-water'
 date = '2026-06-01T19:00:00'
 title = "Water"
-topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+topics = ["Daily Photo", "Family"]
+emojis = ["💧"]
 cover = "A6402341.jpeg"
 +++
 

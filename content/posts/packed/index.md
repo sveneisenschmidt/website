@@ -2,9 +2,9 @@
 slug = 'daily-photo-packed'
 date = '2026-03-28T17:40:00'
 title = 'Packed'
-topics = ['Daily Photo']
+topics = ["Daily Photo", "Software Development"]
 cover = 'IMG_3916.jpeg'
-emojis = ['🧳']
+emojis = ["🧳"]
 +++
 
 Today was packed, in the morning I went out to use the fantastic weather to get some good shots of birds again, the usual Sparrow and a first time shot of a Goldfinch.

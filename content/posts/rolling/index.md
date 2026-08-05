@@ -2,8 +2,8 @@
 slug = 'daily-photo-rolling'
 date = '2026-04-21T19:20:00'
 title = "Rolling"
-topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+topics = ["Daily Photo", "Family"]
+emojis = ["🚲"]
 cover = "A6400573.jpeg"
 +++
 

@@ -2,8 +2,8 @@
 slug = 'daily-photo-first-ride'
 date = '2026-08-02T16:45:00'
 title = "First Ride"
-topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+topics = ["Daily Photo", "Cycling"]
+emojis = ["🚴"]
 cover = "A6405041.jpeg"
 +++
 

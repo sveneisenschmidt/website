@@ -2,7 +2,7 @@
 slug = 'daily-photo-wander'
 date = '2026-06-30T16:00:00'
 title = "Wander"
-topics = ["Daily Photo", "Photography"]
+topics = ["Daily Photo", "Family"]
 emojis = ["📷"]
 cover = "IMG_1182.jpeg"
 +++

@@ -2,10 +2,10 @@
 slug = 'daily-photo-chicken'
 date = '2026-01-05T17:00:00'
 title = 'Chicken'
-topics = ['Daily Photo']
+topics = ["Daily Photo", "Photography"]
 cover = 'IMG_0494.jpg'
 draft = false
-emojis = ['🐔']
+emojis = ["🐔"]
 +++
 
 When I went out with Aika, I caught two of our four chickens in the garden. We have two Silkie chickens and two feather-footed dwarf chickens. The whole family loves them, and two eggs a day is a nice bonus.

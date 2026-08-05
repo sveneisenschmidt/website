@@ -2,8 +2,8 @@
 slug = 'daily-photo-station-visit'
 date = '2026-04-16T23:00:00'
 title = "Station Visit"
-topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+topics = ["Daily Photo", "Work"]
+emojis = ["🚐"]
 cover = "DSC00099.jpeg"
 +++
 

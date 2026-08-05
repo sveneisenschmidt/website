@@ -2,9 +2,9 @@
 slug = 'daily-photo-woods'
 date = '2026-02-21T17:39:00'
 title = 'Woods'
-topics = ['Daily Photo', 'Photography']
+topics = ["Daily Photo", "Photography"]
 cover = 'IMG_1315.jpeg'
-emojis = ['🦌']
+emojis = ["🦌"]
 +++
 
 I went back to the woods looking for the [white albino deer](/posts/daily-photo-dawn/), and found a white albino doe instead.

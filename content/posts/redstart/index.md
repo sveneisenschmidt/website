@@ -3,7 +3,7 @@ slug = 'daily-photo-redstart'
 date = '2026-04-15T22:15:00'
 title = "Redstart"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["🐦"]
 cover = "IMG_5800.jpeg"
 +++
 

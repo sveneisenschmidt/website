@@ -2,8 +2,8 @@
 date = '2026-03-17T12:00:00'
 draft = false
 title = 'Change as a Commodity'
-topics = ['Software Development']
-emojis = ['🤖']
+topics = ["AI", "Software Development"]
+emojis = ["🤖"]
 +++
 
 I've been trying to answer a question about AI and software development for a while now, and I don't think I've been looking far enough for an answer.

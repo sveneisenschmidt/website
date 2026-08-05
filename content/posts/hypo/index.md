@@ -1,8 +1,8 @@
 +++
 date = '2026-03-30T19:22:00'
 title = "So I Built a Mac App"
-topics = ['Software Development', 'Photography']
-emojis = ['📷']
+topics = ["Photography", "Software Development"]
+emojis = ["🛠️"]
 draft = false
 cover = "DSC01685.jpeg"
 +++

@@ -2,6 +2,8 @@
 date = '2026-01-01T12:00:00'
 draft = false
 title = 'Hello'
+topics = []
+emojis = ["👋"]
 +++
 
 Welcome to my website. I work as Chief Technology & Product Officer at [roadsurfer](https://roadsurfer.com), where we help people explore the world in campervans.

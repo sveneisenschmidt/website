@@ -2,9 +2,9 @@
 date = '2026-04-03T22:15:00'
 title = 'Loop'
 slug = 'daily-photo-loop'
-topics = ['Daily Photo', 'Photography']
+topics = ["Daily Photo", "Software Development"]
 cover = 'IMG_4668.jpeg'
-emojis = ['📷']
+emojis = ["🛠️"]
 draft = false
 +++
 

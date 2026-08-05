@@ -3,7 +3,7 @@ slug = 'pond'
 date = '2026-06-17T18:00:00'
 title = "Sponsor Post: Nadine's Morning at the Pond"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["🐦"]
 cover = "1C4A0635.jpeg"
 +++
 

@@ -3,7 +3,7 @@ slug = 'daily-photo-nuthatch'
 date = '2026-05-23T21:00:00'
 title = "Nuthatch"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["🐦"]
 cover = "A97I3604.jpeg"
 +++
 

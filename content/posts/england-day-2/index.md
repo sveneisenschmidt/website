@@ -2,7 +2,7 @@
 slug = 'england-day-2'
 date = '2026-04-24T23:30:00'
 title = "England, Day 2"
-topics = ["Daily Photo", "Travel", "Photography"]
+topics = ["Daily Photo", "Travel"]
 emojis = ["🇬🇧"]
 cover = "A97I1020.jpeg"
 +++

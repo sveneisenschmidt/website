@@ -1,7 +1,7 @@
 +++
 date = '2026-07-24T21:30:00'
 title = "Summer Vacation, Day 14: Hayle"
-topics = ["Travel", "Photography"]
+topics = ["Photography", "Travel"]
 emojis = ["🏕️"]
 cover = "A6404805.jpeg"
 draft = false

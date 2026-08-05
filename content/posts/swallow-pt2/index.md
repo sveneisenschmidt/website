@@ -3,7 +3,7 @@ slug = 'daily-photo-swallow-pt2'
 date = '2026-07-07T18:00:00'
 title = "Flight"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["🐦"]
 cover = "1C4A2503.jpeg"
 +++
 

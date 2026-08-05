@@ -1,8 +1,8 @@
 +++
 date = '2026-02-27T19:00:00'
 title = "Upgrade"
-topics = ['Apple']
-emojis = ['💻']
+topics = ["Technology"]
+emojis = ["💻"]
 cover = "DSC01299.jpeg"
 draft = false
 +++

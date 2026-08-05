@@ -2,10 +2,10 @@
 slug = 'daily-photo-sourdough'
 date = '2026-01-06T19:00:00'
 title = 'Sourdough'
-topics = ['Daily Photo', 'Food']
+topics = ["Daily Photo", "Family", "Food"]
 cover = 'IMG_0500.jpg'
 draft = false
-emojis = ['🍞']
+emojis = ["🍞"]
 +++
 
 My wife started baking bread. Here's her spelt (Deutsch: Dinkel) sourdough recipe. It took quite a few iterations to get it right.

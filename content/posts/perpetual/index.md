@@ -2,9 +2,9 @@
 slug = 'daily-photo-perpetual'
 date = '2026-03-04T18:00:00'
 title = 'Perpetual'
-topics = ['Daily Photo', 'Photography']
+topics = ["Daily Photo", "Photography"]
 cover = 'IMG_1855.JPG'
-emojis = ['🟠']
+emojis = ["🟠"]
 +++
 
 Went for a walk in the woods with the neighbors and their dachshund, and Aika. Spotted a pheasant, a fox, a red kite, and a few deer.

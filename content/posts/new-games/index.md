@@ -1,8 +1,8 @@
 +++
 date = '2026-02-16T16:38:00'
 title = "New Games"
-topics = ['Video Games']
-emojis = ['🎮']
+topics = ["Video Games"]
+emojis = ["🎮"]
 draft = false
 cover = 'DSC01204.jpg'
 +++

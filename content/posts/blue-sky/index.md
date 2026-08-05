@@ -2,9 +2,9 @@
 slug = 'daily-photo-blue-sky'
 date = '2026-03-23T18:00:00'
 title = 'Blue Sky'
-topics = ['Daily Photo', 'Photography']
+topics = ["Daily Photo", "Photography"]
 cover = 'IMG_3607.jpeg'
-emojis = ['🦅']
+emojis = ["🦅"]
 +++
 
 A starling on the roof, a sparrow on a cable, and a red kite overhead, all three on the same blue day. Nadine caught a great shot of the red kite. I think we are both pushing what we can get out of the 90D and the 250mm lens.

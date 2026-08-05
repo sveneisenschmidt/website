@@ -1,10 +1,10 @@
 +++
 date = '2026-02-28T19:18:00'
 title = 'Wild Horses'
-topics = ['Daily Photo']
+topics = ["Daily Photo", "Photography"]
 cover = 'IMG_1690.jpeg'
 draft = false
-emojis = ['🐴']
+emojis = ["🐴"]
 +++
 
 We drove to see wild horses. It's a nature reserve one hour south-west of Leipzig. It's called the [Toten Täler](https://de.wikipedia.org/wiki/Tote_Täler) (Death Valleys).

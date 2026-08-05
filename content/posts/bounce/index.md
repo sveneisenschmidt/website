@@ -3,7 +3,7 @@ slug = 'daily-photo-bounce'
 date = '2026-05-19T18:57:00'
 title = "Bounce"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["🦊"]
 cover = "A97I3438.jpeg"
 +++
 

@@ -2,8 +2,8 @@
 slug = 'daily-photo-pigeon'
 date = '2026-03-17T18:00:00'
 title = 'Pigeon'
-topics = ['Daily Photo', 'Photography']
-emojis = ['🐦']
+topics = ["Daily Photo", "Photography"]
+emojis = ["🐦"]
 cover = 'IMG_2909.jpeg'
 +++
 

@@ -2,9 +2,9 @@
 slug = 'daily-photo-imagination'
 date = '2026-01-25T18:05:00'
 title = 'Imagination'
-topics = ['Daily Photo']
+topics = ["Daily Photo", "Family"]
 cover = 'DSC00252.jpeg'
-emojis = ['🚧']
+emojis = ["❄️"]
 +++
 
 Love this kid. Kellin can take a half-broken toy, a pile of week-old snow and immerse himself in a new adventure so easily.

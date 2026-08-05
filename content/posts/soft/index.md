@@ -2,7 +2,7 @@
 slug = 'daily-photo-soft'
 date = '2026-01-26T10:30:00'
 title = "Soft"
-topics = ["Daily Photo"]
+topics = ["Daily Photo", "Photography"]
 emojis = ["❄️"]
 cover = "DSC00276.jpeg"
 +++

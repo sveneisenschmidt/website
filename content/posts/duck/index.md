@@ -1,9 +1,9 @@
 +++
 date = '2026-04-05T21:43:00'
 title = 'Duck'
-topics = ['Daily Photo']
+topics = ["Daily Photo", "Photography"]
 cover = 'IMG_4748.jpeg'
-emojis = ['🦆']
+emojis = ["🦆"]
 draft = false
 +++
 

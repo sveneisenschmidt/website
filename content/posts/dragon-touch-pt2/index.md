@@ -1,8 +1,8 @@
 +++
 date = '2026-03-31T21:20:00'
 title = 'Dragon Touch (Pt.2)'
-topics = ['Software Development']
-emojis = ['📅']
+topics = ["Family", "Software Development"]
+emojis = ["📅"]
 +++
 
 A follow-up to the [Dragon Touch post](/posts/dragon-touch) from a few days ago, about two things that bothered me enough to fix.

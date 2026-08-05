@@ -1,9 +1,9 @@
 +++
 date = '2026-04-02T21:15:00'
 title = 'Two Cameras'
-topics = ['Daily Photo', 'Photography']
+topics = ["Daily Photo", "Photography"]
 cover = 'IMG_4479.jpeg'
-emojis = ['📷']
+emojis = ["📷"]
 draft = false
 +++
 

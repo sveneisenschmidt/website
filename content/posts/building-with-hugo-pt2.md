@@ -2,8 +2,8 @@
 date = '2026-03-17T08:00:00'
 draft = false
 title = 'Building This Website with Hugo (Pt. 2)'
-topics = ['Software Development']
-emojis = ['🛠️']
+topics = ["Software Development"]
+emojis = ["🛠️"]
 +++
 
 A few months of running this site in production and things changed. This documents what and why, and hopefully saves someone who is just starting out with Hugo some time. The first post covers the initial setup: [Building This Website with Hugo](/posts/building-with-hugo/).

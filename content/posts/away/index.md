@@ -2,10 +2,10 @@
 slug = 'daily-photo-away'
 date = '2026-01-14T19:00:00'
 title = 'Away'
-topics = ['Daily Photo']
+topics = ["Daily Photo", "Family"]
 cover = 'IMG_0615.jpg'
 draft = false
-emojis = ['👬']
+emojis = ["👬"]
 +++
 
 Tilian is sick and Kellin has been quarantined as a precaution. I am on a work trip to Munich so it was extra difficult to leave them until tomorrow night.

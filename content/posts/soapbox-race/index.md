@@ -2,8 +2,8 @@
 slug = 'daily-photo-soapbox-race'
 date = '2026-06-05T18:00:00'
 title = "Soapbox Race"
-topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+topics = ["Daily Photo", "Family"]
+emojis = ["🏎️"]
 cover = "A6402532.jpeg"
 +++
 

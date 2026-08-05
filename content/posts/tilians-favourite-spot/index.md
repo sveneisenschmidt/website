@@ -2,9 +2,9 @@
 slug = 'daily-photo-tilians-favourite-spot'
 date = '2026-03-12T18:00:00'
 title = "Tilian's Favourite Spot"
-topics = ['Daily Photo', 'Photography']
+topics = ["Daily Photo", "Family"]
 cover = 'IMG_2480.jpeg'
-emojis = ['🏞️']
+emojis = ["🏞️"]
 +++
 
 Tilian got the task from school to choose his favourite place where he lives. Nadine went to take a picture of it with him. To my surprise, it's the same spot I spent a lot of days as a kid.

@@ -1,8 +1,8 @@
 +++
 date = '2026-03-29T18:39:00'
 title = "Village Walk"
-topics = ['Daily Photo', 'Photography']
-emojis = ['🌿']
+topics = ["Daily Photo", "Photography"]
+emojis = ["🌿"]
 draft = false
 cover = "IMG_4032.jpeg"
 +++

@@ -2,8 +2,8 @@
 slug = 'daily-photo-resting'
 date = '2026-06-10T18:00:00'
 title = "Resting"
-topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+topics = ["Daily Photo", "Family"]
+emojis = ["🤒"]
 cover = "A6402612.jpeg"
 +++
 

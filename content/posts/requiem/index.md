@@ -2,9 +2,9 @@
 slug = 'daily-photo-requiem'
 date = '2026-03-14T21:00:00'
 title = 'Requiem'
-topics = ['Daily Photo', 'Video Games']
+topics = ["Daily Photo", "Video Games"]
 cover = 'DSC01640.jpeg'
-emojis = ['🎮']
+emojis = ["🎮"]
 +++
 
 I finished [Resident Evil Requiem](/log/games#resident-evil-requiem) on the PS5 Pro. It's a 8/10 for me.

@@ -2,8 +2,8 @@
 date = '2026-07-03T21:00:00'
 draft = true
 title = "Testing Hypo on macOS Versions I Don't Run"
-topics = ['Software Development']
-emojis = ['🛠️']
+topics = ["Software Development"]
+emojis = ["🛠️"]
 +++
 
 I recently lowered [Hypo](https://hypo.eisenschmidt.website/)'s deployment target from macOS 26 (Tahoe) down to macOS 15 (Sequoia), to reach users who have not upgraded yet. The change compiled, every unit test passed, and nobody had ever seen the app running on macOS 15. That is the trouble with deployment target changes: what actually differs between the two systems is visual, window chrome, toolbar materials, sidebar rendering, spacing, and SwiftUI resolves all of that per OS at runtime. My PR convention requires screenshots for UI changes, and a screenshot taken on my dev machine only proves the app on macOS 26.

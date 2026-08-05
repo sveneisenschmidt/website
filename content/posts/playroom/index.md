@@ -2,8 +2,8 @@
 slug = 'daily-photo-playroom'
 date = '2026-06-26T20:00:00'
 title = "Downstairs"
-topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+topics = ["Daily Photo", "Family"]
+emojis = ["🛏️"]
 cover = "A6402634.jpeg"
 +++
 

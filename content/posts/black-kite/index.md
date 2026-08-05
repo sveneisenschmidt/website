@@ -3,7 +3,7 @@ slug = 'daily-photo-black-kite'
 date = '2026-07-06T18:00:00'
 title = "Dive"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["🦅"]
 cover = "1C4A1973.jpeg"
 +++
 

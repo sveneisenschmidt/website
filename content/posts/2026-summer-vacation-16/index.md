@@ -1,7 +1,7 @@
 +++
 date = '2026-07-26T20:15:00'
 title = "Summer Vacation, Day 16: Perran Sands"
-topics = ["Travel", "Photography"]
+topics = ["Photography", "Family", "Travel"]
 emojis = ["🏕️"]
 cover = "1C4A5112.jpeg"
 draft = false

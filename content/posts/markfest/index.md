@@ -2,8 +2,8 @@
 slug = 'daily-photo-markfest'
 date = '2026-05-31T19:00:00'
 title = "Markfest"
-topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+topics = ["Daily Photo", "Family"]
+emojis = ["🤡"]
 cover = "A6402328.jpeg"
 +++
 

@@ -2,10 +2,10 @@
 slug = 'daily-photo-mine-pt2'
 date = '2026-01-23T16:15:00'
 title = 'Mine (Pt.2)'
-topics = ['Daily Photo']
+topics = ["Daily Photo", "Photography"]
 cover = 'DSC00191.jpeg'
 draft = false
-emojis = ['⛏️']
+emojis = ["⛏️"]
 +++
 
 

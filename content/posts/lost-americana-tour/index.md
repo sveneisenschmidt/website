@@ -2,9 +2,9 @@
 date = '2026-02-24T23:59:00'
 draft = false
 title = 'Lost Americana Tour'
-topics = ['Music']
+topics = ["Music", "Travel"]
 cover = 'IMG_0768.jpg'
-emojis = ['🎸']
+emojis = ["🎸"]
 +++
 
 Nadine and I went to Berlin to see [MGK](https://www.last.fm/music/Machine+Gun+Kelly)'s Lost Americana tour. I did not bring a proper camera. In hindsight I could have.

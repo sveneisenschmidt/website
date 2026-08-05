@@ -2,7 +2,7 @@
 slug = 'daily-photo-jump'
 date = '2026-04-12T21:22:00'
 title = "Jump"
-topics = ["Daily Photo", "Photography"]
+topics = ["Daily Photo", "Family"]
 emojis = ["📷"]
 cover = "DSC01825.jpeg"
 +++

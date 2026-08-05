@@ -2,8 +2,8 @@
 slug = 'daily-photo-pillow-fort'
 date = '2026-06-22T17:20:00'
 title = "Fort"
-topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+topics = ["Daily Photo", "Family"]
+emojis = ["🛋️"]
 cover = "A6402616.jpeg"
 +++
 

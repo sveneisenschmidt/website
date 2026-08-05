@@ -3,7 +3,7 @@ slug = 'daily-photo-cliche'
 date = '2026-05-18T22:00:00'
 title = "Cliché"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["☕"]
 cover = "A6401460.jpeg"
 +++
 

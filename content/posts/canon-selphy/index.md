@@ -3,7 +3,7 @@ slug = 'daily-photo-canon-selphy'
 date = '2026-05-03T18:18:00'
 title = "Canon Selphy"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["🖨️"]
 cover = "A6401354.jpeg"
 +++
 

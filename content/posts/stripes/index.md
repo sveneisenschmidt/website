@@ -2,10 +2,10 @@
 slug = 'daily-photo-stripes'
 date = '2026-02-17T20:43:00'
 title = 'Stump'
-topics = ['Daily Photo']
+topics = ["Daily Photo", "Photography"]
 cover = 'DSC01218.jpg'
 draft = false
-emojis = ['📷']
+emojis = ["🪵"]
 +++
 
 Old tree stump next to the agriulture road out of town.

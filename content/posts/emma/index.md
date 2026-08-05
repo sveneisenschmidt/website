@@ -2,7 +2,7 @@
 slug = 'daily-photo-emma'
 date = '2026-02-23T18:10:00'
 title = "Emma"
-topics = ["Daily Photo"]
+topics = ["Daily Photo", "Photography"]
 emojis = ["🐕"]
 cover = "IMG_1151.jpg"
 draft = false

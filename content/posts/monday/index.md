@@ -2,9 +2,9 @@
 slug = 'daily-photo-monday'
 date = '2026-03-16T23:00:00'
 title = 'Monday'
-topics = ['Daily Photo', 'Photography']
+topics = ["Daily Photo", "Photography"]
 cover = 'IMG_2874.jpeg'
-emojis = ['🗑️']
+emojis = ["🗑️"]
 +++
 
 This is what a successfull Monday looks like: Booked my flights for April to see [Jasper](https://jasper.tandy.is) and his family. Decided to go for a Sigma 600mm lens. Fell asleep 8pm with the kids during bedtime routine.

@@ -2,10 +2,10 @@
 slug = 'daily-photo-birthday'
 date = '2026-01-21T15:30:00'
 title = 'Tilian’s 8th Birthday'
-topics = ['Daily Photo']
+topics = ["Daily Photo", "Family"]
 cover = 'DSC00131.jpeg'
 draft = false
-emojis = ['🎁']
+emojis = ["🎁"]
 +++
 
 Tilian turned 8! Time flies so fast. We spent the afternoon building a decommissioned LEGO ([42097](https://www.lego.com/de-de/product/compact-crawler-crane-42097)) set I have been hunting online for him for a while. The bags are not numbered! 

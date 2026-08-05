@@ -1,7 +1,7 @@
 +++
 date = '2026-07-13T23:10:00'
 title = "Summer Vacation, Day 3: New Romney"
-topics = ["Travel", "Photography"]
+topics = ["Photography", "Travel"]
 emojis = ["🏕️"]
 cover = "1C4A3078.jpeg"
 draft = false

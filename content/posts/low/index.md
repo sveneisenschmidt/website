@@ -2,9 +2,9 @@
 slug = 'daily-photo-low'
 date = '2026-03-31T21:21:00'
 title = 'Low'
-topics = ['Daily Photo', 'Photography', 'AI']
+topics = ["Daily Photo", "AI", "Software Development"]
 cover = 'IMG_4358.jpeg'
-emojis = ['🌧️']
+emojis = ["🌧️"]
 +++
 
 The last few evenings went into building [Hypo](/posts/hypo) and the [Dragon Touch](/posts/dragon-touch-pt2) setup. Agentic coding is a different kind of effort: the cycles from idea to working product are so fast that you barely notice how much you are putting in. 

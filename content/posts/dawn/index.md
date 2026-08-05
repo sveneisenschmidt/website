@@ -2,10 +2,10 @@
 slug = 'daily-photo-dawn'
 date = '2026-02-19T15:48:00'
 title = 'Dawn'
-topics = ['Daily Photo', 'Photography']
+topics = ["Daily Photo", "Photography"]
 cover = 'IMG_0996.JPG'
 draft = false
-emojis = ['📷']
+emojis = ["🦌"]
 +++
 
 I took Aika for a long walk at dawn this morning, carrying Nadine's Canon with our new Canon EF-S 55-250mm F4-5.6 IS STM tele lens.

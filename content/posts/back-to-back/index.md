@@ -3,7 +3,7 @@ slug = 'daily-photo-back-to-back'
 date = '2026-04-13T22:00:00'
 title = "Back to Back"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["🐑"]
 cover = "IMG_5721.jpeg"
 +++
 

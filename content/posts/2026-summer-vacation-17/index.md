@@ -1,7 +1,7 @@
 +++
 date = '2026-07-27T21:30:00'
 title = "Summer Vacation, Day 17: Porthcothan Bay"
-topics = ["Travel", "Photography"]
+topics = ["Photography", "Travel"]
 emojis = ["🏕️"]
 cover = "1C4A5326.jpeg"
 draft = false

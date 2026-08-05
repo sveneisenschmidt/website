@@ -1,9 +1,9 @@
 +++
 date = '2026-03-14T18:16:00'
 title = 'Mühltal'
-topics = ['Daily Photo', 'Photography']
+topics = ["Daily Photo", "Family"]
 cover = 'IMG_2775.jpeg'
-emojis = ['📷']
+emojis = ["🐦"]
 +++
 Nadine was away for the last weekend of her Wildnispädagogik training. The boys and I spent the morning at the [Mühltal](https://www.komoot.com/de-de/tour/258321516).
 

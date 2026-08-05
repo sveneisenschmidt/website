@@ -2,8 +2,8 @@
 slug = 'nature-detectives'
 date = '2026-04-18T19:45:00'
 title = "Nature Detectives"
-topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+topics = ["Daily Photo", "Family"]
+emojis = ["🐸"]
 cover = "A6400224.jpeg"
 +++
 

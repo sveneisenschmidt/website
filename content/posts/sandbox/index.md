@@ -3,7 +3,7 @@ slug = 'daily-photo-sandbox'
 date = '2026-06-09T22:45:00'
 title = "Sandbox"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["🛠️"]
 cover = "A6402607.jpeg"
 +++
 

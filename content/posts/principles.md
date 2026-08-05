@@ -2,8 +2,8 @@
 date = '2026-03-24T19:00:00'
 draft = false
 title = 'Principles'
-topics = ['Work', 'AI']
-emojis = ['🧠']
+topics = ["AI", "Work"]
+emojis = ["🧠"]
 +++
 
 One of my team leads came to me today with a proposal. I gave feedback, we talked it through, and at some point we laughed about whether it would be possible to know in advance what my reaction would be, whether my thinking was consistent enough that you could predict where the pushback would land before talking to me.

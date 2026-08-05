@@ -2,9 +2,9 @@
 slug = 'daily-photo-fog'
 date = '2026-03-21T20:03:00'
 title = 'Fog'
-topics = ['Daily Photo', 'Photography']
+topics = ["Daily Photo", "Photography"]
 cover = 'IMG_3261.jpeg'
-emojis = ['🌫️']
+emojis = ["🌫️"]
 +++
 
 A quick morning tour with Aika  trough dense fog before a full day of building furniture. Writing this just before 9pm, still not done, lights next and then putting everything back in.

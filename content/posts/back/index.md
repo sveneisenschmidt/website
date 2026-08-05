@@ -2,10 +2,10 @@
 slug = 'daily-photo-back'
 date = '2026-01-15T19:00:00'
 title = 'Back'
-topics = ['Daily Photo']
+topics = ["Daily Photo", "Travel"]
 cover = 'IMG_0632.jpg'
 draft = false
-emojis = ['🐱']
+emojis = ["🐱"]
 +++
 
 Completed my trip back home today. Did twice 450km within 24 hours. The VW California is such a comfortable car for long trips.

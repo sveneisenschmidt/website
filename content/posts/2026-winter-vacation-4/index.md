@@ -1,8 +1,8 @@
 +++
 date = '2026-02-10T23:00:00'
 title = "Winter Vacation (Pt. 4)"
-topics = ['Photography', 'Family', 'Travel']
-emojis = ['🏔️']
+topics = ["Photography", "Family", "Travel"]
+emojis = ["🏔️"]
 draft = false
 cover = "DSC00817.jpg"
 +++

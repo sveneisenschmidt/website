@@ -2,10 +2,10 @@
 slug = 'daily-photo-honeybee'
 date = '2026-03-08T20:00:00'
 title = 'Honeybee'
-topics = ['Daily Photo', 'Photography']
+topics = ["Daily Photo", "Photography"]
 cover = 'IMG_2036.jpeg'
 draft = false
-emojis = ['🐝']
+emojis = ["🐝"]
 +++
 
 Heard a swarm of insects humming and was surprised to find a bunch of honey bees on a willow catkin that early this year.

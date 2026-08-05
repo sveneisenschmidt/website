@@ -3,7 +3,7 @@ slug = 'daily-photo-mufflon'
 date = '2026-04-11T17:35:00'
 title = "Mufflon"
 topics = ["Daily Photo", "Photography"]
-emojis = ["📷"]
+emojis = ["🐏"]
 cover = "IMG_5587.jpeg"
 +++
 

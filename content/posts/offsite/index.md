@@ -2,7 +2,7 @@
 slug = 'daily-photo-offsite'
 date = '2026-05-13T18:00:00'
 title = "Offsite"
-topics = ["Daily Photo", "Photography"]
+topics = ["Daily Photo", "Work"]
 emojis = ["📷"]
 cover = "A6401441.jpeg"
 +++
