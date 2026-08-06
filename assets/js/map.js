@@ -18,36 +18,21 @@ document.addEventListener("DOMContentLoaded", function () {
             keyboard: zoomable,
             zoomSnap: 0.25,
         });
-        var scheme = window.matchMedia("(prefers-color-scheme: dark)");
-        var tileUrl = function () {
-            return (
-                "https://basemaps.cartocdn.com/" +
-                (scheme.matches ? "dark_all" : "light_all") +
-                "/{z}/{x}/{y}{r}.png"
-            );
-        };
-        var tiles = L.tileLayer(tileUrl(), {
-            maxZoom: 19,
-            attribution:
-                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        }).addTo(map);
-        // Dots are black on the light tiles, white on the dark tiles. The
-        // container background matches the tiles so the hairline seams
-        // between tiles at fractional zoom stay invisible.
+        // Voyager tiles in both color schemes, the map keeps its own light
+        // look. The container background matches the tiles so the hairline
+        // seams between tiles at fractional zoom stay invisible.
+        L.tileLayer(
+            "https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+            {
+                maxZoom: 19,
+                attribution:
+                    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            },
+        ).addTo(map);
         var ink = function () {
-            return scheme.matches ? "#ffffff" : "#000000";
+            return "#000000";
         };
-        var applyBackground = function () {
-            el.style.backgroundColor = scheme.matches ? "#0e1112" : "#f6f6f4";
-        };
-        applyBackground();
-        scheme.addEventListener("change", function () {
-            tiles.setUrl(tileUrl());
-            applyBackground();
-            markers.forEach(function (m) {
-                m.marker.setStyle({ fillColor: ink() });
-            });
-        });
+        el.style.backgroundColor = "#fbf6ee";
 
         var markers = points.map(function (p) {
             var marker = L.circleMarker([p.lat, p.lon], {
