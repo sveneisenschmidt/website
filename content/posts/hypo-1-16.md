@@ -4,7 +4,7 @@ date = '2026-08-13T13:00:00'
 title = "Hypo 1.16"
 topics = ["Photography", "Software Development"]
 emojis = ["🛠️"]
-draft = true
+draft = false
 +++
 
 Back from vacation, after using the previous [Hypo release (1.15)](https://hypo.eisenschmidt.website/?source=website#releases) on a few thousand photos in July, there were a few things I wanted to do better. 
