@@ -7,7 +7,7 @@ emojis = ["📷"]
 cover = "1C4A6723.jpeg"
 +++
 
-We had a barbecue with Nadine's parents and her grandmother yesterday. There have been wildfires in our area every day for the past days, all of them very small, so we have been extra careful.
+We had a barbecue with Nadine's parents and her grandmother yesterday. There have been wildfires in our area every day for the past days, all of them very small (so far), so we have been extra careful.
 
 <!--more-->
 
