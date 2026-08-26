@@ -1,7 +1,7 @@
 +++
-slug = 'daily-photo-bee-eaters-pt2'
+slug = 'for-the-bin'
 date = '2026-08-25T18:00:00'
-title = "Bee-eaters"
+title = "For The Bin"
 topics = ["Daily Photo", "Photography"]
 emojis = ["🐝"]
 cover = "1C4A7374.jpeg"
