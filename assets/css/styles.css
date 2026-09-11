@@ -30,11 +30,25 @@
     font-display: swap;
 }
 
+/* One variable file carries the whole weight axis from 100 to 900, so every grade the site
+   uses costs one request of 28 KB. The range must name the axis the file holds: a narrower
+   range here clamps the font and the lighter grades never render.
+   Latin subset, SIL Open Font Licence, see EncodeSans-OFL.txt. */
+@font-face {
+    font-family: "Encode Sans";
+    src: url("/fonts/encode-sans-v23-latin.woff2") format("woff2");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
 html {
     scroll-behavior: smooth;
 }
 
 :root {
+    color-scheme: light;
+
     --color-text: #222;
     --color-link: #00e;
     --color-border: #222;
@@ -42,30 +56,75 @@ html {
     --color-bg-muted: color-mix(in srgb, var(--color-bg) 95%, black);
     --color-bg-inverted: #222;
     --color-text-inverted: #fff;
+
+    /* A rating badge tints its ground with the rating colour. The colour itself is too
+       light against that tint for body text, between 2.5 and 3.6 to 1, so the label reads
+       a second token. These pass 4.5 to 1 and keep most of the original hue. */
     --color-rating-high: #22863a;
     --color-rating-mid: #b08800;
     --color-rating-low: #cb2431;
+    --color-rating-high-text: #1c6e30;
+    --color-rating-mid-text: #7b5f00;
+    --color-rating-low-text: #af1f2a;
+
+    /* The type scale. Every rule reads one of these six and states no size of its own.
+       The sizes are smaller than the ones the serif used: a grotesque of the same point
+       size covers more area, so 1.25rem of Encode Sans reads as loud as 1.5rem of EB
+       Garamond did. Black at the old heading sizes filled most of the column. */
+    --text-title: clamp(1.1rem, 4vw, 1.625rem);
+    --text-h1: 2rem;
+    --text-h2: 1.5rem;
+    --text-base: 1.125rem;
+    --text-small: 1rem;
+    --text-label: 0.8rem;
+
+    /* Black for a heading, as the roadsurfer style guide sets it. Running text takes Light
+       and not the Medium of the guide: that weight is meant for the short blocks of a
+       booking page and turns heavy over an essay of several thousand words.
+       The stack behind the font names typefaces instead of system-ui, which resolves
+       differently per operating system and would change the width of a text between
+       machines. */
+    --font-body: "Encode Sans", Arial, "Liberation Sans", Helvetica, sans-serif;
+    --font-heading: var(--font-body);
+    --weight-body: 300;
+    --weight-heading: 900;
+    --weight-small: 400;
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --color-text: #e0e0e0;
-        --color-link: #99c3ff;
-        --color-border: #444;
-        --color-bg: #0d1117;
-        --color-bg-muted: color-mix(in srgb, var(--color-bg) 95%, white);
-        --color-bg-inverted: #e0e0e0;
-        --color-text-inverted: #0d1117;
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Smooth scrolling and the fade of the EXIF overlay are motion a reader can switch off in
+   the operating system. */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
     }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+:focus-visible {
+    outline: 2px solid var(--color-link);
+    outline-offset: 2px;
 }
 
 body {
     color: var(--color-text);
     background: var(--color-bg);
-    font-family: "EB Garamond", Georgia, serif;
-    font-size: 1.25rem;
-    font-weight: 400;
-    line-height: 1.4;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    font-weight: var(--weight-body);
+    line-height: 1.6;
     margin: 1rem auto;
     max-width: 768px;
     padding: 1rem;
@@ -85,6 +144,62 @@ blockquote {
     }
 }
 
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1.5rem 0;
+    text-align: left;
+
+    th {
+        font-weight: 500;
+        opacity: 0.55;
+    }
+
+    th,
+    td {
+        vertical-align: top;
+        padding: 0.5rem 1.5rem 0.5rem 0;
+        border-bottom: 1px solid
+            color-mix(in srgb, var(--color-border) 25%, transparent);
+    }
+
+    td:first-child {
+        white-space: nowrap;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* A phone is too narrow to carry a name and a sentence next to each other. The cells
+       become blocks, so the name stands over the text it belongs to and the row keeps the
+       full width for the sentence. */
+    @media (max-width: 768px) {
+        thead {
+            display: none;
+        }
+
+        tr,
+        td {
+            display: block;
+        }
+
+        td {
+            border-bottom: none;
+            padding: 0;
+        }
+
+        td:first-child {
+            padding-top: 1rem;
+        }
+
+        tr + tr td:first-child {
+            border-top: 1px solid
+                color-mix(in srgb, var(--color-border) 25%, transparent);
+        }
+    }
+}
+
 img {
     border-radius: 0.25rem;
 
@@ -93,7 +208,6 @@ img {
         width: 128px;
         height: 128px;
         flex-shrink: 0;
-        margin-top: 0.5rem;
 
         @media (max-width: 768px) {
             width: 100%;
@@ -109,11 +223,10 @@ img {
     width: 128px;
     height: 128px;
     flex-shrink: 0;
-    margin-top: 0.5rem;
     background: var(--color-bg-muted);
     border-radius: 0.25rem;
     text-decoration: none;
-    font-size: 2.5rem;
+    font-size: var(--text-h1);
     font-weight: 500;
     align-items: center;
     justify-content: center;
@@ -175,7 +288,7 @@ img.hero {
     background: var(--color-bg-inverted);
     color: var(--color-text-inverted);
     font-family: monospace;
-    font-size: 0.7em;
+    font-size: var(--text-label);
     font-weight: 400;
     border-radius: 0 0 0.25rem 0.25rem;
     opacity: 0;
@@ -201,7 +314,7 @@ img.hero {
 }
 
 .img-exif figcaption {
-    font-size: 0.9em;
+    font-size: var(--text-small);
     font-style: italic;
     text-align: center;
     margin-top: 0.5rem;
@@ -216,6 +329,14 @@ img.inline {
     float: right;
     margin: 0.5rem;
     width: 33%;
+}
+
+/* A class carries more weight than the rule that clears the space under a heading, so the
+   float kept its own top margin and the About page opened eight pixels lower than every
+   other page. The pair is named here to outweigh the class. */
+h1 + img.inline,
+h2 + img.inline {
+    margin-top: 0;
 }
 
 @keyframes header-shadow {
@@ -247,7 +368,7 @@ header {
 
     h1 {
         text-align: center;
-        font-size: clamp(1.2rem, 5vw, 2rem);
+        font-size: var(--text-title);
         word-break: break-word;
 
         a.home {
@@ -259,9 +380,21 @@ header {
         }
     }
 
+    /* The row of names is already marked as navigation by its place and its separators.
+       Seven underlines next to each other read as one ruled line. The underline comes back
+       under the pointer, so the target of a click stays visible. */
     nav {
         text-align: center;
-        margin-bottom: 1rem;
+        /* The line box of the row carries half of its leading under the last text, and that
+           space reads as a gap. The margin gives back only the rest, so the rule sits as far
+           from the names as the content below sits from the rule. The calculation follows
+           the line height instead of naming a number that a later change would falsify. */
+        margin-bottom: calc(1rem - (1lh - 1em) / 2);
+        word-spacing: clamp(0rem, calc(1.5vw - 0.4rem), 0.6rem);
+
+        a {
+            text-decoration: none;
+        }
     }
 }
 
@@ -286,9 +419,28 @@ a:hover {
     color: var(--color-link);
 }
 
+/* A title and a menu name change colour under the pointer and nothing else. The underline
+   is left to a link inside running text, where it is the only mark that sets the link
+   apart from the words around it. */
+h1 a,
+h2 a {
+    text-decoration: none;
+}
+
+/* A link that carries a picture and no words has nothing to underline. The rule would sit
+   under the image in the gap the line box leaves, in every state and under the pointer as
+   well. No link on this site holds a picture and a word at the same time. */
+a:has(img) {
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: none;
+    }
+}
+
 strong,
 b {
-    font-weight: 500;
+    font-weight: 700;
 }
 
 time {
@@ -296,20 +448,53 @@ time {
 }
 
 h1 {
-    font-weight: 500;
-
-    &:has(+ time) {
-        margin-bottom: 0;
-    }
+    font-family: var(--font-heading);
+    font-size: var(--text-h1);
+    font-weight: var(--weight-heading);
+    line-height: 1.15;
+    margin: 0 0 1rem;
 }
 
+/* The style guide sets a heading in Black and upper case. roadsurfer applies the case to
+   the second level and leaves a first-level heading in the case it was written in, so a
+   long post title does not become a wall of capitals. */
 h2 {
-    margin: 0;
-    font-weight: 500;
+    font-family: var(--font-heading);
+    font-size: var(--text-h2);
+    font-weight: var(--weight-heading);
+    line-height: 1.15;
+    text-transform: uppercase;
+    margin: 2rem 0 0.5rem;
+}
 
-    & + h2 {
-        margin-top: 1rem;
-    }
+/* A heading sets the distance to what stands under it, and that element adds none of its
+   own. Both margins would otherwise collapse to the larger one and the heading would sit
+   as far from its own text as from the paragraph above it. */
+h1 + *,
+h2 + * {
+    margin-top: 0;
+}
+
+/* Two headings that follow each other are not a heading and its text, so the rule above
+   does not apply and the second keeps a distance. */
+h2 + h2 {
+    margin-top: 1rem;
+}
+
+/* A title and the meta line under it are one unit and keep one distance, whether the title
+   opens an article as h1 or an entry of the list as h2. The list sets the measure: the
+   article stood two pixels apart against its ten and read tighter on the same pair. */
+h1:has(+ time),
+h2:has(+ time) {
+    margin-bottom: 0.5rem;
+}
+
+/* A heading that opens its box has nothing above it to keep a distance from. The post
+   title of a list entry sits next to its cover, and the space would push it off that
+   edge. */
+h1:first-child,
+h2:first-child {
+    margin-top: 0;
 }
 
 section {
@@ -357,7 +542,7 @@ section {
 
 #search {
     & input {
-        font-size: 1rem;
+        font-size: var(--text-small);
         padding: 0.5rem;
         border: 1px solid var(--color-border);
         border-radius: 0;
@@ -377,7 +562,7 @@ section {
     }
 
     & button {
-        font-size: 1rem;
+        font-size: var(--text-small);
         padding: 0.5rem 1rem;
         border: 1px solid var(--color-border);
         background: var(--color-bg);
@@ -437,7 +622,7 @@ section {
 
 .log-type,
 .log-rating {
-    font-size: 0.75rem;
+    font-size: var(--text-label);
     padding: 0.125rem 0.375rem;
     border-radius: 0.25rem;
     display: inline-block;
@@ -463,7 +648,7 @@ section {
             var(--color-rating-high) 25%,
             var(--color-bg)
         );
-        color: var(--color-rating-high);
+        color: var(--color-rating-high-text);
     }
 
     &.rating-7,
@@ -474,7 +659,7 @@ section {
             var(--color-rating-mid) 25%,
             var(--color-bg)
         );
-        color: var(--color-rating-mid);
+        color: var(--color-rating-mid-text);
     }
 
     &.rating-4,
@@ -486,7 +671,7 @@ section {
             var(--color-rating-low) 25%,
             var(--color-bg)
         );
-        color: var(--color-rating-low);
+        color: var(--color-rating-low-text);
     }
 }
 
@@ -548,7 +733,7 @@ pre {
 
 code {
     font-family: monospace;
-    font-size: 0.8rem;
+    font-size: var(--text-label);
     line-height: 1.6;
     color: var(--color-text);
     background: var(--color-bg-muted);
