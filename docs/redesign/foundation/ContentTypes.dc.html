@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: oklch(0.18 0.01 60); }
+    a:hover { color: oklch(0.18 0.01 60); text-decoration: underline; }
+  </style>
+</helmet>
+
+<div style="width: 1240px; box-sizing: border-box; background: oklch(0.985 0.004 85); font-family: 'Archivo', sans-serif; color: oklch(0.18 0.01 60); padding: 48px;">
+
+  <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 20px;">
+
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase;">Content types</div>
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 10px 0 6px;"></div>
+
+    <div style="grid-column: span 12; font-size: 17px; line-height: 1.65; max-width: 70ch; padding-bottom: 24px;">Three objects, and only one of them has variants. The site currently has one template for all of it, which is why a photograph with sixty words and an essay with three thousand render in the same frame.</div>
+
+    <sc-for list="{{objects}}" as="o" hint-placeholder-count="3">
+      <div style="grid-column: span 4; padding: 18px 0 20px; border-top: 1px solid oklch(0.18 0.01 60);">
+        <div style="display: flex; align-items: baseline; gap: 10px;">
+          <div style="font-size: 21px; font-weight: 500;">{{o.name}}</div>
+          <div style="font-size: 15px;">{{o.count}}</div>
+        </div>
+        <div style="font-size: 15.5px; line-height: 1.6; padding-top: 8px;">{{o.what}}</div>
+        <div style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-top: 12px;">Fields</div>
+        <div style="font-size: 15px; line-height: 1.55; padding-top: 4px;">{{o.fields}}</div>
+      </div>
+    </sc-for>
+
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 26px 0 6px;"></div>
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 12px;">A post has two kinds, and they need different pages</div>
+
+    <div style="grid-column: span 2; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-bottom: 6px;">Kind</div>
+    <div style="grid-column: span 1; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-bottom: 6px;">Posts</div>
+    <div style="grid-column: span 3; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-bottom: 6px;">What it is</div>
+    <div style="grid-column: span 3; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-bottom: 6px;">Needs</div>
+    <div style="grid-column: span 3; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-bottom: 6px;">Does not need</div>
+
+    <sc-for list="{{kinds}}" as="k" hint-placeholder-count="2">
+      <div style="grid-column: span 2; padding: 14px 0; border-top: 1px solid oklch(0.18 0.01 60); font-size: 18px; font-weight: 500;">{{k.name}}</div>
+      <div style="grid-column: span 1; padding: 14px 0; border-top: 1px solid oklch(0.18 0.01 60); font-size: 18px; font-weight: 500;">{{k.count}}</div>
+      <div style="grid-column: span 3; padding: 14px 0; border-top: 1px solid oklch(0.18 0.01 60); font-size: 15px; line-height: 1.55;">{{k.what}}</div>
+      <div style="grid-column: span 3; padding: 14px 0; border-top: 1px solid oklch(0.18 0.01 60); font-size: 15px; line-height: 1.55;">{{k.needs}}</div>
+      <div style="grid-column: span 3; padding: 14px 0; border-top: 1px solid oklch(0.18 0.01 60); font-size: 15px; line-height: 1.55;">{{k.avoid}}</div>
+    </sc-for>
+
+    <div style="grid-column: span 12; padding: 16px 0 0; font-size: 15.5px; line-height: 1.6; max-width: 86ch;">A trip day is a picture that belongs to a series. A release note is writing that belongs to a series. The series is a second fact about a post, never a third kind, which is what made the old taxonomy impossible to use.</div>
+
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 26px 0 6px;"></div>
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 12px;">Where the current site disagrees with its own content</div>
+
+    <sc-for list="{{mismatch}}" as="m" hint-placeholder-count="5">
+      <div style="grid-column: span 5; font-size: 16px; line-height: 1.55; padding: 11px 0; border-top: 1px solid oklch(0.88 0.008 75);">{{m.now}}</div>
+      <div style="grid-column: span 7; font-size: 16px; line-height: 1.55; padding: 11px 0; border-top: 1px solid oklch(0.88 0.008 75);">{{m.evidence}}</div>
+    </sc-for>
+
+  </div>
+
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      objects: [
+        { name: 'Post', count: '272',
+          what: 'Everything you publish with a date that has a page of its own. It comes in two kinds and may belong to a series.',
+          fields: 'date, title, kind, series, tags, images' },
+        { name: 'Log entry', count: '85',
+          what: 'A film, game or series with a rating out of ten. It has no page of its own and never needed one.',
+          fields: 'date, title, type, rating, link, one sentence' },
+        { name: 'Standing page', count: '5',
+          what: 'About, Projects, Blogroll, Photos, Search. They do not change with time and do not belong in an archive.',
+          fields: 'title, body' },
+      ],
+      kinds: [
+        { name: 'picture', count: '244',
+          what: 'One photograph or a run of them, with a caption. 154 hold exactly one image, the rest are days with more.',
+          needs: 'The image at full width. Date. Camera data. The next picture.',
+          avoid: 'Reading time, summary, thumbnail, a title that competes with the image.' },
+        { name: 'writing', count: '28',
+          what: 'An argument, a release note, a report. From 19 words to 3,017, median around 400.',
+          needs: 'A measure near 60 characters. Headings. Room between paragraphs.',
+          avoid: 'A square cover. Standing next to a photograph in one list.' },
+      ],
+      mismatch: [
+        { now: 'One template renders all 272 posts.',
+          evidence: 'Two kinds that differ by a factor of fifty in length and by everything in purpose.' },
+        { now: 'A 128 pixel square cover is required.',
+          evidence: '250 of 272 posts carry one, including writing where it is decoration. Seven bundles hold images and no cover, and fall out of the photo grid unnoticed.' },
+        { now: 'Reading time is printed on every post.',
+          evidence: '192 of 272 posts are under 200 words. On those it measures nothing.' },
+        { now: 'A series exists only as a naming convention.',
+          evidence: '70 posts belong to 17 runs, and membership is currently guessed from a slug prefix. One series publishes under two different prefixes.' },
+        { now: 'Log entries get a page each and a slot in the feed.',
+          evidence: '38 of 85 have an empty body. A rating and a link do not need a page.' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

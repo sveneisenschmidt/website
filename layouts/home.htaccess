@@ -1,0 +1,89 @@
+{{/* Erzeugt aus data/redirects.yaml. Nicht von Hand ändern — Einträge gehören in
+     die Datendatei, damit Pop und die URL-Prüfung dieselbe Liste sehen. */ -}}
+# Weiterleitungen
+#
+# RedirectMatch greift vor der Dateiauslieferung. Das ist hier wichtig: der Deploy
+# läuft ohne --delete, die alten Verzeichnisse liegen also noch auf dem Server und
+# würden sonst weiter ihren eigenen Inhalt ausliefern.
+<IfModule mod_alias.c>
+{{- range hugo.Data.redirects }}
+    RedirectMatch 301 ^{{ strings.TrimSuffix "/" .from }}/?$ {{ .to }}
+{{- end }}
+</IfModule>
+
+# Content-Type
+AddDefaultCharset UTF-8
+AddType text/html .html
+AddType text/css .css
+AddType application/javascript .js
+AddType application/json .json
+AddType application/xml .xml
+AddType text/xml .xml
+AddType image/svg+xml .svg
+AddType font/woff2 .woff2
+AddType font/woff .woff
+
+# Keep-Alive
+<IfModule mod_headers.c>
+    Header set Connection keep-alive
+</IfModule>
+
+# ETags deaktivieren (Cache-Control reicht)
+<IfModule mod_headers.c>
+    Header unset ETag
+</IfModule>
+FileETag None
+
+# Compression
+<IfModule mod_brotli.c>
+    AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/xml text/css text/javascript application/javascript application/json application/xml image/svg+xml
+</IfModule>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json application/xml image/svg+xml
+</IfModule>
+
+# Caching
+<IfModule mod_expires.c>
+    ExpiresActive On
+
+    # Fonts
+    ExpiresByType font/ttf "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+
+    # Images
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+
+    # CSS/JS
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+
+    # HTML
+    ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+<IfModule mod_headers.c>
+    # Fonts
+    <FilesMatch "\.(ttf|woff|woff2)$">
+        Header set Cache-Control "max-age=31536000, public, immutable"
+    </FilesMatch>
+
+    # Images
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico)$">
+        Header set Cache-Control "max-age=31536000, public, immutable"
+    </FilesMatch>
+
+    # CSS/JS
+    <FilesMatch "\.(css|js)$">
+        Header set Cache-Control "max-age=31536000, public, immutable"
+    </FilesMatch>
+</IfModule>

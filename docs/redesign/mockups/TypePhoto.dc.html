@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;900&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #222; }
+    a:hover { color: #00e; }
+  </style>
+</helmet>
+
+<div style="width: 800px; box-sizing: border-box; background: #fff; color: #222; font-family: 'Encode Sans', Arial, Helvetica, sans-serif; font-weight: 300; font-size: 18px; line-height: 1.6; padding: 16px;">
+
+  <div style="text-align: center; font-size: 24px; font-weight: 900; text-transform: uppercase; line-height: 1.05;">&larr; Back</div>
+  <div style="text-align: center; font-size: 16px; padding: 8px 0 16px; word-spacing: 10px;">Photos &middot; Writing &middot; Archive &middot; About</div>
+  <div style="border-top: 1px solid #222;"></div>
+
+  <div style="width: 100%; aspect-ratio: 3 / 2; background: #d8d8d8; border-radius: 4px; margin-top: 16px;"></div>
+
+  <div style="font-size: 32px; font-weight: 900; text-transform: uppercase; line-height: 1.05; margin: 16px 0 8px;">Reserve</div>
+  <div style="font-size: 16px; font-weight: 400;">September 6, 2026</div>
+
+  <p style="margin: 0; padding-top: 16px; font-size: 16px;">The reservoir sat lower than I have ever seen it. The far bank is normally under two metres of water, and the herons have started working the shallows where the boats used to turn.</p>
+
+  <div style="display: flex; gap: 32px; margin-top: 32px; padding-top: 16px; border-top: 1px solid #222;">
+    <sc-for list="{{exif}}" as="e" hint-placeholder-count="4">
+      <div>
+        <div style="font-size: 12.8px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.08em;">{{e.k}}</div>
+        <div style="font-size: 16px; font-weight: 400; padding-top: 4px;">{{e.v}}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; margin-top: 32px; padding-top: 16px; border-top: 1px solid #222; font-size: 16px; font-weight: 400;"><div>&larr; Paving</div><div>Pipes &rarr;</div></div>
+
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      exif: [
+        { k: 'Camera', v: 'Canon R5' },
+        { k: 'Lens', v: '840mm' },
+        { k: 'Aperture', v: 'f/8' },
+        { k: 'Exposure', v: '1/1600 · ISO 640' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

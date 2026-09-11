@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;900&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #222; }
+    a:hover { color: #00e; }
+  </style>
+</helmet>
+
+<div style="width: 100%; box-sizing: border-box; background: #fff; color: #222; font-family: 'Encode Sans', Arial, Helvetica, sans-serif; font-weight: 300; font-size: 18px; line-height: 1.6; padding: 32px;">
+
+  <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 32px;">
+
+    <div style="grid-column: span 6; font-size: 24px; font-weight: 900; text-transform: uppercase; line-height: 1.05;">Sven Eisenschmidt</div>
+    <div style="grid-column: span 6; display: flex; justify-content: flex-end; gap: 32px; font-size: 16px; font-weight: 400; align-items: baseline;">
+      <span>Photos</span><span>Writing</span><span>Archive</span><span>About</span>
+    </div>
+
+    <div style="grid-column: span 12; padding-top: 32px; font-size: 12.8px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.08em;">Archive</div>
+
+    <sc-for list="{{months}}" as="m" hint-placeholder-count="3">
+      <div style="grid-column: span 12; font-size: 24px; font-weight: 900; text-transform: uppercase; line-height: 1.05; padding: 32px 0 8px;">{{m.label}}</div>
+      <sc-for list="{{m.rows}}" as="r" hint-placeholder-count="5">
+        <div style="grid-column: span 1; font-size: 16px; font-weight: 400; padding: 12px 0; border-top: 1px solid #222;">{{r.day}}</div>
+        <div style="grid-column: span 8; font-size: 18px; padding: 12px 0; border-top: 1px solid #222;">{{r.title}}</div>
+        <div style="grid-column: span 3; font-size: 16px; font-weight: 400; padding: 12px 0; border-top: 1px solid #222; text-align: right;">{{r.kind}}</div>
+      </sc-for>
+    </sc-for>
+
+    <div style="grid-column: span 12; font-size: 16px; font-weight: 400; padding-top: 32px;">June 2026 &middot; May 2026 &middot; April 2026 &middot; March 2026 &middot; February 2026 &middot; January 2026</div>
+
+  </div>
+
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      months: [
+        { label: 'September 2026', rows: [
+          { day: '10', title: 'Hypo 1.18', kind: 'Note' },
+          { day: '10', title: 'Worktrees', kind: 'Note' },
+          { day: '10', title: 'Pipes', kind: 'Photo' },
+          { day: '06', title: 'Reserve', kind: 'Photo' },
+          { day: '05', title: 'Paving', kind: 'Photo' },
+        ]},
+        { label: 'August 2026', rows: [
+          { day: '31', title: 'Twilight', kind: 'Photo' },
+          { day: '24', title: 'Ambiguity', kind: 'Essay' },
+          { day: '19', title: 'Wild Horses', kind: 'Photo' },
+          { day: '11', title: 'Change as a Commodity', kind: 'Essay' },
+          { day: '01', title: 'The Odyssey', kind: 'Log, film, 9' },
+        ]},
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

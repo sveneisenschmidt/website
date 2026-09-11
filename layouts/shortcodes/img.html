@@ -3,59 +3,39 @@
 {{- $caption := .Get "caption" | default "" -}}
 {{- $photographer := .Get "photographer" | default "" -}}
 {{- $img := .Page.Resources.GetMatch $src -}}
-{{- if $img -}}
-{{- $resized := $img.Fit "2048x2048" -}}
-{{- $meta := $img.Meta -}}
-{{- $exif := $meta.Exif -}}
-<figure{{ if or $exif $photographer }} class="img-exif"{{ end }}>
-    <div class="img-wrapper">
-        <img
-            src="{{ $resized.RelPermalink }}"
-            alt="{{ $alt }}"
-            loading="lazy"
-            class="hero"
-        />
-        {{- $camera := "" -}}
-        {{- with $exif -}}
-        {{- $make := .Make -}}
-        {{- $model := .Model -}}
-        {{- if and $make $model (strings.HasPrefix $model $make) -}}
-            {{- $model = strings.TrimPrefix $make $model | strings.TrimLeft " " -}}
-        {{- end -}}
-        {{- $camera = $make -}}
-        {{- with $model -}}{{- $camera = printf "%s · %s" $make . -}}{{- end -}}
-        {{- end -}}
-        {{- if or $camera $photographer -}}
-        <span class="exif">
-            {{- $camera -}}
-            {{- with $exif -}}
-            {{- with .FocalLength }} · {{ lang.FormatNumber 0 . }}mm{{ end -}}
-            {{- with .FNumber }} · ƒ/{{ lang.FormatNumber 1 . }}{{ end -}}
-            {{- with .ExposureTime -}}
-              {{- $str := printf "%v" . -}}
-              {{- if strings.Contains $str "/" -}}
-                {{- $parts := split $str "/" -}}
-                {{- $num := float (index $parts 0) -}}
-                {{- $den := float (index $parts 1) -}}
-                {{- $val := div $num $den -}}
-                {{- if lt $val 1.0 }} · 1/{{ printf "%.0f" (div 1.0 $val) }}s
-                {{- else }} · {{ lang.FormatNumber 1 $val }}s{{ end -}}
-              {{- else }} · {{ . }}s{{ end -}}
-            {{- end -}}
-            {{- $iso := .ISO -}}
-            {{- if not $iso }}{{ $iso = .ISOSpeedRatings }}{{ end -}}
-            {{- if not $iso }}{{ $iso = .RecommendedExposureIndex }}{{ end -}}
-            {{- if not $iso }}{{ $iso = .ISOSpeed }}{{ end -}}
-            {{- if not $iso }}{{ $iso = .PhotographicSensitivity }}{{ end -}}
-            {{- if reflect.IsSlice $iso }}{{ if gt (len $iso) 0 }}{{ $iso = index $iso 0 }}{{ end }}{{ end -}}
-            {{- with $iso }} · ISO {{ . }}{{ end -}}
-            {{- end -}}
-            {{- with $photographer }}{{ if $camera }} · {{ end }}📷 {{ . }}{{ end -}}
-        </span>
-        {{- end -}}
-    </div>
-    {{- with $caption -}}
-    <figcaption>{{ . | markdownify }}</figcaption>
-    {{- end -}}
+
+{{- if not $img -}}
+    {{- errorf "img: %q liegt nicht im Bundle von %s" $src .Page.File.Path -}}
+{{- else -}}
+
+{{/* Dieselbe Semantik wie der Aufmacher auf der Startseite: ein Bild mit der Klasse
+     `frame-picture`, gestylt von derselben Regel. Kein Wrapper, keine eigene Klasse
+     für die Fotografie, keine für die Kameradaten — `img-wrapper`, `hero` und
+     `img-exif` stammten aus dem alten Stylesheet und wurden von nichts gelesen. */}}
+
+{{- $wide := $img.Resize "1600x webp q80" -}}
+{{- $mid := $img.Resize "1000x webp q80" -}}
+{{- $narrow := $img.Resize "600x webp q80" -}}
+
+<figure>
+    {{/* Der Link führt auf die Datei, die aus der Kamera kam — nicht auf eine weitere
+         Fassung davon. Wer auf ein Bild klickt, will es gross sehen, und grösser als
+         das Original gibt es nicht. Die Originale liegen ohnehin schon im Verzeichnis;
+         der Link kostet keine Datei. */}}
+    <a class="frame" href="{{ $img.RelPermalink }}">
+    <img
+        class="frame-picture"
+        src="{{ $wide.RelPermalink }}"
+        srcset="{{ $narrow.RelPermalink }} 600w, {{ $mid.RelPermalink }} 1000w, {{ $wide.RelPermalink }} 1600w"
+        sizes="(max-width: 900px) calc(100vw - 2rem), (max-width: 90rem) 63vw, 907px"
+        width="{{ $wide.Width }}"
+        height="{{ $wide.Height }}"
+        alt="{{ $alt }}"
+        loading="lazy"
+        decoding="async"
+    />
+    </a>
+    {{- partial "exif.html" (dict "resource" $img "photographer" $photographer "caption" $caption) -}}
 </figure>
+
 {{- end -}}

@@ -1,0 +1,177 @@
+{{/* Die Startseite.
+
+     Links die ausgesuchten Bilder, rechts alles in zeitlicher Reihenfolge.
+
+     Erwartet: (dict "page" .) */}}
+
+{{ $page := .page }}
+{{ with $page }}
+
+
+{{/* Zwei Ströme.
+
+     Links die Picks: Beiträge mit Cover, die ausgesucht wurden. Nicht alles mit einem
+     Bild landet dort — `cover` sagt nur, dass es ein Bild gibt, `pick` sagt, dass es
+     gezeigt werden soll. Zwei Aussagen, zwei Felder.
+
+     Rechts alles, in zeitlicher Reihenfolge, ungefiltert. Picks stehen dort mit, an
+     ihrem Platz in der Zeit — sie sind keine eigene Kategorie, sie sind hervorgehoben.
+
+     Das zweite `where` auf `cover` ist kein Zierrat: `!= nil` trifft auch den leeren
+     String, und ein Beitrag mit `cover = ''` würde sonst zum Aufmacher, mit Titel und
+     Datum und ohne Bild. */}}
+{{ $posts := where site.RegularPages "Section" "in" (slice "photos" "trips" "notes" "essays") }}
+{{ $withCover := where (where $posts "Params.cover" "!=" nil) "Params.cover" "!=" "" }}
+{{ $picks := where $withCover "Params.pick" true }}
+
+{{ $lead := index $picks 0 }}
+{{ $tiles := first 12 (after 1 $picks) }}
+{{ $all := first 25 $posts }}
+
+{{/* Fünfundzwanzig, nicht alles. Die Spalte rollt innen und zeigt immer zehn Zeilen
+     — wer weiter unten ankommt, sucht und blättert nicht mehr, und dafür gibt es das
+     Register. Zweihundertsiebzig Zeilen im HTML, von denen niemand die letzten
+     zweihundert liest, kosten jede Seite Gewicht.
+
+     Wie viele es sind, steht im Namen der Spalte und nirgends sonst. Oben, wo es eine
+     Ansage ist — nicht unten, wo es eine Entschuldigung wäre. Die Zahl wird gezählt und
+     nicht hingeschrieben: stünden hier je zwanzig Beiträge, müsste sie zwanzig sagen.
+
+     Der Weg ins Register steht in derselben Zeile und rollt nicht mit weg. Eine
+     zusätzliche Zeile am Ende der Liste wäre derselbe Link ein zweites Mal, an der
+     Stelle, an der ihn am wenigsten jemand sucht. */}}
+
+<section class="pictures" aria-label="Pictures">
+    {{/* Zwei Überschriften und nicht eine: der Aufmacher ist ein anderer Pick als die
+         Kacheln darunter, und ohne ein Wort dazwischen liest sich die Spalte als ein
+         Bild mit seinen Beilagen. Zwei Gruppen, zwei Namen, derselbe Rang.
+
+         Der Weg aus dieser Spalte steht am anderen Ende der ersten Titelzeile, wie
+         beim Strom nebenan. Nicht unten als Fusszeile: dann endete die eine Spalte mit
+         einem Bild und die andere mit einer Linie, und die zwei Ströme hörten nicht
+         mehr auf derselben Höhe auf.
+
+         Ins Register, nicht auf /photos/: dort stünden wieder dieselben Picks und
+         derselbe Strom. Wer hier klickt, will alle Fotos sehen. */}}
+    <h2 class="stream-title stream-opening">Featured photo
+        <a class="far" href="/archive/photos/">All photos</a>
+    </h2>
+
+    {{ with $lead }}
+    {{ $post := . }}
+    <article class="picture">
+        <h3><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h3>
+        <p class="metadata">
+            <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+        </p>
+        {{ with .Resources.GetMatch .Params.cover }}
+        {{ $wide := .Resize "1600x webp q80" }}
+        {{ $mid := .Resize "1000x webp q80" }}
+        {{ $narrow := .Resize "600x webp q80" }}
+        {{/* Die Überschrift darüber ist schon ein Link auf denselben Beitrag. Dieser
+             hier ist ein zweiter Weg dorthin, deshalb steht er nicht in der
+             Tab-Reihenfolge und nicht im Baum, und das Bild darin trägt kein alt. */}}
+        <a href="{{ $post.RelPermalink }}" class="frame" tabindex="-1" aria-hidden="true">
+            <img
+                class="frame-picture"
+                src="{{ $wide.RelPermalink }}"
+                srcset="{{ $narrow.RelPermalink }} 600w, {{ $mid.RelPermalink }} 1000w, {{ $wide.RelPermalink }} 1600w"
+                sizes="(max-width: 900px) calc(100vw - 2rem), (max-width: 90rem) 63vw, 907px"
+                width="{{ $wide.Width }}"
+                height="{{ $wide.Height }}"
+                alt=""
+                fetchpriority="high"
+                decoding="async"
+            />
+        </a>
+        {{ end }}
+    </article>
+    {{ end }}
+
+    {{ with $tiles }}
+    <h2 class="stream-title">Previously featured</h2>
+    <ul class="tiles" role="list">
+        {{ range . }}
+        <li>
+            <a href="{{ .RelPermalink }}" aria-label="{{ .LinkTitle }}">
+                {{ with .Resources.GetMatch .Params.cover }}
+                {{/* Smart statt Center: Hugos Schnitt liest Kanten, Haut und
+                     Sättigung und behält das Motiv. Ein Vogel am oberen Bildrand
+                     überlebt ihn, ein Mittenschnitt köpft ihn. */}}
+                {{ $large := .Fill "480x480 Smart webp q80" }}
+                {{ $small := .Fill "240x240 Smart webp q80" }}
+                <img
+                    class="tile"
+                    src="{{ $large.RelPermalink }}"
+                    srcset="{{ $small.RelPermalink }} 240w, {{ $large.RelPermalink }} 480w"
+                    sizes="(max-width: 900px) 25vw, 16vw"
+                    width="480"
+                    height="480"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                />
+                {{ end }}
+            </a>
+        </li>
+        {{ end }}
+    </ul>
+    {{ end }}
+
+</section>
+
+<section class="writing" aria-label="Posts">
+    {{/* Siehe den Kommentar oben in home.css: dieses Element ist es, das die Spalte
+         ihre Höhe von der Bildspalte nehmen lässt, statt zu ihr beizutragen. */}}
+    <div class="writing-inner">
+        {{/* Dieselbe Zeile wie über der Bildspalte: ein Name links, die Wege nach
+             draussen rechts.
+
+             Keine Filterzeile mehr. Nach Typ suchen heisst suchen, und dafür gibt es
+             das Register — vorne stand der Filter über einer Liste von
+             fünfundzwanzig, wo er kaum etwas zu tun hatte. */}}
+        <h2 class="stream-title stream-opening">Recent posts <span class="stream-count">{{ len $all }}</span>
+            <span class="far">
+                <a href="/archive/">Archive</a>
+                <a href="/about/">About</a>
+                <a href="/index.xml">RSS</a>
+            </span>
+        </h2>
+
+        <div class="writing-list">
+            {{ with index $all 0 }}
+            <article class="writing-lead{{ if .Params.cover }} has-thumb{{ end }}" data-type="{{ .Params.type }}">
+                <div>
+                    <h3><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h3>
+                    <p class="metadata">
+                        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+                        {{ with partialCached "article-type.html" (dict "page" .) .RelPermalink }}&middot; {{ . }}{{ end }}
+                    </p>
+                </div>
+                {{ partial "thumb.html" (dict "page" . "edge" 48) }}
+                <p class="excerpt">{{ .Summary | plainify }}</p>
+            </article>
+            {{ end }}
+
+            {{ range after 1 $all }}
+            <article class="writing-item{{ if .Params.cover }} has-thumb{{ end }}" data-type="{{ .Params.type }}">
+                {{/* Die Miniatur trägt die Angabe, die der Zeile sonst fehlt: bei
+                     einem Foto sagt der Titel nichts über das Bild. Sie steht rechts
+                     und zurückgenommen — der Titel bleibt der Einstieg, das Bild ist
+                     die Bestätigung. */}}
+                <div>
+                    <h3><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h3>
+                    <p class="metadata">
+                        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+                        {{ with partialCached "article-type.html" (dict "page" .) .RelPermalink }}&middot; {{ . }}{{ end }}
+                    </p>
+                </div>
+                {{ partial "thumb.html" (dict "page" . "edge" 48) }}
+            </article>
+            {{ end }}
+
+        </div>
+    </div>
+</section>
+
+{{ end }}

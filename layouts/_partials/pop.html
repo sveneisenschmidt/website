@@ -1,29 +1,35 @@
-{{ $isPost := and (eq .Kind "page") (eq .Section "posts") }} {{ if $isPost }}
+{{/* Der Besuchszähler.
 
-<div id="pop-wrapper">
-    <a href="mailto:{{ .Site.Params.email }}?subject=Feedback on {{ .Title }}">
-        Email me</a
-    >
-    or leave a reaction: <span id="pop"></span>
-</div>
-<hr />
-{{ end }}
-<script src="https://pop.eisenschmidt.website/pop.min.js" defer></script>
+     Läuft auf jeder Seite und zeigt nichts. Die Zahl steht in der Datenbank, nicht auf
+     der Seite — wer wissen will, wie oft etwas gelesen wurde, schaut nach; ein Zähler
+     im Fliesstext ist eine Behauptung über Wichtigkeit.
+
+     Nur der Zähler. Reaktionen sind vertagt: pop baut seine Schaltfläche selbst und
+     schreibt ein Emoji als Textknoten hinein, und die Seite kennt keine Piktogramme.
+     Das gehört in pop gelöst, nicht hier umgangen. Deshalb steht hier weder `el` noch
+     `emojis` noch `renderReactions` — für das Zählen braucht pop kein Markup, und
+     damit ist seine Bibliothek genau das richtige Werkzeug.
+
+     Zwei Riegel gegen das, was schon passiert ist: 1175 der 7468 gezählten Besuche
+     kamen von Entwicklungsservern, weil die pageId die volle Adresse ist.
+
+     Erstens entsteht das hier nur im Produktionsbuild — der Entwicklungsserver
+     schreibt die BaseURL auf seine eigene Adresse um, ein Vergleich darauf hätte beim
+     Aufruf über die LAN-Adresse gepasst.
+
+     Zweitens prüft das Skript den Hostnamen, für den Fall, dass ein Produktionsbuild
+     einmal woanders ausgeliefert wird. */}}
+
+{{ if hugo.IsProduction }}
+<script src="{{ site.Params.popScript | default "https://pop.eisenschmidt.website/pop.min.js" }}" defer></script>
 <script defer>
-    document.addEventListener("DOMContentLoaded", function() {
-        {{ $emojis := slice "❤️" }}
-        {{ if and $isPost .Params.emojis }}
-            {{ $emojis = append .Params.emojis $emojis  }}
-        {{ end }}
+    document.addEventListener("DOMContentLoaded", function () {
+        if (window.location.hostname !== {{ (urls.Parse site.BaseURL).Hostname }}) return;
         Pop.init({
-            endpoint: "https://pop.eisenschmidt.website/api",
-            pageId: {{ .Permalink }},
-        {{ if $isPost }}
-            el: "#pop",
-            emojis: {{ $emojis | jsonify | safeJS }},
-            renderReactions: true,
-        {{ end }}
+            endpoint: {{ site.Params.popEndpoint | default "https://pop.eisenschmidt.website/api" }},
+            pageId: {{ partial "page-id.html" $ }},
             trackVisits: true
         });
     });
 </script>
+{{ end }}

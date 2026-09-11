@@ -1,6 +1,13 @@
-{{ if .IsHome }}
-<h1><a href="{{ "/" | relURL }}" class="home">{{ site.Params.siteHeading | default site.Title }}</a></h1>
-{{ else }}
-<h1><a href="{{ "/" | relURL }}">&larr; Back</a></h1>
-{{ end }}
-{{ partial "menu.html" (dict "menuID" "main" "page" .) }}
+{{/* Der Kopf der Seite: der Name, sonst nichts.
+
+     Eine Navigation steht hier nicht mehr, und auch der Weg zurück nicht: der steht
+     eine Ebene tiefer, in der Zeile, die sagt, was diese Seite ist. Oben ganz rechts
+     stand er 1408 Pixel von allem entfernt, worauf er sich bezog. */}}
+
+<header class="site-header">
+    {{ if .IsHome }}
+    <h1 class="masthead"><a href="{{ "/" | relURL }}">{{ site.Params.siteHeading | default site.Title }}</a></h1>
+    {{ else }}
+    <p class="masthead"><a href="{{ "/" | relURL }}">{{ site.Params.siteHeading | default site.Title }}</a></p>
+    {{ end }}
+</header>

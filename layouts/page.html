@@ -1,12 +1,61 @@
 {{ define "main" }}
-<h1 data-pagefind-meta="title">{{ .Title }}</h1>
 
-{{ if ne .Params.showDate false }} {{ $dateMachine := .Date | time.Format
-"2006-01-02T15:04:05-07:00" }} {{ $dateHuman := .Date | time.Format ":date_long"
-}} {{ $visits := partial "visits.html" . | int }}
-<time datetime="{{ $dateMachine }}"
-    >{{ $dateHuman }} · {{ .ReadingTime }} min read{{ if $visits }} · {{ $visits
-    }} visit{{ if ne $visits 1 }}s{{ end }}{{ end }}</time
->
-{{ end }} {{ .Content }} {{ partial "terms.html" (dict "taxonomy" "topics"
-"page" .) }} {{ end }}
+{{/* Beitrag oder Seite. Ein Beitrag liegt in einer der vier Sektionen; alles andere —
+     About und was noch kommt — ist eine Seite und trägt weder Typ noch Datum. */}}
+{{ $isPost := in (slice "photos" "trips" "notes" "essays") .Section }}
+
+{{/* Eine Vorlage für alle vier Typen. Der Typ entscheidet nicht, wie die Seite
+     aussieht, sondern nur, welche Angaben es zu zeigen gibt: ein Foto hat
+     Kameradaten, ein Reisetag seine Stelle in der Folge, ein Essay eine Lesezeit. */}}
+
+<article class="article">
+    {{/* Steht da, wo auf der Startseite der Name der Bildspalte steht, und trägt
+         denselben Grad: die Seite sagt zuerst, was sie ist.
+
+         Ist der Beitrag ein Pick, sagt sie das statt des Typs — vorne steht er unter
+         genau diesem Wort, und wer von dort kommt, findet es hier wieder. „Featured
+         photo" schliesst „photo" ohnehin ein.
+
+         Eine Seite hat keinen Typ und sagt im Frontmatter selbst, was sie ist. About
+         sagt „Personal blog": wer dort ankommt, fragt genau das, und der Name im Kopf
+         beantwortet es nicht. Ohne `label` bleibt die Zeile leer und trägt nur den Weg
+         zurück. */}}
+    <p class="stream-title stream-opening" data-pagefind-ignore>
+        {{- if $isPost }}{{ if .Params.pick }}Featured photo{{ else }}{{ .Params.type }}{{ end }}{{ else }}{{ .Params.label }}{{ end }}
+        <a class="far" href="{{ "/" | relURL }}">Back</a>
+    </p>
+
+    <h1 data-pagefind-meta="title">{{ .Title }}</h1>
+
+    {{/* Ein Beitrag trägt das Datum, an dem er entstanden ist — er ist ein Eintrag in
+         einer Zeitreihe, und wann er geschrieben wurde, gehört zu ihm.
+
+         Eine Seite wie About ist keine Zeitreihe. Sie gilt jetzt, und das einzig
+         Interessante daran ist, wie alt das „jetzt" ist. Deshalb der Stand statt des
+         Entstehungsdatums — `lastmod` in der Frontmatter, von Hand gesetzt. Ohne das
+         Feld fällt Hugo auf `date` zurück, also auf den Tag, an dem die Seite entstand.
+
+         Titel und Datum stehen schon als Überschrift und Zeitangabe da. Im
+         Suchausschnitt würden sie sich nur wiederholen. */}}
+    <p class="metadata" data-pagefind-ignore>
+        {{- if $isPost }}
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+        {{ with partial "article-type.html" (dict "page" . "type" false) }}&middot; {{ . }}{{ end }}
+        {{- else }}
+        Last updated: <time datetime="{{ .Lastmod.Format "2006-01-02" }}">{{ .Lastmod.Format "January 2, 2006" }}</time>
+        {{- end }}
+    </p>
+
+    <div class="body">
+        {{ .Content }}
+    </div>
+
+    {{/* Ein Weg zu mir, unter einem Strich. Eine Reaktion stand hier auch schon —
+         vertagt, bis pop eine Beschriftung ohne Emoji kann. */}}
+    <p class="post-footer" data-pagefind-ignore>
+        <a href="mailto:{{ site.Params.email }}?subject={{ printf "Re: %s" .Title | urlquery }}">Email me</a>
+    </p>
+
+</article>
+
+{{ end }}

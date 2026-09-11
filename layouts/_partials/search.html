@@ -43,7 +43,12 @@
                             escapeHtml(data.url) +
                             '">' +
                             escapeHtml(data.meta.title) +
-                            "</a></h2>",
+                            "</a></h2>" +
+                            // Pagefind escapes the surrounding text itself and adds only
+                            // <mark> around the match, so the excerpt goes in as markup.
+                            '<p class="search-excerpt">' +
+                            data.excerpt +
+                            "</p>",
                     );
                 }
 

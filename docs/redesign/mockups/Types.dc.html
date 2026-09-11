@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: oklch(0.18 0.01 60); }
+    a:hover { color: oklch(0.18 0.01 60); text-decoration: underline; }
+  </style>
+</helmet>
+
+<div style="width: 1240px; box-sizing: border-box; background: oklch(0.985 0.004 85); font-family: 'Archivo', sans-serif; color: oklch(0.18 0.01 60); padding: 48px;">
+
+  <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 20px;">
+
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase;">Article types</div>
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 10px 0 6px;"></div>
+
+    <div style="grid-column: span 12; font-size: 17px; line-height: 1.65; max-width: 72ch; padding-bottom: 22px;">Four types, counted from the 272 posts today. The boundaries are not a matter of taste: each type needs something the one above it does not, and that need is what defines it.</div>
+
+    <div style="grid-column: span 2; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-bottom: 6px;">Type</div>
+    <div style="grid-column: span 1; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-bottom: 6px;">Posts</div>
+    <div style="grid-column: span 3; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-bottom: 6px;">Definition</div>
+    <div style="grid-column: span 3; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-bottom: 6px;">Needs, and nothing above it has</div>
+    <div style="grid-column: span 3; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-bottom: 6px;">Example</div>
+
+    <sc-for list="{{types}}" as="t" hint-placeholder-count="4">
+      <div style="grid-column: span 2; padding: 16px 0; border-top: 1px solid oklch(0.18 0.01 60); font-size: 19px; font-weight: 500;">{{t.name}}</div>
+      <div style="grid-column: span 1; padding: 16px 0; border-top: 1px solid oklch(0.18 0.01 60); font-size: 19px; font-weight: 500;">{{t.n}}</div>
+      <div style="grid-column: span 3; padding: 16px 0; border-top: 1px solid oklch(0.18 0.01 60); font-size: 15px; line-height: 1.55;">{{t.def}}</div>
+      <div style="grid-column: span 3; padding: 16px 0; border-top: 1px solid oklch(0.18 0.01 60); font-size: 15px; line-height: 1.55;">{{t.needs}}</div>
+      <div style="grid-column: span 3; padding: 16px 0; border-top: 1px solid oklch(0.18 0.01 60); font-size: 15px; line-height: 1.55;">{{t.ex}}</div>
+    </sc-for>
+
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 26px 0 6px;"></div>
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 12px;">What each type does with the same elements</div>
+
+    <div style="grid-column: span 3; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;">Element</div>
+    <sc-for list="{{cols}}" as="c" hint-placeholder-count="4">
+      <div style="grid-column: span 2; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;">{{c}}</div>
+    </sc-for>
+    <div style="grid-column: span 1;"></div>
+
+    <sc-for list="{{matrix}}" as="m" hint-placeholder-count="8">
+      <div style="grid-column: span 3; padding: 10px 0; border-top: 1px solid oklch(0.88 0.008 75); font-size: 15px; font-weight: 500;">{{m.el}}</div>
+      <sc-for list="{{m.cells}}" as="cell" hint-placeholder-count="4">
+        <div style="grid-column: span 2; padding: 10px 0; border-top: 1px solid oklch(0.88 0.008 75); font-size: 15px; line-height: 1.5;">{{cell}}</div>
+      </sc-for>
+      <div style="grid-column: span 1; border-top: 1px solid oklch(0.88 0.008 75);"></div>
+    </sc-for>
+
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 26px 0 6px;"></div>
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 10px;">Two facts that are not types</div>
+    <sc-for list="{{notatype}}" as="n" hint-placeholder-count="2">
+      <div style="grid-column: span 12; font-size: 16px; line-height: 1.6; padding: 11px 0; border-top: 1px solid oklch(0.88 0.008 75);">{{n}}</div>
+    </sc-for>
+
+  </div>
+
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      types: [
+        { name: 'Photo', n: '176',
+          def: 'One photograph and a caption under 200 words. The picture is the post.',
+          needs: 'The picture at the full column width, and camera data.',
+          ex: 'Reserve, 67 words, one image' },
+        { name: 'Gallery', n: '63',
+          def: 'A day with four or more photographs, or one that carries a route map.',
+          needs: 'A sequence rather than a single image, and a route where there is one.',
+          ex: 'England, Day 3, 19 images, 60 words' },
+        { name: 'Note', n: '24',
+          def: 'Short writing. A release note, a link, a remark. Under 700 words, no sections.',
+          needs: 'A reading measure instead of the full column.',
+          ex: 'Hypo 1.18, 468 words' },
+        { name: 'Essay', n: '9',
+          def: 'Long writing with sections. Over 700 words or carrying its own headings.',
+          needs: 'Section headings, and room to breathe between them.',
+          ex: 'Change as a Commodity, 3,017 words' },
+      ],
+      cols: ['Photo', 'Gallery', 'Note', 'Essay'],
+      matrix: [
+        { el: 'Title', cells: ['upper case', 'upper case', 'upper case', 'upper case'] },
+        { el: 'Date', cells: ['yes', 'yes', 'yes', 'yes'] },
+        { el: 'Reading time', cells: ['no', 'no', 'no', 'yes'] },
+        { el: 'Image width', cells: ['full column', 'full column', 'none', 'none'] },
+        { el: 'Text measure', cells: ['full column', 'full column', '60 characters', '60 characters'] },
+        { el: 'Camera data', cells: ['yes', 'on each image', 'no', 'no'] },
+        { el: 'Section headings', cells: ['no', 'no', 'no', 'yes'] },
+        { el: 'Map', cells: ['no', 'where there is one', 'no', 'no'] },
+      ],
+      notatype: [
+        'A series is not a type. A trip day is a Gallery that belongs to summer-2026, and a release note is a Note that belongs to hypo. 70 posts belong to 17 series.',
+        'A tag is not a type. family, software, work, games, ai, cycling, music, books describe subject and drive no layout at all. 94 posts carry one.',
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

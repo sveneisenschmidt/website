@@ -1,0 +1,158 @@
+/* Das Register.
+   ================================================================================
+
+   Alles, was es gibt, nach Jahr und Monat. Eine Zeile je Beitrag: die Tageszahl und
+   der Titel, sonst nichts.
+
+   Warum es nicht aussieht wie der Strom auf der Startseite
+   -------------------------------------------------------
+   Der Strom ist zum Lesen da und zeigt zehn Zeilen auf einmal. Das Register ist zum
+   Finden da und zeigt einen ganzen Monat auf einmal. Deshalb fällt hier weg, was dort
+   richtig ist: die Miniatur, der Anrisstext, die Versalien in Titelgrösse. Was bleibt,
+   ist der Name und wann er entstand.
+
+   Was bleibt, ist die Miniatur: bei einem Foto sagt der Titel nichts über das Bild,
+   und das gilt im Register wie im Strom. Sie kommt aus demselben Partial und liest
+   dieselben Regeln in page.css.
+
+   Wie viele nebeneinander stehen
+   ------------------------------
+   Keine feste Zahl und keine Haltepunkte. Das Register nennt nur, wie schmal eine
+   Spur werden darf, und `auto-fit` teilt die Breite: vier auf einem grossen Schirm,
+   drei auf einem kleineren, zwei auf einem Tablet, eine auf dem Telefon — ohne dass
+   irgendwo eine Zahl steht. Dasselbe Muster wie bei den Kameradaten in exif.css.
+
+   Das `100%` in der Untergrenze ist kein Entwurfswert: es hindert die Untergrenze
+   daran, breiter als die Seite zu sein. Das ist die Seite, keine Entscheidung.
+
+   Jeder Wert kommt aus der semantischen Ebene in tokens.css.
+*/
+
+/* Dieselbe Spalte wie der Bildstrom vorne und der Text einer Beitragsseite. Eine
+   Rolle, eine Marke: was auf dieser Seite der Hauptinhalt ist, steht überall gleich
+   breit. */
+.archive {
+    grid-column: span var(--span-main);
+}
+
+/* --- Das Jahr -----------------------------------------------------------------
+   Trägt .stream-title nicht: ein Jahr ist keine Sektion, sondern der Aufmacher eines
+   Blocks. Es steht so gross da wie der Titel eines Beitrags, weil es hier dasselbe
+   tut — es benennt, was darunter kommt. */
+
+.archive-year {
+    padding-top: var(--space-month);
+    font-size: var(--text-title);
+    text-transform: uppercase;
+}
+
+/* Über dem ersten Jahr steht die Filterzeile, und die trägt ihren Abstand nach unten
+   schon selbst: sie ist der Name dieser Sektion, das Jahr ist deren Inhalt.
+
+   `first-of-type` und nicht `first-child` — erstes Kind ist die Filterzeile. */
+.archive-year:first-of-type {
+    padding-top: 0;
+}
+
+/* --- Der Monat ----------------------------------------------------------------
+   Name links, Anzahl rechts, eine Linie darunter. Dieselbe Zeile wie die Fusszeile
+   eines Stroms, nur andersherum: dort schliesst die Linie ab, hier eröffnet sie. */
+
+.archive-month {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-top: var(--space-month);
+    padding-bottom: var(--space-rule);
+    border-bottom: var(--rule-hairline) solid var(--color-rule);
+}
+
+/* --- Die Zeilen ---------------------------------------------------------------
+   Ein Monat ist ein Raster, kein Stapel: vier Beiträge stehen nebeneinander, und die
+   Zeilen laufen in Leserichtung. */
+
+.archive-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(var(--width-index), 100%), 1fr));
+    gap: var(--space-index-row) var(--space-index-column);
+    padding: 0;
+    padding-top: var(--space-title);
+    list-style: none;
+
+    /* Jede Zeile ist so hoch wie eine Miniatur, ob sie eine trägt oder nicht: sonst
+       fällt die eine Zeile, in der beide Beiträge ohne Cover stehen, aus dem Takt.
+       `minmax` und keine feste Höhe — auf dem Telefon nimmt ein langer Titel drei
+       Zeilen, und die müssen Platz haben. */
+    grid-auto-rows: minmax(var(--size-thumb), auto);
+}
+
+/* Die Spur für die Miniatur steht immer, auch wo keine ist. Sie gehört dem Monat und
+   nicht dem einzelnen Beitrag: sonst liefe der Titel der zweiundzwanzig Beiträge ohne
+   Cover breiter als der aller anderen, und die Spalte bekäme einen Ausschlag. */
+.archive-item {
+    display: grid;
+    grid-template-columns: var(--width-day) 1fr var(--size-thumb);
+    gap: var(--space-day);
+
+    /* Mittig und nicht oben: die Zeile ist so hoch wie die Miniatur, und ein
+       einzeiliger Titel stünde sonst an deren Oberkante statt neben ihr. */
+    align-items: center;
+}
+
+.archive-day {
+    font-size: var(--text-day);
+    font-weight: var(--weight-metadata);
+}
+
+/* Eigene Klasse und nicht `.archive-item a`: die Miniatur ist auch ein Link, und die
+   soll von diesen Regeln nichts abbekommen. */
+.archive-title {
+    font-size: var(--text-index);
+    font-weight: var(--weight-title);
+    line-height: var(--leading-caps);
+    text-transform: uppercase;
+}
+
+/* --- Schmale Fenster ----------------------------------------------------------
+   Nur die Spaltenbreite. Die Spaltenzahl steht hier nicht — auto-fit hat sie schon
+   entschieden.
+
+   Nichts bleibt hier stehen. Ein mitlaufender Monatsname wäre bequem und wäre ein
+   Element, das über dem Inhalt liegt statt in ihm: er verdeckt beim Rollen die Zeile
+   darunter, und auf einem kurzen Fenster nimmt er von dem wenigen, was man sieht.
+   Die Seite hat nichts, was schwebt.
+
+   Die Breite ist ausgeschrieben, weil eine Media Query keine Custom Property lesen
+   kann — dieselbe Stelle wie in home.css. */
+
+@media (max-width: 900px) {
+    .archive {
+        grid-column: auto;
+    }
+}
+
+/* --- Der Bogen: wenn das Register nur Fotos zeigt ----------------------------
+   Auf /archive/photos/ ist jede Zeile ein Bild, und dann ist eine Zeile die falsche
+   Form. Der Titel eines Fotos ist meistens ein Wort, das über das Bild nichts sagt —
+   „Pipes", „Scarce" —, und der Tag steht schon im Monatsnamen darüber. Übrig bleibt
+   das Bild, und Bilder stellt man nebeneinander.
+
+   Wie bei den Zeilen keine feste Anzahl: der Bogen nennt nur, wie schmal eine Kachel
+   werden darf. Fünf über die Hauptspalte, drei auf einem schmalen Fenster, zwei auf
+   dem Telefon — überall etwa hundertsiebzig Pixel. */
+
+.archive-sheet {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(var(--width-tile), 100%), 1fr));
+    gap: var(--space-tile);
+    padding: 0;
+    padding-top: var(--space-title);
+    list-style: none;
+}
+
+/* Ein Link ist eine Inline-Box, das Bild darin ein Block — sonst bleibt unter jeder
+   Kachel die Zeilenluft einer Textzeile stehen. Dieselbe Regel wie .frame, nur ohne
+   dessen Rolle: hier steht kein Bild in voller Breite, sondern eine Kachel im Raster. */
+.archive-sheet a {
+    display: block;
+}

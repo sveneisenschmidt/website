@@ -1,0 +1,97 @@
+{{ define "main" }}
+
+{{/* Das Register.
+
+     Fünf Adressen wie vorne — /archive/, /archive/photos/, /archive/trips/,
+     /archive/notes/, /archive/essays/. Hugo baut jede einmal, deshalb braucht der
+     Filter kein Skript und jede Ansicht ist verlinkbar.
+
+     Gruppiert wird zweimal: aussen nach Jahr, innen nach Monat. Das innere
+     GroupByDate läuft über die Beiträge eines Jahres, nicht über alle — sonst fielen
+     die Januare verschiedener Jahre zusammen. */}}
+
+{{ $stream := .Params.stream | default "all" }}
+{{ $posts := where site.RegularPages "Section" "in" (slice "photos" "trips" "notes" "essays") }}
+
+{{/* PHOTO fragt nicht nach dem Typ, sondern nach dem Bild: alles vom Typ photo, dazu
+     jeder Reisetag, der ein Cover trägt. Ein Reisetag ist fotografisch oft das Beste,
+     was da ist, und wer Fotos sucht, sucht nicht nach der Gelegenheit.
+
+     Damit stehen die Reisetage zweimal in der Leiste — unter PHOTO als Bild, unter
+     TRIP als Reise. Die fünf Zahlen addieren sich deshalb nicht mehr auf ALL, und das
+     ist Absicht: TRIP ist die engere Frage, nicht der Rest von PHOTO.
+
+     Das zweite `where` auf cover ist kein Zierrat: `!= nil` trifft auch den leeren
+     String. */}}
+{{ if eq $stream "photos" }}
+    {{ $trips := where (where (where $posts "Section" "trips") "Params.cover" "!=" nil) "Params.cover" "!=" "" }}
+    {{ $posts = sort (union (where $posts "Section" "photos") $trips) "Date" "desc" }}
+{{ else if ne $stream "all" }}
+    {{ $posts = where $posts "Section" $stream }}
+{{ end }}
+
+<section class="archive">
+    {{/* Der Weg zurück steht am anderen Ende derselben Zeile, wie auf einer
+         Beitragsseite bei der Typangabe. */}}
+    {{ partial "stream-filter.html" (dict
+        "current" $stream
+        "base" "/archive/"
+        "far" (slice (dict "label" "Back" "url" "/"))) }}
+
+    {{ range $posts.GroupByDate "2006" }}
+    <h2 class="archive-year">{{ .Key }}</h2>
+
+    {{ range .Pages.GroupByDate "January" }}
+    <h3 class="archive-month stream-title">
+        <span>{{ .Key }}</span>
+        <span>{{ len .Pages }}</span>
+    </h3>
+
+    {{ if eq $stream "photos" }}
+    {{/* Ein Bogen statt Zeilen. Kein Tag und kein Titel: der Monat steht darüber, und
+         der Titel eines Fotos ist meistens ein Wort, das über das Bild nichts sagt.
+         Der Name steht im aria-label, damit die Kachel trotzdem einen hat.
+
+         Eigene Bildrechnung, keine Miniatur: die Kachel ist fliessend breit, also
+         zwei Fassungen mit Breitenangabe und ein `sizes`, das der Spalte entspricht —
+         907 Pixel geteilt durch fünf, und unter 900 die halbe Fensterbreite. */}}
+    <ul class="archive-sheet">
+        {{ range .Pages }}
+        {{ $post := . }}
+        {{ with .Resources.GetMatch (.Params.cover | default "") }}
+        {{ $large := .Fill "400x400 Smart webp q85" }}
+        {{ $small := .Fill "200x200 Smart webp q85" }}
+        <li>
+            <a href="{{ $post.RelPermalink }}" aria-label="{{ $post.LinkTitle }}">
+                <img
+                    class="tile"
+                    src="{{ $large.RelPermalink }}"
+                    srcset="{{ $small.RelPermalink }} 200w, {{ $large.RelPermalink }} 400w"
+                    sizes="(max-width: 900px) 45vw, (max-width: 1200px) 200px, 170px"
+                    width="400"
+                    height="400"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                />
+            </a>
+        </li>
+        {{ end }}
+        {{ end }}
+    </ul>
+    {{ else }}
+    <ul class="archive-list">
+        {{ range .Pages }}
+        <li class="archive-item">
+            <span class="archive-day"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2" }}</time></span>
+            <a class="archive-title" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+            {{ partial "thumb.html" (dict "page" . "edge" 48) }}
+        </li>
+        {{ end }}
+    </ul>
+    {{ end }}
+    {{ end }}
+    {{ end }}
+</section>
+
+{{ end }}

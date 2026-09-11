@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;900&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #222; }
+    a:hover { color: #00e; }
+  </style>
+</helmet>
+
+<div style="width: 100%; box-sizing: border-box; background: #fff; color: #222; font-family: 'Encode Sans', Arial, Helvetica, sans-serif; font-weight: 300; font-size: 18px; line-height: 1.6; padding: 32px;">
+
+  <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 32px;">
+
+    <div style="grid-column: span 6; font-size: 24px; font-weight: 900; text-transform: uppercase; line-height: 1.05;">Sven Eisenschmidt</div>
+    <div style="grid-column: span 6; display: flex; justify-content: flex-end; gap: 32px; font-size: 16px; font-weight: 400; align-items: baseline;">
+      <span>Photos</span><span>Writing</span><span>Archive</span><span>About</span>
+    </div>
+
+
+    <div style="grid-column: span 8; padding-top: 32px;">
+      <div style="font-size: 12.8px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.08em; padding-bottom: 16px;">Photos</div>
+      <sc-for list="{{pictures}}" as="p" hint-placeholder-count="1">
+        <div style="padding-bottom: 64px;">
+          <div style="font-size: 32px; font-weight: 900; text-transform: uppercase; line-height: 1.05;">{{p.title}}</div>
+          <div style="font-size: 16px; font-weight: 400; padding: 8px 0 16px;">{{p.meta}}</div>
+          <div style="width: 100%; aspect-ratio: 3 / 2; background: #d8d8d8; border-radius: 4px;"></div>
+          <p style="margin: 0; padding-top: 16px; font-size: 16px; max-width: 60ch;">{{p.text}}</p>
+        </div>
+      </sc-for>
+
+      <div style="font-size: 12.8px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.08em; padding-bottom: 16px;">Earlier</div>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px;">
+        <sc-for list="{{tiles}}" as="t" hint-placeholder-count="12">
+          <div style="aspect-ratio: 1; background: #d8d8d8; border-radius: 4px;"></div>
+        </sc-for>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: baseline; padding-top: 16px; border-top: 1px solid #222; margin-top: 32px; font-size: 16px; font-weight: 400;">
+        <div>211 pictures</div>
+        <div>Older pictures</div>
+      </div>
+    </div>
+
+    <div style="grid-column: span 4; padding-top: 32px; height: 100%; min-height: 0; display: flex; flex-direction: column;">
+      <div style="flex: none; font-size: 12.8px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.08em; padding-bottom: 16px;">Writing</div>
+      <div style="flex: 1; min-height: 0; overflow-y: auto;">
+      <div style="padding-bottom: 32px;">
+        <div style="font-size: 32px; font-weight: 900; text-transform: uppercase; line-height: 1.05;">{{lead.title}}</div>
+        <div style="font-size: 16px; font-weight: 400; padding: 8px 0 0;">{{lead.meta}}</div>
+        <p style="margin: 0; padding-top: 16px; font-size: 16px;">{{lead.text}}</p>
+      </div>
+
+      <sc-for list="{{writing}}" as="w" hint-placeholder-count="29">
+        <div style="padding: 16px 0; border-bottom: 1px solid #222;">
+          <div style="font-size: 24px; font-weight: 900; text-transform: uppercase; line-height: 1.05;">{{w.title}}</div>
+          <div style="font-size: 16px; font-weight: 400; padding-top: 8px;">{{w.meta}}</div>
+        </div>
+      </sc-for>
+
+      </div>
+
+      <div style="flex: none; display: flex; justify-content: space-between; align-items: baseline; padding-top: 16px; border-top: 1px solid #222; font-size: 16px; font-weight: 400;">
+        <div>61 pieces</div>
+        <div>Older writing</div>
+      </div>
+    </div>
+
+    <div style="grid-column: span 12; padding-top: 64px; font-size: 16px; font-weight: 400;">All content is available via RSS</div>
+
+  </div>
+
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      pictures: [
+        { h: '760px', title: 'Pipes', meta: 'September 10, 2026 · Photo',
+          text: 'All the parts for the pipe run from the garden house roof into the cistern are finally together.' },
+      ],
+      tiles: [1,2,3,4,5,6,7,8,9,10,11,12],
+      lead: { title: 'Change as a Commodity', meta: 'August 11, 2026 · Essay, 6 min',
+              text: 'Every organisation I have worked in treats change as something to be requested, approved and scheduled. That is what makes it expensive.' },
+      writing: [
+        { title: 'Hypo 1.18', meta: 'September 10, 2026 · Note' },
+        { title: 'Worktrees', meta: 'September 10, 2026 · Note' },
+        { title: 'Ambiguity', meta: 'August 24, 2026 · Essay, 8 min' },
+        { title: 'Open Source', meta: 'January 2, 2026 · Note' },
+        { title: 'Race to Nowhere', meta: 'June 5, 2026 · Note' },
+        { title: 'Principles', meta: 'March 24, 2026 · Essay, 5 min' },
+        { title: 'Gemma', meta: 'June 13, 2026 · Note' },
+        { title: 'Hypo 1.16', meta: 'August 13, 2026 · Note' },
+        { title: 'Testing on macOS Versions I Don\'t Run', meta: 'July 3, 2026 · Essay, 9 min' },
+        { title: 'Hypo 1.15', meta: 'July 9, 2026 · Note' },
+        { title: 'I Built an RSS Reader, Pt. 2', meta: 'July 19, 2026 · Essay, 7 min' },
+        { title: 'Hypo 1.13', meta: 'July 2, 2026 · Note' },
+        { title: 'Hypo 1.12', meta: 'June 28, 2026 · Note' },
+        { title: 'Hypo is Live', meta: 'June 16, 2026 · Note' },
+        { title: 'Hypo 1.10', meta: 'June 18, 2026 · Note' },
+        { title: 'Optimizing Hugo Builds', meta: 'February 9, 2026 · Note' },
+        { title: 'Building This Website with Hugo', meta: 'January 5, 2026 · Essay, 8 min' },
+        { title: 'Two Cameras', meta: 'July 2, 2026 · Note' },
+        { title: 'Scammed', meta: 'June 19, 2026 · Note' },
+        { title: 'New Games', meta: 'May 3, 2026 · Note' },
+        { title: 'Death Stranding 2', meta: 'June 30, 2026 · Note' },
+        { title: 'Dragon Touch, Pt. 2', meta: 'March 31, 2026 · Note' },
+        { title: 'Upgrade', meta: 'February 24, 2026 · Note' },
+        { title: '2025 Wrapped', meta: 'January 12, 2026 · Essay, 11 min' },
+        { title: 'Lost Americana Tour', meta: 'February 24, 2026 · Note' },
+        { title: 'Claude', meta: 'August 20, 2026 · Note' },
+        { title: 'Building This Website with Hugo, Pt. 2', meta: 'March 17, 2026 · Essay, 6 min' },
+        { title: 'Reading', meta: 'May 18, 2026 · Note' },
+        { title: 'Farewell', meta: 'April 8, 2026 · Essay, 4 min' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,5 +1,7 @@
-{{ with resources.Get "js/main.js" | minify }} {{ if .Content }}
+{{/* Nur dort, wo es eine Filterzeile gibt: Startseite, die fünf Typseiten und das
+     Register. Eine Beitragsseite hat keinen Filter und braucht das Skript nicht. */}}
+{{ if or .IsHome (eq .Kind "section") (eq .Layout "archive") }}{{ with resources.Get "js/scroll.js" | minify }}
 <script>
     {{ .Content | safeJS }}
 </script>
-{{ end }} {{ end }}
+{{ end }}{{ end }}

@@ -1,5 +1,6 @@
 baseURL = "https://sven.eisenschmidt.website/"
-languageCode = "en-us"
+
+locale = "en-us"
 title = "Sven Eisenschmidt - Personal Blog"
 timeZone = "Europe/Berlin"
 
@@ -20,11 +21,34 @@ linkedinUrl = "https://linkedin.com/in/sveneisenschmidt"
 stravaUrl = "https://strava.com/athletes/sveneisenschmidt"
 email = "sven.eisenschmidt@gmail.com"
 
+# .htaccess wird erzeugt statt kopiert, damit die Weiterleitungen aus
+# data/redirects.yaml darin landen. Der Medientyp trägt keine Endung, sonst hiesse
+# die Datei ".htaccess.txt".
+[mediaTypes."text/htaccess"]
+delimiter = ""
+
+[outputFormats.htaccess]
+mediaType = "text/htaccess"
+baseName = ".htaccess"
+isPlainText = true
+notAlternative = true
+
+# Keine Taxonomien. Ohne diese leere Tabelle baut Hugo seine Voreinstellung — und
+# aus dem tags-Feld würden 7 Übersichtsseiten, die niemand verlinkt. Tags beschreiben,
+# sie führen nirgendwohin.
 [taxonomies]
-topic = "topics"
+
+# Die Dateien liegen nach Typ, die Adressen bleiben, wo sie immer waren. Ein Umzug
+# der 272 Permalinks wäre 272 Weiterleitungen und in jedem Feedreader ein Schwall
+# alter Beiträge — für eine Ordnung, die nur im Repository sichtbar ist.
+[permalinks.page]
+photos = "/posts/:contentbasename/"
+trips = "/posts/:contentbasename/"
+notes = "/posts/:contentbasename/"
+essays = "/posts/:contentbasename/"
 
 [outputs]
-home = ["HTML", "RSS"]
+home = ["HTML", "RSS", "htaccess"]
 section = ["HTML", "RSS"]
 taxonomy = ["HTML"]
 term = ["HTML"]
@@ -47,37 +71,19 @@ title = true
 [caches.getresource]
 maxAge = 0
 
+# Was die Filterzeile auf der Startseite schon anbietet, steht hier nicht noch
+# einmal: Photos, All, Trip, Note und Essay sind dort und nirgends sonst.
 [[menus.main]]
-name = "Search"
-pageRef = "/search"
+name = "Archive"
+url = "/archive"
 weight = 10
 
 [[menus.main]]
-name = "Topics"
-pageRef = "/topics"
-weight = 30
-
-[[menus.main]]
-name = "Photos"
-pageRef = "/photos"
-weight = 35
-
-[[menus.main]]
-name = "Log"
-pageRef = "/log"
-weight = 37
-
-[[menus.main]]
-name = "Projects"
-pageRef = "/projects"
-weight = 38
-
-[[menus.main]]
-name = "Blogroll"
-url = "/blogroll"
-weight = 40
-
-[[menus.main]]
 name = "About"
-pageRef = "/about"
-weight = 99
+url = "/about"
+weight = 20
+
+[[menus.main]]
+name = "RSS"
+url = "/index.xml"
+weight = 30

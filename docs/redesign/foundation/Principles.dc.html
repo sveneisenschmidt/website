@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: oklch(0.18 0.01 60); }
+    a:hover { color: oklch(0.18 0.01 60); text-decoration: underline; }
+  </style>
+</helmet>
+
+<div style="width: 1000px; box-sizing: border-box; background: oklch(0.985 0.004 85); font-family: 'Archivo', sans-serif; color: oklch(0.18 0.01 60); padding: 48px;">
+
+  <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 20px;">
+
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase;">Principles</div>
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 10px 0 6px;"></div>
+
+    <div style="grid-column: span 12; font-size: 17px; line-height: 1.65; max-width: 66ch; padding-bottom: 20px;">Seven rules, each with the decision it makes and the question that tells you whether you broke it. A principle that decides nothing is a slogan, so every line below can be answered with yes or no while looking at a page.</div>
+
+    <sc-for list="{{principles}}" as="p" hint-placeholder-count="7">
+      <div style="grid-column: span 1; font-size: 15px; padding: 16px 0 0; border-top: 1px solid oklch(0.88 0.008 75);">{{p.n}}</div>
+      <div style="grid-column: span 11; padding: 16px 0 18px; border-top: 1px solid oklch(0.88 0.008 75);">
+        <div style="font-size: 19px; font-weight: 500; line-height: 1.3;">{{p.name}}</div>
+        <div style="font-size: 16px; line-height: 1.6; padding-top: 6px; max-width: 68ch;">{{p.rule}}</div>
+        <div style="display: grid; grid-template-columns: 92px 1fr; gap: 14px; padding-top: 10px;">
+          <div style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;">Decides</div>
+          <div style="font-size: 15px; line-height: 1.55;">{{p.decides}}</div>
+          <div style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;">Test</div>
+          <div style="font-size: 15px; line-height: 1.55;">{{p.test}}</div>
+        </div>
+      </div>
+    </sc-for>
+
+  </div>
+
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      principles: [
+        {
+          n: '1', name: 'The picture is the post',
+          rule: 'On a daily entry the photograph is the content and the words are its caption. Nothing may sit between a reader and the picture, and nothing may frame the picture as an illustration of an article.',
+          decides: 'Thumbnails, summaries and reading time disappear from daily entries.',
+          test: 'Can you see the photograph without scrolling, at the size it was taken for?',
+        },
+        {
+          n: '2', name: 'Writing gets a different room',
+          rule: 'A piece of eight hundred words needs a measure, a paragraph rhythm and no picture beside it. It is a different object from a daily entry and may not be squeezed into the same frame.',
+          decides: 'Two layouts, not one layout with a switch.',
+          test: 'Would you read this piece on this page for six minutes without adjusting the window?',
+        },
+        {
+          n: '3', name: 'Everything is reachable, nothing is ranked',
+          rule: 'All 272 posts are read at roughly the same rate. The site therefore has no popular section, no featured item and no editor. It has an index that reaches everything.',
+          decides: 'The pager goes. No most read, no related posts, no recommendations.',
+          test: 'From any page, how many clicks to a post from March?',
+        },
+        {
+          n: '4', name: 'One shared link is a whole page',
+          rule: 'Most first impressions come from one link someone sent. A single post has to stand alone: it says what it is, who made it, and offers one way onwards.',
+          decides: 'Every post carries identity and one next step, never a sidebar of everything.',
+          test: 'Open one post in a private window. Does it explain itself?',
+        },
+        {
+          n: '5', name: 'Nothing interrupts the reader',
+          rule: 'You would like more readers, and none of them will be won on the page. No overlay, no subscribe prompt, no share row, no consent dialog, no tracking. What may be visible is what a reader might want anyway: the feed, one next step, a link worth copying.',
+          decides: 'Growth happens through Instagram, a shared link and the feed. The page itself stays a place to read.',
+          test: 'Can a reader finish a post without dismissing anything? Then count what still asks for something. One is the feed; anything else needs a reason.',
+        },
+        {
+          n: '6', name: 'It has to still work in ten years',
+          rule: 'Static files, no framework, no build step that depends on a service, no font or script from another host. A page that renders today renders in 2036.',
+          decides: 'No JavaScript for anything a reader needs. Self-hosted fonts. No third-party request.',
+          test: 'Turn JavaScript off. Is anything lost that matters?',
+        },
+        {
+          n: '7', name: 'Every value exists once',
+          rule: 'One typeface, one text colour, one type scale, one spacing scale. A second of anything needs a written reason, and the reason has to name what it decides.',
+          decides: 'No component invents a size, a grey or a radius of its own.',
+          test: 'Count the distinct text colours in the stylesheet. More than one needs a sentence.',
+        },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

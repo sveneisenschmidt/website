@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;900&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #222; }
+    a:hover { color: #00e; }
+  </style>
+</helmet>
+
+<div style="width: 800px; box-sizing: border-box; background: #fff; color: #222; font-family: 'Encode Sans', Arial, Helvetica, sans-serif; font-weight: 300; font-size: 18px; line-height: 1.6; padding: 16px;">
+
+  <div style="text-align: center; font-size: 24px; font-weight: 900; text-transform: uppercase; line-height: 1.05;">&larr; Back</div>
+  <div style="text-align: center; font-size: 16px; padding: 8px 0 16px; word-spacing: 10px;">Photos &middot; Writing &middot; Archive &middot; About</div>
+  <div style="border-top: 1px solid #222;"></div>
+
+  <div style="max-width: 60ch;">
+
+  <div style="font-size: 32px; font-weight: 900; text-transform: uppercase; line-height: 1.05; margin: 16px 0 8px;">Hypo 1.18</div>
+  <div style="font-size: 16px; font-weight: 400;">September 10, 2026</div>
+
+    <sc-for list="{{paras}}" as="p" hint-placeholder-count="3">
+      <p style="margin: 0; padding-top: 16px;">{{p}}</p>
+    </sc-for>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; margin-top: 32px; padding-top: 16px; border-top: 1px solid #222; font-size: 16px; font-weight: 400;"><div>&larr; Worktrees</div><div>Pipes &rarr;</div></div>
+
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      paras: [
+        'Hypo 1.18 is out. After months of adding features I wanted to get the fundamentals right, so I went through the whole app like a professional user would, and like someone who dumps a card at the end of every shoot.',
+        'Hypo copied a file and, as long as the write did not throw an internal error, offered to delete the original. A failing card can return an incomplete file without an error, so a truncated copy counted as imported.',
+        'Now every copy gets read back and compared with the card before anything is deleted. That roughly doubles the copy time, and there is no setting to turn it off.',
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

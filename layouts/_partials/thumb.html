@@ -1,0 +1,40 @@
+{{/* Die Miniatur eines Beitrags in einer Liste.
+
+     Trägt die Angabe, die der Zeile sonst fehlt: bei einem Foto sagt der Titel nichts
+     über das Bild. Ein zweiter Weg auf denselben Beitrag — deshalb nicht in der
+     Tab-Reihenfolge, nicht im Baum, und ohne alt.
+
+     Beiträge ohne Cover geben nichts aus. Wer Platz dafür freihalten will, tut das in
+     seinem eigenen Raster — das ist eine Frage der Liste, nicht der Miniatur.
+
+     `edge` ist die Kantenlänge in CSS-Pixeln, in der die Liste sie zeigt. Daraus
+     entstehen zwei Fassungen, eine für gewöhnliche und eine für feine Schirme. Ohne
+     die zweite sähe ein Bild, das mit 96 Pixeln dasteht, auf einem Retina-Schirm aus
+     wie ein hochgezogenes 96er — genau das, was eine Liste aus Fotos nicht darf.
+
+     Zugeschnitten wird mit `Smart`: Hugo liest Kanten, Haut und Sättigung und behält
+     das Motiv. Ein Vogel am oberen Bildrand überlebt das, ein Mittenschnitt köpft ihn.
+
+     Erwartet: (dict "page" <Beitrag> "edge" <Zahl>)
+
+         {{ partial "thumb.html" (dict "page" . "edge" 48) }} */}}
+
+{{- $page := .page -}}
+{{- $edge := .edge | default 48 -}}
+{{- $q := cond (ge $edge 96) 85 80 -}}
+
+{{- with $page.Resources.GetMatch ($page.Params.cover | default "") -}}
+{{- $one := .Fill (printf "%dx%d Smart webp q%d" $edge $edge $q) -}}
+{{- $two := .Fill (printf "%dx%d Smart webp q%d" (mul $edge 2) (mul $edge 2) $q) -}}
+<a class="thumb" href="{{ $page.RelPermalink }}" tabindex="-1" aria-hidden="true">
+    <img
+        src="{{ $one.RelPermalink }}"
+        srcset="{{ $one.RelPermalink }} 1x, {{ $two.RelPermalink }} 2x"
+        width="{{ $edge }}"
+        height="{{ $edge }}"
+        alt=""
+        loading="lazy"
+        decoding="async"
+    />
+</a>
+{{- end -}}

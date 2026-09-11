@@ -1,0 +1,143 @@
+{{/* The camera data of one photograph, as a list of keys and values. Renders nothing
+     when the file carries no camera data and no photographer is named.
+
+         {{ partial "exif.html" (dict "resource" $img) }}
+         {{ partial "exif.html" (dict "resource" $img "photographer" "Ada Lovelace") }}
+
+     Cameras write the maker into the model as well, so "Canon" and "Canon EOS R5"
+     would read as "Canon · Canon EOS R5"; the maker is cut off the front of the model
+     where it is repeated. The ISO lives under one of five different tags depending on
+     the camera, and on some of them it is a list rather than a number. */}}
+
+{{- $resource := .resource -}}
+{{- $photographer := .photographer | default "" -}}
+{{- $caption := .caption | default "" -}}
+{{- $exif := "" -}}
+{{- with $resource }}{{ $exif = .Meta.Exif }}{{ end -}}
+
+{{- $camera := "" -}}
+{{- $lens := "" -}}
+{{- $focal := "" -}}
+{{- $aperture := "" -}}
+{{- $exposure := "" -}}
+
+{{- with $exif -}}
+    {{- $make := .Make -}}
+    {{- $model := .Model -}}
+    {{- if and $make $model (strings.HasPrefix $model $make) -}}
+        {{- $model = strings.TrimPrefix $make $model | strings.TrimLeft " " -}}
+    {{- end -}}
+    {{- $camera = $make -}}
+    {{- if and $make $model }}{{ $camera = printf "%s %s" $make $model }}
+    {{- else if $model }}{{ $camera = $model }}{{ end -}}
+
+    {{/* The lens is the glass, the focal length is where it was set. A zoom answers
+         the two differently, so they are two data and not one. */}}
+    {{- with .LensModel }}{{ $lens = . }}{{ end -}}
+    {{/* Not lang.FormatNumber: it groups thousands, and an 1120mm lens then reads
+         "1,120mm". A focal length is a measurement, not a quantity to be counted. */}}
+    {{- with .FocalLength }}{{ $focal = printf "%.0fmm" (float .) }}{{ end -}}
+
+    {{/* A whole stop is written without a decimal: ƒ/8, not ƒ/8.0. */}}
+    {{- with .FNumber -}}
+        {{- $f := float . -}}
+        {{- if eq $f (math.Floor $f) -}}
+            {{- $aperture = printf "ƒ/%.0f" $f -}}
+        {{- else -}}
+            {{- $aperture = printf "ƒ/%.1f" $f -}}
+        {{- end -}}
+    {{- end -}}
+
+    {{/* The exposure time is a fraction on most cameras and a plain number on some.
+         Both halves of the fraction are checked before dividing: a zero denominator
+         or a word where a number belongs stops the whole build, not just this
+         photograph, and a card that failed mid-write produces exactly that. */}}
+    {{- with .ExposureTime -}}
+        {{- $str := printf "%v" . -}}
+        {{- if strings.Contains $str "/" -}}
+            {{- $parts := split $str "/" -}}
+            {{- if eq (len $parts) 2 -}}
+                {{- $num := strings.TrimSpace (index $parts 0) -}}
+                {{- $den := strings.TrimSpace (index $parts 1) -}}
+                {{- if and (findRE `^[0-9]+(\.[0-9]+)?$` $num) (findRE `^[0-9]+(\.[0-9]+)?$` $den) -}}
+                    {{- $d := float $den -}}
+                    {{- if ne $d 0.0 -}}
+                        {{- $val := div (float $num) $d -}}
+                        {{- if and (gt $val 0.0) (lt $val 1.0) -}}
+                            {{- $exposure = printf "1/%.0fs" (div 1.0 $val) -}}
+                        {{- else if gt $val 0.0 -}}
+                            {{- $exposure = printf "%.1fs" $val -}}
+                        {{- end -}}
+                    {{- end -}}
+                {{- end -}}
+            {{- end -}}
+        {{- else if findRE `^[0-9]+(\.[0-9]+)?$` $str -}}
+            {{- $exposure = printf "%ss" $str -}}
+        {{- end -}}
+    {{- end -}}
+
+    {{- $iso := .ISO -}}
+    {{- if not $iso }}{{ $iso = .ISOSpeedRatings }}{{ end -}}
+    {{- if not $iso }}{{ $iso = .RecommendedExposureIndex }}{{ end -}}
+    {{- if not $iso }}{{ $iso = .ISOSpeed }}{{ end -}}
+    {{- if not $iso }}{{ $iso = .PhotographicSensitivity }}{{ end -}}
+    {{- if reflect.IsSlice $iso }}{{ if gt (len $iso) 0 }}{{ $iso = index $iso 0 }}{{ end }}{{ end -}}
+    {{- with $iso -}}
+        {{- if $exposure -}}
+            {{- $exposure = printf "%s · ISO %v" $exposure . -}}
+        {{- else -}}
+            {{- $exposure = printf "ISO %v" . -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{/* Alles in einem Fluss: Bildunterschrift, wer fotografiert hat, dann die Messwerte.
+     Jede Angabe ist eine Spur, und wo die Zeile voll ist, bricht sie um.
+
+     Gemessen an den 203 vorhandenen Bildunterschriften: die mittlere ist neunzehn
+     Zeichen und drei Wörter lang — „European greenfinch", „Barn swallow". So etwas ist
+     eine Angabe wie jede andere und gehört in die Reihe.
+
+     Fünfundfünfzig sind länger. Die nehmen zwei Spuren statt einer und bleiben trotzdem
+     in der Reihe — keine eigene Zeile: eine Bildunterschrift ist eine Angabe unter
+     Angaben, auch wenn sie zwei Wörter mehr hat.
+
+     Vierzig ist die Grenze, weil zwei Zeilen in einer Spur gerade die Höhe haben, die
+     das längste Objektiv daneben ohnehin braucht. Über zwei Spuren gerechnet sind es
+     dann wieder zwei Zeilen.
+
+     Die zehn Bildunterschriften über neunzig Zeichen machen ihre Zeile höher als nötig.
+     Das ist der Preis dafür, dass nichts aus der Reihe tanzt. */}}
+{{- $longCaption := gt (len $caption) 40 -}}
+{{- $rows := slice -}}
+{{- with $camera }}{{ $rows = $rows | append (dict "key" "Camera" "value" .) }}{{ end -}}
+{{- with $lens }}{{ $rows = $rows | append (dict "key" "Lens" "value" .) }}{{ end -}}
+{{- with $focal }}{{ $rows = $rows | append (dict "key" "Focal length" "value" .) }}{{ end -}}
+{{- with $aperture }}{{ $rows = $rows | append (dict "key" "Aperture" "value" .) }}{{ end -}}
+{{- with $exposure }}{{ $rows = $rows | append (dict "key" "Exposure" "value" .) }}{{ end -}}
+
+
+{{- if or $rows $caption $photographer -}}
+{{/* Each pair is wrapped, which a description list allows, so that the pairs can be
+     laid out as a row rather than the keys and values separately. */}}
+<dl class="exif">
+    {{- with $caption }}
+    <div{{ if $longCaption }} class="caption-long"{{ end }}>
+        <dt>Caption</dt>
+        <dd>{{ . | markdownify }}</dd>
+    </div>
+    {{- end }}
+    {{- with $photographer }}
+    <div>
+        <dt>Photographer</dt>
+        <dd>{{ . }}</dd>
+    </div>
+    {{- end }}
+    {{- range $rows }}
+    <div>
+        <dt>{{ .key }}</dt>
+        <dd>{{ .value }}</dd>
+    </div>
+    {{- end }}
+</dl>
+{{- end -}}
