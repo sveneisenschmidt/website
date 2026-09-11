@@ -455,16 +455,21 @@ h1 {
     margin: 0 0 1rem;
 }
 
-/* The style guide sets a heading in Black and upper case. roadsurfer applies the case to
-   the second level and leaves a first-level heading in the case it was written in, so a
-   long post title does not become a wall of capitals. */
 h2 {
     font-family: var(--font-heading);
     font-size: var(--text-h2);
     font-weight: var(--weight-heading);
     line-height: 1.15;
-    text-transform: uppercase;
     margin: 2rem 0 0.5rem;
+}
+
+/* Upper case marks the title of a thing, not a heading inside it: the site name, a page
+   title, a post title. A post title in a list is an h2 but still a title, so the rule
+   follows the role and not the tag. A section heading inside a post stays as written. */
+h1,
+section h2,
+h2.term {
+    text-transform: uppercase;
 }
 
 /* A heading sets the distance to what stands under it, and that element adds none of its
