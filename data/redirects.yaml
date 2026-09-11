@@ -1223,3 +1223,12 @@
 
 - from: /topics/work/
   to: /archive/
+
+# Die Suche. Aufgegeben am 11. September 2026 zusammen mit der Navigation, die als
+# einzige darauf verlinkte. Das Zugriffslog zählt über acht Monate rund hundertdreissig
+# Anfragen, neun im September; pop zählt dreiundsiebzig.
+#
+# Ohne `pop`: /archive/ trägt schon den Eintrag von /topics/, und höchstens einer je
+# Ziel darf ihn tragen.
+- from: /search/
+  to: /archive/
