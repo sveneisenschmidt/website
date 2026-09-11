@@ -3,6 +3,9 @@ date = '2026-01-02T12:03:26+01:00'
 showDate = false
 draft = false
 title = 'About'
+label = 'Personal blog'
+# Von Hand: wann die Seite zuletzt stimmte. Hugo liest das als .Lastmod.
+lastmod = '2026-09-11'
 build.list = 'never'
 +++
 
@@ -23,7 +26,7 @@ This is a private, non-commercial website. No business activities, no ads, no af
 
 ### About this Website
 
-Built with [Hugo](https://gohugo.io/), a static site generator. Search powered by [Pagefind](https://pagefind.app/). Reactions on posts via [Pop](https://github.com/sveneisenschmidt/pop), my own tiny feedback library. Custom theme, vanilla CSS, no JavaScript frameworks. Hosted on [All-Inkl](https://all-inkl.com/) in Germany.
+Built with [Hugo](https://gohugo.io/), a static site generator. Search powered by [Pagefind](https://pagefind.app/). Visits counted by [Pop](https://github.com/sveneisenschmidt/pop), my own tiny feedback library. Custom theme, vanilla CSS, no JavaScript frameworks. Hosted on [All-Inkl](https://all-inkl.com/) in Germany.
 
 Read more about how this site was built in the [building with Hugo](/posts/building-with-hugo/) post. The full source code is [available on GitHub](https://github.com/sveneisenschmidt/website).
 
@@ -41,9 +44,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const sum = (k) => p.reduce((s, x) => s + x[k], 0);
         const top = p.filter(x => x.pageId.includes("/posts/"))
             .sort((a, b) => b.totalVisits - a.totalVisits).slice(0, 5)
-            .map(x => `<li><a href="${x.pageId.replace(d, "")}">${x.pageId.replace(d, "")}</a> - ${pl(x.totalVisits, "visit")}, ${pl(x.totalReactions, "reaction")}</li>`).join("");
+            .map(x => `<li><a href="${x.pageId.replace(d, "")}">${x.pageId.replace(d, "")}</a> - ${pl(x.totalVisits, "visit")}</li>`).join("");
         document.getElementById("site-stats").innerHTML = `<h4>Statistics</h4>
-            <p><strong>${sum("uniqueVisitors")}</strong> unique visitors, <strong>${sum("totalVisits")}</strong> total visits, <strong>${sum("totalReactions")}</strong> reactions across <strong>${p.length}</strong> pages. Powered by <a href="https://github.com/sveneisenschmidt/pop">Pop</a>.</p>
+            <p><strong>${sum("uniqueVisitors")}</strong> unique visitors and <strong>${sum("totalVisits")}</strong> total visits across <strong>${p.length}</strong> pages. Powered by <a href="https://github.com/sveneisenschmidt/pop">Pop</a>.</p>
             <p>Most visited posts:</p><ul>${top}</ul>`;
     }).catch(() => {});
 });

@@ -1,0 +1,13 @@
++++
+date = '2026-01-08T20:00:00'
+title = "Snow"
+type = "photo"
+emojis = ["❄️"]
+cover = "IMG_0530.jpg"
++++
+
+First proper snow this season. The boys loved it. Aika was slightly annoyed.
+
+<!--more-->
+
+{{< img src="IMG_0530.jpg" alt="Snow" >}}
