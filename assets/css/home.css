@@ -38,4 +38,11 @@
     .article {
         grid-column: auto;
     }
+
+    /* Unter dem großen Bild bleibt auf dem Telefon eine Zeile Kacheln stehen.
+       Die Zahl folgt --tiles-columns, bei einer anderen Spaltenzahl muss sie
+       hier mitwandern. */
+    .tiles li:nth-child(n + 5) {
+        display: none;
+    }
 }
