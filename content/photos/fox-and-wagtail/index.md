@@ -2,7 +2,6 @@
 date = '2026-05-08T23:00:00'
 title = "Fox & Wagtail"
 type = "photo"
-emojis = ["🦊"]
 cover = "A97I2672.jpeg"
 +++
 

@@ -2,7 +2,6 @@
 date = '2026-05-13T18:00:00'
 title = "Offsite"
 type = "photo"
-emojis = ["📷"]
 cover = "A6401441.jpeg"
 +++
 

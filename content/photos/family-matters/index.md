@@ -2,7 +2,6 @@
 date = '2026-08-30T19:20:00'
 title = "Family Matters"
 type = "photo"
-emojis = ["📷"]
 cover = "1C4A7956.jpeg"
 pick = true
 +++

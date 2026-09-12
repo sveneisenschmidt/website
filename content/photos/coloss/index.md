@@ -4,7 +4,6 @@ title = 'Coloss'
 type = "photo"
 cover = 'IMG_1786.jpeg'
 pick = true
-emojis = ["🚜"]
 +++
 
 Did a late-afteroon trip with Tilian to the big bucket-wheel excavator. He was mesmerized by the size, unfortunately it stopped operating for the day. 

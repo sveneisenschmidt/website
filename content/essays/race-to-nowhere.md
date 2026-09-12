@@ -2,7 +2,6 @@
 date = '2026-06-05T12:00:00'
 title = 'Race to (No)where(?)'
 type = "essay"
-emojis = ["🔋"]
 +++
 
 [Jasper](https://jasper.tandy.is) sent me a post on [AI enthusiasts and skeptics](https://simonwillison.net/2026/Jun/4/ai-enthusiasts-ai-skeptics), the enthusiasts racing against time and the skeptics racing against entropy, and Jasper and I turned it into a funny metaphor about electric cars.

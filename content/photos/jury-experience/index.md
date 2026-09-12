@@ -2,7 +2,6 @@
 date = '2026-05-09T23:00:00'
 title = "The Jury Experience"
 type = "photo"
-emojis = ["⚖️"]
 cover = "A6401410.jpeg"
 pick = true
 +++

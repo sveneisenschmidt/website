@@ -3,7 +3,6 @@ date = '2026-02-04T17:12:00'
 title = 'Bubblegum Blue'
 type = "photo"
 cover = 'DSC00610.jpeg'
-emojis = ["🚜"]
 +++
 
 Saw this bubblegum-blue tractor during my daily tour with Aika. Everything is brown and dark in winter and I am a sucker for some color during my walks.

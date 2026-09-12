@@ -3,7 +3,6 @@ date = '2026-01-11T19:00:00'
 title = 'Last Day Off'
 type = "photo"
 cover = 'IMG_0576.jpg'
-emojis = ["❄️"]
 +++
 
 Vacation is over and I'm officially back at work tomorrow. A few impressions from today.

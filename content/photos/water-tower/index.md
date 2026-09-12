@@ -2,7 +2,6 @@
 date = '2026-08-26T18:00:00'
 title = "Water Tower"
 type = "photo"
-emojis = ["📷"]
 cover = "1C4A7575.jpeg"
 pick = true
 +++

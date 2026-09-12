@@ -2,7 +2,6 @@
 date = '2026-05-03T18:18:00'
 title = "Canon Selphy"
 type = "photo"
-emojis = ["🖨️"]
 cover = "A6401354.jpeg"
 +++
 

@@ -3,7 +3,6 @@ date = '2026-01-06T19:00:00'
 title = 'Sourdough'
 type = "photo"
 cover = 'IMG_0500.jpg'
-emojis = ["🍞"]
 +++
 
 My wife started baking bread. Here's her spelt (Deutsch: Dinkel) sourdough recipe. It took quite a few iterations to get it right.

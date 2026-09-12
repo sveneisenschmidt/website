@@ -2,7 +2,6 @@
 date = '2026-04-29T22:00:00'
 title = "Long Day"
 type = "photo"
-emojis = ["🚗"]
 cover = "A6401350.jpeg"
 pick = true
 +++

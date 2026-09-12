@@ -2,7 +2,6 @@
 date = '2026-07-06T18:00:00'
 title = "Dive"
 type = "photo"
-emojis = ["🦅"]
 cover = "1C4A1973.jpeg"
 pick = true
 +++

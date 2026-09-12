@@ -2,7 +2,6 @@
 date = '2026-05-24T21:00:00'
 title = "Knights Games Trebsen"
 type = "photo"
-emojis = ["🏰"]
 cover = "A6401643.jpeg"
 pick = true
 +++

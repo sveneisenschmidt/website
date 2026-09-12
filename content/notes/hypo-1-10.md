@@ -2,7 +2,6 @@
 date = '2026-06-18T07:30:00'
 title = "Hypo 1.10"
 type = "note"
-emojis = ["🛠️"]
 +++
 
 Hypo 1.10 is out, with better support for Nikon cameras and it's various MakerNote implementations, Fujifilm RAF files, and autofocus points on Canon bodies.

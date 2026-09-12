@@ -2,7 +2,6 @@
 date = '2026-04-13T22:00:00'
 title = "Back to Back"
 type = "photo"
-emojis = ["🐑"]
 cover = "IMG_5721.jpeg"
 +++
 

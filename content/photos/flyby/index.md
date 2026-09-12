@@ -3,7 +3,6 @@ date = '2026-04-06T23:00:00'
 title = 'Flyby'
 type = "photo"
 cover = 'IMG_1346.jpeg'
-emojis = ["🦅"]
 +++
 
 A red kite passed a few meters above us on our Easter walk today. It was stormy, so the large birds stayed low.

@@ -2,7 +2,6 @@
 date = '2026-06-05T18:00:00'
 title = "Soapbox Race"
 type = "photo"
-emojis = ["🏎️"]
 cover = "A6402532.jpeg"
 +++
 

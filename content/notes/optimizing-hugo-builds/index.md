@@ -2,7 +2,6 @@
 date = '2026-02-09T10:00:00'
 title = "Optimizing Hugo Builds"
 type = "note"
-emojis = ["🛠️"]
 draft = true
 +++
 

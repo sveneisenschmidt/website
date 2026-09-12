@@ -2,7 +2,6 @@
 date = '2026-08-19T19:00:00'
 title = "Flugplatz Böhlen"
 type = "photo"
-emojis = ["📷"]
 cover = "1C4A6857.jpeg"
 pick = true
 +++

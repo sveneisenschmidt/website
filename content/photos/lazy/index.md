@@ -2,7 +2,6 @@
 date = '2026-05-25T18:00:00'
 title = "Lazy"
 type = "photo"
-emojis = ["🐶"]
 cover = "A97I3783.jpeg"
 pick = true
 +++

@@ -2,7 +2,6 @@
 date = '2026-05-31T19:00:00'
 title = "Markfest"
 type = "photo"
-emojis = ["🤡"]
 cover = "A6402328.jpeg"
 +++
 

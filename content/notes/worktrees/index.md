@@ -2,7 +2,6 @@
 date = '2026-09-10T16:30:00'
 title = "Worktrees"
 type = "note"
-emojis = ["🌳"]
 +++
 
 On my trip in April I remember asking Jasper who in the world uses worktrees, what is that supposed to be as a concept, and why is it suddenly pushed at me from every direction.

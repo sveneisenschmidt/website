@@ -3,7 +3,6 @@ date = '2026-07-20T21:30:00'
 title = "Summer Vacation, Day 10: Whitsand Bay"
 type = "trip"
 trip = "summer-2026"
-emojis = ["🏕️"]
 cover = "1C4A4134.jpeg"
 pick = true
 +++

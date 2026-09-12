@@ -2,7 +2,6 @@
 date = '2026-08-25T18:00:00'
 title = "For The Bin"
 type = "photo"
-emojis = ["🐝"]
 cover = "1C4A7374.jpeg"
 pick = true
 +++

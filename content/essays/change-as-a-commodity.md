@@ -2,7 +2,6 @@
 date = '2026-03-17T12:00:00'
 title = 'Change as a Commodity'
 type = "essay"
-emojis = ["🤖"]
 +++
 
 I've been trying to answer a question about AI and software development for a while now, and I don't think I've been looking far enough for an answer.

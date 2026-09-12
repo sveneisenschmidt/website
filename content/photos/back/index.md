@@ -3,7 +3,6 @@ date = '2026-01-15T19:00:00'
 title = 'Back'
 type = "photo"
 cover = 'IMG_0632.jpg'
-emojis = ["🐱"]
 +++
 
 Completed my trip back home today. Did twice 450km within 24 hours. The VW California is such a comfortable car for long trips.

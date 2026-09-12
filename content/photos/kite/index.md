@@ -3,7 +3,6 @@ date = '2026-03-25T17:00:00'
 title = 'Kite'
 type = "photo"
 cover = 'IMG_3754.jpeg'
-emojis = ["🪁"]
 +++
 I've been avoiding working from my office space for the last three weeks. I overdid it on the walking pad a few weeks ago, and both kitchen and winter garden were more enjoyable with the warmth of the sun.
 

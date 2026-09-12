@@ -3,7 +3,6 @@ date = '2026-02-11T23:30:00'
 title = "Mayrhofen at Night"
 type = "trip"
 trip = "winter-2026"
-emojis = ["🌙"]
 cover = "DSC00959.jpg"
 +++
 

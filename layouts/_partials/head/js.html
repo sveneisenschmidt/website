@@ -3,3 +3,13 @@
     {{ .Content | safeJS }}
 </script>
 {{ end }}{{ end }}
+{{ if or (eq .Kind "page") (eq .Layout "archive") }}{{ with resources.Get "js/back.js" | minify }}
+<script>
+    {{ .Content | safeJS }}
+</script>
+{{ end }}{{ end }}
+{{ if .IsHome }}{{ with resources.Get "js/fit.js" | minify }}
+<script>
+    {{ .Content | safeJS }}
+</script>
+{{ end }}{{ end }}

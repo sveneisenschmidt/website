@@ -2,7 +2,6 @@
 date = '2026-06-16T21:00:00'
 title = "Hypo is Live"
 type = "photo"
-emojis = ["🛠️"]
 cover = "A6402620.jpeg"
 +++
 

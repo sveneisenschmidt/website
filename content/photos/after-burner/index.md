@@ -3,7 +3,6 @@ date = '2026-02-18T20:07:00'
 title = 'Afterburner'
 type = "photo"
 cover = 'DSC01236.jpeg'
-emojis = ["✈︎"]
 +++
 
 A few days ago, out of nowhere, I remembered a game I played at my cousins a lot, it was [After Burner II](https://segaretro.org/After_Burner_II) on their Sega Mega Drive. I have been looking to scratch that itch on a Steam Deck.

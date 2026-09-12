@@ -4,7 +4,6 @@ title = 'Rime'
 type = "photo"
 cover = 'DSC01579.jpeg'
 pick = true
-emojis = ["❄️"]
 +++
 
 I walked the dog this morning, same as every day. The world feels caught between winter and spring right now. There's still frost overnight, double digits by afternoon. How am I supposed to decide what jacket to wear?

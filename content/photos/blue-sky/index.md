@@ -3,7 +3,6 @@ date = '2026-03-23T18:00:00'
 title = 'Blue Sky'
 type = "photo"
 cover = 'IMG_3607.jpeg'
-emojis = ["🦅"]
 +++
 
 A starling on the roof, a sparrow on a cable, and a red kite overhead, all three on the same blue day. Nadine caught a great shot of the red kite. I think we are both pushing what we can get out of the 90D and the 250mm lens.

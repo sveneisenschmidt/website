@@ -2,7 +2,6 @@
 date = '2026-05-19T18:57:00'
 title = "Bounce"
 type = "photo"
-emojis = ["🦊"]
 cover = "A97I3438.jpeg"
 +++
 

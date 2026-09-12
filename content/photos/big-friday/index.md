@@ -2,7 +2,6 @@
 date = '2026-05-15T20:00:00'
 title = "Big Friday"
 type = "photo"
-emojis = ["🐦"]
 cover = "A97I3072.jpeg"
 +++
 

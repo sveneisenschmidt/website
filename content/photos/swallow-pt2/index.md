@@ -2,7 +2,6 @@
 date = '2026-07-07T18:00:00'
 title = "Flight"
 type = "photo"
-emojis = ["🐦"]
 cover = "1C4A2503.jpeg"
 +++
 

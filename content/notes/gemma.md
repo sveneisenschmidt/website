@@ -2,7 +2,6 @@
 date = 2026-06-13T09:00:00
 title = "Gemma"
 type = "note"
-emojis = ["🤖"]
 +++
 
 Anthropic pulled Fable and Mythos from the market following US intervention, a frustrating move considering Fable was performing for me like Opus was six months ago, before the steady performance degradation across versions 4.6+. It really makes me wonder where LLM proliferation needs to go to ensure we aren't tied to these frontier labs.

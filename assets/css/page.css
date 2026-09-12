@@ -96,16 +96,6 @@ main {
 
 .thumb img {
     object-fit: cover;
-    opacity: var(--opacity-thumb);
-}
-
-.writing-item:hover .thumb img,
-.writing-item:focus-within .thumb img,
-.writing-lead:hover .thumb img,
-.writing-lead:focus-within .thumb img,
-.archive-item:hover .thumb img,
-.archive-item:focus-within .thumb img {
-    opacity: 1;
 }
 
 .metadata {
@@ -129,4 +119,80 @@ main {
     text-decoration: underline;
     text-decoration-thickness: var(--rule-hairline);
     text-underline-offset: var(--space-underline);
+}
+
+.writing {
+    grid-column: span var(--span-writing);
+}
+
+.writing-lead {
+    padding-bottom: var(--space-lead);
+    border-bottom: var(--rule-hairline) solid var(--color-rule);
+}
+
+.writing-aside .writing-lead {
+    padding-bottom: var(--space-figure);
+}
+
+.writing-lead:last-child {
+    border-bottom: 0;
+}
+
+.writing-lead .excerpt {
+    padding-top: var(--space-excerpt);
+    font-size: var(--text-excerpt);
+}
+
+.writing-item.has-thumb,
+.writing-lead.has-thumb {
+    display: grid;
+    grid-template-columns: 1fr var(--size-thumb);
+    gap: var(--space-figure);
+    align-items: start;
+}
+
+.writing-lead.has-thumb .excerpt {
+    grid-column: 1 / -1;
+}
+
+.writing-label {
+    font-weight: var(--weight-label);
+}
+
+.writing-lead,
+.writing-item {
+    position: relative;
+}
+
+.writing-lead h3 a::after,
+.writing-item h3 a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+}
+
+.writing-item {
+    padding-block: var(--space-row);
+    border-bottom: var(--rule-hairline) solid var(--color-rule);
+}
+
+.writing-item:last-child {
+    border-bottom: 0;
+}
+
+/* fit.js schneidet die Timeline an der Unterkante der Galerie ab. Die Regel
+   steht am Ende, damit sie das display der Einträge mit Vorschaubild schlägt,
+   und der letzte sichtbare Eintrag verliert seine Linie. */
+.writing-list .is-trimmed {
+    display: none;
+}
+
+.writing-item:has(+ .is-trimmed) {
+    border-bottom: 0;
+}
+
+@media (max-width: 900px) {
+    .writing-aside {
+        display: none;
+    }
 }

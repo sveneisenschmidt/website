@@ -2,7 +2,6 @@
 date = '2026-06-24T05:30:00'
 title = "Stop Gap Swallow"
 type = "photo"
-emojis = ["🐦"]
 cover = "1C4A1726.jpeg"
 +++
 

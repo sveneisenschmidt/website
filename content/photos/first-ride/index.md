@@ -2,7 +2,6 @@
 date = '2026-08-02T16:45:00'
 title = "First Ride"
 type = "photo"
-emojis = ["🚴"]
 cover = "A6405041.jpeg"
 +++
 

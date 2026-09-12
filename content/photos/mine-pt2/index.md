@@ -4,7 +4,6 @@ title = 'Mine (Pt.2)'
 type = "photo"
 cover = 'DSC00191.jpeg'
 pick = true
-emojis = ["⛏️"]
 +++
 
 

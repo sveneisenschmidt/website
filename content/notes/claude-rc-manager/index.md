@@ -2,7 +2,6 @@
 date = '2026-08-20T12:00:00'
 title = "Claude"
 type = "note"
-emojis = ["🛠️"]
 +++
 
 My software development at home has shifted away from typing code to writing messages into an empty chat window as Claude Code got "better". Better in the sense of writing complex code, it is still annoying in its writing style. I got it under control with lots of training wheels ([anti slop rules](https://github.com/sveneisenschmidt/claude-rc-manager/blob/main/.claude/skills/anti-slop/SKILL.md), [superpowers](https://github.com/obra/superpowers)) attached to it.

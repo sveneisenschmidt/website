@@ -3,7 +3,6 @@ date = '2026-04-02T21:15:00'
 title = 'Two Cameras'
 type = "photo"
 cover = 'IMG_4479.jpeg'
-emojis = ["📷"]
 +++
 
 I went out this morning with both cameras, the two bird shots from the Canon and the frost on the bridge from the Sony.

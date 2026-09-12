@@ -3,7 +3,6 @@ date = '2026-04-04T20:00:00'
 title = 'Experimental'
 type = "photo"
 cover = 'DSC01715.jpeg'
-emojis = ["🧪"]
 +++
 
 I ran the photo import in an experimental Hypo branch today and I will learn from my mistakes: the photos never arrived in Apple Photos and got deleted from the card. Update: I was able to recover them.

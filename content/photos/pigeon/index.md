@@ -2,7 +2,6 @@
 date = '2026-03-17T18:00:00'
 title = 'Pigeon'
 type = "photo"
-emojis = ["🐦"]
 cover = 'IMG_2909.jpeg'
 +++
 

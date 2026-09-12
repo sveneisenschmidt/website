@@ -4,9 +4,6 @@ locale = "en-us"
 title = "Sven Eisenschmidt - Personal Blog"
 timeZone = "Europe/Berlin"
 
-[pagination]
-pagerSize = 10
-
 [params]
 description = "Personal website of Sven Eisenschmidt, based in Leipzig, Germany."
 siteHeading = "Sven Eisenschmidt"
@@ -39,9 +36,7 @@ essays = "/:year-:month-:day-:contentbasename/"
 
 [outputs]
 home = ["HTML", "RSS", "htaccess"]
-section = ["HTML", "RSS"]
-taxonomy = ["HTML"]
-term = ["HTML"]
+section = ["HTML"]
 
 [markup.goldmark.renderer]
 unsafe = true
@@ -60,18 +55,3 @@ title = true
 
 [caches.getresource]
 maxAge = 0
-
-[[menus.main]]
-name = "Archive"
-url = "/archive"
-weight = 10
-
-[[menus.main]]
-name = "About"
-url = "/about"
-weight = 20
-
-[[menus.main]]
-name = "RSS"
-url = "/index.xml"
-weight = 30

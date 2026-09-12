@@ -2,7 +2,6 @@
 date = '2026-01-17T16:00:00'
 title = "New Camera Day"
 type = "photo"
-emojis = ["📷"]
 cover = "DSC00040.jpeg"
 +++
 

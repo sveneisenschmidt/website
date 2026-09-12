@@ -2,7 +2,6 @@
 date = '2026-06-28T21:00:00'
 title = "Hypo 1.12"
 type = "note"
-emojis = ["🛠️"]
 +++
 
 Hypo 1.12 is [out](https://hypo.eisenschmidt.website/downloads/Hypo-1.12.0.dmg), under the hood I focused on a modularized app architecture for plug-and-play support of new camera bodies and RAW formats to make my future life easier, a slightly refined UI and UX, a reworked autofocus and subject visualisation. The latter I think is pretty cool and unique, I haven't seen that in other photo culling apps.

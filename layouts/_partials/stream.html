@@ -1,0 +1,48 @@
+{{- $current := .current | default "" -}}
+{{- $limit := .limit | default 25 -}}
+{{- $fit := .fit | default false -}}
+{{- $posts := where site.RegularPages "Section" "in" (slice "photos" "trips" "notes" "essays") -}}
+
+{{- $entries := slice -}}
+{{- $idx := -1 -}}
+{{- if $current -}}
+    {{- range $i, $p := $posts }}{{ if eq $p.RelPermalink $current }}{{ $idx = $i }}{{ end }}{{ end -}}
+{{- end -}}
+
+{{/* A post shows its two neighbours, every other page the newest $limit. */}}
+{{- if ge $idx 0 -}}
+    {{- if gt $idx 0 }}{{ $entries = $entries | append (dict "page" (index $posts (sub $idx 1)) "label" "Next") }}{{ end -}}
+    {{- if lt $idx (sub (len $posts) 1) }}{{ $entries = $entries | append (dict "page" (index $posts (add $idx 1)) "label" "Previous") }}{{ end -}}
+{{- else -}}
+    {{- range $i, $p := first $limit $posts }}{{ $entries = $entries | append (dict "page" $p "label" (cond (eq $i 0) "Latest" "")) }}{{ end -}}
+{{- end -}}
+
+<section class="writing{{ if $current }} writing-aside{{ end }}" aria-label="Posts"{{ if $fit }} data-fit=".pictures"{{ end }}>
+    <div class="writing-inner">
+        <h2 class="stream-title stream-opening">Timeline{{ if lt $idx 0 }} <span class="stream-count">{{ len $entries }}</span>{{ end }}
+            <span class="far">
+                <a href="/archive/">Archive</a>
+                <a href="/about/">About</a>
+                <a href="/index.xml">RSS</a>
+            </span>
+        </h2>
+
+        <div class="writing-list">
+            {{ range $i, $e := $entries }}
+            {{ $p := $e.page }}
+            {{ $first := eq $i 0 }}
+            <article class="{{ if $first }}writing-lead{{ else }}writing-item{{ end }}{{ if $p.Params.cover }} has-thumb{{ end }}" data-type="{{ $p.Params.type }}">
+                <div>
+                    <h3><a href="{{ $p.RelPermalink }}">{{ with $e.label }}<span class="writing-label">{{ . }}:</span> {{ end }}{{ $p.LinkTitle }}</a></h3>
+                    <p class="metadata">
+                        <time datetime="{{ $p.Date.Format "2006-01-02" }}">{{ $p.Date.Format "January 2, 2006" }}</time>
+                        {{ with partialCached "article-type.html" (dict "page" $p) $p.RelPermalink }}&middot; {{ . }}{{ end }}
+                    </p>
+                </div>
+                {{ partial "thumb.html" (dict "page" $p "edge" 48 "link" false) }}
+                {{ if and $first (lt $idx 0) }}{{ with $p.Summary | plainify }}<p class="excerpt">{{ . }}</p>{{ end }}{{ end }}
+            </article>
+            {{ end }}
+        </div>
+    </div>
+</section>

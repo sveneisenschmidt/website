@@ -3,7 +3,6 @@ date = '2026-04-09T19:00:00'
 title = 'Scammed'
 type = "photo"
 cover = "IMG_5381.jpeg"
-emojis = ["🦌"]
 +++
 
 Last week I did not pay attention and entered my personal data with pictures of my travel passport into a fake UK government website to request my ETA for my forthcoming trip. Call me an official idiot.

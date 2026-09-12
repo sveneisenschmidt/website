@@ -4,7 +4,6 @@ title = 'Dawn'
 type = "photo"
 cover = 'IMG_0996.JPG'
 pick = true
-emojis = ["🦌"]
 +++
 
 I took Aika for a long walk at dawn this morning, carrying Nadine's Canon with our new Canon EF-S 55-250mm F4-5.6 IS STM tele lens.

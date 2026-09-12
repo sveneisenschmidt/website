@@ -7,7 +7,6 @@
 
 {{ $lead := index $picks 0 }}
 {{ $tiles := first 12 (after 1 $picks) }}
-{{ $all := first 25 $posts }}
 
 <section class="pictures" aria-label="Pictures">
         <h2 class="stream-title stream-opening">Featured photo
@@ -25,8 +24,7 @@
         {{ $wide := .Resize "1600x webp q80" }}
         {{ $mid := .Resize "1000x webp q80" }}
         {{ $narrow := .Resize "600x webp q80" }}
-                <a href="{{ $post.RelPermalink }}" class="frame" tabindex="-1" aria-hidden="true">
-            <img
+                    <img
                 class="frame-picture"
                 src="{{ $wide.RelPermalink }}"
                 srcset="{{ $narrow.RelPermalink }} 600w, {{ $mid.RelPermalink }} 1000w, {{ $wide.RelPermalink }} 1600w"
@@ -37,13 +35,12 @@
                 fetchpriority="high"
                 decoding="async"
             />
-        </a>
         {{ end }}
     </article>
     {{ end }}
 
     {{ with $tiles }}
-    <h2 class="stream-title">Previously featured</h2>
+    <h2 class="stream-title"><a href="/archive/photos/">Previously featured</a></h2>
     <ul class="tiles" role="list">
         {{ range . }}
         <li>
@@ -71,46 +68,6 @@
 
 </section>
 
-<section class="writing" aria-label="Posts">
-        <div class="writing-inner">
-                <h2 class="stream-title stream-opening">Recent posts <span class="stream-count">{{ len $all }}</span>
-            <span class="far">
-                <a href="/archive/">Archive</a>
-                <a href="/about/">About</a>
-                <a href="/index.xml">RSS</a>
-            </span>
-        </h2>
-
-        <div class="writing-list">
-            {{ with index $all 0 }}
-            <article class="writing-lead{{ if .Params.cover }} has-thumb{{ end }}" data-type="{{ .Params.type }}">
-                <div>
-                    <h3><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h3>
-                    <p class="metadata">
-                        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
-                        {{ with partialCached "article-type.html" (dict "page" .) .RelPermalink }}&middot; {{ . }}{{ end }}
-                    </p>
-                </div>
-                {{ partial "thumb.html" (dict "page" . "edge" 48) }}
-                <p class="excerpt">{{ .Summary | plainify }}</p>
-            </article>
-            {{ end }}
-
-            {{ range after 1 $all }}
-            <article class="writing-item{{ if .Params.cover }} has-thumb{{ end }}" data-type="{{ .Params.type }}">
-                                <div>
-                    <h3><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h3>
-                    <p class="metadata">
-                        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
-                        {{ with partialCached "article-type.html" (dict "page" .) .RelPermalink }}&middot; {{ . }}{{ end }}
-                    </p>
-                </div>
-                {{ partial "thumb.html" (dict "page" . "edge" 48) }}
-            </article>
-            {{ end }}
-
-        </div>
-    </div>
-</section>
+{{ partial "stream.html" (dict "limit" 30 "fit" true) }}
 
 {{ end }}

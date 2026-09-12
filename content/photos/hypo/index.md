@@ -2,7 +2,6 @@
 date = '2026-03-30T19:22:00'
 title = "So I Built a Mac App"
 type = "photo"
-emojis = ["🛠️"]
 cover = "DSC01685.jpeg"
 +++
 

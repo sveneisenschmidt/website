@@ -2,7 +2,6 @@
 date = '2026-08-23T18:00:00'
 title = "Sticking Around"
 type = "photo"
-emojis = ["🦅"]
 cover = "1C4A7345.jpeg"
 pick = true
 +++

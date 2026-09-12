@@ -2,7 +2,6 @@
 date = '2026-02-16T16:38:00'
 title = "New Games"
 type = "photo"
-emojis = ["🎮"]
 cover = 'DSC01204.jpg'
 +++
 

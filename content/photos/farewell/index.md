@@ -2,7 +2,6 @@
 date = '2026-08-08T18:00:00'
 title = "Farewell"
 type = "photo"
-emojis = ["🖤"]
 cover = "1C4A5919.jpeg"
 +++
 

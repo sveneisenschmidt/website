@@ -2,7 +2,6 @@
 date = '2026-01-08T19:00:00'
 title = "So I built an RSS Reader"
 type = "note"
-emojis = ["📰"]
 +++
 
 So I built an RSS reader. I wanted something simple for myself. Read my feeds, mark things as read, move on.

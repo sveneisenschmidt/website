@@ -2,7 +2,6 @@
 date = '2026-05-05T18:50:00'
 title = "Forest Stroll"
 type = "photo"
-emojis = ["🌳"]
 cover = "A97I2570.jpeg"
 +++
 

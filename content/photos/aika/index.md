@@ -2,7 +2,6 @@
 date = '2026-03-11T20:40:00'
 title = "Aika"
 type = "photo"
-emojis = ["🐕"]
 cover = "IMG_2334.JPG"
 +++
 

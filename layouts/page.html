@@ -4,16 +4,16 @@
 
 <article class="article">
         <p class="stream-title stream-opening">
-        {{- if $isPost }}{{ if .Params.pick }}Featured photo{{ else }}{{ .Params.type }}{{ end }}{{ else }}{{ .Params.label }}{{ end }}
-        <a class="far" href="{{ "/" | relURL }}">Back</a>
+        {{- if $isPost }}<a href="/archive/{{ .Section }}/">{{ if .Params.pick }}Featured photo{{ else }}{{ .Params.type }}{{ end }}</a>{{ else }}{{ .Params.label }}{{ end }}
+        <a class="far" href="{{ "/" | relURL }}" data-back>Back</a>
     </p>
 
     <h1>{{ .Title }}</h1>
 
         <p class="metadata">
         {{- if $isPost }}
-        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
-        {{ with partial "article-type.html" (dict "page" . "type" false) }}&middot; {{ . }}{{ end }}
+        <a href="/archive/"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time></a>
+        {{ with partial "article-type.html" (dict "page" . "type" false) }}&middot; <a href="/archive/{{ $.Section }}/">{{ . }}</a>{{ end }}
         {{- else }}
         Last updated: <time datetime="{{ .Lastmod.Format "2006-01-02" }}">{{ .Lastmod.Format "January 2, 2006" }}</time>
         {{- end }}
@@ -28,5 +28,7 @@
     </p>
 
 </article>
+
+{{ partial "stream.html" (dict "lead" false "current" .RelPermalink) }}
 
 {{ end }}

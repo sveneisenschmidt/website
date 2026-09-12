@@ -3,7 +3,6 @@ date = '2026-03-14T21:00:00'
 title = 'Requiem'
 type = "photo"
 cover = 'DSC01640.jpeg'
-emojis = ["🎮"]
 +++
 
 I finished [Resident Evil Requiem](/log/games#resident-evil-requiem) on the PS5 Pro. It's a 8/10 for me.

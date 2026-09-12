@@ -2,7 +2,6 @@
 date = '2026-04-15T22:15:00'
 title = "Redstart"
 type = "photo"
-emojis = ["🐦"]
 cover = "IMG_5800.jpeg"
 +++
 

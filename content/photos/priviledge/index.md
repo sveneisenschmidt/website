@@ -4,7 +4,6 @@ title = 'Privilege'
 type = "photo"
 cover = 'IMG_2599.jpeg'
 pick = true
-emojis = ["🃏"]
 +++
 
 Every Friday afternoon, Nadine's parents pick up Tilian and Kellin. There is no fixed plan. Sometimes it is an outing, sometimes an hour of card games.

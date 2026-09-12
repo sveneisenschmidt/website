@@ -3,7 +3,6 @@ date = '2026-04-03T22:15:00'
 title = 'Loop'
 type = "photo"
 cover = 'IMG_4668.jpeg'
-emojis = ["🛠️"]
 +++
 
 Working on Hypo and immediately using new features in my photo workflow is instant gratification, and it becomes a self-reinforcing loop.

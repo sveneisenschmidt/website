@@ -3,7 +3,6 @@ date = '2026-01-09T18:00:00'
 title = 'Vet'
 type = "photo"
 cover = 'IMG_0565.jpg'
-emojis = ["🐕"]
 +++
 
 Neither Aika nor I woke up this morning and thought "Hey let's rip out a toe nail, that sounds like fun!". Yet here we are and we spent this afternoon at the vet.

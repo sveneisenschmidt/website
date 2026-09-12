@@ -3,7 +3,6 @@ date = '2026-03-16T23:00:00'
 title = 'Monday'
 type = "photo"
 cover = 'IMG_2874.jpeg'
-emojis = ["🗑️"]
 +++
 
 This is what a successfull Monday looks like: Booked my flights for April to see [Jasper](https://jasper.tandy.is) and his family. Decided to go for a Sigma 600mm lens. Fell asleep 8pm with the kids during bedtime routine.

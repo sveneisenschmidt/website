@@ -33,6 +33,7 @@
 }
 
 .archive-item {
+    position: relative;
     display: grid;
     grid-template-columns: var(--width-day) 1fr var(--size-thumb);
     gap: var(--space-day);
@@ -43,6 +44,12 @@
 .archive-day {
     font-size: var(--text-day);
     font-weight: var(--weight-metadata);
+}
+
+.archive-title::after {
+    content: "";
+    position: absolute;
+    inset: 0;
 }
 
 .archive-title {
@@ -69,4 +76,25 @@
 
 .archive-sheet a {
     display: block;
+}
+
+.archive-sheet a {
+    display: block;
+    position: relative;
+}
+
+.tile-pick {
+    position: absolute;
+    top: var(--space-mark);
+    right: var(--space-mark);
+    color: var(--color-page);
+    font-size: var(--text-mark);
+    pointer-events: none;
+}
+
+.icon-heart {
+    display: block;
+    width: 1em;
+    height: auto;
+    fill: currentColor;
 }

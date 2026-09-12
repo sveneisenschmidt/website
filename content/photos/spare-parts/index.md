@@ -3,7 +3,6 @@ date = '2026-02-15T20:37:00'
 title = 'Spare Parts'
 type = "photo"
 cover = 'DSC01207.jpg'
-emojis = ["🏎️"]
 +++
 
 The front bumper of Tilian's RC car broke off today. Kellin broke it, but to keep the peace I told Tilian it was me.

@@ -2,7 +2,6 @@
 date = '2026-05-29T20:00:00'
 title = "Blackcap"
 type = "photo"
-emojis = ["🐦"]
 cover = "A97I4043.jpeg"
 +++
 

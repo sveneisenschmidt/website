@@ -3,7 +3,6 @@ date = '2026-01-14T19:00:00'
 title = 'Away'
 type = "photo"
 cover = 'IMG_0615.jpg'
-emojis = ["👬"]
 +++
 
 Tilian is sick and Kellin has been quarantined as a precaution. I am on a work trip to Munich so it was extra difficult to leave them until tomorrow night.

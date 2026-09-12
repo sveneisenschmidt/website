@@ -3,7 +3,6 @@ date = '2026-03-22T12:47:00'
 title = 'Dodge'
 type = "photo"
 cover = 'IMG_3382.JPG'
-emojis = ["🚗"]
 +++
 
 My father restores vintage cars as a hobby, and today we did a photo shoot together. The car is a 1932 Dodge Eight Series DK, fully restored by him.

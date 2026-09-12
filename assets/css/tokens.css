@@ -36,9 +36,11 @@
 
     --scale-tracking-1: 0.08em;
 
-    --scale-opacity-1: 0.25;
+    --scale-duration-1: 120ms;
+    --scale-duration-2: 200ms;
 
     --scale-size-thumb: 3rem;
+    --scale-size-mark: 1.25rem;
 
     --scale-width-1: 8.5rem;
     --scale-width-2: 90rem;
@@ -50,7 +52,6 @@
 
     --scale-width-6: 12rem;
 
-    --scale-height-1: 60vh;
     --scale-height-2: 25rem;
     --scale-height-3: 44rem;
 
@@ -151,6 +152,8 @@
 
     --space-tile: var(--scale-space-3);
 
+    --space-mark: var(--scale-space-2);
+
     --space-row: var(--scale-space-3);
 
     --space-rule: var(--scale-space-3);
@@ -173,8 +176,6 @@
 
     --space-ring: var(--scale-space-1);
 
-    --space-ring-clearance: var(--scale-space-2);
-
     --leading-caps: var(--scale-leading-1);
 
     --leading-body: var(--scale-leading-2);
@@ -189,7 +190,11 @@
 
     --size-thumb: var(--scale-size-thumb);
 
-    --opacity-thumb: var(--scale-opacity-1);
+    --text-mark: var(--scale-size-mark);
+
+    --duration-hover: var(--scale-duration-1);
+
+    --duration-page: var(--scale-duration-2);
 
     --width-datum: var(--scale-width-1);
 
@@ -202,8 +207,6 @@
     --width-index: var(--scale-width-4);
 
     --width-page: var(--scale-width-2);
-
-    --height-stream: var(--scale-height-1);
 
     --font-body: var(--scale-family-1);
 

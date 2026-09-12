@@ -2,7 +2,6 @@
 date = '2026-01-02T10:00:00'
 title = 'Open Source'
 type = "note"
-emojis = ["💻"]
 +++
 
 At the end of 2025 I spent 100 hours on a single open source project. I did similar things over the past twenty years but always lost interest. This time was different. The software is actually used at my company. Spoiler: I will happily discontinue it.

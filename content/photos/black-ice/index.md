@@ -3,7 +3,6 @@ date = '2026-02-05T16:15:00'
 title = 'Black Ice'
 type = "photo"
 cover = 'DSC00623.jpeg'
-emojis = ["🧊"]
 +++
 
 Lots of black ice on the farmers road and large chunks of frozen snow on the sides which looked like icebergs. It's been below zero for weeks and quite enjoyable. I dread when it all melts and gets wet again.

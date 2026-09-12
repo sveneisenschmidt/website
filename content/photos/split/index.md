@@ -2,7 +2,6 @@
 date = '2026-04-20T21:00:00'
 title = "Split"
 type = "photo"
-emojis = ["📷"]
 cover = "A6400201.jpeg"
 +++
 

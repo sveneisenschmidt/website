@@ -3,7 +3,6 @@ date = '2026-03-27T19:10:00'
 title = 'Dragon Touch'
 type = "photo"
 cover = 'DSC01677.jpeg'
-emojis = ["📅"]
 +++
 
 We got a Dragon Touch 27" digital display to use as a family calendar. My original plan was to build something with an e-ink display and a Raspberry Pi Zero, but this felt like the faster path.

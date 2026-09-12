@@ -3,7 +3,6 @@ date = '2026-01-19T18:00:00'
 title = 'Mine'
 type = "photo"
 cover = 'DSC00087.jpeg'
-emojis = ["⛏️"]
 +++
 
 

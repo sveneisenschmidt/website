@@ -2,7 +2,6 @@
 date = '2026-02-03T15:45:00'
 title = "Wolf Tracking"
 type = "photo"
-emojis = ["🐺"]
 cover = "DSC00531.jpeg"
 +++
 

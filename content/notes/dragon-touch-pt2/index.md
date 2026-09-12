@@ -2,7 +2,6 @@
 date = '2026-03-31T21:20:00'
 title = 'Dragon Touch (Pt.2)'
 type = "note"
-emojis = ["📅"]
 +++
 
 A follow-up to the [Dragon Touch post](/2026-03-27-dragon-touch/) from a few days ago, about two things that bothered me enough to fix.

@@ -14,7 +14,7 @@
         {{ partial "stream-filter.html" (dict
         "current" $stream
         "base" "/archive/"
-        "far" (slice (dict "label" "Back" "url" "/"))) }}
+        "far" (slice (dict "label" "Back" "url" "/" "back" true))) }}
 
     {{ range $posts.GroupByDate "2006" }}
     <h2 class="archive-year">{{ .Key }}</h2>
@@ -45,6 +45,7 @@
                     loading="lazy"
                     decoding="async"
                 />
+                {{ if $post.Params.pick }}<span class="tile-pick">{{ partial "icon-heart.html" . }}</span>{{ end }}
             </a>
         </li>
         {{ end }}
@@ -56,7 +57,7 @@
         <li class="archive-item">
             <span class="archive-day"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2" }}</time></span>
             <a class="archive-title" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
-            {{ partial "thumb.html" (dict "page" . "edge" 48) }}
+            {{ partial "thumb.html" (dict "page" . "edge" 48 "link" false) }}
         </li>
         {{ end }}
     </ul>

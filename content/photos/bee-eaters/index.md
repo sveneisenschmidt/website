@@ -2,7 +2,6 @@
 date = '2026-08-06T18:00:00'
 title = "They are eating the bees!"
 type = "photo"
-emojis = ["🐝"]
 cover = "1C4A5556.jpeg"
 pick = true
 +++

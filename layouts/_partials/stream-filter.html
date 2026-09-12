@@ -3,10 +3,10 @@
 {{- $far := .far -}}
 {{- $items := slice
     (dict "slug" "all"    "path" ""         "label" "All")
-    (dict "slug" "photos" "path" "photos/"  "label" "Photo")
-    (dict "slug" "trips"  "path" "trips/"   "label" "Trip")
-    (dict "slug" "notes"  "path" "notes/"   "label" "Note")
-    (dict "slug" "essays" "path" "essays/"  "label" "Essay")
+    (dict "slug" "photos" "path" "photos/"  "label" "Photos")
+    (dict "slug" "trips"  "path" "trips/"   "label" "Trips")
+    (dict "slug" "notes"  "path" "notes/"   "label" "Notes")
+    (dict "slug" "essays" "path" "essays/"  "label" "Essays")
 -}}
 
 <nav class="stream-filter" aria-label="Filter by type">
@@ -15,7 +15,7 @@
     {{- end }}
     {{- with $far }}
         <span class="far">
-        {{- range . }}<a href="{{ .url }}">{{ .label }}</a>{{ end -}}
+        {{- range . }}<a href="{{ .url }}"{{ if .back }} data-back{{ end }}>{{ .label }}</a>{{ end -}}
     </span>
     {{- end }}
 </nav>

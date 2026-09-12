@@ -3,7 +3,6 @@ date = '2026-03-04T18:00:00'
 title = 'Perpetual'
 type = "photo"
 cover = 'IMG_1855.JPG'
-emojis = ["🟠"]
 +++
 
 Went for a walk in the woods with the neighbors and their dachshund, and Aika. Spotted a pheasant, a fox, a red kite, and a few deer.

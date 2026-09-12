@@ -12,6 +12,7 @@
 
 .body h2,
 .body h3 {
+    clear: left;
     margin-top: var(--space-entry);
     margin-bottom: var(--space-title);
     font-size: var(--text-subtitle);
@@ -81,9 +82,26 @@
     text-decoration: none;
 }
 
+/* Das Porträt steht im Text, die ersten Absätze laufen daneben. Überschriften
+   beginnen immer wieder auf voller Breite, siehe clear weiter unten. */
 .body img.inline {
+    float: left;
     width: var(--width-portrait);
     margin-bottom: var(--space-figure);
+    margin-right: var(--space-figure);
+}
+
+.body img.inline + p {
+    margin-top: 0;
+}
+
+/* Unter 600px bleibt neben dem Bild zu wenig Textbreite, dort steht es wieder
+   über dem Text. */
+@media (max-width: 600px) {
+    .body img.inline {
+        float: none;
+        margin-right: 0;
+    }
 }
 
 .post-footer {
@@ -91,8 +109,6 @@
     align-items: baseline;
     gap: var(--space-filter);
     margin-top: var(--space-post-end);
-    padding-top: var(--space-rule);
-    border-top: var(--rule-hairline) solid var(--color-rule);
     font-size: var(--text-action);
     font-weight: var(--weight-label);
     line-height: var(--leading-caps);

@@ -2,7 +2,6 @@
 date = '2026-08-10T18:00:00'
 title = "Leipzig"
 type = "photo"
-emojis = ["🎞️"]
 cover = "1C4A6406.jpeg"
 pick = true
 +++

@@ -2,7 +2,6 @@
 date = '2026-07-09T18:30:00'
 title = "Hypo 1.15"
 type = "note"
-emojis = ["🛠️"]
 +++
 
 Right before our summer break I pushed a new [release](https://hypo.eisenschmidt.website/#releases) of Hypo out, macOS 15 (Sequoia) is now better supported, and during import a conversion to DNG (Adobe's open raw image format) is available in Early Access.

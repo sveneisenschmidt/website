@@ -2,7 +2,6 @@
 date = '2026-08-11T21:30:00'
 title = "Lights"
 type = "photo"
-emojis = ["💡"]
 cover = "1C4A6461.jpeg"
 +++
 

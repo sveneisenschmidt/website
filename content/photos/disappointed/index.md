@@ -3,7 +3,6 @@ date = '2026-01-16T19:00:00'
 title = 'Disappointed'
 type = "photo"
 cover = 'IMG_0658.jpg'
-emojis = ["📷"]
 +++
 
 The Sony RX100 VII did not arrive today. I rescheduled delivery from yesterday to today because of my work trip this week. Not sure what happened for it not to arrive but I'm disappointed. 

@@ -2,6 +2,14 @@
   to: /about/
   note: Lebenslauf gelöscht am 10. September 2026, sechs menschliche Aufrufe in acht Monaten
 
+- from: /projects/
+  to: /about/#things-i-built
+  note: Am 12. September 2026 nach /about/ gezogen, die Seite war von nirgends verlinkt
+
+- from: /blogroll/
+  to: /about/#blogroll
+  note: Am 12. September 2026 nach /about/ gezogen, die Seite war von nirgends verlinkt
+
 - from: /posts/ambiguity-at-work-v3/
   to: /2026-01-22-ambiguity/
   note: zwei Vorfassungen desselben Textes, beide ohne Aufrufe; /posts/ambiguity/ hat 76
@@ -1633,10 +1641,6 @@
   rss: keep
   pop: keep
 
-- from: /posts/hypo-1-18-1/
-  to: /2026-09-10-hypo-1-18-1/
-  rss: keep
-  pop: keep
 
 - from: /posts/hypo-live/
   to: /2026-06-16-hypo-live/
@@ -1876,10 +1880,6 @@
 - from: /posts/reading/
   to: /2026-01-07-reading/
 
-- from: /posts/redesign/
-  to: /2026-09-11-redesign/
-  rss: keep
-  pop: keep
 
 - from: /posts/redstart/
   to: /2026-04-15-redstart/

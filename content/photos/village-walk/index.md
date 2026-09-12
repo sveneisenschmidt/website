@@ -2,7 +2,6 @@
 date = '2026-03-29T18:39:00'
 title = "Village Walk"
 type = "photo"
-emojis = ["🌿"]
 cover = "IMG_4032.jpeg"
 +++
 

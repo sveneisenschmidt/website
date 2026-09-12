@@ -4,7 +4,6 @@ title = '2025 Wrapped'
 type = "photo"
 cover = 'IMG_8224.jpg'
 pick = true
-emojis = ["🎬"]
 +++
 
 My year 2025 in numbers and highlights, wrapped-style. First attempt at summarizing an eventful year. More platforms offering wrapped/replay summaries obviously helped.

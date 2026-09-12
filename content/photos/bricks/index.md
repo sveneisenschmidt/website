@@ -3,7 +3,6 @@ date = '2026-01-20T12:30:00'
 title = 'Bricks'
 type = "photo"
 cover = 'DSC00093.jpeg'
-emojis = ["🧱"]
 +++
 
 Week started well at work and I can use the morning hours again for a longer walk with Aika before hitting the desk. Winter mornings don't offer great light, yet it's the only time I have to take pictures during week days.

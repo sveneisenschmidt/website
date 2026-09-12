@@ -2,7 +2,6 @@
 date = '2026-05-10T13:45:00'
 title = "Guided Bird Song Hike & 840mm"
 type = "photo"
-emojis = ["🐦"]
 cover = "A97I2836.jpeg"
 +++
 

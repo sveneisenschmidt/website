@@ -3,7 +3,6 @@ date = '2026-02-14T16:12:00'
 title = "Back Home"
 type = "trip"
 trip = "winter-2026"
-emojis = ["🏠"]
 cover = 'DSC01174.jpeg'
 +++
 

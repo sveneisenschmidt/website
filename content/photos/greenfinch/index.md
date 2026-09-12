@@ -2,7 +2,6 @@
 date = '2026-05-06T22:30:00'
 title = "Greenfinch"
 type = "photo"
-emojis = ["🐦"]
 cover = "A97I2637.jpeg"
 +++
 

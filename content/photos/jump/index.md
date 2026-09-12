@@ -2,7 +2,6 @@
 date = '2026-04-12T21:22:00'
 title = "Jump"
 type = "photo"
-emojis = ["📷"]
 cover = "DSC01825.jpeg"
 pick = true
 +++

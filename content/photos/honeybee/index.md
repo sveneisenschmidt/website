@@ -3,7 +3,6 @@ date = '2026-03-08T20:00:00'
 title = 'Honeybee'
 type = "photo"
 cover = 'IMG_2036.jpeg'
-emojis = ["🐝"]
 +++
 
 Heard a swarm of insects humming and was surprised to find a bunch of honey bees on a willow catkin that early this year.
