@@ -2,14 +2,12 @@
 
 check-deps:
 	@command -v hugo >/dev/null 2>&1 || { echo "hugo is required but not installed. Install with: brew install hugo"; exit 1; }
-	@command -v sips >/dev/null 2>&1 || { echo "sips is required but not installed (comes with macOS)"; exit 1; }
-	@command -v fswatch >/dev/null 2>&1 || { echo "fswatch is required but not installed. Install with: brew install fswatch"; exit 1; }
 	@command -v npx >/dev/null 2>&1 || { echo "npx is required but not installed. Install Node.js first"; exit 1; }
 
 dev: check-deps
 	$(eval IP := $(shell ipconfig getifaddr en0))
 	@echo "Mobile: http://$(IP):1313"
-	@trap 'kill 0' EXIT; ./scripts/convert-heic.sh --watch & (until curl -s http://localhost:1313 >/dev/null 2>&1; do sleep 0.5; done; open http://localhost:1313) & hugo server --buildDrafts --buildFuture --bind 0.0.0.0 --baseURL http://$(IP):1313
+	@trap 'kill 0' EXIT; (until curl -s http://localhost:1313 >/dev/null 2>&1; do sleep 0.5; done; open http://localhost:1313) & hugo server --buildDrafts --buildFuture --bind 0.0.0.0 --baseURL http://$(IP):1313
 
 build:
 	rm -rf public/*
