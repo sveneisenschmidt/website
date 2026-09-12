@@ -1,0 +1,37 @@
+.exif {
+    background: var(--color-panel);
+    color: var(--color-ink-inverted);
+    padding: var(--space-panel-block) var(--space-panel);
+
+    border-radius: 0 0 var(--radius-image) var(--radius-image);
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(min(var(--width-datum), 100%), 1fr));
+    gap: var(--space-data-row) var(--space-data);
+    margin: 0;
+}
+
+.exif .caption-long {
+    grid-column: span 2;
+}
+
+.exif dt {
+    font-size: var(--text-label);
+    font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+}
+
+.exif dd {
+    margin: 0;
+    padding-top: var(--space-datum);
+    font-size: var(--text-value);
+    font-weight: var(--weight-metadata);
+}
+
+@media (max-width: 900px) {
+    .exif .caption-long {
+        grid-column: 1 / -1;
+    }
+}

@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;900&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #222; }
+    a:hover { color: #00e; }
+  </style>
+</helmet>
+
+<div style="width: 100%; box-sizing: border-box; background: #fff; color: #222; font-family: 'Encode Sans', Arial, Helvetica, sans-serif; font-weight: 300; font-size: 18px; line-height: 1.6; padding: 32px;">
+
+  <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 32px;">
+
+    <div style="grid-column: span 6; font-size: 24px; font-weight: 900; text-transform: uppercase; line-height: 1.05;">Sven Eisenschmidt</div>
+    <div style="grid-column: span 6; display: flex; justify-content: flex-end; gap: 32px; font-size: 16px; font-weight: 400; align-items: baseline;">
+      <span>Photos</span><span>Writing</span><span>Archive</span><span>About</span>
+    </div>
+
+    <div style="grid-column: span 12; padding-top: 32px; font-size: 12.8px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.08em;">Photos</div>
+
+    <div style="grid-column: span 12; padding-top: 16px;">
+      <div style="font-size: 32px; font-weight: 900; text-transform: uppercase; line-height: 1.05;">Reserve</div>
+      <div style="font-size: 16px; font-weight: 400; padding: 8px 0 16px;">September 6, 2026</div>
+    </div>
+
+    <div style="grid-column: span 12; width: 100%; aspect-ratio: 3 / 2; background: #d8d8d8; border-radius: 4px;"></div>
+
+    <div style="grid-column: span 8; padding-top: 16px;">
+      <p style="margin: 0; font-size: 16px; max-width: 60ch;">The reservoir sat lower than I have ever seen it. The far bank is normally under two metres of water, and the herons have started working the shallows where the boats used to turn.</p>
+    </div>
+
+    <div style="grid-column: span 4; padding-top: 16px;">
+      <sc-for list="{{exif}}" as="e" hint-placeholder-count="4">
+        <div style="display: grid; grid-template-columns: 110px 1fr; gap: 16px; padding: 4px 0;">
+          <div style="font-size: 12.8px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.08em; padding-top: 4px;">{{e.k}}</div>
+          <div style="font-size: 16px; font-weight: 400;">{{e.v}}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="grid-column: span 12; height: 1px; background: #222; margin-top: 32px;"></div>
+    <div style="grid-column: span 6; font-size: 16px; font-weight: 400;">&larr; Paving</div>
+    <div style="grid-column: span 6; font-size: 16px; font-weight: 400; text-align: right;">Pipes &rarr;</div>
+
+  </div>
+
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      exif: [
+        { k: 'Camera', v: 'Canon R5' }, { k: 'Lens', v: '840mm' },
+        { k: 'Aperture', v: 'f/8' }, { k: 'Exposure', v: '1/1600 · ISO 640' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

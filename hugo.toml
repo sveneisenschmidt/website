@@ -1,11 +1,8 @@
 baseURL = "https://sven.eisenschmidt.website/"
-languageCode = "en-us"
+
+locale = "en-us"
 title = "Sven Eisenschmidt - Personal Blog"
 timeZone = "Europe/Berlin"
-
-
-[pagination]
-pagerSize = 10
 
 [params]
 description = "Personal website of Sven Eisenschmidt, based in Leipzig, Germany."
@@ -20,14 +17,26 @@ linkedinUrl = "https://linkedin.com/in/sveneisenschmidt"
 stravaUrl = "https://strava.com/athletes/sveneisenschmidt"
 email = "sven.eisenschmidt@gmail.com"
 
+[mediaTypes."text/htaccess"]
+delimiter = ""
+
+[outputFormats.htaccess]
+mediaType = "text/htaccess"
+baseName = ".htaccess"
+isPlainText = true
+notAlternative = true
+
 [taxonomies]
-topic = "topics"
+
+[permalinks.page]
+photos = "/:year-:month-:day-:contentbasename/"
+trips = "/:year-:month-:day-:contentbasename/"
+notes = "/:year-:month-:day-:contentbasename/"
+essays = "/:year-:month-:day-:contentbasename/"
 
 [outputs]
-home = ["HTML", "RSS"]
-section = ["HTML", "RSS"]
-taxonomy = ["HTML"]
-term = ["HTML"]
+home = ["HTML", "RSS", "htaccess"]
+section = ["HTML"]
 
 [markup.goldmark.renderer]
 unsafe = true
@@ -46,38 +55,3 @@ title = true
 
 [caches.getresource]
 maxAge = 0
-
-[[menus.main]]
-name = "Search"
-pageRef = "/search"
-weight = 10
-
-[[menus.main]]
-name = "Topics"
-pageRef = "/topics"
-weight = 30
-
-[[menus.main]]
-name = "Photos"
-pageRef = "/photos"
-weight = 35
-
-[[menus.main]]
-name = "Log"
-pageRef = "/log"
-weight = 37
-
-[[menus.main]]
-name = "Projects"
-pageRef = "/projects"
-weight = 38
-
-[[menus.main]]
-name = "Blogroll"
-url = "/blogroll"
-weight = 40
-
-[[menus.main]]
-name = "About"
-pageRef = "/about"
-weight = 99

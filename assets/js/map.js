@@ -18,21 +18,18 @@ document.addEventListener("DOMContentLoaded", function () {
             keyboard: zoomable,
             zoomSnap: 0.25,
         });
-        // Voyager tiles in both color schemes, the map keeps its own light
-        // look. The container background matches the tiles so the hairline
-        // seams between tiles at fractional zoom stay invisible.
-        L.tileLayer(
-            "https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-            {
-                maxZoom: 19,
-                attribution:
-                    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            },
-        ).addTo(map);
+        // Standard OpenStreetMap tiles in both color schemes, the map keeps
+        // its own light look. The container background matches the tiles so
+        // the hairline seams between tiles at fractional zoom stay invisible.
+        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution:
+                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }).addTo(map);
         var ink = function () {
             return "#000000";
         };
-        el.style.backgroundColor = "#fbf6ee";
+        el.style.backgroundColor = "#f2efe9";
 
         var markers = points.map(function (p) {
             var marker = L.circleMarker([p.lat, p.lon], {

@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;900&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #222; }
+    a:hover { color: #00e; }
+  </style>
+</helmet>
+
+<div style="width: 800px; box-sizing: border-box; background: #fff; color: #222; font-family: 'Encode Sans', Arial, Helvetica, sans-serif; font-weight: 300; font-size: 18px; line-height: 1.6; padding: 16px;">
+
+  <div style="text-align: center; font-size: 24px; font-weight: 900; text-transform: uppercase; line-height: 1.05;">Sven Eisenschmidt</div>
+  <div style="text-align: center; font-size: 16px; padding: 8px 0 16px; word-spacing: 10px;">Photos &middot; Writing &middot; Archive &middot; About</div>
+  <div style="border-top: 1px solid #222;"></div>
+
+  <sc-for list="{{entries}}" as="e" hint-placeholder-count="4">
+    <div style="padding-top: 32px;">
+
+      <sc-if value="{{e.img}}" hint-placeholder-val="{{ true }}">
+        <div style="width: 100%; height: 440px; background: #d8d8d8; border-radius: 4px; margin-bottom: 16px;"></div>
+      </sc-if>
+
+      <div style="font-size: 32px; font-weight: 900; text-transform: uppercase; line-height: 1.05; margin-bottom: 8px;">{{e.title}}</div>
+      <div style="font-size: 16px; font-weight: 400;">{{e.meta}}</div>
+      <p style="margin: 0; padding-top: 8px; font-size: 16px; max-width: {{e.measure}};">{{e.text}}</p>
+    </div>
+  </sc-for>
+
+  <div style="font-size: 16px; font-weight: 400; padding: 32px 0 8px;">Older</div>
+
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      entries: [
+        { img: true, title: 'Pipes', meta: 'September 10, 2026 · Photo', measure: 'none',
+          text: 'All the parts for the pipe run from the garden house roof into the cistern are finally together.' },
+        { img: false, title: 'Hypo 1.18', meta: 'September 10, 2026 · Note', measure: '60ch',
+          text: 'Hypo 1.18 is out. After months of adding features I wanted to get the fundamentals right, so I went through the whole app like a professional user would.' },
+        { img: true, title: 'England, Day 3', meta: 'April 25, 2026 · Gallery, 19 pictures', measure: 'none',
+          text: 'Rain all morning, then the light broke over the estuary for about twenty minutes.' },
+        { img: false, title: 'Change as a Commodity', meta: 'August 11, 2026 · Essay, 6 min', measure: '60ch',
+          text: 'Every organisation I have worked in treats change as something to be requested, approved and scheduled. That is what makes it expensive.' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+{
+  "pages": [
+    {
+      "id": "page-1",
+      "name": "Grundlagen"
+    },
+    {
+      "id": "page-2",
+      "name": "Design"
+    }
+  ],
+  "artboards": [
+    {
+      "file": "Types.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 1240,
+      "h": 1240,
+      "title": "Artikeltypen",
+      "page": "page-1"
+    },
+    {
+      "file": "System.dc.html",
+      "x": 1320,
+      "y": 0,
+      "w": 1240,
+      "h": 1060,
+      "title": "Design System",
+      "page": "page-1"
+    },
+    {
+      "file": "TypeFront.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 800,
+      "h": 1900,
+      "title": "A1 \u00b7 Startseite",
+      "page": "page-2"
+    },
+    {
+      "file": "TypePhoto.dc.html",
+      "x": 880,
+      "y": 0,
+      "w": 800,
+      "h": 1000,
+      "title": "A2 \u00b7 Photo",
+      "page": "page-2"
+    },
+    {
+      "file": "TypeGallery.dc.html",
+      "x": 1760,
+      "y": 0,
+      "w": 800,
+      "h": 2100,
+      "title": "A3 \u00b7 Gallery",
+      "page": "page-2"
+    },
+    {
+      "file": "TypeNote.dc.html",
+      "x": 2640,
+      "y": 0,
+      "w": 800,
+      "h": 720,
+      "title": "A4 \u00b7 Note",
+      "page": "page-2"
+    },
+    {
+      "file": "TypeEssay.dc.html",
+      "x": 3520,
+      "y": 0,
+      "w": 800,
+      "h": 1100,
+      "title": "A5 \u00b7 Essay",
+      "page": "page-2"
+    },
+    {
+      "file": "WideFront.dc.html",
+      "x": 0,
+      "y": 2220,
+      "w": 1440,
+      "h": 1900,
+      "title": "B1 \u00b7 Startseite",
+      "page": "page-2",
+      "expand": "fill"
+    },
+    {
+      "file": "WidePhoto.dc.html",
+      "x": 1540,
+      "y": 2220,
+      "w": 1440,
+      "h": 1300,
+      "title": "B2 \u00b7 Photo",
+      "page": "page-2",
+      "expand": "fill"
+    },
+    {
+      "file": "WideArchive.dc.html",
+      "x": 3080,
+      "y": 2220,
+      "w": 1440,
+      "h": 1000,
+      "title": "B3 \u00b7 Archive",
+      "page": "page-2",
+      "expand": "fill"
+    }
+  ],
+  "annotations": [
+    {
+      "id": "lane-a",
+      "x": 0,
+      "y": -200,
+      "w": 700,
+      "page": "page-2",
+      "text": "LANE A \u2014 eine Spalte, 768 px, ein Board je Artikeltyp.\nAus dem Design System von Seite 1. Kein Raster, kein voller Desktop."
+    },
+    {
+      "id": "lane-b",
+      "x": 0,
+      "y": 2020,
+      "w": 700,
+      "page": "page-2",
+      "text": "LANE B \u2014 volle Breite, zwoelf Spalten, 32 px Rinne.\nKopf: Name links, Navigation rechts. Startseite zweispaltig, Bilder links auf acht, Texte rechts auf vier.\nDazu: Sektionstitel ueber beiden Spalten, Headline ueber dem Bild, Anzahl und Older-Link je Spalte, Kontaktbogen, Monatsueberschriften im Archiv, Rueckweg nennt die Sektion.\nNicht uebernommen: Haarlinie zwischen den Spalten, Filterzeile im Archiv."
+    },
+    {
+      "id": "impl-note",
+      "x": 1540,
+      "y": 4540,
+      "w": 700,
+      "page": "page-2",
+      "text": "NOTIZ FUER DIE IMPLEMENTIERUNG\n\nKein fester Container. Das Raster nimmt die volle Fensterbreite und skaliert mit, Aussenabstand 32 px.\n\nDie Writing-Spalte laeuft so weit wie die Photos-Spalte. Sie fuellt sich mit so vielen Eintraegen wie noetig, statt eine feste Zahl zu zeigen.\n\nBoards mit expand fill: in der Vollansicht nimmt das Board die Fensterbreite an, damit die fluide Breite pruefbar ist."
+    },
+    {
+      "id": "ratio-note",
+      "x": 3080,
+      "y": 2220,
+      "w": 700,
+      "page": "page-2",
+      "text": "SEITENVERHAELTNIS\n\nStichprobe von 40 Fotos: 26 quer 3:2, 12 hochkant meist 4:5, 2 in 4:3.\n\nDas Layout darf kein Verhaeltnis erzwingen. Die Spalte gibt die Breite vor, das Bild behaelt seine Hoehe. Ein Hochformat wird dadurch hoch, und das ist richtig.\n\nDie Kacheln im Kontaktbogen sind bewusst quadratisch beschnitten, so wie heute auf der Fotoseite."
+    },
+    {
+      "id": "scroll-note",
+      "x": 1540,
+      "y": 4520,
+      "w": 720,
+      "page": "page-2",
+      "text": "SCROLL\n\nLinks: volle natuerliche Hoehe, kein eigener Scroll. Die Photos-Spalte gibt die Hoehe der Zeile vor.\n\nRechts: nimmt genau diese Hoehe an. Fest bleiben der Sektionstitel oben und der Fuss unten, nur der Bereich dazwischen rollt.\n\nIm Bau: height 100 Prozent auf der rechten Spalte, das Raster streckt sie ohnehin auf die Zeilenhoehe. Keine gemessene Pixelzahl noetig.\n\nAuf dem Handy faellt der eigene Scroll weg: eine Spalte, eine Seite, ein Scroll."
+    }
+  ],
+  "launch": {
+    "view": "focused",
+    "file": "WideFront.dc.html"
+  }
+}

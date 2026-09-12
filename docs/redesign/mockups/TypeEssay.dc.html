@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;900&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #222; }
+    a:hover { color: #00e; }
+  </style>
+</helmet>
+
+<div style="width: 800px; box-sizing: border-box; background: #fff; color: #222; font-family: 'Encode Sans', Arial, Helvetica, sans-serif; font-weight: 300; font-size: 18px; line-height: 1.6; padding: 16px;">
+
+  <div style="text-align: center; font-size: 24px; font-weight: 900; text-transform: uppercase; line-height: 1.05;">&larr; Back</div>
+  <div style="text-align: center; font-size: 16px; padding: 8px 0 16px; word-spacing: 10px;">Photos &middot; Writing &middot; Archive &middot; About</div>
+  <div style="border-top: 1px solid #222;"></div>
+
+  <div style="max-width: 60ch;">
+
+  <div style="font-size: 32px; font-weight: 900; text-transform: uppercase; line-height: 1.05; margin: 16px 0 8px;">Change as a Commodity</div>
+  <div style="font-size: 16px; font-weight: 400;">August 11, 2026 &middot; 6 min read</div>
+
+    <sc-for list="{{intro}}" as="p" hint-placeholder-count="2">
+      <p style="margin: 0; padding-top: 16px;">{{p}}</p>
+    </sc-for>
+
+    <div style="font-size: 24px; font-weight: 900; line-height: 1.15; margin: 32px 0 8px;">Where the cost sits</div>
+
+    <sc-for list="{{body}}" as="p" hint-placeholder-count="2">
+      <p style="margin: 0; padding-top: 16px;">{{p}}</p>
+    </sc-for>
+
+    <div style="font-size: 24px; font-weight: 900; line-height: 1.15; margin: 32px 0 8px;">What to measure instead</div>
+
+    <sc-for list="{{tail}}" as="p" hint-placeholder-count="2">
+      <p style="margin: 0; padding-top: 16px;">{{p}}</p>
+    </sc-for>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; margin-top: 32px; padding-top: 16px; border-top: 1px solid #222; font-size: 16px; font-weight: 400;"><div>&larr; Open Source</div><div>Ambiguity &rarr;</div></div>
+
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      intro: [
+        'Every organisation I have worked in treats change as something to be requested, approved and scheduled. That is what makes it expensive.',
+        'The cost is never in the change itself.',
+      ],
+      body: [
+        'It is in the meeting before it, the ticket that tracks it, and the four people who have to agree that it may happen at all.',
+        'None of those four is doing anything wrong. Each is doing the job the process gave them, and the process was written when a change was genuinely risky.',
+      ],
+      tail: [
+        'Count the hours between someone having an idea and that idea being in front of a customer. Then count how many of those hours were spent writing code.',
+        'The ratio is the number that matters, and in most places it is embarrassing.',
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

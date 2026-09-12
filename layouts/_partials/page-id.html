@@ -1,0 +1,8 @@
+{{- $id := .Permalink -}}
+{{- $here := .RelPermalink -}}
+{{- range hugo.Data.redirects -}}
+    {{- if and (eq .pop "keep") (eq .to $here) -}}
+        {{- $id = printf "%s%s" (strings.TrimSuffix "/" site.BaseURL) .from -}}
+    {{- end -}}
+{{- end -}}
+{{- $id -}}

@@ -1,4 +1,0 @@
-+++
-title = 'Games'
-outputs = ['HTML']
-+++

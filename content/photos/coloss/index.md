@@ -1,0 +1,13 @@
++++
+date = '2026-03-02T16:49:00'
+title = 'Coloss'
+type = "photo"
+cover = 'IMG_1786.jpeg'
+pick = true
++++
+
+Did a late-afteroon trip with Tilian to the big bucket-wheel excavator. He was mesmerized by the size, unfortunately it stopped operating for the day. 
+
+<!--more-->
+
+{{< img src="IMG_1786.jpeg" alt="Coloss" >}}

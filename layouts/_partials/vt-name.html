@@ -1,0 +1,4 @@
+{{- /* Der Name, unter dem ein Titelbild zwischen zwei Seiten wandert. Er muss
+auf beiden Seiten gleich sein und auf jeder Seite nur einmal vorkommen, deshalb
+die Adresse des Beitrags als Grundlage. */ -}}
+{{- printf "post-%s" (replaceRE "[^a-zA-Z0-9-]" "-" (trim .RelPermalink "/")) -}}

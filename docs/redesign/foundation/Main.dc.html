@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: oklch(0.18 0.01 60); }
+    a:hover { color: oklch(0.18 0.01 60); text-decoration: underline; }
+  </style>
+</helmet>
+
+<div style="width: 1000px; box-sizing: border-box; background: oklch(0.985 0.004 85); font-family: 'Archivo', sans-serif; color: oklch(0.18 0.01 60); padding: 48px;">
+
+  <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 20px;">
+
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase;">Intention</div>
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 10px 0 6px;"></div>
+
+    <div style="grid-column: span 12; font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: -0.02em; max-width: 24ch; padding-bottom: 10px;">A place to put a day, and a place to think out loud</div>
+
+    <div style="grid-column: span 12; font-size: 17px; line-height: 1.65; max-width: 62ch; padding-bottom: 26px;">Two things happen here and they do not have the same purpose. One is a daily habit that produces a picture and a few lines. The other is occasional, longer, and is the only part a stranger ever arrives for. The site currently treats both as the same object.</div>
+
+    <div style="grid-column: span 6; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 10px;">Who it is for, by behaviour</div>
+    <div style="grid-column: span 6; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 10px;">What it is not for</div>
+
+    <div style="grid-column: span 6; display: flex; flex-direction: column;">
+      <sc-for list="{{audience}}" as="a" hint-placeholder-count="3">
+        <div style="padding: 12px 0; border-top: 1px solid oklch(0.88 0.008 75);">
+          <div style="font-size: 16px; font-weight: 500;">{{a.who}}</div>
+          <div style="font-size: 15px; line-height: 1.55; padding-top: 4px;">{{a.what}}</div>
+          <div style="font-size: 14px; padding-top: 5px;">{{a.proof}}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="grid-column: span 6; display: flex; flex-direction: column;">
+      <sc-for list="{{notfor}}" as="n" hint-placeholder-count="3">
+        <div style="padding: 12px 0; border-top: 1px solid oklch(0.88 0.008 75);">
+          <div style="font-size: 16px; font-weight: 500;">{{n.who}}</div>
+          <div style="font-size: 15px; line-height: 1.55; padding-top: 4px;">{{n.what}}</div>
+          <div style="font-size: 14px; padding-top: 5px;">{{n.proof}}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 30px 0 6px;"></div>
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 12px;">How someone new would actually arrive</div>
+
+    <sc-for list="{{growth}}" as="g" hint-placeholder-count="3">
+      <div style="grid-column: span 4; padding: 14px 0 18px; border-top: 1px solid oklch(0.18 0.01 60);">
+        <div style="font-size: 18px; font-weight: 500;">{{g.route}}</div>
+        <div style="font-size: 15.5px; line-height: 1.6; padding-top: 6px;">{{g.what}}</div>
+        <div style="font-size: 14px; line-height: 1.5; padding-top: 8px;">{{g.proof}}</div>
+      </div>
+    </sc-for>
+
+    <div style="grid-column: span 12; font-size: 16px; line-height: 1.6; max-width: 86ch; padding: 12px 0 30px;">One gap is concrete rather than strategic: every post does emit a description, but it is the first 160 characters of the body cut off mid-sentence. No post carries one you wrote. A search result for Pipes currently reads: All the parts for the pipe run from the garden house roof into the cistern next to the sandbox are finally together, after I successfully put the job off for a …</div>
+
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 0 0 6px;"></div>
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 12px;">What a good version of this site does</div>
+
+    <sc-for list="{{jobs}}" as="j" hint-placeholder-count="5">
+      <div style="grid-column: span 1; font-size: 15px; padding: 11px 0; border-top: 1px solid oklch(0.88 0.008 75);">{{j.n}}</div>
+      <div style="grid-column: span 11; font-size: 16px; line-height: 1.6; padding: 11px 0; border-top: 1px solid oklch(0.88 0.008 75);">{{j.text}}</div>
+    </sc-for>
+
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 30px 0 6px;"></div>
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 12px;">Assumptions, answered on 11 September</div>
+
+    <sc-for list="{{assumptions}}" as="a" hint-placeholder-count="4">
+      <div style="grid-column: span 12; font-size: 16px; line-height: 1.6; padding: 11px 0; border-top: 1px solid oklch(0.88 0.008 75);">{{a}}</div>
+    </sc-for>
+
+  </div>
+
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      audience: [
+        { who: 'You, first',
+          what: 'The daily picture is a habit before it is a publication. 211 of 272 posts are one photograph and a paragraph, posted on the day.',
+          proof: 'Measured: 211 of 272 posts carry the topic Daily Photo' },
+        { who: 'People who already follow you',
+          what: 'They arrive without a referrer or through the feed, on a bookmark or a reader, and they read everything rather than the newest.',
+          proof: 'Measured: 4,518 of 8,059 post views have no referrer, 563 are tagged RSS' },
+        { who: 'Someone who was sent one link',
+          what: 'They land on one post from a message or Instagram and leave. They see one page and form a whole impression from it.',
+          proof: 'Measured: 199 clicks tagged Instagram over eight months' },
+      ],
+      notfor: [
+        { who: 'Search, for the pictures',
+          what: 'A post titled Duck with sixty words cannot rank for anything and should not try. The site is indexed and crawled; the photographs simply answer no question anyone types.',
+          proof: 'Measured: 6,158 crawler requests, 291 URLs in the sitemap, 64 visits from search' },
+        { who: 'A first-time browsing visitor',
+          what: 'Almost nobody pages through the archive looking for something to read. Building the site around discovery would serve a person who is not here.',
+          proof: 'Measured: 313 of 15,115 views touched the pager' },
+        { who: 'An audience won by interruption',
+          what: 'No overlay, no newsletter prompt, no share row, no consent dialog. Wanting more readers does not mean asking for them on the page.',
+          proof: 'Observed: no popup, no tracking script, and none is proposed' },
+      ],
+      growth: [
+        { route: 'Instagram',
+          what: 'The one channel that already brings people who were not here before. It costs nothing on the site itself.',
+          proof: '199 clicks tagged ig over eight months' },
+        { route: 'A link someone sends',
+          what: 'The largest entry route by far. It needs a post to stand alone, which is principle 4, not a growth feature.',
+          proof: '4,518 of 8,059 post views arrive with no referrer' },
+        { route: 'Search, for the writing only',
+          what: 'Twenty-eight written posts have a subject a stranger might type. That is where a title and a description earn their place.',
+          proof: 'Change as a Commodity, 3,017 words, is the longest piece here' },
+      ],
+      jobs: [
+        { n: '1', text: 'Let you publish a picture and a few lines in under a minute, without deciding anything about layout.' },
+        { n: '2', text: 'Let a returning reader see what is new since last time, and reach anything older without a pager.' },
+        { n: '3', text: 'Give a piece of writing a form that suits eight hundred words, not the form of a caption.' },
+        { n: '4', text: 'Make one shared link look like a considered page rather than a row in a stream.' },
+        { n: '5', text: 'Give a written piece a fair chance of being found, without turning the 244 photographs into bait.' },
+      ],
+      assumptions: [
+        'Confirmed on 11 September: the log stays public, and the site stays one domain and one identity.',
+        'Corrected: the daily picture is a habit rather than the more important half. Important was the wrong word for it.',
+        'Corrected: you would like to reach people who are not here yet. That is why the section above changed.',
+        'Still open: whether the writing is something you want read by strangers, or something you write for yourself that strangers may find.',
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

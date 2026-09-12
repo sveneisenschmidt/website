@@ -1,5 +1,12 @@
-{{ with resources.Get "css/styles.css" | minify }}
+{{ $fonts := resources.Get "css/fonts.css" }}
+{{ $tokens := resources.Get "css/tokens.css" }}
+{{ $base := resources.Get "css/base.css" }}
+{{ $page := resources.Get "css/page.css" }}
+{{ $exif := resources.Get "css/exif.css" }}
+{{ $home := resources.Get "css/home.css" }}
+{{ $article := resources.Get "css/article.css" }}
+{{ $archive := resources.Get "css/archive.css" }}
+{{ $css := slice $fonts $tokens $base $page $exif $home $article $archive | resources.Concat "css/site.css" | minify }}
 <style>
-    {{ .Content | safeCSS }}
+    {{ $css.Content | safeCSS }}
 </style>
-{{ end }}

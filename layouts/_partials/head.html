@@ -1,5 +1,5 @@
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>
     {{ if .IsHome }}{{ site.Title }}{{ else }}{{ printf "%s · %s" .Title
     site.Title }}{{ end }}
@@ -19,27 +19,13 @@
 <link rel="preconnect" href="https://pop.eisenschmidt.website" crossorigin />
 <link
     rel="preload"
-    href="/fonts/WorkSans-Regular.woff2"
-    as="font"
-    type="font/woff2"
-    crossorigin
-/>
-<link
-    rel="preload"
-    href="/fonts/WorkSans-Medium.woff2"
-    as="font"
-    type="font/woff2"
-    crossorigin
-/>
-<link
-    rel="preload"
-    href="/fonts/WorkSans-Italic.woff2"
+    href="/fonts/encode-sans-v23-latin.woff2"
     as="font"
     type="font/woff2"
     crossorigin
 />
 {{ partial "head/meta.html" . }} {{ partialCached "head/css.html" . }} {{
-partialCached "head/js.html" . }}
+partialCached "head/js.html" . .Kind .Layout }}
 {{ if .HasShortcode "map" }}
 {{ with resources.Get "leaflet/leaflet.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ .RelPermalink }}" />
@@ -51,20 +37,3 @@ partialCached "head/js.html" . }}
 <script src="{{ .RelPermalink }}" defer></script>
 {{ end }}
 {{ end }}
-{{ if .IsHome }} {{ $firstPost := index
-site.RegularPages 0 }} {{ with $firstPost.Params.cover }} {{ with
-$firstPost.Resources.GetMatch . }} {{ $small := .Fill "128x128 Center" }} {{
-$large := .Fill "768x768 Center" }}
-<link
-    rel="preload"
-    as="image"
-    href="{{ $large.RelPermalink }}"
-    media="(max-width: 768px)"
-/>
-<link
-    rel="preload"
-    as="image"
-    href="{{ $small.RelPermalink }}"
-    media="(min-width: 769px)"
-/>
-{{ end }} {{ end }} {{ end }}

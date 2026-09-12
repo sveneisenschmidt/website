@@ -1,0 +1,53 @@
++++
+date = '2026-01-22T08:00:00'
+title = 'Ambiguity'
+type = "essay"
++++
+
+Ambiguity gets a bad reputation at work, and people treat it like something is broken. "There's no clear direction." "Leadership doesn't have a plan." I've sat in meetings where someone said exactly that, and I've read the same feedback in employee surveys for years. (And I take it somewhat personally as I am that "leadership".)
+
+<!--more-->
+
+Ten years ago I would have agreed because back then I wanted clarity, defined requirements, a plan I could follow and complain about. I thought that's what good leadership looked like: removing uncertainty so people can execute. I expected my manager to do that for me. He didn't, and I'm glad he didn't. Working with [Daniel](https://www.flowplace.com/daniel-troeger) at trivago is what got me from grumpy developer to junior leader. _Thank you!_.
+
+So when I got my first management role, suddenly complaining about unclear requirements wasn't useful anymore. _Damn it._ Also I was too stubborn to make it look like I wasn't up to the job. As a developer I could point at the mess and say "this isn't defined well enough," but as a manager nobody cared. If I had kept saying "this isn't defined well enough" in that role, what would have happened in my next performance review? I probably wouldn't be where I am today. I wasn't measured by the code I wrote, I was measured by whether my team got the stuff done the company needed, and hitting goals isn't just some corporate phrase. It's often about whether a product survives or gets killed, whether a vision lives on or gets abandoned, whether the company makes it or doesn't. There was no option to not deliver, I have been part of products being killed, at trivago my beloved Express Booking or Delivery Hero with our B2B supply chain solution.
+
+The projects where I made a difference weren't the ones with perfect specs and detailed plans, they were the ones where nobody had any idea how to even solve the problem. There was a goal and someone had to make it happen.
+
+People confuse ambiguity with the absence of strategy but that's not how it works. Strategy sets boundaries and principles tell you who you are, but neither tells you what to do tomorrow. The space in between is yours to fill. I don't know why people expect a detailed plan from the top, maybe it feels safer, but that's not how any of this works in practice. The higher up you go, the less detailed the guidance becomes. At some point it's just the business numbers that give you direction, not plans.
+
+Over the years I've seen people respond to ambiguity in different ways. Some hold on to old plans because the plan said X, so we're doing X. But if the business reality changed in the last four weeks, how can you not react to that? The plan was based on assumptions, the assumptions changed, and the plan is now fiction. In the end it comes down to how open you are to change. That's true beyond work too. Some people I met over the years seem to have figured it out. They make calls, they try things, they're wrong sometimes and adjust, but somehow they always seem to move forward. They have been the people who ship things that weren't planned but solved real problems. When I was working on a reviews integration for trivago Express Booking as _the_ responsible engineering manager, I broke down features and suggested different ways of doing things faster or easier for users to respond that the product owner hadn't considered. I got praised for it. That's when I learned that proposing and solving proactively gets rewarded, and that hasn't changed to this day. Should I have waited until my first management position to change my behaviour? Probably not. So do not repeat my mistake and wait for a role change that puts you in a position to make decisions. 
+
+There is no certainty in product development and I think a lot of people struggle with accepting that. We're building things for eight billion people, markets shift weekly, competitors do things you didn't anticipate, and users behave in ways that make no sense until suddenly they do. If you need everything nailed down before you start, you're too slow. We're not surgeons, pilots, or paramedics. Those jobs need fixed routines because mistakes kill people, but software development isn't like that. If we ship something wrong we can fix it, and if we make a bad call we learn and adjust. Being wrong is fixable, being slow isn't.
+
+Two things help: looking at data and being fast. Looking at data doesn't mean having all the answers upfront, it means moving, measuring, and correcting course. You ship something small, look at the numbers, and adjust - that's it. And speed matters more than people admit because the problem with product development is that it often takes forever. Weeks turn into months, months turn into quarters, and by the time you ship, the world moved on. The ones who do well are the ones who decide fast and accept being wrong sometimes.
+
+Moving first sounds obvious until you've spent three weeks in a planning loop that produced nothing but slides. I've been there, it's exhausting, and at the end you still have to build the thing anyway.
+
+I've seen growing companies try to establish behaviors, processes, and rules that would kill any startup within weeks. More approvals, more sign-offs, more alignment meetings. The desire to play it safe, to wait for clarity, to not move until everything is defined. And then you wonder why nothing ships. If you don't move first, you're just waiting for someone else to outrun you. _We need to accept that companies being built right now have a massive head start: they learn from the ones that came before them and they have access to AI-based tools._
+
+What helps is having a strong opinion on how things should be done. That opinion can come from experience, from data, or from both, but you need one. People with opinions propose things, and people who propose things lead. People who don't propose get led, by their manager, by stakeholders, or by the absence of company success. Choose an approach and ask yourself what makes you happier at work. When people don't lead with an opinion and don't move first, management gets nervous. It's not about a lack of trust, it's the fear that ambiguity leads to standstill instead of action. That's when questions about roadmaps, timelines, and aligned initiatives start coming in. And that kills innovation and ownership, the exact things people then complain about. We created that situation ourselves. I'm guilty of this myself. When I haven't seen progress, I've fallen back to asking for roadmaps instead of helping people find their own direction.
+
+Dealing with ambiguity is hard, and I don't want to pretend otherwise. Even as a leader, I struggle with it. And to be fair, there are companies where ambiguity is genuinely toxic: leadership changes direction every week without any data to back it up, and people are left guessing what matters. That's not the ambiguity I'm talking about. I'm talking about the space where the boundaries are clear but the path isn't, and where it's on you to figure out the next step.
+
+When I need to create alignment and take the lead on something ambiguous, I use a simple format that I also recommend to my teams. At Delivery Hero we used it for almost every decision:
+
+- What is the problem we are trying to solve?
+- How do we measure success?
+- What did we learn about this topic and ourselves in the last 6-12 months?
+- What did we try already and what did it tell us?
+- What are solutions (2-3) and what is the recommendation?
+
+What I like about this: you don't jump to a solution first. You get clear on the problem and how you'll measure success before thinking about what to build. Write it down and share it. People can disagree, but at least there's something to disagree with.
+
+If you find yourself complaining about ambiguity, stop waiting for clarity and create it:
+
+- Look at the business numbers
+- Form an opinion _<- And if your opinion is not in line with the business numbers, ask yourself why is that? I think people usually start here and not with the previous step._
+- Write it down
+- Share and validate it _<- This is where I see most people struggle, myself included: seeking feedback and being challenged on their ideas._
+- Make it happen
+
+One more thing I learned: talk to founders, C-level, senior leaders as often as you can. Understand what's top of mind for them. It prevents surprises by getting information first hand and might help you read between the gaps of ambiguity.
+
+Ambiguity is not something to manage or to complain about. It's the space where you actually get to decide things. Isn't that what people want, to actually decide?

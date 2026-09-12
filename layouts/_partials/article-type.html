@@ -1,0 +1,24 @@
+{{- $page := .page -}}
+{{- $withType := true -}}
+{{- if eq .type false }}{{ $withType = false }}{{ end -}}
+
+{{- with $page -}}
+{{- with .Params.trip -}}
+    {{- $days := sort (where site.RegularPages "Params.trip" .) "Date" -}}
+    {{- $name := . | replaceRE `-` " " | title -}}
+    {{- range $i, $d := $days -}}
+        {{- if eq $d.RelPermalink $page.RelPermalink -}}
+            {{- printf "%s, day %d of %d" $name (add $i 1) (len $days) -}}
+        {{- end -}}
+    {{- end -}}
+{{- else -}}
+    {{- $type := .Params.type | default "" -}}
+    {{- if eq $type "essay" -}}
+        {{- if $withType }}Essay, {{ end }}{{ .ReadingTime }} min
+    {{- else if and $withType (eq $type "note") -}}
+        Note
+    {{- else if and $withType (eq $type "photo") -}}
+        Photo
+    {{- end -}}
+{{- end -}}
+{{- end -}}

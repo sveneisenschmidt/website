@@ -1,7 +1,11 @@
-{{- $cutoff := time "2026-01-01" -}}
-{{- $posts := where .Site.RegularPages "Section" "posts" -}}
-{{- $logs := where (where (where .Site.RegularPages "Section" "log") ".Date" "ge" $cutoff) ".Content" "ne" "" -}}
-{{- $pages := sort (union $posts $logs) ".Date" "desc" -}}
+{{- $pages := sort (where .Site.RegularPages "Section" "in" (slice "photos" "trips" "notes" "essays")) ".Date" "desc" -}}
+
+{{- $frozen := dict -}}
+{{- range hugo.Data.redirects -}}
+  {{- if eq .rss "keep" -}}
+    {{- $frozen = merge $frozen (dict .to (printf "%s%s" (strings.TrimSuffix "/" site.BaseURL) .from)) -}}
+  {{- end -}}
+{{- end -}}
 {{- $limit := .Site.Config.Services.RSS.Limit -}}
 {{- if ge $limit 1 -}}
   {{- $pages = $pages | first $limit -}}
@@ -13,20 +17,16 @@
     <link>{{ .Permalink }}</link>
     <description>{{ .Site.Params.description | default .Site.Title }}</description>
     <generator>Hugo</generator>
-    <language>{{ .Site.LanguageCode }}</language>
+    <language>{{ .Site.Language.Locale }}</language>
     <lastBuildDate>{{ (index $pages 0).Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" }}</lastBuildDate>
     <atom:link href="{{ .Permalink }}index.xml" rel="self" type="application/rss+xml" />
     {{- range $pages }}
-    {{- $link := printf "%s?source=rss" .Permalink -}}
-    {{- $isLog := eq .Section "log" -}}
-    {{- if $isLog -}}
-      {{- $link = printf "%slog/?source=rss#%s" $.Site.BaseURL .File.ContentBaseName -}}
-    {{- end }}
+    {{- $link := printf "%s?source=rss" .Permalink }}
     <item>
-      <title>{{ .Title }}{{ with .Params.rating }} ({{ . }}/10){{ end }}</title>
+      <title>{{ .Title }}</title>
       <link>{{ $link }}</link>
       <pubDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" }}</pubDate>
-      <guid isPermaLink="true">{{ $link }}</guid>
+      <guid isPermaLink="true">{{ with index $frozen .RelPermalink }}{{ printf "%s?source=rss" . }}{{ else }}{{ $link }}{{ end }}</guid>
       <description>{{ printf "<![CDATA[" | safeHTML }}{{- if .Params.cover -}}
           {{- $img := .Resources.GetMatch .Params.cover -}}
           {{- if $img -}}

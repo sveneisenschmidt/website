@@ -1,8 +1,0 @@
-+++
-title = 'Mickey 17'
-date = '2025-05-23'
-type = 'movie'
-rating = 6
-link = 'https://www.imdb.com/title/tt12299608/'
-build.render = 'never'
-+++

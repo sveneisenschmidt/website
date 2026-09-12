@@ -1,0 +1,2123 @@
+- from: /cv/
+  to: /about/
+  note: Lebenslauf gelöscht am 10. September 2026, sechs menschliche Aufrufe in acht Monaten
+
+- from: /projects/
+  to: /about/#things-i-built
+  note: Am 12. September 2026 nach /about/ gezogen, die Seite war von nirgends verlinkt
+
+- from: /blogroll/
+  to: /about/#blogroll
+  note: Am 12. September 2026 nach /about/ gezogen, die Seite war von nirgends verlinkt
+
+- from: /posts/ambiguity-at-work-v3/
+  to: /2026-01-22-ambiguity/
+  note: zwei Vorfassungen desselben Textes, beide ohne Aufrufe; /posts/ambiguity/ hat 76
+
+- from: /posts/ambiguity-v4/
+  to: /2026-01-22-ambiguity/
+
+- from: /posts/daily-photo-afterwork/
+  to: /2026-03-09-nightshot/
+  note: Night Shots, 9. März 2026; 8 Aufrufe alt gegen 5 neu
+
+- from: /posts/daiuly-photo-imagination/
+  to: /2026-01-25-imagination/
+  note: Tippfehler im Slug; 3 Aufrufe alt gegen 8 neu
+
+- from: /posts/daily-photo-dragon-touch/
+  to: /2026-03-27-dragon-touch/
+
+- from: /posts/daily-photo-77256/
+  to: /2026-01-12-77256/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-abandoned/
+  to: /2026-02-02-abandoned/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-after-burner/
+  to: /2026-02-18-after-burner/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-aika/
+  to: /2026-03-11-aika/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-alpha/
+  to: /2026-04-17-alpha/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-archive/
+  to: /2026-06-11-ledge/
+  pop: keep
+  rss: keep
+  note: hiess Archive, umbenannt weil /archive/ eine Route wird
+
+- from: /posts/daily-photo-artemis/
+  to: /2026-04-10-artemis/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-away/
+  to: /2026-01-14-away/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-back/
+  to: /2026-01-15-back/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-back-home/
+  to: /2026-02-14-back-home/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-back-to-back/
+  to: /2026-04-13-back-to-back/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-bbq/
+  to: /2026-08-14-bbq/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-bee-eaters/
+  to: /2026-08-06-bee-eaters/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-big-day/
+  to: /2026-04-28-big-day/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-big-friday/
+  to: /2026-05-15-big-friday/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-birthday/
+  to: /2026-01-21-birthday/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-black-ice/
+  to: /2026-02-05-black-ice/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-black-kite/
+  to: /2026-07-06-black-kite/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-blackbird/
+  to: /2026-04-30-blackbird/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-blackcap/
+  to: /2026-05-29-blackcap/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-blackthorn/
+  to: /2026-03-19-blackthorn/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-blossom/
+  to: /2026-04-14-blossom/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-blue/
+  to: /2026-01-28-blue/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-blue-sky/
+  to: /2026-03-23-blue-sky/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-bounce/
+  to: /2026-05-19-bounce/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-bowl/
+  to: /2026-07-08-bowl/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-breakfast/
+  to: /2026-05-22-breakfast/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-bricks/
+  to: /2026-01-20-bricks/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-bubblegum-blue/
+  to: /2026-02-04-bubblegum-blue/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-bumblebee/
+  to: /2026-06-08-bumblebee/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-burger-day/
+  to: /2026-06-28-burger-day/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-cake/
+  to: /2026-01-24-cake/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-canon-selphy/
+  to: /2026-05-03-canon-selphy/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-chicken/
+  to: /2026-01-05-chicken/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-cistern/
+  to: /2026-05-16-cistern/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-clarity/
+  to: /2026-07-02-clarity/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-cliche/
+  to: /2026-05-18-cliche/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-climate/
+  to: /2026-06-25-climate/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-coloss/
+  to: /2026-03-02-coloss/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-converter/
+  to: /2026-09-03-converter/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-craspedia-globosa/
+  to: /2026-01-10-craspedia-globosa/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-dawn/
+  to: /2026-02-19-dawn/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-deer/
+  to: /2026-02-25-deer/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-departure/
+  to: /2026-04-22-departure/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-disappointed/
+  to: /2026-01-16-disappointed/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-dissolve/
+  to: /2026-04-01-dissolve/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-dorks/
+  to: /2026-01-29-dorks/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-dusk/
+  to: /2026-03-20-dusk/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-eight-hours/
+  to: /2026-08-03-eight-hours/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-emma/
+  to: /2026-02-23-emma/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-england-day-4-half/
+  to: /2026-04-27-england-day-4-half/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-excursion/
+  to: /2026-06-18-excursion/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-family-matters/
+  to: /2026-08-30-family-matters/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-feather/
+  to: /2026-08-27-feather/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-first-ride/
+  to: /2026-08-02-first-ride/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-first-steps/
+  to: /2026-06-13-first-steps/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-fledgling/
+  to: /2026-05-28-fledgling/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-flugplatz-boehlen/
+  to: /2026-08-19-flugplatz-boehlen/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-fog/
+  to: /2026-03-21-fog/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-forest-stroll/
+  to: /2026-05-05-forest-stroll/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-fox-and-wagtail/
+  to: /2026-05-08-fox-and-wagtail/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-frost/
+  to: /2026-01-18-frost/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-grace/
+  to: /2026-03-26-grace/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-greenfinch/
+  to: /2026-05-06-greenfinch/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-guided-bird-song-hike-840mm/
+  to: /2026-05-10-guided-bird-song-hike-840mm/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-haze/
+  to: /2026-08-12-haze/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-heat/
+  to: /2026-06-27-heat/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-hike/
+  to: /2026-06-04-hike/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-honeybee/
+  to: /2026-03-08-honeybee/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-hotel/
+  to: /2026-05-12-hotel/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-imagination/
+  to: /2026-01-25-imagination/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-it-guy/
+  to: /2026-08-18-it-guy/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-jump/
+  to: /2026-04-12-jump/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-jury-experience/
+  to: /2026-05-09-jury-experience/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-kestrels/
+  to: /2026-06-06-kestrels/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-kite/
+  to: /2026-03-25-kite/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-kohlmeise/
+  to: /2026-01-27-kohlmeise/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-last-day-off/
+  to: /2026-01-11-last-day-off/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-lazy/
+  to: /2026-05-25-lazy/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-leipzig/
+  to: /2026-08-10-leipzig/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-lights/
+  to: /2026-08-11-lights/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-long-day/
+  to: /2026-04-29-long-day/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-loop/
+  to: /2026-04-03-loop/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-low/
+  to: /2026-03-31-low/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-markfest/
+  to: /2026-05-31-markfest/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-marshmallows/
+  to: /2026-08-22-marshmallows/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-melt/
+  to: /2026-01-31-melt/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-milestone/
+  to: /2026-04-08-milestone/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-mine/
+  to: /2026-01-19-mine/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-mine-pt2/
+  to: /2026-01-23-mine-pt2/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-mixed-bag/
+  to: /2026-06-19-mixed-bag/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-monday/
+  to: /2026-03-16-monday/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-moon/
+  to: /2026-02-26-moon/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-mouser/
+  to: /2026-08-13-mouser/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-mufflon/
+  to: /2026-04-11-mufflon/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-munich/
+  to: /2026-06-23-munich/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-mushrooms/
+  to: /2026-06-07-mushrooms/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-nadines-birthday/
+  to: /2026-05-11-nadines-birthday/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-nightshot/
+  to: /2026-03-09-nightshot/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-nuthatch/
+  to: /2026-05-23-nuthatch/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-offsite/
+  to: /2026-05-13-offsite/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-overcast/
+  to: /2026-05-21-overcast/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-overflight/
+  to: /2026-03-06-overflight/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-overtaken/
+  to: /2026-02-01-overtaken/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-packed/
+  to: /2026-03-28-packed/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-pancake/
+  to: /2026-08-16-pancake/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-parasol/
+  to: /2026-08-15-parasol/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-paving/
+  to: /2026-09-05-paving/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-perpetual/
+  to: /2026-03-04-perpetual/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-pheasant/
+  to: /2026-01-30-pheasant/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-pigeon/
+  to: /2026-03-17-pigeon/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-pillow-fort/
+  to: /2026-06-22-pillow-fort/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-pipes/
+  to: /2026-09-10-pipes/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-playroom/
+  to: /2026-06-26-playroom/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-poppy/
+  to: /2026-05-26-poppy/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-priviledge/
+  to: /2026-03-13-priviledge/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-puddle/
+  to: /2026-05-07-puddle/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-r5/
+  to: /2026-06-12-r5/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-rain/
+  to: /2026-08-17-rain/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-reading/
+  to: /2026-01-07-reading/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-redstart/
+  to: /2026-04-15-redstart/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-requiem/
+  to: /2026-03-14-requiem/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-reserve/
+  to: /2026-09-06-reserve/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-resting/
+  to: /2026-06-10-resting/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-rime/
+  to: /2026-03-05-rime/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-rolling/
+  to: /2026-04-21-rolling/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-rooster/
+  to: /2026-04-19-rooster/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-rose/
+  to: /2026-06-02-rose/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-same-again/
+  to: /2026-08-04-same-again/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-sandbox/
+  to: /2026-06-09-sandbox/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-sandbox-pt2/
+  to: /2026-06-21-sandbox-pt2/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-sandbox-pt3/
+  to: /2026-07-04-sandbox-pt3/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-saros/
+  to: /2026-05-02-saros/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-scarce/
+  to: /2026-09-04-scarce/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-scouting/
+  to: /2026-05-17-scouting/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-scratch/
+  to: /2026-07-01-scratch/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-shrike/
+  to: /2026-05-27-shrike/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-shrike-pt2/
+  to: /2026-08-29-shrike-pt2/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-sit-in/
+  to: /2026-06-15-sit-in/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-slabs/
+  to: /2026-08-05-slabs/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-snack/
+  to: /2026-08-21-snack/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-snow/
+  to: /2026-01-08-snow/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-soapbox-race/
+  to: /2026-06-05-soapbox-race/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-soft/
+  to: /2026-01-26-soft/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-song-thrush/
+  to: /2026-03-01-song-thrush/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-sourdough/
+  to: /2026-01-06-sourdough/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-spare-parts/
+  to: /2026-02-15-spare-parts/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-sparrows/
+  to: /2026-05-04-sparrows/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-sparrows-pt2/
+  to: /2026-05-20-sparrows-pt2/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-sparrows-pt3/
+  to: /2026-07-09-sparrows-pt3/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-splash/
+  to: /2026-09-01-splash/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-split/
+  to: /2026-04-20-split/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-sponsored-post/
+  to: /2026-03-18-sponsored-post/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-spring-stone/
+  to: /2026-07-05-spring-stone/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-star/
+  to: /2026-04-07-star/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-starling/
+  to: /2026-05-30-starling/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-starling-pt2/
+  to: /2026-08-28-starling-pt2/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-station-visit/
+  to: /2026-04-16-station-visit/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-stop-gap-swallow/
+  to: /2026-06-24-stop-gap-swallow/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-stork/
+  to: /2026-03-10-stork/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-stork-pt2/
+  to: /2026-05-01-stork-pt2/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-stork-pt3/
+  to: /2026-06-03-stork-pt3/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-strawberries/
+  to: /2026-07-03-strawberries/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-stripes/
+  to: /2026-02-17-stripes/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-sunflowers/
+  to: /2026-08-20-sunflowers/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-swallow/
+  to: /2026-06-20-swallow/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-swallow-pt2/
+  to: /2026-07-07-swallow-pt2/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-swans/
+  to: /2026-06-29-swans/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-tilians-favourite-spot/
+  to: /2026-03-12-tilians-favourite-spot/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-together/
+  to: /2026-08-07-together/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-tradition/
+  to: /2026-05-14-tradition/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-twilight/
+  to: /2026-08-31-twilight/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-vet/
+  to: /2026-01-09-vet/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-visit/
+  to: /2026-09-02-visit/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-wander/
+  to: /2026-06-30-wander/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-warming-up/
+  to: /2026-06-14-warming-up/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-water/
+  to: /2026-06-01-water/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-water-tower/
+  to: /2026-08-26-water-tower/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-watercolors/
+  to: /2026-08-09-watercolors/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-weir/
+  to: /2026-02-20-weir/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-windpark/
+  to: /2026-01-13-windpark/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-windpark-pt2/
+  to: /2026-01-22-windpark-pt2/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-winter-walk/
+  to: /2026-01-04-winter-walk/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-woodpecker/
+  to: /2026-03-07-woodpecker/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-woodpecker-pt2/
+  to: /2026-07-10-woodpecker-pt2/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-woods/
+  to: /2026-02-21-woods/
+  pop: keep
+  rss: keep
+
+- from: /posts/daily-photo-zootopia-2/
+  to: /2026-02-22-zootopia-2/
+  pop: keep
+  rss: keep
+
+- from: /log/
+  to: /archive/
+
+- from: /log/games/
+  to: /archive/
+
+- from: /log/movies/
+  to: /archive/
+
+- from: /log/tv/
+  to: /archive/
+
+- from: /photos/
+  to: /archive/photos/
+  pop: keep
+
+- from: /trips/
+  to: /archive/trips/
+
+- from: /notes/
+  to: /archive/notes/
+
+- from: /essays/
+  to: /archive/essays/
+
+- from: /page/1/
+  to: /
+
+- from: /page/2/
+  to: /
+
+- from: /page/3/
+  to: /
+
+- from: /page/4/
+  to: /
+
+- from: /page/5/
+  to: /
+
+- from: /page/6/
+  to: /
+
+- from: /page/7/
+  to: /
+
+- from: /page/8/
+  to: /
+
+- from: /page/9/
+  to: /
+
+- from: /page/10/
+  to: /
+
+- from: /page/11/
+  to: /
+
+- from: /page/12/
+  to: /
+
+- from: /page/13/
+  to: /
+
+- from: /page/14/
+  to: /
+
+- from: /page/15/
+  to: /
+
+- from: /page/16/
+  to: /
+
+- from: /page/17/
+  to: /
+
+- from: /page/18/
+  to: /
+
+- from: /page/19/
+  to: /
+
+- from: /page/20/
+  to: /
+
+- from: /page/21/
+  to: /
+
+- from: /page/22/
+  to: /
+
+- from: /page/23/
+  to: /
+
+- from: /page/24/
+  to: /
+
+- from: /page/25/
+  to: /
+
+- from: /page/26/
+  to: /
+
+- from: /page/27/
+  to: /
+
+- from: /posts/
+  to: /archive/
+
+- from: /posts/daily-photo-bee-eaters-pt2/
+  to: /archive/
+
+- from: /posts/daily-photo-stop-gap-sparrow/
+  to: /archive/
+
+- from: /topics/
+  to: /archive/
+  pop: keep
+
+- from: /topics/daily-photo/
+  to: /archive/photos/
+
+- from: /topics/travel/
+  to: /archive/trips/
+
+- from: /topics/ai/
+  to: /archive/
+
+- from: /topics/apple/
+  to: /archive/
+
+- from: /topics/books/
+  to: /archive/
+
+- from: /topics/cycling/
+  to: /archive/
+
+- from: /topics/family/
+  to: /archive/
+
+- from: /topics/flowers/
+  to: /archive/
+
+- from: /topics/food/
+  to: /archive/
+
+- from: /topics/games/
+  to: /archive/
+
+- from: /topics/leadership/
+  to: /archive/
+
+- from: /topics/music/
+  to: /archive/
+
+- from: /topics/oldtimer/
+  to: /archive/
+
+- from: /topics/open-source/
+  to: /archive/
+
+- from: /topics/photography/
+  to: /archive/
+
+- from: /topics/software-development/
+  to: /archive/
+
+- from: /topics/software-engineering/
+  to: /archive/
+
+- from: /topics/technology/
+  to: /archive/
+
+- from: /topics/video-games/
+  to: /archive/
+
+- from: /topics/vintage/
+  to: /archive/
+
+- from: /topics/work/
+  to: /archive/
+
+- from: /search/
+  to: /archive/
+
+- from: /posts/2025-wrapped/
+  to: /2026-01-03-2025-wrapped/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-february-upgrade/
+  to: /2026-02-27-2026-february-upgrade/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-1/
+  to: /2026-07-11-2026-summer-vacation-1/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-10/
+  to: /2026-07-20-2026-summer-vacation-10/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-11/
+  to: /2026-07-21-2026-summer-vacation-11/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-12/
+  to: /2026-07-22-2026-summer-vacation-12/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-13/
+  to: /2026-07-23-2026-summer-vacation-13/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-14/
+  to: /2026-07-24-2026-summer-vacation-14/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-15/
+  to: /2026-07-25-2026-summer-vacation-15/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-16/
+  to: /2026-07-26-2026-summer-vacation-16/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-17/
+  to: /2026-07-27-2026-summer-vacation-17/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-18/
+  to: /2026-07-28-2026-summer-vacation-18/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-19/
+  to: /2026-07-29-2026-summer-vacation-19/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-2/
+  to: /2026-07-12-2026-summer-vacation-2/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-20/
+  to: /2026-07-30-2026-summer-vacation-20/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-21/
+  to: /2026-07-31-2026-summer-vacation-21/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-3/
+  to: /2026-07-13-2026-summer-vacation-3/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-4/
+  to: /2026-07-14-2026-summer-vacation-4/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-5/
+  to: /2026-07-15-2026-summer-vacation-5/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-6/
+  to: /2026-07-16-2026-summer-vacation-6/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-7/
+  to: /2026-07-17-2026-summer-vacation-7/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-8/
+  to: /2026-07-18-2026-summer-vacation-8/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-9/
+  to: /2026-07-19-2026-summer-vacation-9/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-summer-vacation-overview/
+  to: /2026-08-01-2026-summer-vacation-overview/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-winter-vacation-1/
+  to: /2026-02-07-2026-winter-vacation-1/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-winter-vacation-2/
+  to: /2026-02-08-2026-winter-vacation-2/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-winter-vacation-3/
+  to: /2026-02-09-2026-winter-vacation-3/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-winter-vacation-4/
+  to: /2026-02-10-2026-winter-vacation-4/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-winter-vacation-5/
+  to: /2026-02-11-2026-winter-vacation-5/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-winter-vacation-6/
+  to: /2026-02-12-2026-winter-vacation-6/
+  rss: keep
+  pop: keep
+
+- from: /posts/2026-winter-vacation-7/
+  to: /2026-02-13-2026-winter-vacation-7/
+  rss: keep
+  pop: keep
+
+- from: /posts/77256/
+  to: /2026-01-12-77256/
+
+- from: /posts/abandoned/
+  to: /2026-02-02-abandoned/
+
+- from: /posts/after-burner/
+  to: /2026-02-18-after-burner/
+
+- from: /posts/aika/
+  to: /2026-03-11-aika/
+
+- from: /posts/alpha/
+  to: /2026-04-17-alpha/
+
+- from: /posts/ambiguity/
+  to: /2026-01-22-ambiguity/
+  rss: keep
+  pop: keep
+
+- from: /posts/artemis/
+  to: /2026-04-10-artemis/
+
+- from: /posts/away/
+  to: /2026-01-14-away/
+
+- from: /posts/back-home/
+  to: /2026-02-14-back-home/
+
+- from: /posts/back-to-back/
+  to: /2026-04-13-back-to-back/
+
+- from: /posts/back/
+  to: /2026-01-15-back/
+
+- from: /posts/bbq/
+  to: /2026-08-14-bbq/
+
+- from: /posts/bee-eaters/
+  to: /2026-08-06-bee-eaters/
+
+- from: /posts/big-day/
+  to: /2026-04-28-big-day/
+
+- from: /posts/big-friday/
+  to: /2026-05-15-big-friday/
+
+- from: /posts/birthday/
+  to: /2026-01-21-birthday/
+
+- from: /posts/black-ice/
+  to: /2026-02-05-black-ice/
+
+- from: /posts/black-kite/
+  to: /2026-07-06-black-kite/
+
+- from: /posts/blackbird/
+  to: /2026-04-30-blackbird/
+
+- from: /posts/blackcap/
+  to: /2026-05-29-blackcap/
+
+- from: /posts/blackthorn/
+  to: /2026-03-19-blackthorn/
+
+- from: /posts/blossom/
+  to: /2026-04-14-blossom/
+
+- from: /posts/blue-sky/
+  to: /2026-03-23-blue-sky/
+
+- from: /posts/blue/
+  to: /2026-01-28-blue/
+
+- from: /posts/bounce/
+  to: /2026-05-19-bounce/
+
+- from: /posts/bowl/
+  to: /2026-07-08-bowl/
+
+- from: /posts/breakfast/
+  to: /2026-05-22-breakfast/
+
+- from: /posts/bricks/
+  to: /2026-01-20-bricks/
+
+- from: /posts/bubblegum-blue/
+  to: /2026-02-04-bubblegum-blue/
+
+- from: /posts/building-with-hugo-pt2/
+  to: /2026-03-17-building-with-hugo-pt2/
+  rss: keep
+  pop: keep
+
+- from: /posts/building-with-hugo/
+  to: /2026-01-05-building-with-hugo/
+  rss: keep
+  pop: keep
+
+- from: /posts/bumblebee/
+  to: /2026-06-08-bumblebee/
+
+- from: /posts/burger-day/
+  to: /2026-06-28-burger-day/
+
+- from: /posts/cake/
+  to: /2026-01-24-cake/
+
+- from: /posts/canon-selphy/
+  to: /2026-05-03-canon-selphy/
+
+- from: /posts/change-as-a-commodity/
+  to: /2026-03-17-change-as-a-commodity/
+  rss: keep
+  pop: keep
+
+- from: /posts/chicken/
+  to: /2026-01-05-chicken/
+
+- from: /posts/cistern/
+  to: /2026-05-16-cistern/
+
+- from: /posts/clarity/
+  to: /2026-07-02-clarity/
+
+- from: /posts/claude-rc-manager/
+  to: /2026-08-20-claude-rc-manager/
+  rss: keep
+  pop: keep
+
+- from: /posts/cliche/
+  to: /2026-05-18-cliche/
+
+- from: /posts/climate/
+  to: /2026-06-25-climate/
+
+- from: /posts/coloss/
+  to: /2026-03-02-coloss/
+
+- from: /posts/converter/
+  to: /2026-09-03-converter/
+
+- from: /posts/craspedia-globosa/
+  to: /2026-01-10-craspedia-globosa/
+
+- from: /posts/dawn/
+  to: /2026-02-19-dawn/
+
+- from: /posts/death-stranding-2/
+  to: /2026-01-02-death-stranding-2/
+  rss: keep
+  pop: keep
+
+- from: /posts/deer/
+  to: /2026-02-25-deer/
+
+- from: /posts/departure/
+  to: /2026-04-22-departure/
+
+- from: /posts/disappointed/
+  to: /2026-01-16-disappointed/
+
+- from: /posts/dissolve/
+  to: /2026-04-01-dissolve/
+
+- from: /posts/dodge/
+  to: /2026-03-22-dodge/
+  rss: keep
+  pop: keep
+
+- from: /posts/dorks/
+  to: /2026-01-29-dorks/
+
+- from: /posts/dragon-touch-pt2/
+  to: /2026-03-31-dragon-touch-pt2/
+  rss: keep
+  pop: keep
+
+- from: /posts/dragon-touch/
+  to: /2026-03-27-dragon-touch/
+  rss: keep
+  pop: keep
+
+- from: /posts/duck/
+  to: /2026-04-05-duck/
+  rss: keep
+  pop: keep
+
+- from: /posts/dusk/
+  to: /2026-03-20-dusk/
+
+- from: /posts/eight-hours/
+  to: /2026-08-03-eight-hours/
+
+- from: /posts/emma/
+  to: /2026-02-23-emma/
+
+- from: /posts/england-day-1/
+  to: /2026-04-23-england-day-1/
+  rss: keep
+  pop: keep
+
+- from: /posts/england-day-2/
+  to: /2026-04-24-england-day-2/
+  rss: keep
+  pop: keep
+
+- from: /posts/england-day-3/
+  to: /2026-04-25-england-day-3/
+  rss: keep
+  pop: keep
+
+- from: /posts/england-day-4-half/
+  to: /2026-04-27-england-day-4-half/
+
+- from: /posts/england-day-4/
+  to: /2026-04-26-england-day-4/
+  rss: keep
+  pop: keep
+
+- from: /posts/excursion/
+  to: /2026-06-18-excursion/
+
+- from: /posts/experimental/
+  to: /2026-04-04-experimental/
+  rss: keep
+  pop: keep
+
+- from: /posts/family-matters/
+  to: /2026-08-30-family-matters/
+
+- from: /posts/farewell/
+  to: /2026-08-08-farewell/
+  rss: keep
+  pop: keep
+
+- from: /posts/feather/
+  to: /2026-08-27-feather/
+
+- from: /posts/first-ride/
+  to: /2026-08-02-first-ride/
+
+- from: /posts/first-steps/
+  to: /2026-06-13-first-steps/
+
+- from: /posts/fledgling/
+  to: /2026-05-28-fledgling/
+
+- from: /posts/flugplatz-boehlen/
+  to: /2026-08-19-flugplatz-boehlen/
+
+- from: /posts/flyby/
+  to: /2026-04-06-flyby/
+  rss: keep
+  pop: keep
+
+- from: /posts/fog/
+  to: /2026-03-21-fog/
+
+- from: /posts/for-the-bin/
+  to: /2026-08-25-for-the-bin/
+  rss: keep
+  pop: keep
+
+- from: /posts/forest-stroll/
+  to: /2026-05-05-forest-stroll/
+
+- from: /posts/fox-and-wagtail/
+  to: /2026-05-08-fox-and-wagtail/
+
+- from: /posts/frost/
+  to: /2026-01-18-frost/
+
+- from: /posts/gemma/
+  to: /2026-06-13-gemma/
+  rss: keep
+  pop: keep
+
+- from: /posts/grace/
+  to: /2026-03-26-grace/
+
+- from: /posts/green/
+  to: /2026-03-24-green/
+  rss: keep
+  pop: keep
+
+- from: /posts/greenfinch/
+  to: /2026-05-06-greenfinch/
+
+- from: /posts/guided-bird-song-hike-840mm/
+  to: /2026-05-10-guided-bird-song-hike-840mm/
+
+- from: /posts/haze/
+  to: /2026-08-12-haze/
+
+- from: /posts/heat/
+  to: /2026-06-27-heat/
+
+- from: /posts/hello-world/
+  to: /2026-01-01-hello-world/
+  rss: keep
+  pop: keep
+
+- from: /posts/hike/
+  to: /2026-06-04-hike/
+
+- from: /posts/honeybee/
+  to: /2026-03-08-honeybee/
+
+- from: /posts/hotel/
+  to: /2026-05-12-hotel/
+
+- from: /posts/hypo-1-10/
+  to: /2026-06-18-hypo-1-10/
+  rss: keep
+  pop: keep
+
+- from: /posts/hypo-1-12/
+  to: /2026-06-28-hypo-1-12/
+  rss: keep
+  pop: keep
+
+- from: /posts/hypo-1-13/
+  to: /2026-07-02-hypo-1-13/
+  rss: keep
+  pop: keep
+
+- from: /posts/hypo-1-15/
+  to: /2026-07-09-hypo-1-15/
+  rss: keep
+  pop: keep
+
+- from: /posts/hypo-1-16/
+  to: /2026-08-13-hypo-1-16/
+  rss: keep
+  pop: keep
+
+
+- from: /posts/hypo-live/
+  to: /2026-06-16-hypo-live/
+  rss: keep
+  pop: keep
+
+- from: /posts/hypo/
+  to: /2026-03-30-hypo/
+  rss: keep
+  pop: keep
+
+- from: /posts/i-built-a-rss-reader-pt2/
+  to: /2026-01-19-i-built-a-rss-reader-pt2/
+  rss: keep
+  pop: keep
+
+- from: /posts/i-built-a-rss-reader/
+  to: /2026-01-08-i-built-a-rss-reader/
+  rss: keep
+  pop: keep
+
+- from: /posts/imagination/
+  to: /2026-01-25-imagination/
+
+- from: /posts/it-guy/
+  to: /2026-08-18-it-guy/
+
+- from: /posts/jump/
+  to: /2026-04-12-jump/
+
+- from: /posts/jury-experience/
+  to: /2026-05-09-jury-experience/
+
+- from: /posts/kestrels/
+  to: /2026-06-06-kestrels/
+
+- from: /posts/kite/
+  to: /2026-03-25-kite/
+
+- from: /posts/knights-games-trebsen/
+  to: /2026-05-24-knights-games-trebsen/
+  rss: keep
+  pop: keep
+
+- from: /posts/kohlmeise/
+  to: /2026-01-27-kohlmeise/
+
+- from: /posts/last-day-off/
+  to: /2026-01-11-last-day-off/
+
+- from: /posts/lazy/
+  to: /2026-05-25-lazy/
+
+- from: /posts/ledge/
+  to: /2026-06-11-ledge/
+
+- from: /posts/leipzig/
+  to: /2026-08-10-leipzig/
+
+- from: /posts/lights/
+  to: /2026-08-11-lights/
+
+- from: /posts/long-day/
+  to: /2026-04-29-long-day/
+
+- from: /posts/loop/
+  to: /2026-04-03-loop/
+
+- from: /posts/lost-americana-tour/
+  to: /2026-02-24-lost-americana-tour/
+  rss: keep
+  pop: keep
+
+- from: /posts/low/
+  to: /2026-03-31-low/
+
+- from: /posts/markfest/
+  to: /2026-05-31-markfest/
+
+- from: /posts/marshmallows/
+  to: /2026-08-22-marshmallows/
+
+- from: /posts/mayrhofen-at-night/
+  to: /2026-02-11-mayrhofen-at-night/
+  rss: keep
+  pop: keep
+
+- from: /posts/melt/
+  to: /2026-01-31-melt/
+
+- from: /posts/milestone/
+  to: /2026-04-08-milestone/
+
+- from: /posts/mine-pt2/
+  to: /2026-01-23-mine-pt2/
+
+- from: /posts/mine/
+  to: /2026-01-19-mine/
+
+- from: /posts/mixed-bag/
+  to: /2026-06-19-mixed-bag/
+
+- from: /posts/monday/
+  to: /2026-03-16-monday/
+
+- from: /posts/moon/
+  to: /2026-02-26-moon/
+
+- from: /posts/mouser/
+  to: /2026-08-13-mouser/
+
+- from: /posts/muehltal/
+  to: /2026-03-14-muehltal/
+  rss: keep
+  pop: keep
+
+- from: /posts/mufflon/
+  to: /2026-04-11-mufflon/
+
+- from: /posts/munich/
+  to: /2026-06-23-munich/
+
+- from: /posts/mushrooms/
+  to: /2026-06-07-mushrooms/
+
+- from: /posts/nadines-birthday/
+  to: /2026-05-11-nadines-birthday/
+
+- from: /posts/nature-detectives/
+  to: /2026-04-18-nature-detectives/
+  rss: keep
+  pop: keep
+
+- from: /posts/new-camera-day/
+  to: /2026-01-17-new-camera-day/
+  rss: keep
+  pop: keep
+
+- from: /posts/new-games/
+  to: /2026-02-16-new-games/
+  rss: keep
+  pop: keep
+
+- from: /posts/nightshot/
+  to: /2026-03-09-nightshot/
+
+- from: /posts/no-one-was-driving-the-car-tour/
+  to: /2026-03-03-no-one-was-driving-the-car-tour/
+  rss: keep
+  pop: keep
+
+- from: /posts/not-sold-yet/
+  to: /2026-08-24-not-sold-yet/
+  rss: keep
+  pop: keep
+
+- from: /posts/nuthatch/
+  to: /2026-05-23-nuthatch/
+
+- from: /posts/offsite/
+  to: /2026-05-13-offsite/
+
+- from: /posts/open-source/
+  to: /2026-01-02-open-source/
+  rss: keep
+  pop: keep
+
+- from: /posts/overcast/
+  to: /2026-05-21-overcast/
+
+- from: /posts/overflight/
+  to: /2026-03-06-overflight/
+
+- from: /posts/overtaken/
+  to: /2026-02-01-overtaken/
+
+- from: /posts/packed/
+  to: /2026-03-28-packed/
+
+- from: /posts/pancake/
+  to: /2026-08-16-pancake/
+
+- from: /posts/parasol/
+  to: /2026-08-15-parasol/
+
+- from: /posts/paving/
+  to: /2026-09-05-paving/
+
+- from: /posts/perpetual/
+  to: /2026-03-04-perpetual/
+
+- from: /posts/pheasant/
+  to: /2026-01-30-pheasant/
+
+- from: /posts/pigeon/
+  to: /2026-03-17-pigeon/
+
+- from: /posts/pillow-fort/
+  to: /2026-06-22-pillow-fort/
+
+- from: /posts/pipes/
+  to: /2026-09-10-pipes/
+
+- from: /posts/playroom/
+  to: /2026-06-26-playroom/
+
+- from: /posts/pond/
+  to: /2026-06-17-pond/
+  rss: keep
+  pop: keep
+
+- from: /posts/poppy/
+  to: /2026-05-26-poppy/
+
+- from: /posts/principles/
+  to: /2026-03-24-principles/
+  rss: keep
+  pop: keep
+
+- from: /posts/priviledge/
+  to: /2026-03-13-priviledge/
+
+- from: /posts/puddle/
+  to: /2026-05-07-puddle/
+
+- from: /posts/r5/
+  to: /2026-06-12-r5/
+
+- from: /posts/race-to-nowhere/
+  to: /2026-06-05-race-to-nowhere/
+  rss: keep
+  pop: keep
+
+- from: /posts/rain/
+  to: /2026-08-17-rain/
+
+- from: /posts/reading/
+  to: /2026-01-07-reading/
+
+
+- from: /posts/redstart/
+  to: /2026-04-15-redstart/
+
+- from: /posts/requiem/
+  to: /2026-03-14-requiem/
+
+- from: /posts/reserve/
+  to: /2026-09-06-reserve/
+
+- from: /posts/resting/
+  to: /2026-06-10-resting/
+
+- from: /posts/rime/
+  to: /2026-03-05-rime/
+
+- from: /posts/rolling/
+  to: /2026-04-21-rolling/
+
+- from: /posts/rooster/
+  to: /2026-04-19-rooster/
+
+- from: /posts/rose/
+  to: /2026-06-02-rose/
+
+- from: /posts/same-again/
+  to: /2026-08-04-same-again/
+
+- from: /posts/sandbox-pt2/
+  to: /2026-06-21-sandbox-pt2/
+
+- from: /posts/sandbox-pt3/
+  to: /2026-07-04-sandbox-pt3/
+
+- from: /posts/sandbox/
+  to: /2026-06-09-sandbox/
+
+- from: /posts/saros/
+  to: /2026-05-02-saros/
+
+- from: /posts/scammed/
+  to: /2026-04-09-scammed/
+  rss: keep
+  pop: keep
+
+- from: /posts/scarce/
+  to: /2026-09-04-scarce/
+
+- from: /posts/schools-out/
+  to: /2026-02-06-schools-out/
+  rss: keep
+  pop: keep
+
+- from: /posts/scouting/
+  to: /2026-05-17-scouting/
+
+- from: /posts/scratch/
+  to: /2026-07-01-scratch/
+
+- from: /posts/shrike-pt2/
+  to: /2026-08-29-shrike-pt2/
+
+- from: /posts/shrike/
+  to: /2026-05-27-shrike/
+
+- from: /posts/sit-in/
+  to: /2026-06-15-sit-in/
+
+- from: /posts/slabs/
+  to: /2026-08-05-slabs/
+
+- from: /posts/snack/
+  to: /2026-08-21-snack/
+
+- from: /posts/snow/
+  to: /2026-01-08-snow/
+
+- from: /posts/soapbox-race/
+  to: /2026-06-05-soapbox-race/
+
+- from: /posts/soft/
+  to: /2026-01-26-soft/
+
+- from: /posts/song-thrush/
+  to: /2026-03-01-song-thrush/
+
+- from: /posts/sourdough/
+  to: /2026-01-06-sourdough/
+
+- from: /posts/spare-parts/
+  to: /2026-02-15-spare-parts/
+
+- from: /posts/sparrows-pt2/
+  to: /2026-05-20-sparrows-pt2/
+
+- from: /posts/sparrows-pt3/
+  to: /2026-07-09-sparrows-pt3/
+
+- from: /posts/sparrows/
+  to: /2026-05-04-sparrows/
+
+- from: /posts/splash/
+  to: /2026-09-01-splash/
+
+- from: /posts/split/
+  to: /2026-04-20-split/
+
+- from: /posts/sponsored-post/
+  to: /2026-03-18-sponsored-post/
+
+- from: /posts/spring-stone/
+  to: /2026-07-05-spring-stone/
+
+- from: /posts/star/
+  to: /2026-04-07-star/
+
+- from: /posts/starling-pt2/
+  to: /2026-08-28-starling-pt2/
+
+- from: /posts/starling/
+  to: /2026-05-30-starling/
+
+- from: /posts/station-visit/
+  to: /2026-04-16-station-visit/
+
+- from: /posts/sticking-around/
+  to: /2026-08-23-sticking-around/
+  rss: keep
+  pop: keep
+
+- from: /posts/stop-gap-swallow/
+  to: /2026-06-24-stop-gap-swallow/
+
+- from: /posts/stork-pt2/
+  to: /2026-05-01-stork-pt2/
+
+- from: /posts/stork-pt3/
+  to: /2026-06-03-stork-pt3/
+
+- from: /posts/stork/
+  to: /2026-03-10-stork/
+
+- from: /posts/strawberries/
+  to: /2026-07-03-strawberries/
+
+- from: /posts/stripes/
+  to: /2026-02-17-stripes/
+
+- from: /posts/sunflowers/
+  to: /2026-08-20-sunflowers/
+
+- from: /posts/swallow-pt2/
+  to: /2026-07-07-swallow-pt2/
+
+- from: /posts/swallow/
+  to: /2026-06-20-swallow/
+
+- from: /posts/swans/
+  to: /2026-06-29-swans/
+
+- from: /posts/tilians-favourite-spot/
+  to: /2026-03-12-tilians-favourite-spot/
+
+- from: /posts/together/
+  to: /2026-08-07-together/
+
+- from: /posts/tradition/
+  to: /2026-05-14-tradition/
+
+- from: /posts/twilight/
+  to: /2026-08-31-twilight/
+
+- from: /posts/two-cameras/
+  to: /2026-04-02-two-cameras/
+  rss: keep
+  pop: keep
+
+- from: /posts/vet/
+  to: /2026-01-09-vet/
+
+- from: /posts/village-walk/
+  to: /2026-03-29-village-walk/
+  rss: keep
+  pop: keep
+
+- from: /posts/visit/
+  to: /2026-09-02-visit/
+
+- from: /posts/wander/
+  to: /2026-06-30-wander/
+
+- from: /posts/warming-up/
+  to: /2026-06-14-warming-up/
+
+- from: /posts/water-tower/
+  to: /2026-08-26-water-tower/
+
+- from: /posts/water/
+  to: /2026-06-01-water/
+
+- from: /posts/watercolors/
+  to: /2026-08-09-watercolors/
+
+- from: /posts/weir/
+  to: /2026-02-20-weir/
+
+- from: /posts/wild-horeses/
+  to: /2026-02-28-wild-horeses/
+  rss: keep
+  pop: keep
+
+- from: /posts/windpark-pt2/
+  to: /2026-01-22-windpark-pt2/
+
+- from: /posts/windpark/
+  to: /2026-01-13-windpark/
+
+- from: /posts/winter-walk/
+  to: /2026-01-04-winter-walk/
+
+- from: /posts/wolfs-tracking/
+  to: /2026-02-03-wolfs-tracking/
+  rss: keep
+  pop: keep
+
+- from: /posts/woodpecker-pt2/
+  to: /2026-07-10-woodpecker-pt2/
+
+- from: /posts/woodpecker/
+  to: /2026-03-07-woodpecker/
+
+- from: /posts/woods/
+  to: /2026-02-21-woods/
+
+- from: /posts/worktrees/
+  to: /2026-09-10-worktrees/
+  rss: keep
+  pop: keep
+
+- from: /posts/zootopia-2/
+  to: /2026-02-22-zootopia-2/

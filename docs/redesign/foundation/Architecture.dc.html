@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: oklch(0.18 0.01 60); }
+    a:hover { color: oklch(0.18 0.01 60); text-decoration: underline; }
+  </style>
+</helmet>
+
+<div style="width: 1240px; box-sizing: border-box; background: oklch(0.985 0.004 85); font-family: 'Archivo', sans-serif; color: oklch(0.18 0.01 60); padding: 48px;">
+
+  <div style="font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase;">Information architecture</div>
+  <div style="height: 1px; background: oklch(0.18 0.01 60); margin: 10px 0 20px;"></div>
+
+  <div style="font-size: 17px; line-height: 1.65; max-width: 70ch; padding-bottom: 28px;">Today the site is organised by feature: a list, a pager, a taxonomy, a search page. The proposal organises it by the kind of a post, which is the field the taxonomy card defines. Eleven routes become eight, and four of those carry the menu. Every address that exists today and takes traffic keeps its name.</div>
+
+  <svg viewBox="0 0 1144 620" width="1144" height="620" role="img" aria-label="Current routes on the left mapped onto proposed routes on the right">
+    <defs>
+      <style>
+        .lbl { font: 500 15px Archivo, sans-serif; fill: oklch(0.18 0.01 60); }
+        .sub { font: 400 13px Archivo, sans-serif; fill: oklch(0.18 0.01 60); }
+        .hd  { font: 500 13px Archivo, sans-serif; fill: oklch(0.18 0.01 60); letter-spacing: 1.2px; }
+        .ln  { stroke: oklch(0.88 0.008 75); stroke-width: 1; fill: none; }
+        .lnk { stroke: oklch(0.18 0.01 60); stroke-width: 1; fill: none; }
+        .gone { stroke: oklch(0.88 0.008 75); stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
+        .box { stroke: oklch(0.18 0.01 60); stroke-width: 1; fill: none; }
+      </style>
+    </defs>
+
+    <text class="hd" x="0" y="14">TODAY, WITH EIGHT MONTHS OF TRAFFIC</text>
+    <text class="hd" x="700" y="14">PROPOSED, BY CONTENT TYPE</text>
+    <line class="lnk" x1="0" y1="24" x2="470" y2="24" />
+    <line class="lnk" x1="700" y1="24" x2="1144" y2="24" />
+
+    <!-- left column -->
+    <g>
+      <text class="lbl" x="0" y="60">/</text>
+      <text class="sub" x="330" y="60" text-anchor="end">4,087 views</text>
+      <line class="ln" x1="0" y1="72" x2="470" y2="72" />
+
+      <text class="lbl" x="0" y="106">/posts/…</text>
+      <text class="sub" x="330" y="106" text-anchor="end">8,059 views</text>
+      <line class="ln" x1="0" y1="118" x2="470" y2="118" />
+
+      <text class="lbl" x="0" y="152">/page/2 … /28</text>
+      <text class="sub" x="330" y="152" text-anchor="end">313 views</text>
+      <line class="ln" x1="0" y1="164" x2="470" y2="164" />
+
+      <text class="lbl" x="0" y="198">/photos</text>
+      <text class="sub" x="330" y="198" text-anchor="end">210 views</text>
+      <line class="ln" x1="0" y1="210" x2="470" y2="210" />
+
+      <text class="lbl" x="0" y="244">/about</text>
+      <text class="sub" x="330" y="244" text-anchor="end">173 views</text>
+      <line class="ln" x1="0" y1="256" x2="470" y2="256" />
+
+      <text class="lbl" x="0" y="290">/topics</text>
+      <text class="sub" x="330" y="290" text-anchor="end">147 views, 39 real clicks</text>
+      <line class="ln" x1="0" y1="302" x2="470" y2="302" />
+
+      <text class="lbl" x="0" y="336">/log</text>
+      <text class="sub" x="330" y="336" text-anchor="end">129 views</text>
+      <line class="ln" x1="0" y1="348" x2="470" y2="348" />
+
+      <text class="lbl" x="0" y="382">/blogroll</text>
+      <text class="sub" x="330" y="382" text-anchor="end">128 views</text>
+      <line class="ln" x1="0" y1="394" x2="470" y2="394" />
+
+      <text class="lbl" x="0" y="428">/search</text>
+      <text class="sub" x="330" y="428" text-anchor="end">82 views</text>
+      <line class="ln" x1="0" y1="440" x2="470" y2="440" />
+
+      <text class="lbl" x="0" y="474">/projects</text>
+      <text class="sub" x="330" y="474" text-anchor="end">new this week</text>
+      <line class="ln" x1="0" y1="486" x2="470" y2="486" />
+
+      <text class="lbl" x="0" y="520">/cv</text>
+      <text class="sub" x="330" y="520" text-anchor="end">deleted, 6 views</text>
+      <line class="ln" x1="0" y1="532" x2="470" y2="532" />
+    </g>
+
+    <!-- right column -->
+    <g>
+      <rect class="box" x="700" y="40" width="444" height="30" />
+      <text class="lbl" x="712" y="60">/</text>
+      <text class="sub" x="1132" y="60" text-anchor="end">menu · what is new, both kinds</text>
+
+      <rect class="box" x="700" y="100" width="444" height="30" />
+      <text class="lbl" x="712" y="120">/photos</text>
+      <text class="sub" x="1132" y="120" text-anchor="end">menu · kind picture, 244 · address exists</text>
+
+      <rect class="box" x="700" y="160" width="444" height="30" />
+      <text class="lbl" x="712" y="180">/writing</text>
+      <text class="sub" x="1132" y="180" text-anchor="end">menu · kind writing, 28</text>
+
+      <rect class="box" x="700" y="220" width="444" height="30" />
+      <text class="lbl" x="712" y="240">/archive</text>
+      <text class="sub" x="1132" y="240" text-anchor="end">menu · all 357, filter in page</text>
+
+      <text class="lbl" x="712" y="300">/trips</text>
+      <text class="sub" x="1132" y="300" text-anchor="end">from a photo · 17 series, 70 posts</text>
+      <line class="ln" x1="700" y1="312" x2="1144" y2="312" />
+
+      <text class="lbl" x="712" y="346">/log</text>
+      <text class="sub" x="1132" y="346" text-anchor="end">from /writing · 85 entries</text>
+      <line class="ln" x1="700" y1="358" x2="1144" y2="358" />
+
+      <text class="lbl" x="712" y="392">/about</text>
+      <text class="sub" x="1132" y="392" text-anchor="end">from the footer · blogroll folded in</text>
+      <line class="ln" x1="700" y1="404" x2="1144" y2="404" />
+
+      <text class="lbl" x="712" y="438">/projects</text>
+      <text class="sub" x="1132" y="438" text-anchor="end">from /about and /writing</text>
+      <line class="ln" x1="700" y1="450" x2="1144" y2="450" />
+
+      <text class="lbl" x="712" y="498">/index.xml</text>
+      <text class="sub" x="1132" y="498" text-anchor="end">unchanged, one feed</text>
+      <line class="ln" x1="700" y1="510" x2="1144" y2="510" />
+    </g>
+
+    <!-- mapping -->
+    <path class="lnk" d="M470 55 C 580 55, 590 55, 700 55" />
+    <path class="lnk" d="M470 101 C 580 101, 590 115, 700 115" />
+    <path class="lnk" d="M470 101 C 580 101, 590 175, 700 175" />
+    <path class="lnk" d="M470 101 C 580 101, 590 295, 700 295" />
+    <path class="lnk" d="M470 147 C 580 147, 590 235, 700 235" />
+    <path class="lnk" d="M470 193 C 580 193, 590 115, 700 115" />
+    <path class="lnk" d="M470 239 C 580 239, 590 387, 700 387" />
+    <path class="lnk" d="M470 285 C 580 285, 590 235, 700 235" />
+    <path class="lnk" d="M470 331 C 580 331, 590 341, 700 341" />
+    <path class="gone" d="M470 377 C 580 377, 590 387, 700 387" />
+    <path class="gone" d="M470 423 C 580 423, 590 235, 700 235" />
+    <path class="lnk" d="M470 469 C 580 469, 590 433, 700 433" />
+  </svg>
+
+  <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 20px; padding-top: 30px;">
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60);"></div>
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding-top: 6px;">What the diagram decides</div>
+    <sc-for list="{{decisions}}" as="d" hint-placeholder-count="6">
+      <div style="grid-column: span 12; font-size: 16px; line-height: 1.6; padding: 11px 0; border-top: 1px solid oklch(0.88 0.008 75);">{{d}}</div>
+    </sc-for>
+  </div>
+
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      decisions: [
+        'A dotted line means the route disappears and its job moves elsewhere. Blogroll becomes a section of About, search becomes a field on the archive. /topics goes because the index produced 39 human clicks in eight months and the topic data is not reliable enough to filter on.',
+        '/trips is the only new address. 38 posts across four trips have no container today, and of 214 people who read a summer vacation day, 167 read exactly one. It helps a minority, so it is reached from a photo and not from the menu.',
+        'The menu holds four entries. Everything else is reached from a page where it belongs, which is where a reader is already looking for it.',
+        'The pager has no successor. Each of the three lists keeps loading as you scroll, and the archive holds the rest on one page.',
+        'The feed stays at /index.xml with everything in it. 563 tagged clicks and an unknown number of untagged readers depend on that address.',
+        'Fifteen addresses answer today that the build no longer produces. Any rename has to decide what happens to them, or the old page simply stays and competes.',
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -25,15 +25,6 @@ jobs:
           hugo-version: "latest"
           extended: true
 
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: "20"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
       - name: Show build time and scheduled posts
         run: |
           echo "Current time (Hugo's perspective): $(date -u '+%Y-%m-%dT%H:%M:%S+00:00')"
@@ -46,11 +37,6 @@ jobs:
         env:
           TZ: Europe/Berlin
         run: hugo --minify
-
-      - name: Build search index
-        run: |
-          npx pagefind --site public --glob 'posts/*/**/*.html'
-          rm -f public/pagefind/pagefind-ui.* public/pagefind/pagefind-modular-ui.* public/pagefind/pagefind-highlight.js
 
       - name: Deploy via SSH
         timeout-minutes: 10

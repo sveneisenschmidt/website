@@ -1,0 +1,41 @@
+.pictures {
+    grid-column: span var(--span-main);
+}
+
+/* Die Fläche liegt über dem ganzen Block, damit auch das Bild zum Beitrag
+   führt. Das Bild trägt einen view-transition-name und stapelt sich damit
+   selbst, ohne z-index läge es über der Fläche und würde die Klicks
+   abfangen. */
+.picture h3 a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.picture {
+    position: relative;
+    padding-bottom: var(--space-group);
+}
+
+.tiles {
+    display: grid;
+    grid-template-columns: repeat(var(--tiles-columns), minmax(0, 1fr));
+    gap: var(--space-tile);
+    padding: 0;
+    list-style: none;
+}
+
+@media (max-width: 900px) {
+
+    main {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: var(--space-stack);
+    }
+
+    .pictures,
+    .writing,
+    .article {
+        grid-column: auto;
+    }
+}

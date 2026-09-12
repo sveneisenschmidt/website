@@ -14,8 +14,6 @@ dev: check-deps
 build:
 	rm -rf public/*
 	hugo --minify
-	npx pagefind --site public --glob 'posts/*/**/*.html'
-	rm -f public/pagefind/pagefind-ui.* public/pagefind/pagefind-modular-ui.* public/pagefind/pagefind-highlight.js
 
 push:
 	hugo --gc

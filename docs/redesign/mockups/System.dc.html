@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Encode+Sans:wght@300;400;500;900&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: oklch(0.18 0.01 60); }
+    a:hover { color: oklch(0.18 0.01 60); text-decoration: underline; }
+  </style>
+</helmet>
+
+<div style="width: 1240px; box-sizing: border-box; background: oklch(0.985 0.004 85); font-family: 'Archivo', sans-serif; color: oklch(0.18 0.01 60); padding: 48px;">
+
+  <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 20px;">
+
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase;">Design system</div>
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 10px 0 6px;"></div>
+
+    <div style="grid-column: span 12; font-size: 17px; line-height: 1.65; max-width: 74ch; padding-bottom: 8px;">Five sizes, two weights, four colours, five spacing steps, two measures, one radius. Three columns: what is live today, what I propose, and why. The live column is the baseline to diff against, not a constraint. Where the two agree, the value was settled this morning and I see no reason to move it.</div>
+    <div style="grid-column: span 12; font-size: 17px; line-height: 1.65; max-width: 74ch; padding-bottom: 24px;">The samples are set in Encode Sans, so this table shows the real thing rather than a description of it.</div>
+
+    <div style="grid-column: span 2; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-bottom: 6px;">Token</div>
+    <div style="grid-column: span 2; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-bottom: 6px;">Live</div>
+    <div style="grid-column: span 2; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-bottom: 6px;">Proposed</div>
+    <div style="grid-column: span 3; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-bottom: 6px;">Sample</div>
+    <div style="grid-column: span 3; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-bottom: 6px;">Why</div>
+
+    <sc-for list="{{scale}}" as="s" hint-placeholder-count="5">
+      <div style="grid-column: span 2; padding: 13px 0; border-top: 1px solid oklch(0.88 0.008 75); font-size: 15px; font-weight: 500;">{{s.token}}</div>
+      <div style="grid-column: span 2; padding: 13px 0; border-top: 1px solid oklch(0.88 0.008 75); font-size: 15px;">{{s.live}}</div>
+      <div style="grid-column: span 2; padding: 13px 0; border-top: 1px solid oklch(0.88 0.008 75); font-size: 15px; font-weight: 500;">{{s.prop}}</div>
+      <div style="grid-column: span 3; padding: 13px 0; border-top: 1px solid oklch(0.88 0.008 75); overflow: hidden;">
+        <span style="font-family: 'Encode Sans', sans-serif; font-size: {{s.px}}; font-weight: {{s.w}}; line-height: 1.15; text-transform: {{s.tt}};">{{s.sample}}</span>
+      </div>
+      <div style="grid-column: span 3; padding: 13px 0; border-top: 1px solid oklch(0.88 0.008 75); font-size: 14.5px; line-height: 1.5;">{{s.why}}</div>
+    </sc-for>
+
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 26px 0 6px;"></div>
+
+    <div style="grid-column: span 3;">
+      <div style="font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 12px;">Colour, four values</div>
+      <sc-for list="{{colors}}" as="c" hint-placeholder-count="4">
+        <div style="display: flex; align-items: center; gap: 12px; padding: 7px 0;">
+          <div style="width: 30px; height: 30px; flex: none; background: {{c.v}}; border: 1px solid oklch(0.88 0.008 75);"></div>
+          <div>
+            <div style="font-size: 15px; font-weight: 500;">{{c.name}}</div>
+            <div style="font-size: 13.5px;">{{c.use}}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="grid-column: span 3;">
+      <div style="font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 12px;">Spacing, five steps</div>
+      <sc-for list="{{space}}" as="s" hint-placeholder-count="5">
+        <div style="display: flex; align-items: center; gap: 12px; padding: 7px 0;">
+          <div style="height: 10px; width: {{s.px}}; background: oklch(0.18 0.01 60); flex: none;"></div>
+          <div style="font-size: 14px;">{{s.label}}</div>
+        </div>
+      </sc-for>
+      <div style="font-size: 14px; line-height: 1.55; padding-top: 8px;">A heading sets the space under it and the next block adds none. That rule is already live.</div>
+    </div>
+
+    <div style="grid-column: span 3;">
+      <div style="font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 12px;">Measure, two widths</div>
+      <sc-for list="{{measures}}" as="m" hint-placeholder-count="2">
+        <div style="padding: 7px 0;">
+          <div style="font-size: 15px; font-weight: 500;">{{m.name}}</div>
+          <div style="font-size: 14px; line-height: 1.55;">{{m.what}}</div>
+        </div>
+      </sc-for>
+      <div style="font-size: 14px; line-height: 1.55; padding-top: 8px;">This is the one thing the live site does not have. Today every type gets 768 pixels, including a 3,000 word essay.</div>
+    </div>
+
+
+    <div style="grid-column: span 3;">
+      <div style="font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 12px;">Radius, one value</div>
+      <div style="display: flex; align-items: center; gap: 12px; padding: 7px 0;">
+        <div style="width: 60px; height: 40px; background: #d8d8d8; border-radius: 4px;"></div>
+        <div style="font-size: 14px; line-height: 1.5;">4 px on every image and tile</div>
+      </div>
+      <div style="font-size: 14px; line-height: 1.55; padding-top: 8px;">Already in the live stylesheet. Nothing else is rounded: no box, no button, no field.</div>
+    </div>
+  </div>
+
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      scale: [
+        { token: '1 · title', live: '2rem, 1.15', prop: '2rem, 32px, 1.05', px: '32px', w: '900', tt: 'uppercase',
+          sample: 'Reserve', why: 'The title of a post, on all four types. Upper case has no descenders, so a wrapped title sits tighter at 1.05 than at 1.15.' },
+        { token: '2 · heading', live: '1.5rem + a clamp', prop: '1.5rem, 24px, 1.05 / 1.15', px: '24px', w: '900', tt: 'none',
+          sample: 'Where the cost sits', why: 'Two roles, one size: the site name and a list title in upper case at 1.05, a section heading in an Essay in its written case at 1.15. The header clamp goes: measured on a 390 pixel phone the name needs 260 of the 358 available.' },
+        { token: '3 · body', live: '1.125rem', prop: '1.125rem, 18px', px: '18px', w: '300', tt: 'none',
+          sample: 'The reservoir sat lower than I have ever seen it.', why: 'Light at 18 pixels carries 3,000 words.' },
+        { token: '4 · secondary', live: 'body size, italic', prop: '1rem, 16px', px: '16px', w: '400', tt: 'none',
+          sample: 'September 6, 2026', why: 'Caption and meta line. Upright, because Encode Sans has no italic and the browser slants it.' },
+        { token: '5 · label', live: '0.8rem', prop: '0.8rem, 12.8px', px: '12.8px', w: '400', tt: 'uppercase',
+          sample: 'Aperture', why: 'Camera keys and the few interface words.' },
+      ],
+      colors: [
+        { name: 'Ink', v: '#222222', use: 'every text' },
+        { name: 'Link', v: '#0000ee', use: 'links in running text only' },
+        { name: 'Rule', v: '#222222', use: 'lines, one pixel' },
+        { name: 'Muted', v: '#f2f2f2', use: 'code, a placeholder ground' },
+      ],
+      space: [
+        { px: '4px', label: '4, inside a label' },
+        { px: '8px', label: '8, title to date' },
+        { px: '16px', label: '16, between blocks' },
+        { px: '32px', label: '32, between sections' },
+        { px: '64px', label: '64, between entries' },
+      ],
+      measures: [
+        { name: 'Column, 768 px', what: 'Photo and Gallery. The picture decides the width and the caption follows it.' },
+        { name: 'Reading, 60 characters', what: 'Note and Essay. About 600 pixels at 18 pixel body text.' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

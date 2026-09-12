@@ -1,29 +1,13 @@
-{{ $isPost := and (eq .Kind "page") (eq .Section "posts") }} {{ if $isPost }}
-
-<div id="pop-wrapper">
-    <a href="mailto:{{ .Site.Params.email }}?subject=Feedback on {{ .Title }}">
-        Email me</a
-    >
-    or leave a reaction: <span id="pop"></span>
-</div>
-<hr />
-{{ end }}
-<script src="https://pop.eisenschmidt.website/pop.min.js" defer></script>
+{{ if hugo.IsProduction }}
+<script src="{{ site.Params.popScript | default "https://pop.eisenschmidt.website/pop.min.js" }}" defer></script>
 <script defer>
-    document.addEventListener("DOMContentLoaded", function() {
-        {{ $emojis := slice "❤️" }}
-        {{ if and $isPost .Params.emojis }}
-            {{ $emojis = append .Params.emojis $emojis  }}
-        {{ end }}
+    document.addEventListener("DOMContentLoaded", function () {
+        if (window.location.hostname !== {{ (urls.Parse site.BaseURL).Hostname }}) return;
         Pop.init({
-            endpoint: "https://pop.eisenschmidt.website/api",
-            pageId: {{ .Permalink }},
-        {{ if $isPost }}
-            el: "#pop",
-            emojis: {{ $emojis | jsonify | safeJS }},
-            renderReactions: true,
-        {{ end }}
+            endpoint: {{ site.Params.popEndpoint | default "https://pop.eisenschmidt.website/api" }},
+            pageId: {{ partial "page-id.html" $ }},
             trackVisits: true
         });
     });
 </script>
+{{ end }}

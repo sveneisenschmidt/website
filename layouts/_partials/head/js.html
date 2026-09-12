@@ -1,5 +1,15 @@
-{{ with resources.Get "js/main.js" | minify }} {{ if .Content }}
+{{ if or .IsHome (eq .Kind "section") (eq .Layout "archive") }}{{ with resources.Get "js/scroll.js" | minify }}
 <script>
     {{ .Content | safeJS }}
 </script>
-{{ end }} {{ end }}
+{{ end }}{{ end }}
+{{ if or (eq .Kind "page") (eq .Layout "archive") }}{{ with resources.Get "js/back.js" | minify }}
+<script>
+    {{ .Content | safeJS }}
+</script>
+{{ end }}{{ end }}
+{{ if .IsHome }}{{ with resources.Get "js/fit.js" | minify }}
+<script>
+    {{ .Content | safeJS }}
+</script>
+{{ end }}{{ end }}

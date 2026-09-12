@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: oklch(0.18 0.01 60); }
+    a:hover { color: oklch(0.18 0.01 60); text-decoration: underline; }
+  </style>
+</helmet>
+
+<div style="width: 1240px; box-sizing: border-box; background: oklch(0.985 0.004 85); font-family: 'Archivo', sans-serif; color: oklch(0.18 0.01 60); padding: 48px;">
+
+  <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 20px;">
+
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase;">Content quality</div>
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 10px 0 6px;"></div>
+
+    <div style="grid-column: span 12; font-size: 17px; line-height: 1.65; max-width: 70ch; padding-bottom: 24px;">Four findings that block the architecture, and a list of smaller things worth fixing in the same pass. Every number below was counted from the repository or the access log today.</div>
+
+    <sc-for list="{{findings}}" as="f" hint-placeholder-count="4">
+      <div style="grid-column: span 1; font-size: 15px; padding: 18px 0 0; border-top: 1px solid oklch(0.18 0.01 60);">{{f.n}}</div>
+      <div style="grid-column: span 11; padding: 18px 0 22px; border-top: 1px solid oklch(0.18 0.01 60);">
+        <div style="font-size: 21px; font-weight: 500; line-height: 1.25;">{{f.head}}</div>
+        <div style="font-size: 16px; line-height: 1.6; padding-top: 8px; max-width: 78ch;">{{f.body}}</div>
+
+        <div style="display: flex; gap: 28px; padding-top: 14px; flex-wrap: wrap;">
+          <sc-for list="{{f.numbers}}" as="k" hint-placeholder-count="3">
+            <div style="display: flex; flex-direction: column; gap: 3px;">
+              <div style="font-size: 22px; font-weight: 500;">{{k.v}}</div>
+              <div style="font-size: 13px; line-height: 1.4; max-width: 22ch;">{{k.l}}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 108px 1fr; gap: 14px; padding-top: 16px;">
+          <div style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;">Blocks</div>
+          <div style="font-size: 15px; line-height: 1.55;">{{f.blocks}}</div>
+          <div style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;">Fix</div>
+          <div style="font-size: 15px; line-height: 1.55;">{{f.fix}}</div>
+        </div>
+      </div>
+    </sc-for>
+
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 24px 0 6px;"></div>
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 10px;">Smaller things, same pass</div>
+
+    <div style="grid-column: span 7; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;">What</div>
+    <div style="grid-column: span 2; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;">Count</div>
+    <div style="grid-column: span 3; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;">Effect today</div>
+
+    <sc-for list="{{small}}" as="s" hint-placeholder-count="8">
+      <div style="grid-column: span 7; font-size: 15px; line-height: 1.5; padding: 10px 0; border-top: 1px solid oklch(0.88 0.008 75);">{{s.what}}</div>
+      <div style="grid-column: span 2; font-size: 15px; font-weight: 500; padding: 10px 0; border-top: 1px solid oklch(0.88 0.008 75);">{{s.n}}</div>
+      <div style="grid-column: span 3; font-size: 15px; line-height: 1.5; padding: 10px 0; border-top: 1px solid oklch(0.88 0.008 75);">{{s.effect}}</div>
+    </sc-for>
+
+  </div>
+
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      findings: [
+        {
+          n: '1', head: 'Topics cannot be used as a filter',
+          body: 'Photography is missing from 64 posts that are photographs, because it was dropped whenever a second subject topic fitted. Daily Photo and Photography overlap on 147 posts and neither contains the other. Five topics hold one post each and four of those are already covered by an existing topic. One post carries an empty topic list.',
+          numbers: [
+            { v: '64', l: 'photo posts without the Photography topic' },
+            { v: '19', l: 'topic combinations used exactly once' },
+            { v: '39', l: 'human clicks from the topics index in eight months' },
+          ],
+          blocks: 'Any archive that filters by topic. The filter would return a wrong set and the reader would never know.',
+          fix: 'Filter the archive by content type instead. Topics can stay as a label on a post without carrying navigation.',
+        },
+        {
+          n: '2', head: 'Daily Photo no longer means one photo',
+          body: 'A post in bricks from 20 January states the policy in your own words: only one daily photo from now on, to force a choice. 57 of the 211 posts tagged Daily Photo break it, up to 19 images in one post. The four England days carry 19, 12, 8 and 6 images and are tagged Daily Photo, while the structurally identical summer vacation series is tagged Photography and Travel.',
+          numbers: [
+            { v: '154', l: 'of 211 actually hold exactly one image' },
+            { v: '57', l: 'hold more than one' },
+            { v: '19', l: 'images in the largest of them' },
+          ],
+          blocks: 'The split between a daily picture and a travel day. Both are currently the same type with the same tag.',
+          fix: 'Treat a multi-image day as a travel day or a gallery. That is a third content type, not a broken daily photo.',
+        },
+        {
+          n: '3', head: 'Two identity conventions, and they leak',
+          body: 'A post gets its URL either from a slug or from its folder name. 207 use a slug, 65 the folder. England days 1 to 4 have bare slugs while day 4 and a half sits in the daily-photo namespace, so one series publishes under two prefixes. The Hypo series exists in three structural forms at once. Five titles are used by more than one post, which makes them indistinguishable in a list, in the feed and in search.',
+          numbers: [
+            { v: '65', l: 'posts with no slug, folder name decides the URL' },
+            { v: '13', l: 'posts sharing a title with another post' },
+            { v: '3', l: 'structural forms inside the Hypo series' },
+          ],
+          blocks: 'A stable URL rule, and any grouping that relies on the name. Series membership is currently guessed from a prefix.',
+          fix: 'One rule for identity. A series becomes a declared field in the frontmatter rather than a naming convention.',
+        },
+        {
+          n: '4', head: 'The server never forgets a page',
+          body: 'The deploy copies the build up and deletes nothing. 15 addresses answer with 200 that the build no longer produces, among them three typos that were once published: daiuly-photo-imagination, ambiguity-v4 and ambiguity-at-work-v3. Six are topic pages for topics that no longer exist. They still take traffic, which is how they stay invisible.',
+          numbers: [
+            { v: '15', l: 'live addresses missing from the build' },
+            { v: '23', l: 'views on topics slash vintage, a topic that is gone' },
+            { v: '22', l: 'views on an old daily photo URL' },
+          ],
+          blocks: 'Any rename, any restructure. Every old address survives and competes with its replacement.',
+          fix: 'Let the deploy delete what the build no longer contains, after listing what would go. Redirect the addresses that carry traffic.',
+        },
+      ],
+      small: [
+        { what: 'Bundles that hold images but set no cover, so the photo grid skips them silently', n: '7', effect: 'Missing from /photos' },
+        { what: 'Images inside a bundle that no post ever references', n: '7', effect: 'Uploaded and never shown' },
+        { what: 'A nested copy of content/posts inside summer vacation 14, shipped into the build', n: '1', effect: 'Dead file in public/' },
+        { what: 'Log entries with no link to the film or game', n: '8', effect: 'Dead end in the log' },
+        { what: 'Posts carrying draft = false, which is the Hugo default anyway', n: '94', effect: 'Noise in frontmatter' },
+        { what: 'Distinct orderings of the frontmatter keys across posts', n: '20', effect: 'No template to follow' },
+        { what: 'Posts using the camera emoji, on a site where every post is a photo', n: '33', effect: 'Carries no meaning' },
+        { what: 'Two posts published on the exact same timestamp, so list order is undefined', n: '2', effect: 'Order changes per build' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

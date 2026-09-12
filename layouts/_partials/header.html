@@ -1,6 +1,7 @@
-{{ if .IsHome }}
-<h1><a href="{{ "/" | relURL }}" class="home">{{ site.Params.siteHeading | default site.Title }}</a></h1>
-{{ else }}
-<h1><a href="{{ "/" | relURL }}">&larr; Back</a></h1>
-{{ end }}
-{{ partial "menu.html" (dict "menuID" "main" "page" .) }}
+<header class="site-header">
+    {{ if .IsHome }}
+    <h1 class="masthead"><a href="{{ "/" | relURL }}">{{ site.Params.siteHeading | default site.Title }}</a></h1>
+    {{ else }}
+    <p class="masthead"><a href="{{ "/" | relURL }}">{{ site.Params.siteHeading | default site.Title }}</a></p>
+    {{ end }}
+</header>

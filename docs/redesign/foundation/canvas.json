@@ -1,0 +1,73 @@
+{
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 1000,
+      "h": 1560,
+      "title": "1 \u00b7 Intention"
+    },
+    {
+      "file": "Principles.dc.html",
+      "x": 1080,
+      "y": 0,
+      "w": 1000,
+      "h": 1560,
+      "title": "2 \u00b7 Principles"
+    },
+    {
+      "file": "ContentTypes.dc.html",
+      "x": 0,
+      "y": 1600,
+      "w": 1240,
+      "h": 1020,
+      "title": "3 \u00b7 Content types"
+    },
+    {
+      "file": "Architecture.dc.html",
+      "x": 1320,
+      "y": 1600,
+      "w": 1240,
+      "h": 1220,
+      "title": "4 \u00b7 Information architecture"
+    },
+    {
+      "file": "Quality.dc.html",
+      "x": 0,
+      "y": 2900,
+      "w": 1240,
+      "h": 1500,
+      "title": "5 \u00b7 Content quality"
+    },
+    {
+      "file": "Taxonomy.dc.html",
+      "x": 1320,
+      "y": 2900,
+      "w": 1240,
+      "h": 1520,
+      "title": "6 \u00b7 Taxonomy"
+    },
+    {
+      "file": "Requirements.dc.html",
+      "x": 0,
+      "y": 4500,
+      "w": 1240,
+      "h": 1180,
+      "title": "7 \u00b7 Non-functional requirements"
+    }
+  ],
+  "annotations": [
+    {
+      "id": "read-order",
+      "x": 0,
+      "y": -150,
+      "w": 520,
+      "text": "Read 1 to 4. No design yet: this is what the design would have to follow.\nBoard 1 ends with four assumptions I need you to correct."
+    }
+  ],
+  "launch": {
+    "view": "focused",
+    "file": "Requirements.dc.html"
+  }
+}

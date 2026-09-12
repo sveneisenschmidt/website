@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: oklch(0.18 0.01 60); }
+    a:hover { color: oklch(0.18 0.01 60); text-decoration: underline; }
+  </style>
+</helmet>
+
+<div style="width: 1240px; box-sizing: border-box; background: oklch(0.985 0.004 85); font-family: 'Archivo', sans-serif; color: oklch(0.18 0.01 60); padding: 48px;">
+
+  <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 20px;">
+
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase;">Taxonomy</div>
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 10px 0 6px;"></div>
+
+    <div style="grid-column: span 12; font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: -0.02em; max-width: 30ch; padding-bottom: 10px;">One list is holding three different kinds of thing</div>
+
+    <div style="grid-column: span 12; font-size: 17px; line-height: 1.65; max-width: 70ch; padding-bottom: 8px;">A trip day cannot be both a daily photo and a travel post while both words live in the same list. They are not competing subjects: one describes the form of the post, the other says which run it belongs to. The list has no way to express that, so you have to choose, and either choice is wrong.</div>
+
+    <div style="grid-column: span 12; font-size: 17px; line-height: 1.65; max-width: 70ch; padding-bottom: 24px;">Three of the fifteen topics cover almost the whole site, and none of the three is a subject. Remove them and 176 of 272 posts have no topic left at all.</div>
+
+    <div style="grid-column: span 4; padding: 16px 0; border-top: 1px solid oklch(0.18 0.01 60);">
+      <div style="font-size: 30px; font-weight: 500;">64 %</div>
+      <div style="font-size: 15px; line-height: 1.5; padding-top: 4px;">of posts carry no subject once form and series are taken out</div>
+    </div>
+    <div style="grid-column: span 4; padding: 16px 0; border-top: 1px solid oklch(0.18 0.01 60);">
+      <div style="font-size: 30px; font-weight: 500;">35 of 35</div>
+      <div style="font-size: 15px; line-height: 1.5; padding-top: 4px;">posts in a trip already carry Travel, so the topic repeats the series</div>
+    </div>
+    <div style="grid-column: span 4; padding: 16px 0; border-top: 1px solid oklch(0.18 0.01 60);">
+      <div style="font-size: 30px; font-weight: 500;">39</div>
+      <div style="font-size: 15px; line-height: 1.5; padding-top: 4px;">human clicks from the topics index in eight months</div>
+    </div>
+
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 28px 0 6px;"></div>
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 12px;">Three fields instead of one list</div>
+
+    <sc-for list="{{fields}}" as="f" hint-placeholder-count="3">
+      <div style="grid-column: span 4; padding: 18px 0 22px; border-top: 1px solid oklch(0.18 0.01 60);">
+        <div style="font-size: 21px; font-weight: 500;">{{f.name}}</div>
+        <div style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-top: 4px;">{{f.card}}</div>
+        <div style="font-size: 15.5px; line-height: 1.6; padding-top: 10px;">{{f.what}}</div>
+        <div style="font-size: 15.5px; line-height: 1.6; padding-top: 10px;">{{f.values}}</div>
+        <div style="display: grid; grid-template-columns: 76px 1fr; gap: 12px; padding-top: 12px;">
+          <div style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;">Drives</div>
+          <div style="font-size: 14.5px; line-height: 1.5;">{{f.drives}}</div>
+        </div>
+      </div>
+    </sc-for>
+
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 22px 0 6px;"></div>
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 10px;">Your example, resolved</div>
+
+    <div style="grid-column: span 6; padding: 14px 0; border-top: 1px solid oklch(0.88 0.008 75);">
+      <div style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-bottom: 8px;">Today</div>
+      <div style="font-size: 16px; line-height: 1.6;">England, Day 3 is tagged Daily Photo and Travel. It holds 19 images and 60 words. The four summer vacation days beside it, identical in form, are tagged Photography and Travel instead. Nothing in the data says they are the same thing.</div>
+    </div>
+    <div style="grid-column: span 6; padding: 14px 0; border-top: 1px solid oklch(0.88 0.008 75);">
+      <div style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding-bottom: 8px;">Proposed</div>
+      <div style="font-size: 16px; line-height: 1.6;">England, Day 3 is kind picture, series england-2026. So is every summer vacation day, with its own series. A daily picture that happens on a trip is still a daily picture, and the trip is a separate fact about it. Neither has to win.</div>
+    </div>
+
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 28px 0 6px;"></div>
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 10px;">What happens to the fifteen topics</div>
+
+    <div style="grid-column: span 3; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;">Topic</div>
+    <div style="grid-column: span 1; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;">Posts</div>
+    <div style="grid-column: span 2; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;">Becomes</div>
+    <div style="grid-column: span 6; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;">Why</div>
+
+    <sc-for list="{{migration}}" as="m" hint-placeholder-count="12">
+      <div style="grid-column: span 3; font-size: 16px; font-weight: 500; padding: 10px 0; border-top: 1px solid oklch(0.88 0.008 75);">{{m.topic}}</div>
+      <div style="grid-column: span 1; font-size: 16px; padding: 10px 0; border-top: 1px solid oklch(0.88 0.008 75);">{{m.n}}</div>
+      <div style="grid-column: span 2; font-size: 16px; font-weight: 500; padding: 10px 0; border-top: 1px solid oklch(0.88 0.008 75);">{{m.becomes}}</div>
+      <div style="grid-column: span 6; font-size: 15px; line-height: 1.5; padding: 10px 0; border-top: 1px solid oklch(0.88 0.008 75);">{{m.why}}</div>
+    </sc-for>
+
+    <div style="grid-column: span 12; height: 1px; background: oklch(0.18 0.01 60); margin: 28px 0 6px;"></div>
+    <div style="grid-column: span 12; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 10px;">What it costs you</div>
+    <sc-for list="{{costs}}" as="c" hint-placeholder-count="4">
+      <div style="grid-column: span 12; font-size: 16px; line-height: 1.6; padding: 11px 0; border-top: 1px solid oklch(0.88 0.008 75);">{{c}}</div>
+    </sc-for>
+
+  </div>
+
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      fields: [
+        {
+          name: 'kind', card: 'exactly one, required',
+          what: 'The form of the post. It is the only field that decides how a page is built, so it has to be a small closed set.',
+          values: 'picture 244, writing 28. Derived for 255 of 272 posts from what you already declared; 17 needed a rule.',
+          drives: 'The layout, the feed entry, and which of the two lists the post appears in.',
+        },
+        {
+          name: 'series', card: 'zero or one, optional',
+          what: 'Which run the post belongs to. Declared in the post rather than guessed from a name prefix, which is how it works today.',
+          values: '17 series over 70 posts. Four trips, the Hypo releases, and eleven pairs such as sandbox, sparrows, stork.',
+          drives: 'Previous and next inside the run, and a page for the run itself.',
+        },
+        {
+          name: 'tags', card: 'zero or more, optional',
+          what: 'What the post is actually about. Pure description. No page, no index, no filter, no menu entry.',
+          values: 'family 45, software 28, work 8, games 6, ai 6, cycling 5, music 4, books 1. Eight tags on 94 posts, 178 posts carry none.',
+          drives: 'Nothing. A tag is printed on the post and is searchable. That is the whole job.',
+        },
+      ],
+      migration: [
+        { topic: 'Daily Photo', n: '211', becomes: 'kind', why: 'It is a form, not a subject. It also stopped being true: 57 of the 211 hold more than one image.' },
+        { topic: 'Photography', n: '185', becomes: 'nothing', why: 'On a site where 257 of 272 posts carry a photograph, the word carries no information.' },
+        { topic: 'Travel', n: '40', becomes: 'series', why: 'All 35 posts in a trip already carry it. Only 5 travel posts sit outside a series.' },
+        { topic: 'Family', n: '45', becomes: 'tag', why: 'A real subject. The largest tag that survives.' },
+        { topic: 'Software Development', n: '28', becomes: 'tag', why: 'A real subject. Shorten to software.' },
+        { topic: 'Work', n: '8', becomes: 'tag', why: 'A real subject and distinct from software.' },
+        { topic: 'AI', n: '6', becomes: 'tag', why: 'A real subject, though three of the six are long essays and two are daily pictures.' },
+        { topic: 'Video Games', n: '6', becomes: 'tag', why: 'A real subject. Three of them are log entries in disguise.' },
+        { topic: 'Cycling', n: '5', becomes: 'tag', why: 'A coherent cluster about the e-roadbike. Nothing else covers it.' },
+        { topic: 'Music', n: '4', becomes: 'tag', why: 'Three of four are concert posts. Nothing else covers it.' },
+        { topic: 'Technology, Oldtimer, Food, Flowers', n: '4', becomes: 'nothing', why: 'One post each, and each is already covered by family or software.' },
+        { topic: 'Books', n: '1', becomes: 'tag', why: 'One post, but genuinely not covered by anything else. Keep it or drop it deliberately.' },
+      ],
+      costs: [
+        'The rule was run over all 272 posts today. Four posts you tagged Daily Photo are long enough to be writing: Farewell at 568 words, Packed at 400, Reading at 358, Parasol at 304. Those four need your call, the rest fell out on their own.',
+        'Every post needs its frontmatter rewritten once. 272 posts, and the kind and the series can be derived from the image count and the folder name, so this is a script and a review rather than a day of typing.',
+        'The topic pages disappear, and with them nine live addresses. Six of those are already dead in the build and only alive because the server keeps them.',
+        'A tag no longer leads anywhere. If you later want a page per tag, the data will finally be good enough to build one, which it is not today.',
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

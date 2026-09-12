@@ -1,12 +1,34 @@
 {{ define "main" }}
-<h1 data-pagefind-meta="title">{{ .Title }}</h1>
 
-{{ if ne .Params.showDate false }} {{ $dateMachine := .Date | time.Format
-"2006-01-02T15:04:05-07:00" }} {{ $dateHuman := .Date | time.Format ":date_long"
-}} {{ $visits := partial "visits.html" . | int }}
-<time datetime="{{ $dateMachine }}"
-    >{{ $dateHuman }} · {{ .ReadingTime }} min read{{ if $visits }} · {{ $visits
-    }} visit{{ if ne $visits 1 }}s{{ end }}{{ end }}</time
->
-{{ end }} {{ .Content }} {{ partial "terms.html" (dict "taxonomy" "topics"
-"page" .) }} {{ end }}
+{{ $isPost := in (slice "photos" "trips" "notes" "essays") .Section }}
+
+<article class="article">
+        <p class="stream-title stream-opening">
+        {{- if $isPost }}<a href="/archive/{{ .Section }}/">{{ if .Params.pick }}Featured photo{{ else }}{{ .Params.type }}{{ end }}</a>{{ else }}{{ .Params.label }}{{ end }}
+        <a class="far" href="{{ "/" | relURL }}" data-back>Back</a>
+    </p>
+
+    <h1>{{ .Title }}</h1>
+
+        <p class="metadata">
+        {{- if $isPost }}
+        <a href="/archive/"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time></a>
+        {{ with partial "article-type.html" (dict "page" . "type" false) }}&middot; <a href="/archive/{{ $.Section }}/">{{ . }}</a>{{ end }}
+        {{- else }}
+        Last updated: <time datetime="{{ .Lastmod.Format "2006-01-02" }}">{{ .Lastmod.Format "January 2, 2006" }}</time>
+        {{- end }}
+    </p>
+
+    <div class="body">
+        {{ .Content }}
+    </div>
+
+        <p class="post-footer">
+        <a href="mailto:{{ site.Params.email }}?subject={{ printf "Re: %s" .Title | urlquery }}">Email me</a>
+    </p>
+
+</article>
+
+{{ partial "stream.html" (dict "lead" false "current" .RelPermalink) }}
+
+{{ end }}

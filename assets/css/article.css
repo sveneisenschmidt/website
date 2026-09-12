@@ -1,0 +1,117 @@
+.article {
+    grid-column: span var(--span-main);
+}
+
+.body p {
+    margin-bottom: var(--space-block);
+}
+
+.body p:last-child {
+    margin-bottom: 0;
+}
+
+.body h2,
+.body h3 {
+    clear: left;
+    margin-top: var(--space-entry);
+    margin-bottom: var(--space-title);
+    font-size: var(--text-subtitle);
+}
+
+.body > :first-child {
+    margin-top: 0;
+}
+
+.body ul,
+.body ol {
+    margin-bottom: var(--space-block);
+    padding-left: var(--space-lead);
+}
+
+.body li {
+    margin-bottom: var(--space-tight);
+}
+
+.body blockquote {
+    margin-block: var(--space-entry);
+    padding-left: var(--space-block);
+    border-left: var(--ring-focus) solid var(--color-rule);
+}
+
+.body code {
+    font-size: var(--text-code);
+    background: var(--color-placeholder);
+    padding: 0 var(--space-datum);
+    border-radius: var(--radius-image);
+}
+
+.body pre {
+    margin-bottom: var(--space-block);
+    padding: var(--space-block);
+    background: var(--color-placeholder);
+    border-radius: var(--radius-image);
+    overflow-x: auto;
+}
+
+.body pre code {
+    padding: 0;
+    background: none;
+}
+
+.body .map {
+    height: var(--height-map);
+    margin-block: var(--space-figure);
+    border-radius: var(--radius-image);
+}
+
+.body .map--tall {
+    height: var(--height-map-tall);
+}
+
+.body figure {
+    margin-block: var(--space-figure);
+}
+
+.body figure:has(.exif) .frame-picture {
+    border-radius: var(--radius-image) var(--radius-image) 0 0;
+}
+
+.heading-anchor {
+    margin-left: var(--space-count);
+    font-weight: var(--weight-metadata);
+    text-decoration: none;
+}
+
+/* Das Porträt steht im Text, die ersten Absätze laufen daneben. Überschriften
+   beginnen immer wieder auf voller Breite, siehe clear weiter unten. */
+.body img.inline {
+    float: left;
+    width: var(--width-portrait);
+    margin-bottom: var(--space-figure);
+    margin-right: var(--space-figure);
+}
+
+.body img.inline + p {
+    margin-top: 0;
+}
+
+/* Unter 600px bleibt neben dem Bild zu wenig Textbreite, dort steht es wieder
+   über dem Text. */
+@media (max-width: 600px) {
+    .body img.inline {
+        float: none;
+        margin-right: 0;
+    }
+}
+
+.post-footer {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-filter);
+    margin-top: var(--space-post-end);
+    font-size: var(--text-action);
+    font-weight: var(--weight-label);
+    line-height: var(--leading-caps);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+}

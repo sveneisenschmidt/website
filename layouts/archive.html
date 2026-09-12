@@ -1,0 +1,69 @@
+{{ define "main" }}
+
+{{ $stream := .Params.stream | default "all" }}
+{{ $posts := where site.RegularPages "Section" "in" (slice "photos" "trips" "notes" "essays") }}
+
+{{ if eq $stream "photos" }}
+    {{ $trips := where (where (where $posts "Section" "trips") "Params.cover" "!=" nil) "Params.cover" "!=" "" }}
+    {{ $posts = sort (union (where $posts "Section" "photos") $trips) "Date" "desc" }}
+{{ else if ne $stream "all" }}
+    {{ $posts = where $posts "Section" $stream }}
+{{ end }}
+
+<section class="archive">
+        {{ partial "stream-filter.html" (dict
+        "current" $stream
+        "base" "/archive/"
+        "far" (slice (dict "label" "Back" "url" "/" "back" true))) }}
+
+    {{ range $posts.GroupByDate "2006" }}
+    <h2 class="archive-year">{{ .Key }}</h2>
+
+    {{ range .Pages.GroupByDate "January" }}
+    <h3 class="archive-month stream-title">
+        <span>{{ .Key }}</span>
+        <span>{{ len .Pages }}</span>
+    </h3>
+
+    {{ if eq $stream "photos" }}
+        <ul class="archive-sheet">
+        {{ range .Pages }}
+        {{ $post := . }}
+        {{ with .Resources.GetMatch (.Params.cover | default "") }}
+        {{ $large := .Fill "400x400 Smart webp q85" }}
+        {{ $small := .Fill "200x200 Smart webp q85" }}
+        <li>
+            <a href="{{ $post.RelPermalink }}" aria-label="{{ $post.LinkTitle }}">
+                <img
+                    class="tile"
+                    src="{{ $large.RelPermalink }}"
+                    srcset="{{ $small.RelPermalink }} 200w, {{ $large.RelPermalink }} 400w"
+                    sizes="(max-width: 900px) 45vw, (max-width: 1200px) 200px, 170px"
+                    width="400"
+                    height="400"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                />
+                {{ if $post.Params.pick }}<span class="tile-pick">{{ partial "icon-heart.html" . }}</span>{{ end }}
+            </a>
+        </li>
+        {{ end }}
+        {{ end }}
+    </ul>
+    {{ else }}
+    <ul class="archive-list">
+        {{ range .Pages }}
+        <li class="archive-item">
+            <span class="archive-day"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2" }}</time></span>
+            <a class="archive-title" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+            {{ partial "thumb.html" (dict "page" . "edge" 48 "link" false) }}
+        </li>
+        {{ end }}
+    </ul>
+    {{ end }}
+    {{ end }}
+    {{ end }}
+</section>
+
+{{ end }}

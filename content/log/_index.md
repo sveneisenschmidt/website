@@ -1,4 +1,0 @@
-+++
-title = 'Log'
-outputs = ['HTML']
-+++

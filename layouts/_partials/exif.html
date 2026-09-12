@@ -1,0 +1,103 @@
+{{- $resource := .resource -}}
+{{- $photographer := .photographer | default "" -}}
+{{- $caption := .caption | default "" -}}
+{{- $exif := "" -}}
+{{- with $resource }}{{ $exif = .Meta.Exif }}{{ end -}}
+
+{{- $camera := "" -}}
+{{- $lens := "" -}}
+{{- $focal := "" -}}
+{{- $aperture := "" -}}
+{{- $exposure := "" -}}
+
+{{- with $exif -}}
+    {{- $make := .Make -}}
+    {{- $model := .Model -}}
+    {{- if and $make $model (strings.HasPrefix $model $make) -}}
+        {{- $model = strings.TrimPrefix $make $model | strings.TrimLeft " " -}}
+    {{- end -}}
+    {{- $camera = $make -}}
+    {{- if and $make $model }}{{ $camera = printf "%s %s" $make $model }}
+    {{- else if $model }}{{ $camera = $model }}{{ end -}}
+
+        {{- with .LensModel }}{{ $lens = . }}{{ end -}}
+        {{- with .FocalLength }}{{ $focal = printf "%.0fmm" (float .) }}{{ end -}}
+
+        {{- with .FNumber -}}
+        {{- $f := float . -}}
+        {{- if eq $f (math.Floor $f) -}}
+            {{- $aperture = printf "ƒ/%.0f" $f -}}
+        {{- else -}}
+            {{- $aperture = printf "ƒ/%.1f" $f -}}
+        {{- end -}}
+    {{- end -}}
+
+        {{- with .ExposureTime -}}
+        {{- $str := printf "%v" . -}}
+        {{- if strings.Contains $str "/" -}}
+            {{- $parts := split $str "/" -}}
+            {{- if eq (len $parts) 2 -}}
+                {{- $num := strings.TrimSpace (index $parts 0) -}}
+                {{- $den := strings.TrimSpace (index $parts 1) -}}
+                {{- if and (findRE `^[0-9]+(\.[0-9]+)?$` $num) (findRE `^[0-9]+(\.[0-9]+)?$` $den) -}}
+                    {{- $d := float $den -}}
+                    {{- if ne $d 0.0 -}}
+                        {{- $val := div (float $num) $d -}}
+                        {{- if and (gt $val 0.0) (lt $val 1.0) -}}
+                            {{- $exposure = printf "1/%.0fs" (div 1.0 $val) -}}
+                        {{- else if gt $val 0.0 -}}
+                            {{- $exposure = printf "%.1fs" $val -}}
+                        {{- end -}}
+                    {{- end -}}
+                {{- end -}}
+            {{- end -}}
+        {{- else if findRE `^[0-9]+(\.[0-9]+)?$` $str -}}
+            {{- $exposure = printf "%ss" $str -}}
+        {{- end -}}
+    {{- end -}}
+
+    {{- $iso := .ISO -}}
+    {{- if not $iso }}{{ $iso = .ISOSpeedRatings }}{{ end -}}
+    {{- if not $iso }}{{ $iso = .RecommendedExposureIndex }}{{ end -}}
+    {{- if not $iso }}{{ $iso = .ISOSpeed }}{{ end -}}
+    {{- if not $iso }}{{ $iso = .PhotographicSensitivity }}{{ end -}}
+    {{- if reflect.IsSlice $iso }}{{ if gt (len $iso) 0 }}{{ $iso = index $iso 0 }}{{ end }}{{ end -}}
+    {{- with $iso -}}
+        {{- if $exposure -}}
+            {{- $exposure = printf "%s · ISO %v" $exposure . -}}
+        {{- else -}}
+            {{- $exposure = printf "ISO %v" . -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{- $longCaption := gt (len $caption) 40 -}}
+{{- $rows := slice -}}
+{{- with $camera }}{{ $rows = $rows | append (dict "key" "Camera" "value" .) }}{{ end -}}
+{{- with $lens }}{{ $rows = $rows | append (dict "key" "Lens" "value" .) }}{{ end -}}
+{{- with $focal }}{{ $rows = $rows | append (dict "key" "Focal length" "value" .) }}{{ end -}}
+{{- with $aperture }}{{ $rows = $rows | append (dict "key" "Aperture" "value" .) }}{{ end -}}
+{{- with $exposure }}{{ $rows = $rows | append (dict "key" "Exposure" "value" .) }}{{ end -}}
+
+{{- if or $rows $caption $photographer -}}
+<dl class="exif">
+    {{- with $caption }}
+    <div{{ if $longCaption }} class="caption-long"{{ end }}>
+        <dt>Caption</dt>
+        <dd>{{ . | markdownify }}</dd>
+    </div>
+    {{- end }}
+    {{- with $photographer }}
+    <div>
+        <dt>Photographer</dt>
+        <dd>{{ . }}</dd>
+    </div>
+    {{- end }}
+    {{- range $rows }}
+    <div>
+        <dt>{{ .key }}</dt>
+        <dd>{{ .value }}</dd>
+    </div>
+    {{- end }}
+</dl>
+{{- end -}}

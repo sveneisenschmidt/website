@@ -1,16 +1,14 @@
 <!doctype html>
 <html
-    lang="{{ site.Language.LanguageCode }}"
-    dir="{{ or site.Language.LanguageDirection `ltr` }}"
+    lang="{{ site.Language.Lang }}"
+    dir="{{ or site.Language.Direction `ltr` }}"
 >
     <head>
         {{ partial "head.html" . }}
     </head>
-    <body>
-        <header>{{ partial "header.html" . }}</header>
-        <main data-pagefind-body>{{ block "main" . }}{{ end }}</main>
-        <footer>
-            {{ partial "pop.html" . }} {{ partial "footer.html" . }}
-        </footer>
+        <body class="{{ .Kind }}">
+        {{ partial "header.html" . }}
+        <main>{{ block "main" . }}{{ end }}</main>
+        {{ partial "pop.html" . }}
     </body>
 </html>

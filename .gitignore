@@ -1,8 +1,14 @@
 TONE_OF_VOICE.md
 node_modules/
 public/
-package.json
-package-lock.json
 .hugo_build.lock
 .DS_Store
 logs/
+
+*.db
+*.sqlite
+*.sqlite3
+data.db*
+
+# Editor
+.zed/

@@ -1,0 +1,21 @@
+{{- $page := .page -}}
+{{- $edge := .edge | default 48 -}}
+{{- $link := .link -}}
+{{- if eq $link nil }}{{ $link = true }}{{ end -}}
+{{- $q := cond (ge $edge 96) 85 80 -}}
+
+{{- with $page.Resources.GetMatch ($page.Params.cover | default "") -}}
+{{- $one := .Fill (printf "%dx%d Smart webp q%d" $edge $edge $q) -}}
+{{- $two := .Fill (printf "%dx%d Smart webp q%d" (mul $edge 2) (mul $edge 2) $q) -}}
+{{ if $link }}<a class="thumb" href="{{ $page.RelPermalink }}" tabindex="-1" aria-hidden="true">{{ else }}<span class="thumb">{{ end }}
+    <img
+        src="{{ $one.RelPermalink }}"
+        srcset="{{ $one.RelPermalink }} 1x, {{ $two.RelPermalink }} 2x"
+        width="{{ $edge }}"
+        height="{{ $edge }}"
+        alt=""
+        loading="lazy"
+        decoding="async"
+    />
+{{ if $link }}</a>{{ else }}</span>{{ end }}
+{{- end -}}

@@ -1,0 +1,100 @@
+.archive {
+    grid-column: span var(--span-main);
+}
+
+.archive-year {
+    padding-top: var(--space-month);
+    font-size: var(--text-title);
+    text-transform: uppercase;
+}
+
+.archive-year:first-of-type {
+    padding-top: 0;
+}
+
+.archive-month {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-top: var(--space-month);
+    padding-bottom: var(--space-rule);
+    border-bottom: var(--rule-hairline) solid var(--color-rule);
+}
+
+.archive-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(var(--width-index), 100%), 1fr));
+    gap: var(--space-index-row) var(--space-index-column);
+    padding: 0;
+    padding-top: var(--space-title);
+    list-style: none;
+
+    grid-auto-rows: minmax(var(--size-thumb), auto);
+}
+
+.archive-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--width-day) 1fr var(--size-thumb);
+    gap: var(--space-day);
+
+    align-items: center;
+}
+
+.archive-day {
+    font-size: var(--text-day);
+    font-weight: var(--weight-metadata);
+}
+
+.archive-title::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+}
+
+.archive-title {
+    font-size: var(--text-index);
+    font-weight: var(--weight-title);
+    line-height: var(--leading-caps);
+    text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+    .archive {
+        grid-column: auto;
+    }
+}
+
+.archive-sheet {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(var(--width-tile), 100%), 1fr));
+    gap: var(--space-tile);
+    padding: 0;
+    padding-top: var(--space-title);
+    list-style: none;
+}
+
+.archive-sheet a {
+    display: block;
+}
+
+.archive-sheet a {
+    display: block;
+    position: relative;
+}
+
+.tile-pick {
+    position: absolute;
+    top: var(--space-mark);
+    right: var(--space-mark);
+    color: var(--color-page);
+    font-size: var(--text-mark);
+    pointer-events: none;
+}
+
+.icon-heart {
+    display: block;
+    width: 1em;
+    height: auto;
+    fill: currentColor;
+}
