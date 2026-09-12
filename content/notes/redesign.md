@@ -9,7 +9,7 @@ I rebuilt the website. A lot of what used to be here is gone and every address h
 
 <!--more-->
 
-Every address moved. A post that lived at `/posts/pipes/` is now at `/2026-09-10-pipes/`, so the date is part of the link. Redirects keep every old one working and I checked them against the live feed before shipping, so your feed reader won't notice. The only thing really gone is the log this site used to have, sorry, those posts are gone forever.
+A post that lived at `/posts/pipes/` is now at `/2026-09-10-pipes/`, so the date is part of the link. Redirects keep every old one working and I checked them against the live feed before shipping, so your feed reader won't notice. The only thing really gone is the log this site used to have, sorry, those posts are gone forever.
 
 Topics and tags are gone. A general archive took their place: every post by year and month, day and title, on one page. Five separate pages filter it by type, so it works without JavaScript. Switch the filter to photos and the rows turn into a grid of thumbnails. It's the page I use now when I go looking for something I wrote. The old topic list never worked because you needed to guess the topic first.
 
