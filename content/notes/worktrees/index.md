@@ -19,6 +19,6 @@ As an alternative I wrote [cwt](https://github.com/sveneisenschmidt/cwt), claude
 $ cwt "work on issue #237"
 ```
 
-Remote control is always on through my [Claude RC Manager](/posts/claude-rc-manager/), so I can keep working on the same session in Zed from my phone.
+Remote control is always on through my [Claude RC Manager](/2026-08-20-claude-rc-manager/), so I can keep working on the same session in Zed from my phone.
 
 {{< img src="cwt-zed.png" alt="Zed with a worktree open and Claude Code running in the right panel" >}}

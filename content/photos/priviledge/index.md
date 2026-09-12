@@ -13,4 +13,4 @@ Every Friday afternoon, Nadine's parents pick up Tilian and Kellin. There is no 
 
 {{< img src="IMG_2599.jpeg" alt="Tilian and Kellin with Nadine's parents" >}}
 
-They also joined us for the full week during our [winter vacation in Mayrhofen](/posts/2026-winter-vacation-6/) earlier this year. Having that kind of support is a privilege, for us and for the kids.
+They also joined us for the full week during our [winter vacation in Mayrhofen](/2026-02-12-2026-winter-vacation-6/) earlier this year. Having that kind of support is a privilege, for us and for the kids.

@@ -58,7 +58,7 @@ Data from [PlayStation Wrap-Up](https://wrapup.playstation.com/).
 1. [Assassin's Creed Shadows](https://www.metacritic.com/game/assassins-creed-shadows/) *Action RPG* - 67 hours, 8/10. (Nice evolution of the formula. I could easily follow the main story without mandatory side quests. I didn't like that I played with two characters.)
 2. [Astro Bot](https://www.metacritic.com/game/astro-bot/) *Platformer* - 53 hours. (Tilian played this, he's 8. That's a lot of screen time for an eight year old. Either PlayStation got the numbers wrong or I need to reconsider my parenting.)
 3. [LEGO Marvel's Avengers](https://www.metacritic.com/game/lego-marvels-avengers/) *Action Adventure* - 29 hours. (Tilian also played this.)
-4. [Death Stranding 2: On The Beach](https://www.metacritic.com/game/death-stranding-2-on-the-beach/) *Action Adventure* - 28 hours, 9/10. ([I wrote about it here](/posts/death-stranding-2/).)
+4. [Death Stranding 2: On The Beach](https://www.metacritic.com/game/death-stranding-2-on-the-beach/) *Action Adventure* - 28 hours, 9/10. ([I wrote about it here](/2026-01-02-death-stranding-2/).)
 5. [ARC Raiders](https://www.metacritic.com/game/arc-raiders/) *Extraction Shooter* - 24 hours, 8/10. (I learned that extraction shooters are not for me. The unpredictable PvP and recurring wipes don't work with my need for permanent progression. I only played in duo with Jan.)
 
 My two favorites this year: [Death Stranding 2](https://www.metacritic.com/game/death-stranding-2-on-the-beach/) and [Metal Gear Solid Delta: Snake Eater](https://www.metacritic.com/game/metal-gear-solid-delta-snake-eater/).

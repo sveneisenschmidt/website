@@ -14,4 +14,6 @@ Things I removed and won't miss:
 - Ratings, logs - I do write proper notes and content instead if I find something interesting.
 - Search - Go to the archive and do `cmd+f` or `ctrl+f`. I might bring it back. There's supposedly a new pagefind release.
 
+The archive lists everything now, by year and month.
+
 Happy exploring!

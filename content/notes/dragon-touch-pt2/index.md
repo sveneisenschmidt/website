@@ -5,7 +5,7 @@ type = "note"
 emojis = ["📅"]
 +++
 
-A follow-up to the [Dragon Touch post](/posts/dragon-touch) from a few days ago, about two things that bothered me enough to fix.
+A follow-up to the [Dragon Touch post](/2026-03-27-dragon-touch/) from a few days ago, about two things that bothered me enough to fix.
 
 <!--more-->
 

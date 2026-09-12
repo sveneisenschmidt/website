@@ -6,7 +6,7 @@ emojis = ["🎮"]
 cover = "A6401352.jpeg"
 +++
 
-After a long day in the garden, arguing with the PayPal chatbot about why my claim from when I was [scammed](/posts/scammed/) has been denied (but I am not giving up yet), I was ready to get back to Saros's first boss and beat it. It's a great game and a more accessible version of Returnal, except for the difficulty level.
+After a long day in the garden, arguing with the PayPal chatbot about why my claim from when I was [scammed](/2026-04-09-scammed/) has been denied (but I am not giving up yet), I was ready to get back to Saros's first boss and beat it. It's a great game and a more accessible version of Returnal, except for the difficulty level.
 
 <!--more-->
 

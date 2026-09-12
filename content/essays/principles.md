@@ -44,7 +44,7 @@ The way I think about leadership is mostly structural and conscious: what condit
 - **Communicate vision, not just milestones**: when only intermediate goals get communicated, those become the final goals.
 - **Push back on learned helplessness**: identifying the pattern, naming it, and pushing for ownership is more useful than accepting that the team cannot move without support. This also has a high risk to become toxic and spread into a downward spiral of hopelessness. People start leaving quickly in these environments.
 - **Move toward hard things, not away from them**: most things that look impossible are a question of approach. When a plan runs into something unexpected, that is information, not a conclusion. "Therefore it cannot be done" is a failure of belief, not a reasonable conclusion. 
-- **Embrace ambiguity**: I wrote more about how I think about [ambiguity](/posts/ambiguity/) separately.
+- **Embrace ambiguity**: I wrote more about how I think about [ambiguity](/2026-01-22-ambiguity/) separately.
 
 ## The full skill
 

@@ -12,4 +12,4 @@ The front bumper of Tilian's RC car broke off today. Kellin broke it, but to kee
 
 {{< img src="DSC01207.jpg" alt="3D printed front bumper for Tilian's RC car" >}}
 
-I checked Makerworld for a ready-to-print replacement, found a [stock 3D model](https://makerworld.com/en/models/480524-autorc-ar10-front-bumper?from=search#profileId-392117) and replaced the mounts with custom ones. It took about 8 iterations on the [Bambu A1 Mini](/posts/2025-wrapped/#3d-printing) until I got the mount placements, angles and dimensions right. All prints were made in draft mode so I could verify quickly. Each draft took 12 to 22 minutes, the final print about an hour.
+I checked Makerworld for a ready-to-print replacement, found a [stock 3D model](https://makerworld.com/en/models/480524-autorc-ar10-front-bumper?from=search#profileId-392117) and replaced the mounts with custom ones. It took about 8 iterations on the [Bambu A1 Mini](/2026-01-03-2025-wrapped/#3d-printing) until I got the mount placements, angles and dimensions right. All prints were made in draft mode so I could verify quickly. Each draft took 12 to 22 minutes, the final print about an hour.

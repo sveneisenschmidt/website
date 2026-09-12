@@ -5,7 +5,7 @@ type = "note"
 emojis = ["🛠️"]
 +++
 
-A few months of running this site in production and things changed. This documents what and why, and hopefully saves someone who is just starting out with Hugo some time. The first post covers the initial setup: [Building This Website with Hugo](/posts/building-with-hugo/).
+A few months of running this site in production and things changed. This documents what and why, and hopefully saves someone who is just starting out with Hugo some time. The first post covers the initial setup: [Building This Website with Hugo](/2026-01-05-building-with-hugo/).
 
 <!--more-->
 

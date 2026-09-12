@@ -6,7 +6,7 @@ cover = 'IMG_1315.jpeg'
 emojis = ["🦌"]
 +++
 
-I went back to the woods looking for the [white albino deer](/posts/daily-photo-dawn/), and found a white albino doe instead.
+I went back to the woods looking for the [white albino deer](/2026-02-19-dawn/), and found a white albino doe instead.
 
 <!--more-->
 

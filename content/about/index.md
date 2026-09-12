@@ -26,9 +26,9 @@ This is a private, non-commercial website. No business activities, no ads, no af
 
 ### About this Website
 
-Built with [Hugo](https://gohugo.io/), a static site generator. Search powered by [Pagefind](https://pagefind.app/). Visits counted by [Pop](https://github.com/sveneisenschmidt/pop), my own tiny feedback library. Custom theme, vanilla CSS, no JavaScript frameworks. Hosted on [All-Inkl](https://all-inkl.com/) in Germany.
+Built with [Hugo](https://gohugo.io/), a static site generator. Visits counted by [Pop](https://github.com/sveneisenschmidt/pop), my own tiny feedback library. Custom theme, vanilla CSS, no JavaScript frameworks. Hosted on [All-Inkl](https://all-inkl.com/) in Germany.
 
-Read more about how this site was built in the [building with Hugo](/posts/building-with-hugo/) post. The full source code is [available on GitHub](https://github.com/sveneisenschmidt/website).
+Read more about how this site was built in the [building with Hugo](/2026-01-05-building-with-hugo/) post. The full source code is [available on GitHub](https://github.com/sveneisenschmidt/website).
 
 {{< rawhtml >}}
 <div id="site-stats"></div>
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const p = data.pages;
         if (!p.length) return;
         const sum = (k) => p.reduce((s, x) => s + x[k], 0);
-        const top = p.filter(x => x.pageId.includes("/posts/"))
+        const top = p.filter(x => x.pageId.includes("/posts/") || /\/\d{4}-\d{2}-\d{2}-/.test(x.pageId))
             .sort((a, b) => b.totalVisits - a.totalVisits).slice(0, 5)
             .map(x => `<li><a href="${x.pageId.replace(d, "")}">${x.pageId.replace(d, "")}</a> - ${pl(x.totalVisits, "visit")}</li>`).join("");
         document.getElementById("site-stats").innerHTML = `<h4>Statistics</h4>

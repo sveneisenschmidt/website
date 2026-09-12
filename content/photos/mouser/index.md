@@ -14,4 +14,4 @@ Nadine took over photo duty yesterday. She does so well. She was photographing t
 
 {{< img src="1C4A6698.jpeg" alt="Close-up of a ginger cat with a mouse in its mouth" >}}
 
-I wrote in [Farewell](/posts/farewell/) about how finite the time with a person is. Not even a week later it caught up with us, the boys were supposed to meet their great-grandmother, but she had a fall and was taken to hospital on short notice. Now we wait and see how it goes.
+I wrote in [Farewell](/2026-08-08-farewell/) about how finite the time with a person is. Not even a week later it caught up with us, the boys were supposed to meet their great-grandmother, but she had a fall and was taken to hospital on short notice. Now we wait and see how it goes.

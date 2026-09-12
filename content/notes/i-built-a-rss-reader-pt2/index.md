@@ -5,7 +5,7 @@ type = "note"
 emojis = ["📰"]
 +++
 
-Two weeks ago I wrote about [building an RSS reader](/posts/i-built-a-rss-reader/). I said it would probably crash with more than 20 feeds (or I lose [motivation](https://sven.eisenschmidt.website/posts/open-source/)). It didn't crash but I needed to optimize it a bit.
+Two weeks ago I wrote about [building an RSS reader](/2026-01-08-i-built-a-rss-reader/). I said it would probably crash with more than 20 feeds (or I lose [motivation](https://sven.eisenschmidt.website/posts/open-source/)). It didn't crash but I needed to optimize it a bit.
 
 <!--more-->
 
