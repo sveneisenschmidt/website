@@ -16,6 +16,7 @@
         <a class="frame" href="{{ $img.RelPermalink }}">
     <img
         class="frame-picture"
+        {{ if eq $src (.Page.Params.cover | default "") }}style="view-transition-name: {{ partial "vt-name.html" .Page }}"{{ end }}
         src="{{ $wide.RelPermalink }}"
         srcset="{{ $narrow.RelPermalink }} 600w, {{ $mid.RelPermalink }} 1000w, {{ $wide.RelPermalink }} 1600w"
         sizes="(max-width: 900px) calc(100vw - 2rem), (max-width: 90rem) 63vw, 907px"

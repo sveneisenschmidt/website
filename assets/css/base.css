@@ -79,6 +79,22 @@ img {
     animation-duration: var(--duration-page);
 }
 
+/* Ein Titelbild wandert von der Startseite in den Beitrag. Die Kachel ist
+   quadratisch, das Bild im Beitrag hat sein eigenes Seitenverhältnis, ohne
+   object-fit würde der Übergang das Motiv verzerren. Die Regel gilt für die
+   benannten Bilder, die Seite selbst behält ihre Überblendung. */
+::view-transition-old(*),
+::view-transition-new(*) {
+    height: 100%;
+    object-fit: cover;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    height: auto;
+    object-fit: fill;
+}
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -87,7 +103,8 @@ img {
     }
 
     ::view-transition-old(root),
-    ::view-transition-new(root) {
+    ::view-transition-new(root),
+    ::view-transition-group(*) {
         animation: none;
     }
 }
