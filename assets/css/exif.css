@@ -1,41 +1,17 @@
-/* The camera data of a photograph.
-   ================================================================================
-
-   Eine Reihe unter einer Fotografie, auf dunklem Grund und bündig an ihr: je eine
-   Angabe als Schlüssel in Versalien mit dem Wert darunter. It is a grid rather than a wrapping row, so that on a narrow window
-   the data fall into columns that line up instead of into ragged lines. The columns
-   share the width that is there. The same block on the front page and on an article
-   page, which is why it is not in either of their stylesheets.
-
-   Every value that the design decides is read from the semantic tier in tokens.css.
-   The `100%` in the column floor is not one of them: it is there to stop the floor
-   from being taller than the page, and it is the page, not a decision.
-*/
-
 .exif {
     background: var(--color-panel);
     color: var(--color-ink-inverted);
     padding: var(--space-panel-block) var(--space-panel);
 
-    /* Sie hängt am Bild: oben keine Ecken, unten dieselben wie das Bild sie oben hat.
-       Beide zusammen sind ein Block, nicht zwei Dinge untereinander. */
     border-radius: 0 0 var(--radius-image) var(--radius-image);
 
     display: grid;
-    /* Alle Spalten sind gleich breit und teilen sich die volle Breite. Ein
-       `max-content`-Deckel liesse die Spalte unter einem langen Objektivnamen wachsen
-       und brächte die Reihe aus dem Takt; mit `1fr` bricht der Name in seiner Spalte
-       um, und die Reihe bleibt gleichmässig.
 
-       Das `min()` verhindert den Überlauf auf schmalen Seiten: eine blosse Spurbreite
-       ist ein hartes Minimum, und eine Spalte davon kann breiter sein als die Seite. */
     grid-template-columns: repeat(auto-fit, minmax(min(var(--width-datum), 100%), 1fr));
     gap: var(--space-data-row) var(--space-data);
     margin: 0;
 }
 
-/* Eine Bildunterschrift, die für eine Spur zu lang ist, nimmt zwei — und bleibt in
-   der Reihe. Warum vierzig Zeichen die Grenze sind, steht in exif.html. */
 .exif .caption-long {
     grid-column: span 2;
 }
@@ -53,14 +29,6 @@
     font-size: var(--text-value);
     font-weight: var(--weight-metadata);
 }
-
-/* --- Schmale Fenster ----------------------------------------------------------
-   Auf einem Telefon trägt der Kasten zwei Spuren, auf einem sehr schmalen eine. `span 2`
-   würde dort eine Spur erfinden, die es nicht gibt, und das Raster auseinanderziehen —
-   also nimmt die Bildunterschrift, was da ist.
-
-   Die Breite ist ausgeschrieben, weil eine Media Query keine Custom Property lesen
-   kann — dieselbe Stelle wie in home.css und archive.css. */
 
 @media (max-width: 900px) {
     .exif .caption-long {

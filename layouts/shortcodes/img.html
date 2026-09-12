@@ -8,21 +8,12 @@
     {{- errorf "img: %q liegt nicht im Bundle von %s" $src .Page.File.Path -}}
 {{- else -}}
 
-{{/* Dieselbe Semantik wie der Aufmacher auf der Startseite: ein Bild mit der Klasse
-     `frame-picture`, gestylt von derselben Regel. Kein Wrapper, keine eigene Klasse
-     für die Fotografie, keine für die Kameradaten — `img-wrapper`, `hero` und
-     `img-exif` stammten aus dem alten Stylesheet und wurden von nichts gelesen. */}}
-
 {{- $wide := $img.Resize "1600x webp q80" -}}
 {{- $mid := $img.Resize "1000x webp q80" -}}
 {{- $narrow := $img.Resize "600x webp q80" -}}
 
 <figure>
-    {{/* Der Link führt auf die Datei, die aus der Kamera kam — nicht auf eine weitere
-         Fassung davon. Wer auf ein Bild klickt, will es gross sehen, und grösser als
-         das Original gibt es nicht. Die Originale liegen ohnehin schon im Verzeichnis;
-         der Link kostet keine Datei. */}}
-    <a class="frame" href="{{ $img.RelPermalink }}">
+        <a class="frame" href="{{ $img.RelPermalink }}">
     <img
         class="frame-picture"
         src="{{ $wide.RelPermalink }}"

@@ -1,19 +1,5 @@
 {{- $pages := sort (where .Site.RegularPages "Section" "in" (slice "photos" "trips" "notes" "essays")) ".Date" "desc" -}}
 
-{{/* Die guid ist eingefroren.
-
-     Ein Feedreader erkennt einen Beitrag an der guid. Ändert sie sich, ist es für ihn
-     ein neuer Beitrag — und als 2026 die Slugs abgeschafft wurden, zogen 187 Adressen
-     um. Der Feed meldet deshalb weiter die Adresse, unter der ein Beitrag zuerst
-     erschienen ist, während <link> auf die heutige zeigt. Die alte antwortet über eine
-     301, die guid bleibt also ein gültiger Link.
-
-     Nur Einträge mit `rss: keep` zählen. Die anderen in der Datei sind Tippfehler und
-     alte Entwürfe, die nie im Feed standen; würde man sie mitnehmen, bekäme ein
-     Beitrag eine guid, die nie jemand gesehen hat.
-
-     Einmal gebaut, nicht je Zeile durchsucht: 193 Einträge mal 286 Zeilen waren
-     messbar. */}}
 {{- $frozen := dict -}}
 {{- range hugo.Data.redirects -}}
   {{- if eq .rss "keep" -}}

@@ -1,14 +1,3 @@
-{{/* The camera data of one photograph, as a list of keys and values. Renders nothing
-     when the file carries no camera data and no photographer is named.
-
-         {{ partial "exif.html" (dict "resource" $img) }}
-         {{ partial "exif.html" (dict "resource" $img "photographer" "Ada Lovelace") }}
-
-     Cameras write the maker into the model as well, so "Canon" and "Canon EOS R5"
-     would read as "Canon · Canon EOS R5"; the maker is cut off the front of the model
-     where it is repeated. The ISO lives under one of five different tags depending on
-     the camera, and on some of them it is a list rather than a number. */}}
-
 {{- $resource := .resource -}}
 {{- $photographer := .photographer | default "" -}}
 {{- $caption := .caption | default "" -}}
@@ -31,15 +20,10 @@
     {{- if and $make $model }}{{ $camera = printf "%s %s" $make $model }}
     {{- else if $model }}{{ $camera = $model }}{{ end -}}
 
-    {{/* The lens is the glass, the focal length is where it was set. A zoom answers
-         the two differently, so they are two data and not one. */}}
-    {{- with .LensModel }}{{ $lens = . }}{{ end -}}
-    {{/* Not lang.FormatNumber: it groups thousands, and an 1120mm lens then reads
-         "1,120mm". A focal length is a measurement, not a quantity to be counted. */}}
-    {{- with .FocalLength }}{{ $focal = printf "%.0fmm" (float .) }}{{ end -}}
+        {{- with .LensModel }}{{ $lens = . }}{{ end -}}
+        {{- with .FocalLength }}{{ $focal = printf "%.0fmm" (float .) }}{{ end -}}
 
-    {{/* A whole stop is written without a decimal: ƒ/8, not ƒ/8.0. */}}
-    {{- with .FNumber -}}
+        {{- with .FNumber -}}
         {{- $f := float . -}}
         {{- if eq $f (math.Floor $f) -}}
             {{- $aperture = printf "ƒ/%.0f" $f -}}
@@ -48,11 +32,7 @@
         {{- end -}}
     {{- end -}}
 
-    {{/* The exposure time is a fraction on most cameras and a plain number on some.
-         Both halves of the fraction are checked before dividing: a zero denominator
-         or a word where a number belongs stops the whole build, not just this
-         photograph, and a card that failed mid-write produces exactly that. */}}
-    {{- with .ExposureTime -}}
+        {{- with .ExposureTime -}}
         {{- $str := printf "%v" . -}}
         {{- if strings.Contains $str "/" -}}
             {{- $parts := split $str "/" -}}
@@ -91,23 +71,6 @@
     {{- end -}}
 {{- end -}}
 
-{{/* Alles in einem Fluss: Bildunterschrift, wer fotografiert hat, dann die Messwerte.
-     Jede Angabe ist eine Spur, und wo die Zeile voll ist, bricht sie um.
-
-     Gemessen an den 203 vorhandenen Bildunterschriften: die mittlere ist neunzehn
-     Zeichen und drei Wörter lang — „European greenfinch", „Barn swallow". So etwas ist
-     eine Angabe wie jede andere und gehört in die Reihe.
-
-     Fünfundfünfzig sind länger. Die nehmen zwei Spuren statt einer und bleiben trotzdem
-     in der Reihe — keine eigene Zeile: eine Bildunterschrift ist eine Angabe unter
-     Angaben, auch wenn sie zwei Wörter mehr hat.
-
-     Vierzig ist die Grenze, weil zwei Zeilen in einer Spur gerade die Höhe haben, die
-     das längste Objektiv daneben ohnehin braucht. Über zwei Spuren gerechnet sind es
-     dann wieder zwei Zeilen.
-
-     Die zehn Bildunterschriften über neunzig Zeichen machen ihre Zeile höher als nötig.
-     Das ist der Preis dafür, dass nichts aus der Reihe tanzt. */}}
 {{- $longCaption := gt (len $caption) 40 -}}
 {{- $rows := slice -}}
 {{- with $camera }}{{ $rows = $rows | append (dict "key" "Camera" "value" .) }}{{ end -}}
@@ -116,10 +79,7 @@
 {{- with $aperture }}{{ $rows = $rows | append (dict "key" "Aperture" "value" .) }}{{ end -}}
 {{- with $exposure }}{{ $rows = $rows | append (dict "key" "Exposure" "value" .) }}{{ end -}}
 
-
 {{- if or $rows $caption $photographer -}}
-{{/* Each pair is wrapped, which a description list allows, so that the pairs can be
-     laid out as a row rather than the keys and values separately. */}}
 <dl class="exif">
     {{- with $caption }}
     <div{{ if $longCaption }} class="caption-long"{{ end }}>

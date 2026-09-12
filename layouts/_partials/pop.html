@@ -1,25 +1,3 @@
-{{/* Der Besuchszähler.
-
-     Läuft auf jeder Seite und zeigt nichts. Die Zahl steht in der Datenbank, nicht auf
-     der Seite — wer wissen will, wie oft etwas gelesen wurde, schaut nach; ein Zähler
-     im Fliesstext ist eine Behauptung über Wichtigkeit.
-
-     Nur der Zähler. Reaktionen sind vertagt: pop baut seine Schaltfläche selbst und
-     schreibt ein Emoji als Textknoten hinein, und die Seite kennt keine Piktogramme.
-     Das gehört in pop gelöst, nicht hier umgangen. Deshalb steht hier weder `el` noch
-     `emojis` noch `renderReactions` — für das Zählen braucht pop kein Markup, und
-     damit ist seine Bibliothek genau das richtige Werkzeug.
-
-     Zwei Riegel gegen das, was schon passiert ist: 1175 der 7468 gezählten Besuche
-     kamen von Entwicklungsservern, weil die pageId die volle Adresse ist.
-
-     Erstens entsteht das hier nur im Produktionsbuild — der Entwicklungsserver
-     schreibt die BaseURL auf seine eigene Adresse um, ein Vergleich darauf hätte beim
-     Aufruf über die LAN-Adresse gepasst.
-
-     Zweitens prüft das Skript den Hostnamen, für den Fall, dass ein Produktionsbuild
-     einmal woanders ausgeliefert wird. */}}
-
 {{ if hugo.IsProduction }}
 <script src="{{ site.Params.popScript | default "https://pop.eisenschmidt.website/pop.min.js" }}" defer></script>
 <script defer>

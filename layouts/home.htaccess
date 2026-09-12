@@ -1,5 +1,3 @@
-{{/* Erzeugt aus data/redirects.yaml. Nicht von Hand ändern — Einträge gehören in
-     die Datendatei, damit Pop und die URL-Prüfung dieselbe Liste sehen. */ -}}
 # Weiterleitungen
 #
 # RedirectMatch greift vor der Dateiauslieferung. Das ist hier wichtig: der Deploy

@@ -1,103 +1,24 @@
-/* Design tokens.
-   ================================================================================
-
-   This file holds marks and nothing else. It states no rule, selects no element and
-   styles no component. Every value the site uses is defined here once.
-
-   Three tiers, and the direction of reference never reverses:
-
-     Primitive   a raw value with a place in a scale and no meaning at all.
-                 No rule and no component ever reads a primitive.
-     Semantic    exactly one role, named in one sentence. Every rule reads this tier
-                 and only this tier. A semantic mark points at a primitive, never at
-                 another semantic mark.
-     Component   a value one component needs that no role covers. Each one carries a
-                 written reason. The target is none, and today there are none.
-
-   The rule against false reuse
-   ----------------------------
-   Two things that carry the same value but not the same role get two marks. The gap
-   between two tiles and the padding inside a list row are both 1rem. That is a
-   coincidence, not sameness: move one and the other must not follow. Conversely two
-   things with the same role share one mark, however far apart they sit.
-
-   This is why twenty-two spacing marks stand on five spacing primitives, and why that
-   is correct. The caps below count primitives. Roles are not capped, they are counted: a
-   role whose sentence does not describe what the CSS actually does with it is a bug,
-   and the sentence may not be widened to cover a second use.
-
-   A mark enters this file when a rule reads it and leaves when the last rule that
-   read it goes. Only the front page is built, so only the front page's roles are here.
-
-   Caps
-   ----
-     size      6    five static steps and one fluid
-     weight    4
-     colour    4    three greys and one blue
-     space     6
-     leading   2
-     radius    1
-     line      2
-     tracking  1
-     width     6
-     thumb     1
-     opacity   1
-     height    3
-     columns   3
-     family    1
-
-   A new primitive replaces an existing one or raises the cap here, with a reason
-   written next to the new value.
-*/
-
-/* ================================================================================
-   Tier 1 — Primitives
-
-   A number here has a place in a row, not a purpose. Nothing outside this block may
-   read one.
-   ================================================================================ */
-
 :root {
-    /* Type sizes. Five static steps, 12.8 / 16 / 18 / 24 / 32 pixels at the default
-       root size, plus one fluid step. */
+
     --scale-size-1: 0.8rem;
     --scale-size-2: 1rem;
     --scale-size-3: 1.125rem;
     --scale-size-4: 1.5rem;
     --scale-size-5: 2rem;
 
-    /* The fluid step travels between step 3 and step 4 and is named after its two
-       ends. It exists because one role needs the viewport in its value and a static
-       scale cannot express that. Measured on a 390 pixel phone the longest string
-       that uses it needs 260 of the 326 pixels the page margins leave. */
     --scale-size-3-4: clamp(1.125rem, 4vw, 1.5rem);
 
-    /* Weights. Encode Sans carries the whole axis from 100 to 900 in one file, so
-       jeder Grad kostet nichts. Vier trennen Fliesstext, eine Zeile mit Daten, den
-       Namen einer Sektion und einen Titel.
-
-       Der dritte Schritt steht zwischen den beiden alten Nachbarn: 900 machte aus
-       einem Sektionsnamen einen zweiten Titel, 400 unterschied ihn nicht vom Filter
-       daneben. */
     --scale-weight-1: 300;
     --scale-weight-2: 400;
     --scale-weight-3: 600;
     --scale-weight-4: 900;
 
-    /* Greys, lightest to darkest. Three is the whole palette: the site separates
-       things by weight and space, not by shades of text. */
     --scale-grey-0: #fff;
     --scale-grey-1: #f2f2f2;
     --scale-grey-2: #222;
 
-    /* The one hue. The browser default link blue, kept because it is the only colour
-       on the page and therefore reads as a link without being taught. */
     --scale-blue-1: #00e;
 
-    /* Abstände: 4 / 8 / 16 / 32 / 48 / 64 Pixel bei der Grundschriftgrösse. Die Reihe
-       verdoppelt sich bis 32 und setzt dann einen halben Schritt dazwischen — 48 ist
-       das, was zwischen zwei Dingen steht, die nebeneinander gehören und trotzdem
-       auseinander sollen. */
     --scale-space-1: 0.25rem;
     --scale-space-2: 0.5rem;
     --scale-space-3: 1rem;
@@ -105,425 +26,199 @@
     --scale-space-5: 3rem;
     --scale-space-6: 4rem;
 
-    /* Leading. Two, because die Seite eine Zeile entweder in Versalien setzt oder als
-       Fliesstext, und nichts dazwischen kennt.
-
-       Versalien brauchen mehr Luft, nicht weniger: sie haben keine Unterlängen, die
-       den Abstand optisch füllen, und in Schriftschnitt 900 stehen zwei Zeilen bei
-       1.05 fast auf Stoss. */
     --scale-leading-1: 1.25;
     --scale-leading-2: 1.6;
 
     --scale-radius-1: 0.5rem;
 
-    /* Line widths. The second step exists because a focus ring drawn at the hairline
-       width disappears among the hairlines the page already draws. */
     --scale-line-1: 1px;
     --scale-line-2: 2px;
 
     --scale-tracking-1: 0.08em;
 
-    /* Eine Deckkraft. */
     --scale-opacity-1: 0.25;
 
-    /* Die Kantenlänge der Miniatur in der Liste. Klein genug, dass eine Reihe davon
-       eine Kante bleibt und kein zweiter Bildstrom wird. */
     --scale-size-thumb: 3rem;
 
-    /* Widths. The narrowest a camera datum may stand, the widest the page grows, and
-       the room two digits need.
-
-       The first is set so that all five camera data fit across a column at the page's
-       full width: five tracks of it with four 16 pixel gaps come to 744 of the 907
-       pixels a picture column holds. A phone leaves 326 and takes two.
-
-       The third is two digits and a little air. It is a third step because a register
-       of dates needs a column that does not move between the 9th and the 10th, and
-       neither of the two above is anywhere near that size. */
     --scale-width-1: 8.5rem;
     --scale-width-2: 90rem;
     --scale-width-3: 2.5rem;
 
-    /* Die vierte ist die schmalste Spur, in der eine Registerzeile noch aufgeht: zwei
-       Ziffern, ein Titel und eine Miniatur. Gemessen an allen 272 vorhandenen Titeln:
-       bei 336 Pixeln nehmen zwei davon drei Zeilen, darunter werden es schnell mehr.
-       Ein halbes rem weniger, und aus zwei Spalten wird auf einem Tablet eine. */
     --scale-width-4: 21rem;
 
-    /* Die fünfte ist die schmalste Kachel, die im Bogen des Registers noch ein Bild
-       ist und kein Daumennagel. */
     --scale-width-5: 10rem;
 
-    /* Die sechste ist ein Porträt auf einer Seite über eine Person. Die Datei ist
-       768 Pixel im Quadrat — über die volle Spalte gezogen würde sie hochskaliert, und
-       ein Gesicht in Plakatgrösse ist keine Angabe über jemanden, sondern eine
-       Behauptung. */
     --scale-width-6: 12rem;
 
-
-    /* Höhen. Ein Anteil des Fensters, und zwei feste Höhen für eine Karte. */
     --scale-height-1: 60vh;
     --scale-height-2: 25rem;
     --scale-height-3: 44rem;
 
-
-    /* Column counts. The page is twelve wide and splits eight and four. */
     --scale-columns-1: 12;
     --scale-columns-2: 8;
     --scale-columns-3: 4;
 
-    /* Latin subset, one variable file, 28 KB. The fallbacks are the grotesques that
-       ship with the three platforms, in that order. */
     --scale-family-1: "Encode Sans", Arial, "Liberation Sans", Helvetica, sans-serif;
 }
 
-/* ================================================================================
-   Tier 2 — Semantic
-
-   One role each, stated in one sentence. This is the only tier a rule may read.
-   ================================================================================ */
-
 :root {
-    /* --- Type ---------------------------------------------------------------- */
 
-    /* The site name in the page header. Fluid because it shares one line with the
-       navigation on a phone. */
     --text-sitename: var(--scale-size-3-4);
 
-
-    /* The name of a section on a page: PHOTOS, WRITING, EARLIER. */
     --text-section: var(--scale-size-1);
 
-    /* The title of the entry that opens a stream. */
     --text-title: var(--scale-size-5);
 
-    /* The title of an entry inside a list. */
     --text-subtitle: var(--scale-size-4);
 
-    /* Running text. */
     --text-body: var(--scale-size-3);
 
-
-    /* The date and type line that sits under a title. Auf derselben Stufe wie der Name
-       einer Sektion: beides sind kleine Angaben in Versalien, die einen Titel
-       einfassen, und zwei Grössen dafür lasen sich wie zwei Ränge. */
     --text-metadata: var(--scale-size-1);
 
-    /* Code im Fliesstext. Eine Stufe unter der Zeile, in der er steht — sonst drängt
-       er sie auseinander. */
     --text-code: var(--scale-size-2);
 
-    /* The sentences an article opens with, shown under its title in a stream. */
     --text-excerpt: var(--scale-size-2);
 
-
-    /* The key of a camera datum: Camera, Lens, Aperture, Exposure. */
     --text-label: var(--scale-size-1);
 
-    /* The value of a camera datum, und ebenso die Bildunterschrift und der Name des
-       Fotografen im selben Kasten. Auf derselben Stufe wie der Schlüssel darüber und
-       wie die Datumszeile: alles unter einer Fotografie ist Kleingedrucktes, und zwei
-       Stufen darin lasen sich als zwei Ränge, wo keine sind. */
     --text-value: var(--scale-size-1);
 
-    /* Ein Wort, das etwas tut, am Fuss eines Beitrags: reagieren, schreiben. Derselbe
-       Rang wie jede andere kleine Angabe — es ist eine Beschriftung, keine
-       Überschrift. */
     --text-action: var(--scale-size-1);
 
-    /* Der Titel eines Beitrags im Register. Klein, weil im Register vier davon
-       nebeneinander stehen und jeder eine Zeile bleiben muss. */
     --text-index: var(--scale-size-2);
 
-    /* Die Tageszahl vor einem Titel im Register. */
     --text-day: var(--scale-size-2);
 
-    /* --- Weight -------------------------------------------------------------- */
-
-    /* Running text. */
     --weight-body: var(--scale-weight-1);
 
-    /* A line of data rather than prose: a date, a count, an older link. */
     --weight-metadata: var(--scale-weight-2);
 
-    /* A word that names something rather than says it: a filter, a navigation item,
-       der Schlüssel einer Kameraangabe. */
     --weight-label: var(--scale-weight-2);
 
-    /* Der Name der Gruppe, die eine Spalte eröffnet. Schwerer als die Namen darunter,
-       weil er zugleich sagt, worum es in dieser Spalte überhaupt geht. Ein Schritt,
-       nicht zwei: bei 900 wäre er ein zweiter Titel neben dem Titel darunter. */
     --weight-opening: var(--scale-weight-3);
 
-    /* Any title, at any size. */
     --weight-title: var(--scale-weight-4);
 
-    /* --- Colour -------------------------------------------------------------- */
-
-    /* Every piece of text on the page. Against the page ground: 15.9 to 1. */
     --color-ink: var(--scale-grey-2);
 
-    /* The ring that shows the keyboard has reached something. It is not text and not
-       a rule, and it is the one mark that may have to leave the ink colour to stay
-       visible against whatever it surrounds. */
     --color-ring: var(--scale-grey-2);
 
-    /* The ground of the page. */
     --color-page: var(--scale-grey-0);
 
-    /* A link under the pointer. Links carry the ink colour until then, so blue is the
-       one colour on the page and it only ever means "this is under your cursor".
-       Against the page ground: 9.4 to 1. */
     --color-link-hover: var(--scale-blue-1);
 
-    /* Any one-pixel line: under a list row, above a stream footer. */
     --color-rule: var(--scale-grey-2);
 
-    /* The ground of a tile whose post carries no picture. Ink on it measures
-       14.2 to 1. */
     --color-placeholder: var(--scale-grey-1);
 
-    /* Der Grund, auf dem die Kameradaten unter einer Fotografie stehen. Dunkel, damit
-       die Angaben zum Bild gehören und nicht zum Text, der darunter weitergeht. */
     --color-panel: var(--scale-grey-2);
 
-    /* Schrift auf diesem Grund. Dagegen: 15,9 zu 1. */
     --color-ink-inverted: var(--scale-grey-0);
 
-
-
-    /* --- Space --------------------------------------------------------------- */
-
-    /* Between the page and the window. Auf einem schmalen Fenster der kleinere Wert,
-       siehe unten: dieselbe Rolle, zwei Werte. */
     --space-page: var(--scale-space-4);
 
-
-    /* Between two filter items. */
     --space-filter: var(--scale-space-3);
 
-    /* Between a word and the line under it. */
     --space-underline: var(--scale-space-1);
 
-    /* Zwischen dem Namen einer Spalte und der Zahl, die sagt, wie viel darin steht.
-       Kein Wortabstand: die Titelzeile ist eine Flexbox, und die wirft den Leerraum
-       zwischen zwei Elementen weg. Der Abstand muss also genannt werden — und wenn er
-       schon genannt wird, dann als der, der er ist. */
     --space-count: var(--scale-space-2);
 
-
-
-    /* Between the page header and the content under it. */
     --space-header-end: var(--scale-space-4);
 
-    /* Between two columns of the grid. */
     --space-gutter: var(--scale-space-4);
 
-    /* Between two streams once they stand one above the other instead of side by
-       side. */
     --space-stack: var(--scale-space-6);
 
-    /* Between a section title and the content it heads. */
     --space-title: var(--scale-space-3);
 
-    /* Between a title and the date line under it. */
     --space-tight: var(--scale-space-2);
 
-    /* Between a photograph and the text above or below it. */
     --space-figure: var(--scale-space-3);
 
-    /* Zwischen zwei Absätzen im Text eines Beitrags. */
     --space-block: var(--scale-space-3);
 
-
-    /* Zwischen dem seitlichen Rand des dunklen Grundes und den Angaben darauf. Weiter
-       als die Fuge zwischen zwei Spuren: ein Rand ist kein Zwischenraum, und die erste
-       Spur soll nicht an der Kante kleben. */
     --space-panel: var(--scale-space-4);
 
-    /* Dasselbe nach oben und unten. Knapper: seitlich trennt der Abstand zwei Angaben
-       voneinander, oben und unten trennt er nichts — dort schliesst die Fotografie an,
-       und die Angaben gehören zu ihr. */
     --space-panel-block: var(--scale-space-3);
 
-
-    /* Between a key and the value under it. */
     --space-datum: var(--scale-space-1);
 
-    /* Between two camera data standing side by side. */
     --space-data: var(--scale-space-3);
 
-    /* Between two rows of camera data, once the row has wrapped. It is tighter than
-       the gap beside them: down the page a datum already reads as separate, across it
-       does not. */
     --space-data-row: var(--scale-space-3);
 
-
-
-
-    /* Between a date line and the excerpt under it. */
     --space-excerpt: var(--scale-space-3);
 
-    /* Between two tiles. */
     --space-tile: var(--scale-space-3);
 
-    /* Above and below one row of a list. */
     --space-row: var(--scale-space-3);
 
-    /* Between a line and the text on either side of it. */
     --space-rule: var(--scale-space-3);
 
-    /* Between two entries in a stream. */
     --space-entry: var(--scale-space-6);
 
-    /* Zwischen dem Ende eines Beitrags und der Zeile darunter, die etwas anzubieten
-       hat. Weiter als zwischen zwei Absätzen: der Text ist hier zu Ende, und das soll
-       man sehen, bevor man liest, was man tun kann. */
     --space-post-end: var(--scale-space-4);
 
-    /* Zwischen einer Gruppe und dem Namen der nächsten. Kleiner als zwischen zwei
-       Einträgen: der Name bringt seinen eigenen Abstand nach unten mit, und beides
-       zusammen gab eine Lücke, in der die Spalte auseinanderfiel. */
     --space-group: var(--scale-space-4);
 
-    /* Zwischen zwei Monatsblöcken im Register, und über dem ersten. */
     --space-month: var(--scale-space-5);
 
-    /* Zwischen zwei Zeilen des Registers, die Seite hinunter. */
     --space-index-row: var(--scale-space-3);
 
-    /* Zwischen zwei Spalten des Registers, quer über die Seite. Es sind nicht die
-       Spalten des Seitenrasters: das Register teilt seine Breite unter sich auf. */
     --space-index-column: var(--scale-space-4);
 
-    /* Zwischen der Tageszahl und dem Titel daneben. */
     --space-day: var(--scale-space-3);
 
-    /* Between the entry that opens a stream and the list under it. */
     --space-lead: var(--scale-space-4);
 
-
-    /* Between an element and the ring that shows the keyboard has reached it. */
     --space-ring: var(--scale-space-1);
 
-    /* The room a scrolling box leaves on its sides so that a focus ring drawn inside
-       it is not clipped. It must exceed the ring's own width plus its offset. */
     --space-ring-clearance: var(--scale-space-2);
 
-    /* --- Leading ------------------------------------------------------------- */
-
-    /* A line set in upper case. Capitals carry no descenders, so a title that wraps
-       sits right at this and loose at anything more. */
     --leading-caps: var(--scale-leading-1);
 
-    /* Running text. */
     --leading-body: var(--scale-leading-2);
 
-    /* --- Line, shape --------------------------------------------------------- */
-
-    /* The width of every line the site draws. */
     --rule-hairline: var(--scale-line-1);
 
-    /* The width of the ring around the element the keyboard has reached. */
     --ring-focus: var(--scale-line-2);
 
-    /* The corner of every image the site shows, and of the tile that stands in for a
-       missing one. */
     --radius-image: var(--scale-radius-1);
 
-
-    /* The tracking of a word set in upper case at section size. */
     --tracking-label: var(--scale-tracking-1);
 
-    /* Die Seitenlänge einer Miniatur in der Liste. */
     --size-thumb: var(--scale-size-thumb);
 
-
-    /* Wie deutlich eine Miniatur in der Liste steht. Zurückgenommen, damit sie die
-       Zeile begleitet statt sie anzuführen. */
     --opacity-thumb: var(--scale-opacity-1);
 
-    /* The narrowest a camera datum stands before the row gives it a line of its own. */
     --width-datum: var(--scale-width-1);
 
-    /* Die Spalte, in der die Tageszahl im Register steht. Fest, damit die Titel
-       daneben auf einer Kante stehen und nicht mit dem Datum wandern. */
     --width-day: var(--scale-width-3);
 
-    /* Ein Porträt im Text einer Seite. */
     --width-portrait: var(--scale-width-6);
 
-    /* Die schmalste Kachel im Bogen des Registers. Der Bogen zählt keine Spalten, er
-       teilt die Breite: unter diesem Mass fällt eine Kachel weg. */
     --width-tile: var(--scale-width-5);
 
-    /* Die schmalste Spur, in der eine Registerzeile noch steht. Das Register zählt
-       keine Spalten, es teilt die Breite: unter diesem Mass fällt eine Spur weg. */
     --width-index: var(--scale-width-4);
 
-
-    /* The widest the page grows before it stops. It stays at the left. Past it a
-       line of running text passes two hundred characters, the camera data strand a
-       thousand pixels of white beside them, and a thumbnail grows larger than the
-       photograph it stands under. */
     --width-page: var(--scale-width-2);
 
-
-
-    /* The least a stream may be, whatever the stream beside it does. */
     --height-stream: var(--scale-height-1);
 
-
-
-    /* --- Type family --------------------------------------------------------- */
-
-    /* Every word on the site. */
     --font-body: var(--scale-family-1);
 
-    /* --- Grid ---------------------------------------------------------------- */
-
-    /* The number of columns the page is laid out on. */
     --grid-columns: var(--scale-columns-1);
 
-    /* Wie hoch eine Karte steht. Eine Karte hat keine eigene Höhe — sie füllt, was
-       man ihr gibt —, also muss die Seite eine nennen. */
     --height-map: var(--scale-height-2);
 
-    /* Dieselbe Karte, wenn der Beitrag sie als `tall` anfordert: eine Tagesroute
-       braucht mehr Nord-Süd als ein Punkt auf einer Stadtkarte. */
     --height-map-tall: var(--scale-height-3);
 
-    /* Die Breite der Hauptspalte, in Spalten. Der Bildstrom auf der Startseite und
-       eine Beitragsseite sind dieselbe Spalte — die eine hat eine Spalte daneben, die
-       andere nicht. Eine Rolle, eine Marke. */
     --span-main: var(--scale-columns-2);
 
-    /* The width of the writing stream, in columns. */
     --span-writing: var(--scale-columns-3);
 
-    /* The number of tiles across. */
     --tiles-columns: var(--scale-columns-3);
 }
-
-/* ================================================================================
-   Tier 3 — Component
-
-   A value one component needs that no role above covers. Each entry states why the
-   role tier cannot carry it.
-
-   Empty, and that is the goal.
-   ================================================================================ */
-
-/* ================================================================================
-   Dieselben Rollen, schmales Fenster
-
-   Kein neuer Mark und keine neue Regel — nur ein Wert, der von der Fensterbreite
-   abhängt. Auf einem Telefon sind zweimal 32 Pixel Rand ein Zehntel der Seite, und
-   das Zehntel fehlt der Zeile darin.
-
-   Die Breite ist ausgeschrieben, weil eine Media Query keine Custom Property lesen
-   kann — dieselbe Stelle wie in home.css und archive.css.
-   ================================================================================ */
 
 @media (max-width: 900px) {
     :root {

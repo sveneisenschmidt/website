@@ -6,10 +6,7 @@
     <head>
         {{ partial "head.html" . }}
     </head>
-    {{/* Hugo's own name for what this page is: home, page, section, term. Rules that
-         belong to one kind of page hang off it, so that a stylesheet for the front
-         page cannot reach an article. */}}
-    <body class="{{ .Kind }}">
+        <body class="{{ .Kind }}">
         {{ partial "header.html" . }}
         <main>{{ block "main" . }}{{ end }}</main>
         {{ partial "pop.html" . }}

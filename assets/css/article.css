@@ -1,22 +1,6 @@
-/* Eine Beitragsseite.
-   ================================================================================
-
-   Dieselbe Seite für alle vier Typen. Ein Foto, ein Reisetag, eine Notiz und ein
-   Essay unterscheiden sich darin, was sie zu zeigen haben, nicht darin, wie sie
-   aussehen.
-
-   Alles nimmt die volle Spaltenbreite — Bilder wie Text. Die Zeilen bleiben lesbar,
-   weil `text-wrap: pretty` auf dem Körper steht und der Browser vorausschaut, statt
-   umzubrechen, wo die Breite gerade endet.
-
-   Jeder Wert kommt aus der semantischen Ebene in tokens.css.
-*/
-
 .article {
     grid-column: span var(--span-main);
 }
-
-/* --- Der Textkörper --------------------------------------------------------- */
 
 .body p {
     margin-bottom: var(--space-block);
@@ -33,7 +17,6 @@
     font-size: var(--text-subtitle);
 }
 
-/* Die erste Überschrift eines Abschnitts steht nicht zusätzlich vom Titel ab. */
 .body > :first-child {
     margin-top: 0;
 }
@@ -74,10 +57,6 @@
     background: none;
 }
 
-/* --- Eine Karte im Text ------------------------------------------------------
-   Leaflet zeichnet in einen Kasten, den es nicht selbst aufspannt: ohne Höhe bleibt
-   die Karte unsichtbar. */
-
 .body .map {
     height: var(--height-map);
     margin-block: var(--space-figure);
@@ -88,23 +67,13 @@
     height: var(--height-map-tall);
 }
 
-/* --- Ein Bild im Text ------------------------------------------------------- */
-
-/* Derselbe Abstand wie unter der Datumszeile: zwischen einer Fotografie und dem Text
-   darüber oder darunter steht überall dieselbe Fuge. */
 .body figure {
     margin-block: var(--space-figure);
 }
 
-/* Trägt die Fotografie ihre Kameradaten, gibt sie die unteren Ecken an sie ab. */
 .body figure:has(.exif) .frame-picture {
     border-radius: var(--radius-image) var(--radius-image) 0 0;
 }
-
-/* --- Der Anker an einer Überschrift ------------------------------------------
-   Das Gitterkreuz hinter einer Überschrift ist ein Werkzeug, keine Überschrift: es
-   erbt deren Grad nicht und trägt auch nicht den Strich, den ein Link im Fliesstext
-   trägt. */
 
 .heading-anchor {
     margin-left: var(--space-count);
@@ -112,18 +81,10 @@
     text-decoration: none;
 }
 
-/* --- Ein Porträt -------------------------------------------------------------
-   Auf einer Seite über eine Person. Nicht über die volle Spalte: siehe die Begründung
-   bei --scale-width-6. */
-
 .body img.inline {
     width: var(--width-portrait);
     margin-bottom: var(--space-figure);
 }
-
-/* --- Die Fusszeile eines Beitrags ---------------------------------------------
-   Eine Linie, darüber Abstand, darunter ein Wort: wie man mich erreicht. Derselbe Rang
-   wie jede andere kleine Angabe, und links, wo jede Zeile der Seite anfängt. */
 
 .post-footer {
     display: flex;

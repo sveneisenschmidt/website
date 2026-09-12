@@ -1,44 +1,11 @@
-/* The front page.
-   ================================================================================
-
-   Two streams side by side. The picture stream has its full natural height and never
-   scrolls. The writing stream takes exactly that height and scrolls inside it, under a
-   filter row that stays put.
-
-   Beide Spalten tragen den Weg nach draussen in ihrer Titelzeile und keine Fusszeile:
-   so enden beide mit Inhalt, auf derselben Höhe.
-
-   How the height actually passes from one column to the other
-   -----------------------------------------------------------
-   A grid row is sized by the tallest of its items, so a plain `height: 100%` on the
-   writing column is a no-op: the row was already sized by that column's own content,
-   and a long list stretches the picture column instead of scrolling.
-
-   So the writing column's content is taken out of flow. `.writing` is a positioned
-   box with no in-flow children, which means it contributes nothing to the row. The
-   row is sized by the picture column alone; the grid's stretch default then gives
-   `.writing` exactly that height, and `.writing-inner` fills it with `inset: 0`.
-
-   That is what `.writing-inner` is for. It is not a wrapper for styling.
-
-   Every value is read from the semantic tier in tokens.css.
-*/
-
-
-/* --- The picture stream ------------------------------------------------------ */
-
 .pictures {
     grid-column: span var(--span-main);
 }
 
-/* Unter dem Aufmacher steht der Name der nächsten Gruppe, nicht gleich das nächste
-   Bild. */
 .picture {
     padding-bottom: var(--space-group);
 }
 
-/* The pictures under the lead. They carry no title: the picture is the whole entry,
-   and a name under each one would make a caption out of it. */
 .tiles {
     display: grid;
     grid-template-columns: repeat(var(--tiles-columns), minmax(0, 1fr));
@@ -47,12 +14,6 @@
     list-style: none;
 }
 
-/* --- The writing stream ------------------------------------------------------ */
-
-/* The floor matters: this column's height is the picture column's height, and the
-   picture column is one photograph. If that photograph's file is ever missing, the
-   left column shrinks to a heading and this one would follow it down to a sliver with
-   twenty-two entries scrolling inside. */
 .writing {
     grid-column: span var(--span-writing);
     position: relative;
@@ -70,14 +31,6 @@
     flex: none;
 }
 
-
-/* A scrolling box clips on every side, so the box has to leave room on every side for
-   the ring around a link inside it. Room above and below cannot be given back the way
-   the sides can — a negative block margin would let the list overlap the title and the
-   footer — so the scroll is padded and the column is shortened by the same amount.
-
-   `scrollbar-gutter` keeps a classic scrollbar out of that room, which would otherwise
-   push every row's rule 15 pixels short of the column's edge. */
 .writing-list {
     flex: 1;
     min-height: 0;
@@ -88,7 +41,6 @@
     margin-block-start: calc(var(--space-ring-clearance) * -1);
 }
 
-/* The first piece is set out: title, date and the sentences it opens with. */
 .writing-lead {
     padding-bottom: var(--space-lead);
 }
@@ -98,8 +50,6 @@
     font-size: var(--text-excerpt);
 }
 
-/* Eine Zeile mit Miniatur ist zweispaltig, das Bild steht am rechten Rand. Der erste
-   Eintrag trägt zusätzlich den Anrisstext, und der läuft unter beiden Spalten durch. */
 .writing-item.has-thumb,
 .writing-lead.has-thumb {
     display: grid;
@@ -113,28 +63,13 @@
 }
 
 .writing-item {
-    /* Einzelwerte, siehe den Hinweis bei .metadata in page.css: die Kurzschreibweise
-       mit einer Null dahinter überlebt den Minifier nicht. */
+
     padding-block: var(--space-row);
     border-bottom: var(--rule-hairline) solid var(--color-rule);
 }
 
-/* --- Narrow windows -----------------------------------------------------------
-   Not the phone design, which is still to be drawn. This only stops a twelve column
-   grid from cutting the writing stream down to a sliver: below the width at which
-   four of twelve columns still hold a line of text, the two streams stack and the
-   writing stream returns to the normal flow, so it grows instead of scrolling.
-
-   The breakpoint is written out because a custom property cannot be read inside a
-   media query. */
-
 @media (max-width: 900px) {
-    /* The grid itself collapses to one track. Twelve tracks carry eleven gutters,
-       which on a 390 pixel phone come to 352 pixels on their own — wider than the
-       page. Spanning twelve columns would not have helped; the tracks had to go.
 
-       The gutter becomes a distance down the page rather than across it, which is a
-       different role and so a different mark. */
     main {
         grid-template-columns: minmax(0, 1fr);
         row-gap: var(--space-stack);
@@ -159,4 +94,3 @@
         overflow: visible;
     }
 }
-

@@ -1,43 +1,16 @@
 {{ define "main" }}
 
-{{/* Beitrag oder Seite. Ein Beitrag liegt in einer der vier Sektionen; alles andere —
-     About und was noch kommt — ist eine Seite und trägt weder Typ noch Datum. */}}
 {{ $isPost := in (slice "photos" "trips" "notes" "essays") .Section }}
 
-{{/* Eine Vorlage für alle vier Typen. Der Typ entscheidet nicht, wie die Seite
-     aussieht, sondern nur, welche Angaben es zu zeigen gibt: ein Foto hat
-     Kameradaten, ein Reisetag seine Stelle in der Folge, ein Essay eine Lesezeit. */}}
-
 <article class="article">
-    {{/* Steht da, wo auf der Startseite der Name der Bildspalte steht, und trägt
-         denselben Grad: die Seite sagt zuerst, was sie ist.
-
-         Ist der Beitrag ein Pick, sagt sie das statt des Typs — vorne steht er unter
-         genau diesem Wort, und wer von dort kommt, findet es hier wieder. „Featured
-         photo" schliesst „photo" ohnehin ein.
-
-         Eine Seite hat keinen Typ und sagt im Frontmatter selbst, was sie ist. About
-         sagt „Personal blog": wer dort ankommt, fragt genau das, und der Name im Kopf
-         beantwortet es nicht. Ohne `label` bleibt die Zeile leer und trägt nur den Weg
-         zurück. */}}
-    <p class="stream-title stream-opening">
+        <p class="stream-title stream-opening">
         {{- if $isPost }}{{ if .Params.pick }}Featured photo{{ else }}{{ .Params.type }}{{ end }}{{ else }}{{ .Params.label }}{{ end }}
         <a class="far" href="{{ "/" | relURL }}">Back</a>
     </p>
 
     <h1>{{ .Title }}</h1>
 
-    {{/* Ein Beitrag trägt das Datum, an dem er entstanden ist — er ist ein Eintrag in
-         einer Zeitreihe, und wann er geschrieben wurde, gehört zu ihm.
-
-         Eine Seite wie About ist keine Zeitreihe. Sie gilt jetzt, und das einzig
-         Interessante daran ist, wie alt das „jetzt" ist. Deshalb der Stand statt des
-         Entstehungsdatums — `lastmod` in der Frontmatter, von Hand gesetzt. Ohne das
-         Feld fällt Hugo auf `date` zurück, also auf den Tag, an dem die Seite entstand.
-
-         Titel und Datum stehen schon als Überschrift und Zeitangabe da. Im
-         Suchausschnitt würden sie sich nur wiederholen. */}}
-    <p class="metadata">
+        <p class="metadata">
         {{- if $isPost }}
         <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
         {{ with partial "article-type.html" (dict "page" . "type" false) }}&middot; {{ . }}{{ end }}
@@ -50,9 +23,7 @@
         {{ .Content }}
     </div>
 
-    {{/* Ein Weg zu mir, unter einem Strich. Eine Reaktion stand hier auch schon —
-         vertagt, bis pop eine Beschriftung ohne Emoji kann. */}}
-    <p class="post-footer">
+        <p class="post-footer">
         <a href="mailto:{{ site.Params.email }}?subject={{ printf "Re: %s" .Title | urlquery }}">Email me</a>
     </p>
 

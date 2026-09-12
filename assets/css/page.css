@@ -1,19 +1,3 @@
-/* Was jede Seite teilt.
-   ================================================================================
-
-   Der Kopf, die Navigation, und die Bauteile, die auf mehr als einer Seite stehen:
-   der Titel eines Beitrags, seine Datumszeile, ein Sektionstitel, eine Fusszeile.
-
-   Sie stehen hier und nicht zweimal in home.css und article.css. Zwei Kopien
-   derselben Regel sind zwei Stellen, an denen sie auseinanderlaufen kann.
-
-   Jeder Wert kommt aus der semantischen Ebene in tokens.css.
-*/
-
-/* --- The page header ---------------------------------------------------------
-   Nur der Name, keine Linie darunter. Die Wege stehen dort, wo sie gebraucht werden:
-   in der Filterzeile, im Titel der Bildspalte und in der Typzeile eines Beitrags. */
-
 .site-header {
     padding-bottom: var(--space-header-end);
 }
@@ -26,53 +10,33 @@
     text-transform: uppercase;
 }
 
-
-/* --- Das Raster --------------------------------------------------------------
-   Dasselbe auf jeder Seite: Startseite, Typseite, Beitragsseite. Eine Beitragsseite
-   ist der linke Strom ohne die Spalte daneben. */
-
 main {
     display: grid;
     grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
     gap: var(--space-gutter);
 }
 
-/* --- Der Name einer Sektion --------------------------------------------------
-   PICKS, ALL, EARLIER, und der Typ oben auf einer Beitragsseite. */
-
 .stream-title {
-    /* Flex und nicht block: die Zeile kann am anderen Ende einen Weg aus dieser Ebene
-       tragen. Mit einem einzigen Kind verhält sie sich wie vorher. */
+
     display: flex;
     align-items: baseline;
     font-size: var(--text-section);
 
-    /* Die Zeilenhöhe gehört der Rolle, nicht dem Element. Auf der Startseite trägt
-       ein h2 diesen Namen und erbte --leading-caps von der Elementregel, auf einer
-       Beitragsseite ein p und erbte --leading-body — vier Pixel Unterschied, und
-       alles darunter verschob sich mit. */
     line-height: var(--leading-caps);
     font-weight: var(--weight-label);
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
 }
 
-/* Der Name, der eine Spalte eröffnet, trägt einen Grad mehr. Nur dieser eine: die
-   Namen darunter gehören zu ihm, nicht neben ihn. */
 .stream-opening {
     font-weight: var(--weight-opening);
 }
 
-/* Wie viel in dieser Spalte steht. Eine Zahl ist keine Ansage, sondern eine Angabe —
-   sie erbt den Grad des Namens daneben deshalb nicht. */
 .stream-count {
     margin-left: var(--space-count);
     font-weight: var(--weight-label);
 }
 
-/* Die Filterzeile ist derselbe Rang wie ein Sektionstitel: klein, in Versalien,
-   gesperrt. Sie teilt deshalb Größe, Gewicht, Sperrung und Zeilenhöhe mit ihm — sonst
-   erbt sie die Zeilenhöhe vom Fliesstext und alles darunter verschiebt sich. */
 .stream-filter {
     display: flex;
     flex-wrap: wrap;
@@ -84,34 +48,18 @@ main {
     text-transform: uppercase;
 }
 
-/* Der Abstand unter dem Namen eines Stroms, gleich ob ihn ein Titel oder die
-   Filterzeile trägt. */
 .stream-title,
 .stream-filter {
     padding-bottom: var(--space-title);
 }
 
-/* Der Weg aus dieser Ebene heraus steht am anderen Ende der Zeile — in
-   der Filterzeile des Textstroms, im Titel der Bildspalte und in der Typzeile eines
-   Beitrags. `margin-left: auto` und nicht
-   `space-between` auf der Leiste: die fünf Filter sollen ihren eigenen Abstand
-   behalten und nicht über die Breite verteilt werden.
-
-   Er steht oben und nicht unten: eine Fusszeile hätte die eine Spalte mit einer Linie
-   enden lassen und die andere mit ihrem letzten Eintrag, und die zwei Ströme hörten
-   nicht mehr auf derselben Höhe auf. */
 .far {
     display: flex;
     gap: var(--space-filter);
     margin-left: auto;
 
-    /* Eigenes Gewicht: der Weg nach draussen ist kein Name, auch wenn er in der Zeile
-       eines Namens steht, und darf dessen Grad nicht erben. */
     font-weight: var(--weight-label);
 }
-
-/* --- Der Titel eines Beitrags ------------------------------------------------
-   Zwei Rollen: einmal, wo er für sich steht, einmal in einer Liste. */
 
 .article h1,
 .picture h3,
@@ -125,33 +73,15 @@ main {
     text-transform: uppercase;
 }
 
-/* --- Eine Fotografie ----------------------------------------------------------
-   Sie nimmt die Breite, die sie bekommt, und behält ihre eigene Form darin. Nichts
-   wird gedeckelt, nichts beschnitten: die Seite hat eine Breite, und in ihr ist ein
-   Hochformat einfach höher als ein Querformat.
-
-   Dieselbe Regel für den Aufmacher auf der Startseite und für jedes Bild im Text. */
-
 .frame-picture {
     display: block;
     width: 100%;
     height: auto;
 }
 
-/* Der Link um eine Fotografie — auf der Startseite auf ihren Beitrag, im Text auf die
-   Datei aus der Kamera. Ein Link ist eine Inline-Box, das Bild darin ein Block, und
-   ohne das hier bliebe unter dem Bild die Zeilenluft einer Textzeile stehen. */
 .frame {
     display: block;
 }
-
-/* --- Eine Kachel -------------------------------------------------------------
-   Ein quadratischer Ausschnitt einer Fotografie: unter dem Aufmacher auf der
-   Startseite und im Bogen des Registers dasselbe Ding, deshalb hier und nicht zweimal.
-
-   Quadratisch und beschnitten, weil eine Reihe davon eine Reihe sein soll. Hoch- und
-   Querformate nebeneinander in ihrer eigenen Form ergeben eine Mauer, keine Kante —
-   das gilt für das Bild in seiner vollen Grösse, nicht für seinen Daumennagel. */
 
 .tile {
     aspect-ratio: 1;
@@ -160,29 +90,15 @@ main {
     border-radius: var(--radius-image);
 }
 
-/* --- Die Miniatur in einer Liste ----------------------------------------------
-   Dieselbe im Strom auf der Startseite und im Register. Zwei Listen, ein Bauteil:
-   sie steht hier und nicht zweimal in home.css und archive.css.
-
-   Auf halber Höhe der Zeile, nicht an deren Oberkante: sie gehört zur ganzen Zeile,
-   nicht zu deren erster Zeile. */
-
 .thumb {
     align-self: center;
 }
 
-/* Keine Breite und keine Höhe: die stehen als Attribute am Bild, weil die Liste dem
-   Partial sagt, in welcher Kantenlänge sie es zeigt — und dieselbe Zahl entscheidet
-   dort, in welcher Auflösung Hugo zuschneidet. Zwei Stellen, an denen dieselbe Zahl
-   stünde, wären eine zu viel: beim Auseinanderlaufen bekäme man ein hochgezogenes
-   Bild statt eines Fehlers. */
 .thumb img {
     object-fit: cover;
     opacity: var(--opacity-thumb);
 }
 
-/* Unter dem Zeiger ganz da. Die Zurücknahme gilt der ruhigen Liste, nicht dem
-   Bild — wer hinschaut, soll es sehen. */
 .writing-item:hover .thumb img,
 .writing-item:focus-within .thumb img,
 .writing-lead:hover .thumb img,
@@ -192,37 +108,22 @@ main {
     opacity: 1;
 }
 
-/* --- Die Datumszeile ---------------------------------------------------------
-   Datum und Typangabe, wo immer sie steht. */
-
 .metadata {
-    /* Der Abstand zum Titel darüber gehört der Rolle: die Datumszeile steht überall
-       gleich weit unter ihm. Was darunter folgt, entscheidet die jeweilige Seite.
 
-       Einzelwerte statt der Kurzschreibweise, weil Hugos Minifier aus
-       `padding: var(--a) 0 var(--b)` ein `var(--a)0 var(--b)` macht — ohne Leerzeichen
-       vor der Null, und damit ungültig. Die Regel fiel dann ganz aus. */
     padding-top: var(--space-tight);
     font-size: var(--text-metadata);
 
-    /* Versalien und gesperrt, wie jede andere kleine Angabe auf der Seite: der Typ
-       über dem Titel, der Name eines Stroms, der Schlüssel einer Kameraangabe. Die
-       Datumszeile war das einzige Kleingedruckte in Gemischtschreibung und fiel
-       deshalb aus dem Satz heraus. */
     font-weight: var(--weight-metadata);
     line-height: var(--leading-caps);
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
 }
 
-/* Steht die Datumszeile über dem Inhalt eines Beitrags — und nicht in einer Liste —,
-   trennt sie derselbe Abstand davon, vorne wie auf einer Beitragsseite. */
 .picture .metadata,
 .article > .metadata {
     padding-bottom: var(--space-figure);
 }
 
-/* Ein Wort mit einer Linie darunter: der aktive Filter, und ein Link im Fliesstext. */
 .stream-filter [aria-current],
 .body a {
     text-decoration: underline;

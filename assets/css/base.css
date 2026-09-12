@@ -1,14 +1,3 @@
-/* Base.
-   ================================================================================
-
-   What an element looks like before any layout touches it. No page, no section, no
-   component lives here.
-
-   Every value that the design decides is read from the semantic tier in tokens.css.
-   The keywords and the full-width percentages that remain are not design values;
-   there is no version of this file in which `box-sizing` is a token.
-*/
-
 *,
 *::before,
 *::after {
@@ -18,16 +7,11 @@
 html {
     -webkit-text-size-adjust: 100%;
 
-    /* The palette has one mode. Saying so keeps the browser from painting its own
-       form controls and scrollbars dark on a dark-mode machine, against a page that
-       is white either way. */
     color-scheme: light;
 }
 
 body {
-    /* Die Seite hört bei ihrer Breite auf und bleibt links stehen. Nicht zentriert:
-       zentriert wandert der Anfang jeder Zeile mit der Fensterbreite, und der Blick
-       muss ihn jedes Mal neu suchen. Links steht er immer an derselben Stelle. */
+
     max-width: var(--width-page);
     margin-block: var(--space-page);
     margin-inline: 0;
@@ -39,14 +23,9 @@ body {
     font-weight: var(--weight-body);
     line-height: var(--leading-body);
 
-    /* The browser is allowed to look ahead and avoid a last line that carries one
-       word. It applies to every block on the page, so no rule repeats it. */
     text-wrap: pretty;
 }
 
-/* A link carries the ink colour and takes the one colour on the page under the
-   pointer. Only a link inside running prose is underlined, which the body rules set,
-   so a title and a navigation item stay clean. */
 a {
     color: inherit;
     text-decoration: none;
@@ -73,9 +52,6 @@ p {
     margin: 0;
 }
 
-/* Der Browser gibt einigen Elementen von sich aus Ränder. Ein figure bekommt sogar
-   40 Pixel an den Seiten — genug, um ein Bild sichtbar schmaler zu machen als die
-   Spalte, in der es steht. Abstände kommen aus dem System, nicht vom Browser. */
 ul,
 ol,
 dl,
@@ -92,4 +68,3 @@ img {
     height: auto;
     border-radius: var(--radius-image);
 }
-

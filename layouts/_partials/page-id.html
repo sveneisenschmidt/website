@@ -1,17 +1,3 @@
-{{/* Die Adresse, unter der Pop die Zahlen dieser Seite führt.
-
-     Pop hängt Reaktionen und Besuchszähler an die pageId, und die pageId ist die
-     Adresse. Zieht ein Beitrag um, verwaisen seine Zahlen.
-
-     Deshalb entscheidet data/redirects.yaml darüber: zeigt ein Eintrag mit `pop: keep`
-     auf diese Seite, meldet sie die alte Adresse weiter. Die Zählung bleibt am
-     Beitrag, nicht an der Adresse.
-
-     Zwei Stellen lesen das — der Zähler im Fuss jeder Seite und die Reaktion unter
-     einem Beitrag —, und zwei Kopien wären zwei Stellen, an denen es auseinanderläuft.
-
-     Erwartet: die Seite als Kontext. Gibt die Adresse zurück. */}}
-
 {{- $id := .Permalink -}}
 {{- $here := .RelPermalink -}}
 {{- range hugo.Data.redirects -}}
