@@ -38,6 +38,25 @@ jobs:
           TZ: Europe/Berlin
         run: hugo --minify
 
+      - name: Build search index
+        run: npx -y pagefind@1.5.2 --site public
+
+      # Die Sitemap der laufenden Seite ist der Stand von vorher. Was in der
+      # frisch gebauten steht und dort nicht, ist neu. Der Vergleich muss vor
+      # dem Hochladen laufen, danach wäre beides gleich.
+      - name: Find new pages
+        id: new_pages
+        run: |
+          curl -sf https://sven.eisenschmidt.website/sitemap.xml \
+            | grep -oE '<loc>[^<]+' | sed 's|<loc>||' | sort > /tmp/live.txt || : > /tmp/live.txt
+          grep -oE '<loc>[^<]+' public/sitemap.xml | sed 's|<loc>||' | sort > /tmp/built.txt
+          comm -13 /tmp/live.txt /tmp/built.txt > /tmp/new.txt
+          COUNT=$(wc -l < /tmp/new.txt | tr -d ' ')
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "first=$(head -1 /tmp/new.txt)" >> "$GITHUB_OUTPUT"
+          echo "Neu: $COUNT"
+          cat /tmp/new.txt
+
       - name: Deploy via SSH
         timeout-minutes: 10
         uses: easingthemes/ssh-deploy@v6
@@ -48,6 +67,32 @@ jobs:
           TARGET: ${{ secrets.DEPLOY_PATH }}
           SOURCE: public/
           SSH_CMD_ARGS: -o StrictHostKeyChecking=no -o ConnectTimeout=30
+
+      # Nur wenn wirklich ein Beitrag dazugekommen ist, nicht bei jeder Änderung
+      # an Vorlagen oder Stilen.
+      - name: Notify
+        if: steps.new_pages.outputs.count != '0'
+        env:
+          NTFY_URL: ${{ secrets.NTFY_URL }}
+          FIRST: ${{ steps.new_pages.outputs.first }}
+          COUNT: ${{ steps.new_pages.outputs.count }}
+        run: |
+          if [ -z "$NTFY_URL" ]; then
+            echo "NTFY_URL ist nicht gesetzt, keine Nachricht."
+            exit 0
+          fi
+          TITLE=$(basename "$FIRST" | sed 's/^[0-9][0-9-]*//; s/-/ /g')
+          if [ "$COUNT" -gt 1 ]; then
+            BODY="$TITLE und $((COUNT - 1)) weitere"
+          else
+            BODY="$TITLE"
+          fi
+          curl -sf \
+            -H "Title: Neu auf der Website" \
+            -H "Click: $FIRST" \
+            -H "Tags: camera_flash" \
+            -d "$BODY" \
+            "$NTFY_URL"
 
       - name: Submit to IndexNow
         run: |

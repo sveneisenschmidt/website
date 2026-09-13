@@ -4,8 +4,22 @@
     {
       "name": "hugo-dev",
       "runtimeExecutable": "make",
-      "runtimeArgs": ["dev"],
+      "runtimeArgs": [
+        "dev"
+      ],
       "port": 1313
+    },
+    {
+      "name": "public-preview",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "1314",
+        "--directory",
+        "public"
+      ],
+      "port": 1314
     }
   ]
 }

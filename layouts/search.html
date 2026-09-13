@@ -1,0 +1,31 @@
+{{ define "main" }}
+
+<section class="archive">
+        {{ partial "stream-filter.html" (dict
+        "current" "search"
+        "base" "/archive/"
+        "far" (slice (dict "label" "Back" "url" "/" "back" true))) }}
+
+    {{/* Kein sichtbares Label: das Feld ist die Überschrift der Seite, so wie
+         das Wort Archive die des Archivs ist. Den Namen der Seite trägt der
+         Eintrag Search in der Filterzeile. */}}
+    <form class="search-form" role="search">
+        <input
+            class="search-input"
+            type="search"
+            aria-label="Search"
+            autocomplete="off"
+            enterkeyhint="search"
+            autofocus
+            data-search-input
+        />
+        {{/* Telefone verweigern den Fokus beim Laden, damit nicht ungefragt die
+             Tastatur aufspringt. Ohne Fokus zeichnet der Browser keinen Cursor,
+             deshalb steht hier einer, solange das Feld leer und unbenutzt ist. */}}
+        <span class="search-caret" aria-hidden="true"></span>
+    </form>
+
+    <div class="search-results" data-search-results></div>
+</section>
+
+{{ end }}

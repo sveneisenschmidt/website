@@ -83,6 +83,11 @@ main {
     padding-bottom: var(--space-title);
 }
 
+.stream-search {
+    display: flex;
+    gap: var(--space-filter);
+}
+
 .far {
     display: flex;
     gap: var(--space-filter);
@@ -248,5 +253,12 @@ a.far,
 @media (max-width: 900px) {
     .writing-aside {
         display: none;
+    }
+
+    /* Sieben Einträge auf einer Telefonbreite brauchen einen engeren Abstand als
+       auf dem Bildschirm. */
+    .stream-filter,
+    .stream-search {
+        gap: var(--space-filter-tight);
     }
 }

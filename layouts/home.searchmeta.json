@@ -1,0 +1,15 @@
+{{- /* Datum und Vorschaubild der Beiträge, die die Suchseite neben den Treffern
+       braucht. Sie stehen hier und nicht als Pagefind-Metadaten, weil Pagefind
+       Metadaten mitdurchsucht: eine Bildadresse im Index lässt jede Suche nach
+       einem Stück Dateiname jede Seite treffen. */ -}}
+{{- $data := dict -}}
+{{- range where site.RegularPages "Section" "in" (slice "photos" "trips" "notes" "essays") -}}
+    {{- $entry := dict "date" (.Date.Format "2006-01-02") -}}
+    {{- with .Resources.GetMatch (.Params.cover | default "") -}}
+        {{- $one := .Fill "48x48 Smart webp q80" -}}
+        {{- $two := .Fill "96x96 Smart webp q80" -}}
+        {{- $entry = merge $entry (dict "thumb" $one.RelPermalink "thumb2x" $two.RelPermalink) -}}
+    {{- end -}}
+    {{- $data = merge $data (dict .RelPermalink $entry) -}}
+{{- end -}}
+{{- $data | jsonify -}}

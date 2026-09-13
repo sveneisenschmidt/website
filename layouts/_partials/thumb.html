@@ -9,6 +9,7 @@
 {{- $two := .Fill (printf "%dx%d Smart webp q%d" (mul $edge 2) (mul $edge 2) $q) -}}
 {{ if $link }}<a class="thumb" href="{{ $page.RelPermalink }}" tabindex="-1" aria-hidden="true">{{ else }}<span class="thumb">{{ end }}
     <img
+                data-pagefind-meta="image[alt]"
         src="{{ $one.RelPermalink }}"
         srcset="{{ $one.RelPermalink }} 1x, {{ $two.RelPermalink }} 2x"
         width="{{ $edge }}"

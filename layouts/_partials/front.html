@@ -26,6 +26,7 @@
         {{ $mid := .Resize "1000x webp q80" }}
         {{ $narrow := .Resize "600x webp q80" }}
                     <img
+                data-pagefind-meta="image[alt]"
                 class="frame-picture"
                 style="view-transition-name: {{ partial "vt-name.html" $post }}"
                 src="{{ $wide.RelPermalink }}"
@@ -52,6 +53,7 @@
                                 {{ $large := .Fill "480x480 Smart webp q80" }}
                 {{ $small := .Fill "240x240 Smart webp q80" }}
                 <img
+                data-pagefind-meta="image[alt]"
                     class="tile"
                     style="view-transition-name: {{ partial "vt-name.html" $tile }}"
                     src="{{ $large.RelPermalink }}"

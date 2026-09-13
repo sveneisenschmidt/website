@@ -4,14 +4,15 @@
     grid-column: 1 / -1;
 }
 
-.archive-year {
-    padding-top: var(--space-month);
+/* Die Überschrift trägt den Namen der Seite: im Archiv das Wort Archive, auf
+   der Suchseite den getippten Begriff. Die Jahreszahl steht in der Monatszeile.
+   Beide tragen denselben Schnitt, deshalb steht er hier einmal. */
+.archive-heading,
+.search-input {
     font-size: var(--text-title);
+    font-weight: var(--weight-title);
+    line-height: var(--leading-caps);
     text-transform: uppercase;
-}
-
-.archive-year:first-of-type {
-    padding-top: 0;
 }
 
 .archive-month {
@@ -94,3 +95,87 @@
     height: auto;
     fill: currentColor;
 }
+
+/* Die Suchseite hat keine eigene Liste: Jahr, Monat und Zeilen sind die des
+   Archivs. Neu ist allein das Feld, und es trägt den Schnitt der Jahreszahl,
+   weil es an deren Stelle die Überschrift der Seite ist. */
+.search-form {
+    position: relative;
+    display: flex;
+}
+
+/* Der gezeichnete Cursor steht am Anfang der Zeile und blinkt im Takt eines
+   echten. Er weicht, sobald jemand tippt oder das Feld den Fokus bekommt, dann
+   zeichnet der Browser seinen eigenen. */
+.search-caret {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: var(--rule-caret);
+    height: var(--text-title);
+    transform: translateY(-50%);
+    background: var(--color-ink);
+    animation: search-caret 1.06s step-end infinite;
+}
+
+/* Sichtbar ist der Vorgabezustand: ein leeres Feld ist das, was ein Besucher
+   zuerst sieht. Solange es leer ist, zeichnet die Seite den Balken und der
+   Browser keinen: iOS setzt den Fokus beim Laden, zeigt seinen eigenen Cursor
+   aber erst nach der ersten Berührung, dann stünde dort vorher nichts. Sobald
+   jemand tippt, kehrt sich beides um. */
+.search-form:not(.has-term) .search-input {
+    caret-color: transparent;
+}
+
+.search-form.has-term .search-caret {
+    display: none;
+}
+
+@keyframes search-caret {
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .search-caret {
+        animation: none;
+    }
+}
+
+/* Ein Bedienelement erbt weder Schrift noch Rahmen, beides steht deshalb hier. */
+.search-input {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font-family: inherit;
+}
+
+.search-input:focus {
+    outline: none;
+}
+
+/* Optische Korrektur: der Browser zentriert den Text eines Eingabefelds in
+   dessen Kasten, eine Überschrift setzt ihn auf die Zeile. Bei gleicher Größe
+   sitzt das Feld dadurch einen Punkt tiefer. Verschoben wird nur die Zeichnung,
+   der Kasten bleibt wo er ist. */
+.search-input {
+    position: relative;
+    top: -1px;
+}
+
+/* Der Browser hängt an ein Suchfeld eine eigene Löschtaste, die nichts mit der
+   Seite zu tun hat. */
+.search-input::-webkit-search-cancel-button,
+.search-input::-webkit-search-decoration {
+    appearance: none;
+}
+

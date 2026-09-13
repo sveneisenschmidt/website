@@ -12,6 +12,7 @@ dev: check-deps
 build:
 	rm -rf public/*
 	hugo --minify
+	npx -y pagefind@1.5.2 --site public
 
 push:
 	hugo --gc

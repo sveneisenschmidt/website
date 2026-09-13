@@ -16,6 +16,11 @@
         <a class="frame" href="{{ $img.RelPermalink }}">
     <img
         class="frame-picture"
+        {{/* Pagefind nimmt sonst die Adresse des ersten Bildes als Metadatum, und
+             Metadaten sind durchsuchbar: dann trifft eine Suche nach "webp" jede
+             Seite. Der Alternativtext an derselben Stelle ist Sprache statt
+             Dateiname und damit brauchbar. */}}
+        data-pagefind-meta="image[alt]"
         {{ if eq $src (.Page.Params.cover | default "") }}style="view-transition-name: {{ partial "vt-name.html" .Page }}"{{ end }}
         src="{{ $wide.RelPermalink }}"
         srcset="{{ $narrow.RelPermalink }} 600w, {{ $mid.RelPermalink }} 1000w, {{ $wide.RelPermalink }} 1600w"

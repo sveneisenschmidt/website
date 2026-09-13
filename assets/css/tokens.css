@@ -20,6 +20,7 @@
     --scale-blue-1: #00e;
 
     --scale-space-1: 0.25rem;
+    --scale-space-1-2: 0.375rem;
     --scale-space-2: 0.5rem;
     --scale-space-3: 1rem;
     --scale-space-4: 2rem;
@@ -125,6 +126,8 @@
 
     --space-filter: var(--scale-space-3);
 
+    --space-filter-tight: var(--scale-space-1-2);
+
     --space-underline: var(--scale-space-1);
 
     --space-count: var(--scale-space-2);
@@ -188,6 +191,8 @@
     --rule-hairline: var(--scale-line-1);
 
     --ring-focus: var(--scale-line-2);
+
+    --rule-caret: var(--scale-line-2);
 
     --radius-image: var(--scale-radius-1);
 

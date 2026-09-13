@@ -18,3 +18,8 @@
     {{ .Content | safeJS }}
 </script>
 {{ end }}{{ end }}
+{{ if eq .Layout "search" }}{{ with resources.Get "js/search.js" | minify }}
+<script type="module">
+    {{ .Content | safeJS }}
+</script>
+{{ end }}{{ end }}

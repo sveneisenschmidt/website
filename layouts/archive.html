@@ -16,14 +16,15 @@
         "base" "/archive/"
         "far" (slice (dict "label" "Back" "url" "/" "back" true))) }}
 
-    {{ range $posts.GroupByDate "2006" }}
-    <h2 class="archive-year">{{ .Key }}</h2>
+    <h1 class="archive-heading">Archive</h1>
 
-    {{ range .Pages.GroupByDate "January" }}
-    <h3 class="archive-month stream-title">
+    {{/* Das Jahr steht in der Monatszeile, damit die Überschrift den Namen der
+         Seite trägt und jede Gruppe ihr Jahr behält. */}}
+    {{ range $posts.GroupByDate "January 2006" }}
+    <h2 class="archive-month stream-title">
         <span>{{ .Key }}</span>
         <span>{{ len .Pages }}</span>
-    </h3>
+    </h2>
 
     {{ if eq $stream "photos" }}
         <ul class="archive-sheet">
@@ -35,6 +36,7 @@
         <li>
             <a href="{{ $post.RelPermalink }}" aria-label="{{ $post.LinkTitle }}">
                 <img
+                data-pagefind-meta="image[alt]"
                     class="tile"
                     src="{{ $large.RelPermalink }}"
                     srcset="{{ $small.RelPermalink }} 200w, {{ $large.RelPermalink }} 400w"
@@ -61,7 +63,6 @@
         </li>
         {{ end }}
     </ul>
-    {{ end }}
     {{ end }}
     {{ end }}
 </section>

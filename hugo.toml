@@ -34,8 +34,14 @@ trips = "/:year-:month-:day-:contentbasename/"
 notes = "/:year-:month-:day-:contentbasename/"
 essays = "/:year-:month-:day-:contentbasename/"
 
+[outputFormats.searchmeta]
+mediaType = "application/json"
+baseName = "search-meta"
+isPlainText = true
+notAlternative = true
+
 [outputs]
-home = ["HTML", "RSS", "htaccess"]
+home = ["HTML", "RSS", "htaccess", "searchmeta"]
 section = ["HTML"]
 
 [markup.goldmark.renderer]

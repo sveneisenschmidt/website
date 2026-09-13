@@ -9,10 +9,17 @@
     (dict "slug" "essays" "path" "essays/"  "label" "Essays")
 -}}
 
-<nav class="stream-filter" aria-label="Filter by type">
+<nav class="stream-filter" aria-label="Archive and search">
     {{- range $items }}
     <a href="{{ printf "%s%s" $base .path }}"{{ if eq .slug $current }} aria-current="true"{{ end }}>{{ .label }}</a>
     {{- end }}
+    {{- /* Die Suche filtert nicht, sie ist ein eigener Weg in den Bestand. Der
+    Strich trennt sie deshalb von der Reihe der Filter. Beide stehen in einem
+    Element, damit der Strich beim Umbruch nicht allein am Zeilenende hängt. */ -}}
+    <span class="stream-search">
+        <span class="stream-separator" aria-hidden="true">|</span>
+        <a href="/search/"{{ if eq "search" $current }} aria-current="true"{{ end }}>Search</a>
+    </span>
     {{- with $far }}
         <span class="far">
         {{- range . }}<a href="{{ .url }}"{{ if .back }} data-back{{ end }}>{{ .label }}</a>{{ end -}}

@@ -2,16 +2,16 @@
 
 {{ $isPost := in (slice "photos" "trips" "notes" "essays") .Section }}
 
-<article class="article">
+<article class="article" data-pagefind-body>
     <div class="article-head">
-        <p class="stream-title stream-opening">
+        <p class="stream-title stream-opening" data-pagefind-ignore>
         {{- if $isPost }}<a href="/archive/{{ .Section }}/">{{ if .Params.pick }}Featured photo{{ else }}{{ .Params.type }}{{ end }}</a>{{ else }}{{ .Params.label }}{{ end }}
         <a class="far" href="{{ "/" | relURL }}" data-back>Back</a>
     </p>
 
         <h1>{{ .Title }}</h1>
 
-        <p class="metadata">
+        <p class="metadata" data-pagefind-ignore>
         {{- if $isPost }}
         <a href="/archive/"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time></a>
         {{ with partial "article-type.html" (dict "page" . "type" false) }}&middot; <a href="/archive/{{ $.Section }}/">{{ . }}</a>{{ end }}
@@ -25,7 +25,7 @@
         {{ .Content }}
     </div>
 
-        <p class="post-footer">
+        <p class="post-footer" data-pagefind-ignore>
         {{- $subject := replace (printf "Re: %s" .Title | urlquery) "+" "%20" -}}
         <a href="{{ printf "mailto:%s?subject=%s" site.Params.email $subject | safeURL }}">Leave me a message</a>
     </p>
