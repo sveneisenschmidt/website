@@ -115,3 +115,15 @@
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
 }
+
+/* Label-Zeile und Titel bleiben beim Scrollen zusammen oben stehen, solange der
+   Artikel läuft, und verschwinden mit dessen Ende. Der Seitenhintergrund deckt
+   den Text darunter, das negative Margin hält die Regel layoutneutral. */
+.article-head {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding-block-start: var(--space-page);
+    margin-block-start: calc(var(--space-page) * -1);
+    background: var(--color-page);
+}

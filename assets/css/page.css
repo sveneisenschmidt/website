@@ -140,7 +140,7 @@ main {
 }
 
 .picture .metadata,
-.article > .metadata {
+.article-head .metadata {
     padding-bottom: var(--space-figure);
 }
 

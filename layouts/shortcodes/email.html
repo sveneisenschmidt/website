@@ -1,1 +1,1 @@
-{{- $subject := .Get "subject" -}}<a href="mailto:{{ .Site.Params.email }}{{ with $subject }}?subject={{ . | urlquery }}{{ end }}">Email</a>
+{{- $subject := .Get "subject" -}}{{- with $subject }}{{ $subject = replace (. | urlquery) "+" "%20" }}{{ end -}}<a href="{{ printf "mailto:%s%s" .Site.Params.email (cond (ne $subject "") (printf "?subject=%s" $subject) "") | safeURL }}">Email</a>

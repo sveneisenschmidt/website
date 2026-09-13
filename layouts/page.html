@@ -3,12 +3,13 @@
 {{ $isPost := in (slice "photos" "trips" "notes" "essays") .Section }}
 
 <article class="article">
+    <div class="article-head">
         <p class="stream-title stream-opening">
         {{- if $isPost }}<a href="/archive/{{ .Section }}/">{{ if .Params.pick }}Featured photo{{ else }}{{ .Params.type }}{{ end }}</a>{{ else }}{{ .Params.label }}{{ end }}
         <a class="far" href="{{ "/" | relURL }}" data-back>Back</a>
     </p>
 
-    <h1>{{ .Title }}</h1>
+        <h1>{{ .Title }}</h1>
 
         <p class="metadata">
         {{- if $isPost }}
@@ -18,13 +19,15 @@
         Last updated: <time datetime="{{ .Lastmod.Format "2006-01-02" }}">{{ .Lastmod.Format "January 2, 2006" }}</time>
         {{- end }}
     </p>
+    </div>
 
     <div class="body">
         {{ .Content }}
     </div>
 
         <p class="post-footer">
-        <a href="mailto:{{ site.Params.email }}?subject={{ printf "Re: %s" .Title | urlquery }}">Leave me a message</a>
+        {{- $subject := replace (printf "Re: %s" .Title | urlquery) "+" "%20" -}}
+        <a href="{{ printf "mailto:%s?subject=%s" site.Params.email $subject | safeURL }}">Leave me a message</a>
     </p>
 
 </article>
