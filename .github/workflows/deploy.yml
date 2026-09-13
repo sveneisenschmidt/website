@@ -8,6 +8,15 @@ on:
     # Every 2 hours
     - cron: "0 */2 * * *"
   workflow_dispatch:
+    inputs:
+      force_notify:
+        description: "Nachricht auch ohne neuen Beitrag schicken"
+        type: boolean
+        default: false
+      allow_shrink:
+        description: "Weniger Seiten als live zulassen (nach dem Löschen von Beiträgen)"
+        type: boolean
+        default: false
 
 jobs:
   deploy:
@@ -57,6 +66,27 @@ jobs:
           echo "Neu: $COUNT"
           cat /tmp/new.txt
 
+      # rsync läuft mit --delete, ein halber Build würde den Server also leerräumen.
+      # Die laufende Seite ist der Maßstab: deutlich weniger Seiten als dort sind
+      # ein Fehler, kein Stand zum Ausrollen.
+      - name: Check the build
+        env:
+          ALLOW_SHRINK: ${{ inputs.allow_shrink }}
+        run: |
+          test -s public/index.html || { echo "public/index.html fehlt oder ist leer."; exit 1; }
+          test -s public/.htaccess || { echo "public/.htaccess fehlt."; exit 1; }
+          LIVE=$(wc -l < /tmp/live.txt | tr -d ' ')
+          BUILT=$(wc -l < /tmp/built.txt | tr -d ' ')
+          echo "Seiten live: $LIVE, gebaut: $BUILT"
+          if [ "$LIVE" -gt 0 ] && [ "$BUILT" -lt $(( LIVE * 9 / 10 )) ]; then
+            if [ "$ALLOW_SHRINK" = "true" ]; then
+              echo "Weniger Seiten als live, per Schalter erlaubt."
+            else
+              echo "Abbruch: gebaut $BUILT, live $LIVE. Mit dem Schalter allow_shrink von Hand starten, wenn das so gewollt ist."
+              exit 1
+            fi
+          fi
+
       - name: Deploy via SSH
         timeout-minutes: 10
         uses: easingthemes/ssh-deploy@v6
@@ -66,12 +96,16 @@ jobs:
           REMOTE_USER: ${{ secrets.DEPLOY_USER }}
           TARGET: ${{ secrets.DEPLOY_PATH }}
           SOURCE: public/
+          # Ohne --delete bleiben alte Dateien für immer liegen: Bildvarianten
+          # aus früheren Zuschnitten, Verzeichnisse umbenannter Beiträge. Der
+          # Stand auf dem Server ist damit genau der gebaute Stand.
+          ARGS: -rltgoDzvO --delete --exclude=.ftp-deploy-sync-state.json
           SSH_CMD_ARGS: -o StrictHostKeyChecking=no -o ConnectTimeout=30
 
       # Nur wenn wirklich ein Beitrag dazugekommen ist, nicht bei jeder Änderung
       # an Vorlagen oder Stilen.
       - name: Notify
-        if: steps.new_pages.outputs.count != '0'
+        if: steps.new_pages.outputs.count != '0' || inputs.force_notify
         env:
           NTFY_URL: ${{ secrets.NTFY_URL }}
           FIRST: ${{ steps.new_pages.outputs.first }}
@@ -81,16 +115,27 @@ jobs:
             echo "NTFY_URL ist nicht gesetzt, keine Nachricht."
             exit 0
           fi
-          TITLE=$(basename "$FIRST" | sed 's/^[0-9][0-9-]*//; s/-/ /g')
-          if [ "$COUNT" -gt 1 ]; then
-            BODY="$TITLE und $((COUNT - 1)) weitere"
+          # Beim Handstart ohne neuen Beitrag ist nichts neu, dann sagt die
+          # Nachricht genau das und zeigt auf die Startseite.
+          if [ -z "$FIRST" ]; then
+            SUBJECT="Probelauf"
+            BODY="Keine neuen Beiträge"
+            FIRST="https://sven.eisenschmidt.website/"
+            MARK="white_check_mark"
           else
-            BODY="$TITLE"
+            SUBJECT="Neu auf der Website"
+            MARK="camera_flash"
+            TITLE=$(basename "$FIRST" | sed 's/^[0-9][0-9-]*//; s/-/ /g')
+            if [ "${COUNT:-0}" -gt 1 ]; then
+              BODY="$TITLE und $((COUNT - 1)) weitere"
+            else
+              BODY="$TITLE"
+            fi
           fi
           curl -sf \
-            -H "Title: Neu auf der Website" \
+            -H "Title: $SUBJECT" \
             -H "Click: $FIRST" \
-            -H "Tags: camera_flash" \
+            -H "Tags: $MARK" \
             -d "$BODY" \
             "$NTFY_URL"
 

@@ -1146,9 +1146,6 @@
 - from: /topics/work/
   to: /archive/
 
-- from: /search/
-  to: /archive/
-
 - from: /posts/2025-wrapped/
   to: /2026-01-03-2025-wrapped/
   rss: keep
