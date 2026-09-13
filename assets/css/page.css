@@ -28,7 +28,7 @@
 .masthead {
     margin: 0;
     font-size: var(--text-sitename);
-    font-weight: var(--weight-title);
+    font-weight: var(--weight-masthead);
     line-height: var(--leading-caps);
     text-transform: uppercase;
 }

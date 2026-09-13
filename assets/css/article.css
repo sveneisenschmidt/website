@@ -127,3 +127,54 @@
     margin-block-start: calc(var(--space-page) * -1);
     background: var(--color-page);
 }
+
+/* Der Copy-Button sitzt in der rechten oberen Ecke des Codeblocks, auf der
+   Höhe der ersten Zeile, und trägt die Label-Ebene der übrigen Aktionen. Er
+   erscheint beim Überfahren des Blocks und bleibt auf Geräten ohne Zeiger
+   dauerhaft sichtbar. */
+.body pre.has-copy {
+    position: relative;
+}
+
+.copy-button {
+    position: absolute;
+    top: var(--space-block);
+    right: var(--space-block);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: var(--text-action);
+    font-weight: var(--weight-label);
+    line-height: var(--leading-caps);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    text-decoration: underline;
+    text-decoration-thickness: var(--rule-hairline);
+    text-underline-offset: var(--space-underline);
+    cursor: pointer;
+    opacity: 0;
+}
+
+.body pre.has-copy:hover .copy-button,
+.copy-button:focus-visible {
+    opacity: 1;
+}
+
+@media (hover: none) {
+    .copy-button {
+        opacity: 1;
+    }
+}
+
+/* Inline-Code nimmt den Klick selbst entgegen. Die Rückmeldung läuft über den
+   Hintergrund, damit die Zeile nicht umbricht. */
+.body code.is-copyable {
+    cursor: pointer;
+}
+
+.body code.is-copied {
+    background: var(--color-panel);
+    color: var(--color-ink-inverted);
+}

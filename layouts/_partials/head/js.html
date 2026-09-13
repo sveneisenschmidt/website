@@ -13,3 +13,8 @@
     {{ .Content | safeJS }}
 </script>
 {{ end }}{{ end }}
+{{ if eq .Kind "page" }}{{ with resources.Get "js/copy.js" | minify }}
+<script>
+    {{ .Content | safeJS }}
+</script>
+{{ end }}{{ end }}
