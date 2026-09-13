@@ -9,9 +9,10 @@
 {{ $tiles := first 12 (after 1 $picks) }}
 
 <section class="pictures" aria-label="Pictures">
-        <h2 class="stream-title stream-opening">Featured photo
+    <div class="stream-title stream-opening">
+        <h2>Featured photo</h2>
         <a class="far" href="/archive/photos/">All photos</a>
-    </h2>
+    </div>
 
     {{ with $lead }}
     {{ $post := . }}
@@ -29,10 +30,10 @@
                 style="view-transition-name: {{ partial "vt-name.html" $post }}"
                 src="{{ $wide.RelPermalink }}"
                 srcset="{{ $narrow.RelPermalink }} 600w, {{ $mid.RelPermalink }} 1000w, {{ $wide.RelPermalink }} 1600w"
-                sizes="(max-width: 900px) calc(100vw - 2rem), (max-width: 90rem) 63vw, 907px"
+                sizes="(max-width: 900px) calc(100vw - 2rem), (max-width: 90rem) 55vw, 764px"
                 width="{{ $wide.Width }}"
                 height="{{ $wide.Height }}"
-                alt=""
+                alt="{{ partial "cover-alt.html" $post }}"
                 fetchpriority="high"
                 decoding="async"
             />
@@ -41,7 +42,7 @@
     {{ end }}
 
     {{ with $tiles }}
-    <h2 class="stream-title"><a href="/archive/photos/">Previously featured</a></h2>
+    <h2 class="stream-title">Previously featured</h2>
     <ul class="tiles" role="list">
         {{ range . }}
         {{ $tile := . }}

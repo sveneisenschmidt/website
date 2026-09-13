@@ -9,6 +9,9 @@
 {{- end }}
 </IfModule>
 
+# Fehlerseite
+ErrorDocument 404 /404.html
+
 # Content-Type
 AddDefaultCharset UTF-8
 AddType text/html .html

@@ -1,20 +1,38 @@
 # sven.eisenschmidt.website
 
-Personal website of Sven Eisenschmidt - CTO & Product Officer based in Leipzig, Germany.
+> Personal website of Sven Eisenschmidt, Chief Technology & Product Officer at roadsurfer, based near Leipzig, Germany. Daily photographs, trip diaries, short notes, and essays. Private and non-commercial: no ads, no affiliate links, no monetization.
 
-## About
-Sven works at roadsurfer and writes about software development, gaming, and open source projects.
+## Essays
 
-## Content
-- Photographs, trip diaries, notes and essays
-- Subjects include: photography, software development, gaming, cycling, travel
+- [Ambiguity](https://sven.eisenschmidt.website/2026-01-22-ambiguity/): Why ambiguity at work is not a sign that something is broken, written from the leadership side of the complaint.
+- [Change as a Commodity](https://sven.eisenschmidt.website/2026-03-17-change-as-a-commodity/): What AI actually changes about software development once change itself becomes cheap.
+- [Principles](https://sven.eisenschmidt.website/2026-03-24-principles/): The working principles behind predictable leadership feedback.
+- [Race to (No)where(?)](https://sven.eisenschmidt.website/2026-06-05-race-to-nowhere/): AI enthusiasts race against time, skeptics against entropy, and a metaphor about electric cars.
+
+## Notes
+
+- [Building with Hugo](https://sven.eisenschmidt.website/2026-01-05-building-with-hugo/): How this site is built — Hugo, custom theme, vanilla CSS, no JavaScript frameworks.
+- [I Built a RSS Reader](https://sven.eisenschmidt.website/2026-01-08-i-built-a-rss-reader/): A self-hosted RSS reader in PHP with SQLite.
+- [Optimizing Hugo Builds](https://sven.eisenschmidt.website/2026-02-09-optimizing-hugo-builds/): Making a 270-post Hugo site build fast.
+- [Open Source](https://sven.eisenschmidt.website/2026-01-02-open-source/): Why the spare-time tools are on GitHub.
+- [Worktrees](https://sven.eisenschmidt.website/2026-09-10-worktrees/): Git worktrees in a Claude Code workflow.
+- [Redesign](https://sven.eisenschmidt.website/2026-09-12-redesign/): The 2026 redesign of this site.
+
+## Projects
+
+- [Hypo](https://hypo.eisenschmidt.website/): macOS app for importing and culling photos from a camera.
+- [reader](https://github.com/sveneisenschmidt/reader): Self-hosted RSS reader, PHP with SQLite.
+- [pop](https://github.com/sveneisenschmidt/pop): Cookie-less widget for emoji reactions and visit counts, ~3KB frontend.
+- [website](https://github.com/sveneisenschmidt/website): The source of this site.
+
+## Site
+
+- [Homepage](https://sven.eisenschmidt.website/)
+- [Archive](https://sven.eisenschmidt.website/archive/): All posts by month, filterable by type (photos, trips, notes, essays).
+- [About](https://sven.eisenschmidt.website/about/): Bio, full project list, blogroll, site statistics.
+- [Feed](https://sven.eisenschmidt.website/index.xml)
+- [Sitemap](https://sven.eisenschmidt.website/sitemap.xml)
 
 ## Crawling
-This site welcomes crawling by LLMs and AI systems for training and indexing purposes.
 
-## Links
-- Homepage: https://sven.eisenschmidt.website/
-- Archive: https://sven.eisenschmidt.website/archive/
-- About: https://sven.eisenschmidt.website/about/
-- Feed: https://sven.eisenschmidt.website/index.xml
-- Sitemap: https://sven.eisenschmidt.website/sitemap.xml
+This site welcomes crawling by LLMs and AI systems for training and indexing purposes.

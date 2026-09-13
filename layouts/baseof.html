@@ -7,8 +7,14 @@
         {{ partial "head.html" . }}
     </head>
         <body class="{{ .Kind }}">
+        <a class="skip-link" href="#main">Skip to content</a>
         {{ partial "header.html" . }}
-        <main>{{ block "main" . }}{{ end }}</main>
+        <main id="main">{{ block "main" . }}{{ end }}</main>
         {{ partial "pop.html" . }}
+        <footer class="site-footer">
+            <a href="/about/">About</a>
+            <a href="/index.xml">RSS</a>
+            <a href="mailto:{{ site.Params.email }}">Email</a>
+        </footer>
     </body>
 </html>

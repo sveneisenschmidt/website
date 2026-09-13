@@ -25,6 +25,7 @@
     --scale-space-4: 2rem;
     --scale-space-5: 3rem;
     --scale-space-6: 4rem;
+    --scale-space-7: 6rem;
 
     --scale-leading-1: 1.25;
     --scale-leading-2: 1.6;
@@ -58,6 +59,8 @@
     --scale-columns-1: 12;
     --scale-columns-2: 8;
     --scale-columns-3: 4;
+    --scale-columns-4: 7;
+    --scale-columns-5: 5;
 
     --scale-family-1: "Encode Sans", Arial, "Liberation Sans", Helvetica, sans-serif;
 }
@@ -126,7 +129,7 @@
 
     --space-header-end: var(--scale-space-4);
 
-    --space-gutter: var(--scale-space-4);
+    --space-gutter: var(--scale-space-6);
 
     --space-stack: var(--scale-space-6);
 
@@ -216,9 +219,9 @@
 
     --height-map-tall: var(--scale-height-3);
 
-    --span-main: var(--scale-columns-2);
+    --span-main: var(--scale-columns-4);
 
-    --span-writing: var(--scale-columns-3);
+    --span-writing: var(--scale-columns-5);
 
     --tiles-columns: var(--scale-columns-3);
 }

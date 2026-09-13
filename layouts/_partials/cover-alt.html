@@ -1,0 +1,15 @@
+{{- /* Der Alt-Text des Titelbilds steht im img-Shortcode des Inhalts, nicht
+     im Frontmatter. Hier wird der Shortcode gesucht, der das Cover zeigt,
+     und seine alt-Angabe zurückgegeben; ohne Treffer trägt der Titel. */ -}}
+{{- $page := . -}}
+{{- $alt := "" -}}
+{{- with $page.Params.cover -}}
+    {{- $needle := printf `src="%s"` . -}}
+    {{- range findRE `\{\{<\s*img\s[^>]*>\}\}` $page.RawContent -}}
+        {{- if and (not $alt) (in . $needle) -}}
+            {{- $m := replaceRE `(?s).*alt="([^"]*)".*` "$1" . -}}
+            {{- if ne $m . -}}{{- $alt = $m -}}{{- end -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+{{- return ($alt | default $page.LinkTitle) -}}

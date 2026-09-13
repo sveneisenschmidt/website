@@ -59,11 +59,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     fit();
     window.addEventListener("resize", schedule);
-    window.addEventListener("load", schedule);
 
-    // Die Bilder der Galerie bestimmen ihre Höhe, jedes fertige Bild kann das
-    // Ergebnis verschieben.
-    reference.querySelectorAll("img").forEach(function (img) {
-        if (!img.complete) img.addEventListener("load", schedule);
-    });
+    // Die Bildhöhen stehen über width/height schon vor dem Laden fest; nur
+    // der Font-Swap kann die Zeilenhöhen noch verschieben. Ein Nachmessen
+    // pro geladenem Bild würde Einträge sichtbar verschwinden lassen.
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(schedule);
+    }
 });

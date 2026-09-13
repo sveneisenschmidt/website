@@ -1,3 +1,26 @@
+/* Der Link steht über der Seite und rutscht erst bei Tastaturfokus ins Bild.
+   Er ist das erste fokussierbare Element im Dokument. */
+.skip-link {
+    position: absolute;
+    top: 0;
+    left: var(--space-page);
+    padding: var(--space-tight);
+    background: var(--color-page);
+    font-size: var(--text-action);
+    font-weight: var(--weight-label);
+    line-height: var(--leading-caps);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    text-decoration: underline;
+    text-decoration-thickness: var(--rule-hairline);
+    text-underline-offset: var(--space-underline);
+    transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+    transform: none;
+}
+
 .site-header {
     padding-bottom: var(--space-header-end);
 }
@@ -30,6 +53,13 @@ main {
 
 .stream-opening {
     font-weight: var(--weight-opening);
+}
+
+/* Die Überschrift steht in der Flex-Zeile neben der Navigation und übernimmt
+   deren Schriftbild; ohne die Regel griffe der h2-Reset mit Titelgewicht. */
+.stream-title h2 {
+    font-size: inherit;
+    font-weight: inherit;
 }
 
 .stream-count {
@@ -114,11 +144,23 @@ main {
     padding-bottom: var(--space-figure);
 }
 
-.stream-filter [aria-current],
+/* Unterstreichung nur, wo die Seite eine Interaktion anbietet: Aktionen der
+   Label-Ebene und Textlinks. Metadaten wie das Datum bleiben ohne. */
+a.far,
+.far a,
+.site-footer a,
+.stream-filter a,
+.post-footer a,
 .body a {
     text-decoration: underline;
     text-decoration-thickness: var(--rule-hairline);
     text-underline-offset: var(--space-underline);
+}
+
+/* Alle Filter sind unterstrichene Links; den aktiven markiert das Gewicht,
+   nicht die Unterstreichung, sonst kollidieren "Link" und "du bist hier". */
+.stream-filter [aria-current] {
+    font-weight: var(--weight-opening);
 }
 
 .writing {
@@ -189,6 +231,18 @@ main {
 
 .writing-item:has(+ .is-trimmed) {
     border-bottom: 0;
+}
+
+.site-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-filter);
+    margin-top: var(--space-stack);
+    font-size: var(--text-action);
+    font-weight: var(--weight-label);
+    line-height: var(--leading-caps);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
 }
 
 @media (max-width: 900px) {

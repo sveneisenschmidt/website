@@ -1,4 +1,7 @@
 TONE_OF_VOICE.md
+DESIGN.md
+PRODUCT.md
+.impeccable/
 node_modules/
 public/
 .hugo_build.lock

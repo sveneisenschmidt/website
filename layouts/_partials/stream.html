@@ -19,13 +19,14 @@
 
 <section class="writing{{ if $current }} writing-aside{{ end }}" aria-label="Posts"{{ if $fit }} data-fit=".pictures"{{ end }}>
     <div class="writing-inner">
-        <h2 class="stream-title stream-opening">Timeline{{ if lt $idx 0 }} <span class="stream-count">{{ len $entries }}</span>{{ end }}
-            <span class="far">
+        <div class="stream-title stream-opening">
+            <h2>Timeline{{ if lt $idx 0 }} <span class="stream-count">{{ len $entries }}</span>{{ end }}</h2>
+            {{/* Archive ist die Fortsetzung der Liste und bleibt hier;
+                 About und RSS sind Site-Ebene und stehen im Footer. */}}
+            <nav class="far" aria-label="Site">
                 <a href="/archive/">Archive</a>
-                <a href="/about/">About</a>
-                <a href="/index.xml">RSS</a>
-            </span>
-        </h2>
+            </nav>
+        </div>
 
         <div class="writing-list">
             {{ range $i, $e := $entries }}

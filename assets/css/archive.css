@@ -1,5 +1,7 @@
+/* Das Archiv hat keine Seitenspalte und nutzt die volle Rasterbreite; die
+   auto-fit-Listen füllen den Platz mit zusätzlichen Spalten. */
 .archive {
-    grid-column: span var(--span-main);
+    grid-column: 1 / -1;
 }
 
 .archive-year {
@@ -57,12 +59,6 @@
     font-weight: var(--weight-title);
     line-height: var(--leading-caps);
     text-transform: uppercase;
-}
-
-@media (max-width: 900px) {
-    .archive {
-        grid-column: auto;
-    }
 }
 
 .archive-sheet {
