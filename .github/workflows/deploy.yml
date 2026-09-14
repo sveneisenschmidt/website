@@ -21,7 +21,8 @@ on:
 jobs:
   deploy:
     if: github.actor == 'sveneisenschmidt'
-    runs-on: ubuntu-latest
+    # Läuft auf dem Pi im Homelab (Repo sveneisenschmidt/homelab, Rolle github-runner).
+    runs-on: [self-hosted, Linux, ARM64]
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
