@@ -144,15 +144,3 @@ jobs:
             -H "Tags: $MARK" \
             -d "$BODY" \
             "$NTFY_SERVER/$NTFY_TOPIC"
-
-      - name: Submit to IndexNow
-        run: |
-          INDEXNOW_KEY=$(basename static/*-*-*-*-*.txt .txt)
-          URLS=$(curl -s https://sven.eisenschmidt.website/sitemap.xml | grep -oE 'https://sven\.eisenschmidt\.website[^<]+')
-          URL_LIST=$(echo "$URLS" | jq -R -s -c 'split("\n") | map(select(length > 0))')
-          echo "Submitting $(echo "$URLS" | wc -l | tr -d ' ') URLs to IndexNow..."
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST "https://api.indexnow.org/indexnow" \
-            -H "Content-Type: application/json" \
-            -d "{\"host\":\"sven.eisenschmidt.website\",\"key\":\"$INDEXNOW_KEY\",\"urlList\":$URL_LIST}")
-          echo "IndexNow response: $HTTP_STATUS"
-          if [ "$HTTP_STATUS" -ge 400 ]; then exit 1; fi

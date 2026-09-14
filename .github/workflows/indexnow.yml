@@ -1,0 +1,30 @@
+name: IndexNow
+
+# Meldet einmal am Tag alle Seiten aus der Sitemap an IndexNow (Bing, Yandex, ...).
+# Eigener Workflow, damit ein Fehler bei IndexNow den Deploy nicht anhält.
+
+on:
+  schedule:
+    # Täglich um 6 Uhr UTC
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  submit:
+    # Läuft auf dem Pi im Homelab (Repo sveneisenschmidt/homelab, Rolle github-runner).
+    runs-on: [self-hosted, Linux, ARM64]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: static
+      - name: Submit to IndexNow
+        run: |
+          INDEXNOW_KEY=$(basename static/*-*-*-*-*.txt .txt)
+          URLS=$(curl -s https://sven.eisenschmidt.website/sitemap.xml | grep -oE 'https://sven\.eisenschmidt\.website[^<]+')
+          URL_LIST=$(echo "$URLS" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "Submitting $(echo "$URLS" | wc -l | tr -d ' ') URLs to IndexNow..."
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST "https://api.indexnow.org/indexnow" \
+            -H "Content-Type: application/json" \
+            -d "{\"host\":\"sven.eisenschmidt.website\",\"key\":\"$INDEXNOW_KEY\",\"urlList\":$URL_LIST}")
+          echo "IndexNow response: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" -ge 400 ]; then exit 1; fi
