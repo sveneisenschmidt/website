@@ -106,13 +106,17 @@ jobs:
       # an Vorlagen oder Stilen.
       - name: Notify
         if: steps.new_pages.outputs.count != '0' || inputs.force_notify
+        # Geht an den eigenen ntfy-Server auf dem Homelab-Pi (Repo sveneisenschmidt/homelab).
+        # Der Token gehört dem ntfy-Benutzer "website", der nur auf sein Topic schreiben darf.
         env:
-          NTFY_URL: ${{ secrets.NTFY_URL }}
+          NTFY_SERVER: ${{ secrets.NTFY_SERVER }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          NTFY_TOKEN: ${{ secrets.NTFY_TOKEN }}
           FIRST: ${{ steps.new_pages.outputs.first }}
           COUNT: ${{ steps.new_pages.outputs.count }}
         run: |
-          if [ -z "$NTFY_URL" ]; then
-            echo "NTFY_URL ist nicht gesetzt, keine Nachricht."
+          if [ -z "$NTFY_SERVER" ] || [ -z "$NTFY_TOPIC" ] || [ -z "$NTFY_TOKEN" ]; then
+            echo "NTFY_SERVER, NTFY_TOPIC oder NTFY_TOKEN ist nicht gesetzt, keine Nachricht."
             exit 0
           fi
           # Beim Handstart ohne neuen Beitrag ist nichts neu, dann sagt die
@@ -133,11 +137,12 @@ jobs:
             fi
           fi
           curl -sf \
+            -H "Authorization: Bearer $NTFY_TOKEN" \
             -H "Title: $SUBJECT" \
             -H "Click: $FIRST" \
             -H "Tags: $MARK" \
             -d "$BODY" \
-            "$NTFY_URL"
+            "$NTFY_SERVER/$NTFY_TOPIC"
 
       - name: Submit to IndexNow
         run: |
