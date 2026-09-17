@@ -137,10 +137,11 @@ jobs:
               BODY="$TITLE"
             fi
           fi
+          # Kein Click-Header: der Link steht im Text, damit er gelesen werden kann, bevor
+          # er geöffnet wird (sveneisenschmidt/homelab#2).
           curl -sf \
             -H "Authorization: Bearer $NTFY_TOKEN" \
             -H "Title: $SUBJECT" \
-            -H "Click: $FIRST" \
             -H "Tags: $MARK" \
-            -d "$BODY" \
+            -d "$BODY"$'\n'"beitrag: $FIRST" \
             "$NTFY_SERVER/$NTFY_TOPIC"
