@@ -3,7 +3,6 @@ date = '2026-09-12T18:30:00'
 title = "Flycatcher"
 type = "photo"
 cover = "1C4A8155.jpeg"
-pick = true
 +++
 
 I photographed my first pied flycatcher, at first I thought it was a red-backed shrike. The brown wings say it is a female or a young bird, I read that in September the males look almost the same.
