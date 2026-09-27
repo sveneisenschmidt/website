@@ -1,6 +1,6 @@
 +++
 date = '2026-08-29T16:31:00'
-title = "Shrike"
+title = "Female Shrike"
 type = "photo"
 cover = "1C4A7728.jpeg"
 +++

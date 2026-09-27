@@ -1,6 +1,6 @@
 +++
 date = '2026-01-22T20:00:00'
-title = 'Windpark (Pt.2)'
+title = "Old Friend"
 type = "photo"
 cover = 'DSC00107.jpeg'
 +++

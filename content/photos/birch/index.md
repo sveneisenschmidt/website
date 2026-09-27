@@ -1,6 +1,6 @@
 +++
 date = '2026-09-17T20:15:00'
-title = "Blue Sky"
+title = "Birch"
 type = "photo"
 cover = "1C4A8190.jpeg"
 +++

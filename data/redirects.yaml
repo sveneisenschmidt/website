@@ -475,7 +475,7 @@
   rss: keep
 
 - from: /posts/daily-photo-mine-pt2/
-  to: /2026-01-23-mine-pt2/
+  to: /2026-01-23-steel-giants/
   pop: keep
   rss: keep
 
@@ -680,12 +680,12 @@
   rss: keep
 
 - from: /posts/daily-photo-sandbox-pt2/
-  to: /2026-06-21-sandbox-pt2/
+  to: /2026-06-21-sand-and-water/
   pop: keep
   rss: keep
 
 - from: /posts/daily-photo-sandbox-pt3/
-  to: /2026-07-04-sandbox-pt3/
+  to: /2026-07-04-sand-nose/
   pop: keep
   rss: keep
 
@@ -715,7 +715,7 @@
   rss: keep
 
 - from: /posts/daily-photo-shrike-pt2/
-  to: /2026-08-29-shrike-pt2/
+  to: /2026-08-29-female-shrike/
   pop: keep
   rss: keep
 
@@ -770,12 +770,12 @@
   rss: keep
 
 - from: /posts/daily-photo-sparrows-pt2/
-  to: /2026-05-20-sparrows-pt2/
+  to: /2026-05-20-shelter/
   pop: keep
   rss: keep
 
 - from: /posts/daily-photo-sparrows-pt3/
-  to: /2026-07-09-sparrows-pt3/
+  to: /2026-07-09-short-walks/
   pop: keep
   rss: keep
 
@@ -810,7 +810,7 @@
   rss: keep
 
 - from: /posts/daily-photo-starling-pt2/
-  to: /2026-08-28-starling-pt2/
+  to: /2026-08-28-moult/
   pop: keep
   rss: keep
 
@@ -830,12 +830,12 @@
   rss: keep
 
 - from: /posts/daily-photo-stork-pt2/
-  to: /2026-05-01-stork-pt2/
+  to: /2026-05-01-mowed-meadow/
   pop: keep
   rss: keep
 
 - from: /posts/daily-photo-stork-pt3/
-  to: /2026-06-03-stork-pt3/
+  to: /2026-06-03-stork-nest/
   pop: keep
   rss: keep
 
@@ -860,7 +860,7 @@
   rss: keep
 
 - from: /posts/daily-photo-swallow-pt2/
-  to: /2026-07-07-swallow-pt2/
+  to: /2026-07-07-flight/
   pop: keep
   rss: keep
 
@@ -935,7 +935,7 @@
   rss: keep
 
 - from: /posts/daily-photo-windpark-pt2/
-  to: /2026-01-22-windpark-pt2/
+  to: /2026-01-22-old-friend/
   pop: keep
   rss: keep
 
@@ -950,7 +950,7 @@
   rss: keep
 
 - from: /posts/daily-photo-woodpecker-pt2/
-  to: /2026-07-10-woodpecker-pt2/
+  to: /2026-07-10-woodpecker-couple/
   pop: keep
   rss: keep
 
@@ -1732,7 +1732,7 @@
   to: /2026-04-08-milestone/
 
 - from: /posts/mine-pt2/
-  to: /2026-01-23-mine-pt2/
+  to: /2026-01-23-steel-giants/
 
 - from: /posts/mine/
   to: /2026-01-19-mine/
@@ -1906,10 +1906,10 @@
   to: /2026-08-04-same-again/
 
 - from: /posts/sandbox-pt2/
-  to: /2026-06-21-sandbox-pt2/
+  to: /2026-06-21-sand-and-water/
 
 - from: /posts/sandbox-pt3/
-  to: /2026-07-04-sandbox-pt3/
+  to: /2026-07-04-sand-nose/
 
 - from: /posts/sandbox/
   to: /2026-06-09-sandbox/
@@ -1937,7 +1937,7 @@
   to: /2026-07-01-scratch/
 
 - from: /posts/shrike-pt2/
-  to: /2026-08-29-shrike-pt2/
+  to: /2026-08-29-female-shrike/
 
 - from: /posts/shrike/
   to: /2026-05-27-shrike/
@@ -1970,10 +1970,10 @@
   to: /2026-02-15-spare-parts/
 
 - from: /posts/sparrows-pt2/
-  to: /2026-05-20-sparrows-pt2/
+  to: /2026-05-20-shelter/
 
 - from: /posts/sparrows-pt3/
-  to: /2026-07-09-sparrows-pt3/
+  to: /2026-07-09-short-walks/
 
 - from: /posts/sparrows/
   to: /2026-05-04-sparrows/
@@ -1994,7 +1994,7 @@
   to: /2026-04-07-star/
 
 - from: /posts/starling-pt2/
-  to: /2026-08-28-starling-pt2/
+  to: /2026-08-28-moult/
 
 - from: /posts/starling/
   to: /2026-05-30-starling/
@@ -2011,10 +2011,10 @@
   to: /2026-06-24-stop-gap-swallow/
 
 - from: /posts/stork-pt2/
-  to: /2026-05-01-stork-pt2/
+  to: /2026-05-01-mowed-meadow/
 
 - from: /posts/stork-pt3/
-  to: /2026-06-03-stork-pt3/
+  to: /2026-06-03-stork-nest/
 
 - from: /posts/stork/
   to: /2026-03-10-stork/
@@ -2029,7 +2029,7 @@
   to: /2026-08-20-sunflowers/
 
 - from: /posts/swallow-pt2/
-  to: /2026-07-07-swallow-pt2/
+  to: /2026-07-07-flight/
 
 - from: /posts/swallow/
   to: /2026-06-20-swallow/
@@ -2089,7 +2089,7 @@
   pop: keep
 
 - from: /posts/windpark-pt2/
-  to: /2026-01-22-windpark-pt2/
+  to: /2026-01-22-old-friend/
 
 - from: /posts/windpark/
   to: /2026-01-13-windpark/
@@ -2103,7 +2103,7 @@
   pop: keep
 
 - from: /posts/woodpecker-pt2/
-  to: /2026-07-10-woodpecker-pt2/
+  to: /2026-07-10-woodpecker-couple/
 
 - from: /posts/woodpecker/
   to: /2026-03-07-woodpecker/
@@ -2118,3 +2118,57 @@
 
 - from: /posts/zootopia-2/
   to: /2026-02-22-zootopia-2/
+
+- from: /2026-09-17-blue-sky-pt2/
+  to: /2026-09-17-birch/
+  pop: keep
+  rss: keep
+  note: -pt-Ordner am 27. September 2026 umbenannt
+
+- from: /2026-01-23-mine-pt2/
+  to: /2026-01-23-steel-giants/
+  note: -pt-Ordner am 27. September 2026 umbenannt
+
+- from: /2026-06-21-sandbox-pt2/
+  to: /2026-06-21-sand-and-water/
+  note: -pt-Ordner am 27. September 2026 umbenannt
+
+- from: /2026-07-04-sandbox-pt3/
+  to: /2026-07-04-sand-nose/
+  note: -pt-Ordner am 27. September 2026 umbenannt
+
+- from: /2026-08-29-shrike-pt2/
+  to: /2026-08-29-female-shrike/
+  note: -pt-Ordner am 27. September 2026 umbenannt
+
+- from: /2026-05-20-sparrows-pt2/
+  to: /2026-05-20-shelter/
+  note: -pt-Ordner am 27. September 2026 umbenannt
+
+- from: /2026-07-09-sparrows-pt3/
+  to: /2026-07-09-short-walks/
+  note: -pt-Ordner am 27. September 2026 umbenannt
+
+- from: /2026-08-28-starling-pt2/
+  to: /2026-08-28-moult/
+  note: -pt-Ordner am 27. September 2026 umbenannt
+
+- from: /2026-05-01-stork-pt2/
+  to: /2026-05-01-mowed-meadow/
+  note: -pt-Ordner am 27. September 2026 umbenannt
+
+- from: /2026-06-03-stork-pt3/
+  to: /2026-06-03-stork-nest/
+  note: -pt-Ordner am 27. September 2026 umbenannt
+
+- from: /2026-07-07-swallow-pt2/
+  to: /2026-07-07-flight/
+  note: -pt-Ordner am 27. September 2026 umbenannt
+
+- from: /2026-01-22-windpark-pt2/
+  to: /2026-01-22-old-friend/
+  note: -pt-Ordner am 27. September 2026 umbenannt
+
+- from: /2026-07-10-woodpecker-pt2/
+  to: /2026-07-10-woodpecker-couple/
+  note: -pt-Ordner am 27. September 2026 umbenannt

@@ -1,6 +1,6 @@
 +++
 date = '2026-06-21T18:00:00'
-title = "Sandbox"
+title = "Sand and Water"
 type = "photo"
 cover = "A6402628.jpeg"
 +++

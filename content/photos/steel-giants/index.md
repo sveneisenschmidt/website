@@ -1,6 +1,6 @@
 +++
 date = '2026-01-23T16:15:00'
-title = 'Mine (Pt.2)'
+title = "Steel Giants"
 type = "photo"
 cover = 'DSC00191.jpeg'
 pick = true
