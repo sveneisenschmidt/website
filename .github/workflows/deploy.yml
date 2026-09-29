@@ -29,10 +29,14 @@ jobs:
         with:
           fetch-depth: 1
 
+      # Feste Version: resources/_gen ist eingecheckt, und eine neue Hugo-Version
+      # kann andere Bild-Hashes erzeugen. Dann rechnet jeder Build alle Bilder neu,
+      # rund 20 Minuten statt 30 Sekunden. Ein Update gehört in denselben Commit
+      # wie das neu erzeugte resources/_gen.
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: "latest"
+          hugo-version: "0.166.0"
           extended: true
 
       - name: Show build time and scheduled posts
