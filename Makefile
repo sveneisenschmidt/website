@@ -1,4 +1,4 @@
-.PHONY: dev build publish check-deps logs
+.PHONY: dev build publish check-deps check-hugo logs
 
 check-deps:
 	@command -v hugo >/dev/null 2>&1 || { echo "hugo is required but not installed. Install with: brew install hugo"; exit 1; }
@@ -14,7 +14,14 @@ build:
 	hugo --minify
 	npx -y pagefind@1.5.2 --site public
 
-push:
+# resources/_gen ist eingecheckt und kommt aus `hugo --gc` in push. Baut der Mac
+# mit einer anderen Version als der Runner, findet der Runner den Bild-Cache nicht.
+check-hugo: check-deps
+	@want=$$(sed -n 's/.*hugo-version: "\(.*\)"/\1/p' .github/workflows/deploy.yml); \
+	have=$$(hugo version | sed -n 's/^hugo v\([0-9.]*\).*/\1/p'); \
+	test "$$have" = "$$want" || { echo "hugo $$have on this Mac, deploy.yml builds with $$want. Install $$want, or raise deploy.yml in the same commit as resources/_gen."; exit 1; }
+
+push: check-hugo
 	hugo --gc
 	git add -A
 	git commit -m "Update site $$(date +%Y-%m-%d\ %H:%M)" || true
