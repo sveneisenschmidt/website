@@ -72,10 +72,6 @@
     margin-block: var(--space-figure);
 }
 
-.body figure:has(.exif) .frame-picture {
-    border-radius: var(--radius-image) var(--radius-image) 0 0;
-}
-
 .heading-anchor {
     margin-left: var(--space-count);
     font-weight: var(--weight-metadata);

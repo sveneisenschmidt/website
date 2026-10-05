@@ -44,7 +44,7 @@
     --scale-size-thumb: 3rem;
     --scale-size-mark: 1.25rem;
 
-    --scale-width-1: 8.5rem;
+    --scale-width-1: 7.5rem;
     --scale-width-2: 90rem;
     --scale-width-3: 2.5rem;
 
@@ -100,6 +100,8 @@
 
     --weight-label: var(--scale-weight-2);
 
+    --weight-exif-label: var(--scale-weight-3);
+
     --weight-opening: var(--scale-weight-3);
 
     --weight-title: var(--scale-weight-4);
@@ -146,7 +148,7 @@
 
     --space-block: var(--scale-space-3);
 
-    --space-panel: var(--scale-space-4);
+    --space-panel: var(--scale-space-2);
 
     --space-panel-block: var(--scale-space-3);
 
@@ -154,7 +156,7 @@
 
     --space-data: var(--scale-space-3);
 
-    --space-data-row: var(--scale-space-3);
+    --space-data-row: var(--scale-space-2);
 
     --space-excerpt: var(--scale-space-3);
 

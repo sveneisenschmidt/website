@@ -81,22 +81,22 @@
 
 {{- if or $rows $caption $photographer -}}
 <dl class="exif">
+    {{- range $rows }}
+    <div>
+        <dt>{{ .key }}</dt>
+        <dd>{{ .value }}</dd>
+    </div>
+    {{- end }}
     {{- with $caption }}
-    <div{{ if $longCaption }} class="caption-long"{{ end }}>
+    <div class="caption{{ if $longCaption }} caption-long{{ end }}">
         <dt>Caption</dt>
         <dd>{{ . | markdownify }}</dd>
     </div>
     {{- end }}
     {{- with $photographer }}
-    <div>
+    <div class="photographer">
         <dt>Photographer</dt>
         <dd>{{ . }}</dd>
-    </div>
-    {{- end }}
-    {{- range $rows }}
-    <div>
-        <dt>{{ .key }}</dt>
-        <dd>{{ .value }}</dd>
     </div>
     {{- end }}
 </dl>

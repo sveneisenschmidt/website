@@ -1,9 +1,5 @@
 .exif {
-    background: var(--color-panel);
-    color: var(--color-ink-inverted);
     padding: var(--space-panel-block) var(--space-panel);
-
-    border-radius: 0 0 var(--radius-image) var(--radius-image);
 
     display: grid;
 
@@ -12,13 +8,19 @@
     margin: 0;
 }
 
+/* Caption und Fotograf beginnen eine eigene Zeile unter den Kameradaten. */
+.exif .caption,
+.exif .photographer:not(.caption + .photographer) {
+    grid-column-start: 1;
+}
+
 .exif .caption-long {
-    grid-column: span 2;
+    grid-column-end: span 2;
 }
 
 .exif dt {
     font-size: var(--text-label);
-    font-weight: var(--weight-label);
+    font-weight: var(--weight-exif-label);
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
 }
