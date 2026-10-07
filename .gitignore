@@ -8,6 +8,7 @@ public/
 .hugo_build.lock
 .DS_Store
 logs/
+.srgb-originals/
 
 *.db
 *.sqlite
