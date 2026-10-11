@@ -50,6 +50,8 @@ Software I built in my spare time, most of it small, self-hosted, and written fo
 
 [Jasper Tandy](https://jasper.tandy.is): Monthly recaps, music, interesting links, my favorite personal blog and the inspiration for this one.
 
+[Cliff538 Pixels](https://cliff538pixels.com/): Digital and film photography, the film developed and scanned by Cliff himself, built on the source code of this site.
+
 ### About this Website
 
 Built with [Hugo](https://gohugo.io/), a static site generator. Visits counted by [Pop](https://github.com/sveneisenschmidt/pop), my own tiny feedback library. Custom theme, vanilla CSS, no JavaScript frameworks. Hosted on [All-Inkl](https://all-inkl.com/) in Germany.
