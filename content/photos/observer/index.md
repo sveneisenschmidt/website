@@ -1,5 +1,5 @@
 +++
-date = '2026-10-09T08:47:13'
+date = '2026-10-08T08:47:13'
 title = "Observer"
 type = "photo"
 cover = "1C4A8845.jpeg"
