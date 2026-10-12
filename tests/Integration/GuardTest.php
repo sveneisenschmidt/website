@@ -1,0 +1,86 @@
+<?php
+
+namespace Website\Tests\Integration;
+
+/**
+ * guard.php: every proposed text, before a card exists. The tests check
+ * security and content model only, never style (spec, "Prüfung der Texte").
+ */
+final class GuardTest extends IntegrationTestCase
+{
+    private const FILES = ['a.jpg', 'b.jpg'];
+
+    private function markdown(string $text, array $allowed = [], bool $map = true): ?string
+    {
+        return blog_guard_markdown($text, $allowed, self::FILES, $map);
+    }
+
+    public function testPlainMarkdownPasses(): void
+    {
+        $this->assertNull($this->markdown("We drove **north**.\n\n(image: a.jpg)\n\n(map:)\n\n(Update: the ferry was late.)"));
+        $this->assertNull($this->markdown('(image: a.jpg imgclass: inline)'));
+    }
+
+    public function testRawHtmlIsRefused(): void
+    {
+        foreach (['<script>alert(1)</script>', 'A <a href="https://x.test">link</a>', '<!-- note -->', '</p>', '<?php echo 1; ?>', '<https://x.test>'] as $text) {
+            $this->assertStringContainsString('HTML', (string)$this->markdown($text), $text);
+        }
+        $this->assertNull($this->markdown('3 < 4 and 5 > 2'));
+    }
+
+    public function testOnlyThreeKirbyTagsAreAllowed(): void
+    {
+        foreach (['(email: me@x.test)', '(file: a.jpg)', '(video: https://youtube.com/x)', '(youtube: https://x)', '(date: year)', '(gist: x)', '(tel: 123)'] as $text) {
+            $this->assertStringContainsString('not allowed', (string)$this->markdown($text), $text);
+        }
+        $this->assertStringContainsString('names no image', (string)$this->markdown('(image: c.jpg)'));
+        $this->assertStringContainsString('imgclass', (string)$this->markdown('(image: a.jpg link: https://x.test)'));
+        $this->assertStringContainsString('photo and trip', (string)$this->markdown('(map:)', [], false));
+        $this->assertStringContainsString('page://', (string)$this->markdown('(link: https://x.test text: X)'));
+        $this->assertStringContainsString('page://', (string)$this->markdown('(link: page:// text: X)'));
+    }
+
+    public function testAPageLinkNeedsAnExistingPage(): void
+    {
+        $uuid = $this->post->uuid()->toString();
+        $this->assertNull($this->markdown("(link: $uuid text: the test photo)"));
+        $this->assertNotNull($this->markdown('(link: page://doesnotexist1234 text: X)'));
+        $this->assertStringContainsString('text:', (string)$this->markdown("(link: $uuid target: _blank)"));
+    }
+
+    public function testLinksGoOnlyToKnownUrls(): void
+    {
+        $allowed = ['https://known.test/a', 'mailto:me@x.test'];
+        $this->assertNull($this->markdown('See [this](https://known.test/a), mail [me](mailto:me@x.test) or https://known.test/a.', $allowed));
+        foreach (['[x](https://evil.test)', 'Go to https://evil.test/path now.', "[x][1]\n\n[1]: https://evil.test", '![x](https://evil.test/p.png)', '[x](javascript:alert(1))', '[x](/2024-01-01-old/)'] as $text) {
+            $this->assertStringContainsString('not allowed', (string)$this->markdown($text, $allowed), $text);
+        }
+    }
+
+    public function testLinksTargetsAreFound(): void
+    {
+        $this->assertSame(
+            ['https://a.test', 'https://b.test/x', 'https://c.test', 'https://d.test/y'],
+            blog_guard_links("[a](https://a.test) ![b](https://b.test/x \"title\")\n\n[ref]: https://c.test\n\nBare https://d.test/y.")
+        );
+    }
+
+    public function testCaptionsAreTextWithKnownLinks(): void
+    {
+        $this->assertNull(blog_guard_caption('Taken on [the roof](https://known.test).', ['https://known.test']));
+        $this->assertNotNull(blog_guard_caption('Taken on [the roof](https://evil.test).', ['https://known.test']));
+        $this->assertNotNull(blog_guard_caption('(image: a.jpg)', []));
+        $this->assertNotNull(blog_guard_caption('![x](https://known.test)', ['https://known.test']));
+        $this->assertNotNull(blog_guard_caption('<b>x</b>', []));
+    }
+
+    public function testPlainTextHasNoMarkup(): void
+    {
+        $this->assertNull(blog_guard_plain('Summer Vacation, Day 5: Brighton'));
+        $this->assertNotNull(blog_guard_plain("Two\nlines"));
+        $this->assertNotNull(blog_guard_plain('<b>bold</b>'));
+        $this->assertNull(blog_guard_plain(str_repeat('a', 60), 60));
+        $this->assertNotNull(blog_guard_plain(str_repeat('a', 61), 60));
+    }
+}
