@@ -7,5 +7,7 @@
 </head>
 <body>
     <h1><?= $page->title()->esc() ?></h1>
+    <?= $page->intro()->kt() ?>
+    <?= $page->text()->kt() ?>
 </body>
 </html>

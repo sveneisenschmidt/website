@@ -27,7 +27,7 @@ final class TestSite
             }
         }
         Dir::make($root . '/content');
-        file_put_contents($root . '/content/site.txt', "Title: Sven Eisenschmidt\n");
+        file_put_contents($root . '/content/site.txt', "Title: Sven Eisenschmidt - Personal Blog\n");
         return $root;
     }
 
