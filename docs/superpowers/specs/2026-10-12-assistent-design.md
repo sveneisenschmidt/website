@@ -45,7 +45,7 @@ Alles kommt in einem Schritt (Svens Wahl). Die Karte sieht Sven erst ab Phase 3;
 
 ## System-Prompt
 
-**Der Prompt steht nie in Git, nicht im Plan und nicht in Tests.** Das Repo ist öffentlich.
+**Der Prompt steht nie in Git, nicht im Plan und nicht in Tests.** Das Repo ist öffentlich. Wer ein Konto im Panel hat, darf ihn lesen, auch ohne Rolle `admin`; er darf nur nie öffentlich sein (Sven, 2026-10-12).
 
 - **Ort:** Der Prompt steht nur im Feld `assistantPrompt` unter Website › Assistent, also in `content/site.txt`. Das ist Zustand: auf dem Server, im Backup, nie in Git. Sven ändert ihn nur im Panel.
 - **Kein Vorgabewert:** Das Feld hat keinen Default, kein Template, keinen Hilfetext mit Inhalt und keine Migration. Ist es leer, bleibt der Assistent aus, und das Panel sagt das.
