@@ -9,7 +9,7 @@
 **Technik:** Kirby 5.6.1 über Composer (`getkirby/cms`, installiert nach `www/kirby`, Abhängigkeiten in `vendor/` außerhalb des Document Root), PHP 8.5, PHPUnit 12, Bash, Apache auf All-Inkl.
 
 **Regeln für die Ausführung:**
-- Die Arbeit läuft auf dem Branch `kirby`. In Phase 5 wird er in `main` gemergt.
+- Die Arbeit läuft auf dem Branch `kirby`. Er reift, bis Sven umschaltet; erst in Phase 5 wird er in `main` gemergt. Neue Beiträge von `main` kommen per `git merge main` in `kirby`, bevor ein Import sie braucht.
 - Claude committet und pusht nie. Am Ende jeder Aufgabe steht ein Checkpoint, Sven committet.
 - Hugo darf nicht brechen: `make dev`, `make push` und der Deploy von Hugo bleiben, wie sie sind.
 - Kirby-Ziele im Makefile tragen bis Phase 5 das Präfix `kirby-`.
