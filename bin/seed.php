@@ -26,6 +26,7 @@ require $root . '/vendor/autoload.php';
 require $root . '/www/kirby/bootstrap.php';
 require_once $root . '/www/site/plugins/blog/exif.php';
 require_once $root . '/bin/lib/hugo.php';
+require_once $root . '/bin/lib/seed.php';
 
 if (!function_exists('exif_read_data')) {
     fwrite(STDERR, "PHP has no exif extension: the import would lose all camera data.\n");
@@ -59,6 +60,8 @@ try {
     fwrite(STDERR, "Import failed, www/content is unchanged.\n" . $e->getMessage() . "\n");
     exit(1);
 }
+// Prompt and model of the assistant live only here: the new import keeps them.
+$kept = seed_keep_site_fields("$content/site.txt", "$staging/site.txt");
 rrmdir($content);
 if (!rename($staging, $content)) {
     fwrite(STDERR, "Cannot move $staging to $content.\n");
@@ -80,6 +83,10 @@ if (!$hasAccounts) {
         'name' => 'Dev',
     ]);
     echo "Dev login for the Panel (make kirby-dev, then /panel): see DEV_EMAIL and DEV_PASSWORD in bin/seed.php\n";
+}
+
+if ($kept !== []) {
+    echo 'Kept from the old site.txt: ' . implode(', ', $kept) . "\n";
 }
 
 $posts = $counts['photo'] + $counts['trip'] + $counts['note'] + $counts['essay'];

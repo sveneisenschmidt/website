@@ -108,3 +108,19 @@ kirby-restore-test:
 .PHONY: kirby-lint
 kirby-lint:
 	@find $(WWW)/site $(WWW)/index.php bin tests -name '*.php' -print0 | xargs -0 -n1 $(PHP) -l >/dev/null && echo "lint ok"
+
+# Pre-commit- und Pre-push-Hook gegen den Prompt des Assistenten in Git
+# (bin/prompt-guard.php). Die Hooks laufen auf jedem Branch, auch auf main.
+# Nach einer Änderung am Skript noch einmal aufrufen.
+.PHONY: kirby-hooks
+kirby-hooks:
+	@hooks="$$(git rev-parse --git-path hooks)"; \
+	for hook in pre-commit pre-push; do \
+	  if [ -f "$$hooks/$$hook" ] && ! grep -q prompt-guard.php "$$hooks/$$hook"; then echo "$$hooks/$$hook gibt es schon, nicht überschrieben"; exit 1; fi; \
+	done; \
+	cp bin/prompt-guard.php "$$hooks/prompt-guard.php"; \
+	for hook in pre-commit pre-push; do \
+	  printf '#!/bin/sh\n# make kirby-hooks: no text from the assistant prompt in git.\nexec %s "$$(git rev-parse --git-path hooks)/prompt-guard.php" %s\n' "$(PHP)" "$$hook" > "$$hooks/$$hook"; \
+	  chmod +x "$$hooks/$$hook"; \
+	done; \
+	echo "Hooks eingerichtet: pre-commit, pre-push"

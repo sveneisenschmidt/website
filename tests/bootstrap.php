@@ -9,4 +9,5 @@ Kirby\Cms\App::$enableWhoops = false;
 // include_once when it starts, so nothing is defined twice.
 require_once __DIR__ . '/../www/site/plugins/blog/index.php';
 require_once __DIR__ . '/../bin/lib/hugo.php';
+require_once __DIR__ . '/../bin/lib/seed.php';
 require_once __DIR__ . '/../www/site/plugins/assistant/route.php';
