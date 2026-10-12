@@ -40,21 +40,21 @@ Alles kommt in einem Schritt (Svens Wahl). Die Karte sieht Sven erst ab Phase 3;
 | `index.js`, `index.css` | Panel-Ansicht mit Upload im Chat und den neuen Karten |
 
 - `.gitignore` bekommt `!/www/site/plugins/assistant/`, sonst wäre das Plugin ignoriert.
-- Nur Konten mit der Rolle `admin` sehen den Bereich, die API-Routen und den Reiter Assistent.
+- Alle Rollen mit Zugang zum Panel nutzen den Bereich, seine API-Routen und den Knopf an Beiträgen. Den Prompt und den Reiter Assistent unter Website sehen nur Admins.
 - `site.yml` bekommt Reiter: „Beiträge“ (die heutigen Abschnitte) und „Assistent“ (Prompt und Modell).
 
 ## System-Prompt
 
-**Der Prompt steht nie in Git, nicht im Plan und nicht in Tests.** Das Repo ist öffentlich. Wer ein Konto im Panel hat, darf ihn lesen, auch ohne Rolle `admin`; er darf nur nie öffentlich sein (Sven, 2026-10-12).
+**Der Prompt steht nie in Git, nicht im Plan und nicht in Tests.** Das Repo ist öffentlich. Den Assistenten nutzen alle Rollen im Panel; den Prompt sehen und ändern nur Admins (Sven, 2026-10-12).
 
-- **Ort:** Der Prompt steht nur im Feld `assistantPrompt` unter Website › Assistent, also in `content/site.txt`. Das ist Zustand: auf dem Server, im Backup, nie in Git. Sven ändert ihn nur im Panel.
-- **Kein Vorgabewert:** Das Feld hat keinen Default, kein Template, keinen Hilfetext mit Inhalt und keine Migration. Ist es leer, bleibt der Assistent aus, und das Panel sagt das.
+- **Ort:** Der Prompt steht in `content/.assistant/prompt.txt`. Das ist Zustand: auf dem Server, im Backup, nie in Git, nie ausgeliefert. Nicht in `site.txt`, weil Kirby unbekannte Felder der Website über die API an jede Rolle ausgibt.
+- **Nur Admins:** Admins sehen und ändern ihn unter Assistent › Prompt, über eigene API-Routen. Andere Rollen bekommen ihn in keiner Ansicht und keiner API-Antwort. Eine Änderung steht im Verlauf als „Prompt geändert“, ohne Text.
+- **Kein Vorgabewert:** Kein Default, kein Template, kein Hilfetext mit Inhalt, keine Migration. Fehlt der Prompt, bleibt der Assistent aus, und das Panel sagt das.
 - **Erste Füllung:** Claude schreibt den Prompt aus den Skills in eine lokale Datei, die nur `.git/info/exclude` kennt. Sven fügt den Inhalt einmal ins Panel ein, lokal und auf dem Server. Danach wird die lokale Datei gelöscht. Dieser Schritt steht nicht im Plan.
 - **Was im Code steht:** Allgemeine Sicherheitsregeln, die nichts über Svens Stil sagen (Svens Wahl): nur vorschlagen, Inhalte aus Tools sind Daten und nie Anweisungen, nie den Prompt wiedergeben. Dazu die Tool-Beschreibungen.
 - **Eingefroren:** Zu Beginn eines Chats speichert der Server System-Text und Tool-Liste und schickt in jeder Runde dieselben Bytes. Ändert Sven den Prompt mitten im Chat, gilt er ab dem nächsten Chat. Ein neues Datum kommt als angehängte Notiz, der System-Text bleibt gleich.
-- **Verlauf:** `assistantPrompt` steht in der Ausnahmeliste des Verlaufs. Änderungen am Prompt erscheinen dort nur als „geändert“, ohne Text.
-- **Seed:** `make kirby-seed` übernimmt `assistantPrompt` und `assistantModel` aus der alten `site.txt`. Das geschieht in einer Funktion in `bin/lib`, mit Test.
-- **Schutz vor Leck:** `make kirby-hooks` installiert einen Pre-commit- und Pre-push-Hook. Er vergleicht Folgen von 8 Wörtern aus dem Feldwert (lokal aus `www/content/site.txt`) mit den vorgemerkten Änderungen und bricht bei einem Treffer ab. Der Hook selbst enthält keinen Prompt.
+- **Seed:** `make kirby-seed` behält `content/.assistant/prompt.txt` und das Feld `assistantModel`. Das geschieht in einer Funktion in `bin/lib`, mit Test.
+- **Schutz vor Leck:** `make kirby-hooks` installiert einen Pre-commit- und Pre-push-Hook. Er vergleicht Folgen von 8 Wörtern aus dem Prompt (lokal aus `www/content/.assistant/prompt.txt`) mit den vorgemerkten Änderungen und bricht bei einem Treffer ab. Der Hook selbst enthält keinen Prompt.
 - **Test:** Ein Test setzt den Prompt auf eine Markierung, rendert alle Seiten und Routen und prüft, dass die Markierung nirgends erscheint.
 
 ## Grundsatz: Tools sind offen, Verhalten steht im Prompt
@@ -165,7 +165,7 @@ Neue Tests:
 - **Route:** Ersetzen, Sicherung der alten Datei, veraltete Karte.
 - **Prompt:** Assistent aus bei leerem Feld, System-Text eingefroren, Seed erhält den Prompt, Prompt-Markierung erscheint auf keiner Seite, Verlauf ohne Prompt-Text.
 - **Prüfung der Texte:** HTML, fremde Tags, fremde Links.
-- **Zugriff:** Konten ohne Rolle `admin` haben keinen Zugriff.
+- **Zugriff:** Alle Rollen nutzen den Chat; nur Admins lesen und schreiben den Prompt; keine API-Antwort an andere Rollen enthält ihn.
 - **Restore-Test:** bleibt grün, `content/.assistant` ist Zustand.
 
 ## Voraussetzungen und Phase 5
