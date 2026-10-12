@@ -50,6 +50,9 @@
 - **Phase 3, EXIF-Zeile wie Hugo:** Brennweite auf ganze Zahl runden plus `mm`. Blende `ƒ/` plus ganze Zahl, sonst eine Nachkommastelle. Belichtung `1/N` wird `1/Ns`, sonst eine Nachkommastelle plus `s`. ISO als ` · ISO n` hinter der Belichtung, ohne Belichtung allein `ISO n`. Gemessen gegen Hugos Ausgabe: 737 von 742 Fotos gleich.
 - **Phase 3, Bild-Blueprint:** Bekommt `files/image.yml` je `create:`-Optionen (Größe, Format), rechnet Kirby die Datei vor dem `after`-Hook neu, und EXIF ist weg. Dann EXIF in `file.create:before` aus `$upload->root()` lesen.
 - **Phase 5, Objektiv bei 5 Fotos:** In `2026-02-19-dawn` (`IMG_0957`, `IMG_0972`, `IMG_0996`, `IMG_1009`, `IMG_1024`) liest PHP das Objektiv nicht, iOS hat die Dateien verändert. Nach dem letzten Import im Panel eintragen: `EF-S55-250mm f/4-5.6 IS STM`.
+- **Phase 3, Markdown wie Hugo:** `'markdown' => ['breaks' => false]` (Kirby macht sonst aus jedem Zeilenumbruch ein `<br>`, betrifft `photos/pipes`) und `'smartypants' => true` für typografische Anführungszeichen und Striche wie Hugos Typographer.
+- **Phase 3, Templates:** Titelbild ohne Alternativtext nimmt den Seitentitel (wie `cover-alt.html`, betrifft `wild-horeses` und `hypo`). Kartenpunkte als Zahlen ausgeben (`(float)`), nicht als Text. Stream und Archiv sortieren nach dem Feld `date`: 21 Tage haben zwei Beiträge, `num` allein ordnet sie nach Ordnernamen.
+- **Phase 4, Links:** Die URL muss aus einem Page Model kommen (`url()`), nicht nur aus Routen: auch `(link: page://…)` und die Panel-Vorschau nutzen sie. Im Inhalt stehen 43 feste Links der Form `/YYYY-MM-DD-slug/`, die bleiben gültig. Links auf `/log/…`, `/posts` und `/topics` sind schon bei Hugo tot.
 - **Beim Merge in `main`:** den Block `kirby-state` aus `.git/info/exclude` entfernen.
 - **Nach dem Umschalten:** Die Skills `write-post` und `journey-post` werden gelöscht. Bis dahin bleiben sie, weil Sven mit Hugo weiter schreibt.
 
@@ -960,7 +963,7 @@ Expected: keine Pfade unter `www/content`, `www/media`, `www/site/accounts`, `ba
 - Bilder: `{{< img src="x" ... >}}` wird `(image: x)`. `alt`, `caption` und `photographer` stehen in der Datei (`x.txt`, Template `image`), EXIF ebenso (`camera`, `lens`, `focal`, `aperture`, `shutter`, `iso`). Die Werte stehen ohne Einheit; das Format macht Phase 3.
 - Karte: `{{< map >}}` wird `(map:)` an derselben Stelle im Text. Route, Punkte und Zoom sind Seitenfelder. Der Tag gibt in Phase 2 nur `<div class="map"></div>` aus.
 - `{{< ref "slug" >}}` wird `(link: page://UUID text: …)`. `{{< email >}}` wird ein Markdown-Link `mailto:` wie bei Hugo. `{{< rawhtml >}}` fällt weg, das HTML bleibt.
-- UUIDs sind fest: `hugo_uid('page:<slug>')`, `hugo_uid('file:<slug>/<datei>')`. Dateien behalten ihre Zeit. Inhaltsdateien bekommen die Zeit ihrer Hugo-Datei, Ordner eine feste Zeit.
+- UUIDs sind fest: `hugo_uid('page:<slug>')`, `hugo_uid('file:<slug>/<datei>')`. Ein Beitrag und seine Dateien bekommen als Zeit das Datum des Beitrags, About sein `lastmod`, alles andere und alle Ordner eine feste Zeit. So ist das Ergebnis auf jedem Klon gleich, und `lastmod` in der Sitemap ist wie bei Hugo das Datum des Beitrags.
 - Unbekanntes stoppt den Import mit Datei und Fundstelle: Shortcode, Argument, Frontmatter-Schlüssel, Dateityp.
 - Seitentitel ist `Sven Eisenschmidt - Personal Blog` wie in `hugo.toml`.
 
@@ -977,7 +980,7 @@ Expected: keine Pfade unter `www/content`, `www/media`, `www/site/accounts`, `ba
 | `tests/Support/HugoFixture.php` | kleiner Hugo-Ordner mit je einem Beispiel |
 | `tests/fixtures/exif.jpg` | Foto mit EXIF, aus concertshotsbyluisa |
 
-**Zahlen aus dem Bestand (2026-10-12):** 235 `photo`, 37 `trip`, 21 `note`, 4 `essay`. 2 Entwürfe (`notes/testing-macos-versions-i-dont-run`, `notes/optimizing-hugo-builds`). 742 Dateien in Beiträgen (558 `.jpeg`, 143 `.jpg`/`.JPG`, 18 `.png`, 1 `.webp`, 22 `.json`) und `about/sven.jpg`. 21 Karten (18 in Reisen, 3 in Fotos), höchstens eine pro Beitrag. 711 `img`, 1 `ref`, 1 `email`, 1 `rawhtml`. Jedes Bild steht höchstens einmal in einem Beitrag. Alle Slugs sind eindeutig und bestehen nur aus `a-z0-9-`.
+**Zahlen aus dem Bestand (2026-10-12):** 235 `photo`, 37 `trip`, 21 `note`, 4 `essay`. 2 Entwürfe (`notes/testing-macos-versions-i-dont-run`, `notes/optimizing-hugo-builds`). 741 Dateien in Beiträgen (558 `.jpeg`, 143 `.jpg`/`.JPG`, 18 `.png`, 1 `.webp`, 21 `.json`) und `about/sven.jpg`. Ein alter Ordner `trips/2026-summer-vacation-14/content/` aus dem Redesign-Commit `53786248` stoppt den Import; Hugo hat ihn nie benutzt. 21 Karten (18 in Reisen, 3 in Fotos), höchstens eine pro Beitrag. 711 `img`, 1 `ref`, 1 `email`, 1 `rawhtml`. Jedes Bild steht höchstens einmal in einem Beitrag. Alle Slugs sind eindeutig und bestehen nur aus `a-z0-9-`.
 
 ---
 
@@ -1437,6 +1440,12 @@ final class HugoTest extends TestCase
         hugo_front_matter("+++\ntags = ['a']\n+++\n");
     }
 
+    public function testReadsUnquotedDates(): void
+    {
+        [$fm] = hugo_front_matter("+++\ndate = 2026-06-13T09:00:00\n+++\n");
+        $this->assertSame(['date' => '2026-06-13T09:00:00'], $fm);
+    }
+
     public function testDatesAreBerlinLocalTime(): void
     {
         $this->assertSame('2026-03-11 20:40:00', hugo_date('2026-03-11T20:40:00'));
@@ -1500,10 +1509,30 @@ final class HugoTest extends TestCase
         $this->assertSame('Send me an [Email](mailto:sven.eisenschmidt@gmail.com?subject=Hypo%20App).', $text);
     }
 
-    public function testUnwrapsRawHtml(): void
+    public function testUnwrapsRawHtmlWithoutBlankLines(): void
     {
-        [$text] = hugo_convert("A\n\n{{< rawhtml >}}\n<ul><li>x</li></ul>\n{{< /rawhtml >}}\n", fn () => '');
-        $this->assertSame("A\n\n<ul><li>x</li></ul>\n", $text);
+        // A blank line would end the HTML block in Markdown; the rest would show as code.
+        [$text] = hugo_convert("A\n\n{{< rawhtml >}}\n<script>\nlet a = 1;\n\nlet b = 2;\n</script>\n{{< /rawhtml >}}\n", fn () => '');
+        $this->assertSame("A\n\n<script>\nlet a = 1;\nlet b = 2;\n</script>\n", $text);
+    }
+
+    public function testFoldsAnImageClassIntoTheTag(): void
+    {
+        [$text] = hugo_convert("![Sven](sven.jpg)\n{class=\"inline\"}\n\nText", fn () => '');
+        $this->assertSame("(image: sven.jpg imgclass: inline)\n\nText", $text);
+    }
+
+    public function testStopsOnOtherMarkdownAttributes(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('{#anchor}');
+        hugo_convert("## Title\n{#anchor}\n", fn () => '');
+    }
+
+    public function testUnderscoreEmphasisAroundALinkBecomesStars(): void
+    {
+        [$text] = hugo_convert('Read _[The Day](https://x.test/The_Day)_ now.', fn () => '');
+        $this->assertSame('Read *[The Day](https://x.test/The_Day)* now.', $text);
     }
 
     public function testStopsOnUnknownShortcodesAndArguments(): void
@@ -1579,6 +1608,10 @@ function hugo_toml_value(string $raw): string|bool
     if ($raw === 'true' || $raw === 'false') {
         return $raw === 'true';
     }
+    // An unquoted TOML date, as in date = 2026-06-13T09:00:00.
+    if (preg_match('/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})?)?$/', $raw)) {
+        return $raw;
+    }
     if (preg_match("/^'([^']*)'$/", $raw, $m)) {
         return $m[1];
     }
@@ -1595,6 +1628,12 @@ function hugo_date(string $value): string
     return (new DateTimeImmutable($value, $berlin))->setTimezone($berlin)->format('Y-m-d H:i:s');
 }
 
+/** Unix time of a Kirby date in Berlin time. */
+function hugo_time(string $date): int
+{
+    return (new DateTimeImmutable($date, new DateTimeZone('Europe/Berlin')))->getTimestamp();
+}
+
 /** [intro, text]: the text before <!--more--> and the rest. Without the marker the intro is empty. */
 function hugo_split_intro(string $body): array
 {
@@ -1607,8 +1646,9 @@ function hugo_attrs(string $raw, array $known): array
 {
     preg_match_all(HUGO_ATTR, $raw, $m, PREG_SET_ORDER);
     $attrs = [];
+    // Hugo unescapes only \" in shortcode arguments.
     foreach ($m as [, $key, $value]) {
-        $attrs[$key] = stripcslashes($value);
+        $attrs[$key] = str_replace('\"', '"', $value);
     }
     $rest = trim(preg_replace(HUGO_ATTR, '', $raw));
     if ($rest !== '') {
@@ -1638,8 +1678,13 @@ function hugo_convert(string $body, callable $pageUuid): array
         return "(image: $name)";
     };
 
-    // KirbyText keeps HTML as it is.
-    $body = preg_replace('/\{\{<\s*rawhtml\s*>\}\}\n?(.*?)\n?\{\{<\s*\/rawhtml\s*>\}\}/s', '$1', $body);
+    // KirbyText keeps HTML as it is. A blank line would end the HTML block in
+    // Markdown and the rest would show as code, so blank lines go.
+    $body = preg_replace_callback(
+        '/\{\{<\s*rawhtml\s*>\}\}\n?(.*?)\n?\{\{<\s*\/rawhtml\s*>\}\}/s',
+        fn ($m) => preg_replace('/\n[ \t]*(?=\n)/', '', $m[1]),
+        $body
+    );
 
     $body = preg_replace_callback('/\{\{<\s*map\b(.*?)>\}\}(.*?)\{\{<\s*\/map\s*>\}\}/s', function ($m) use (&$map) {
         if ($map !== null) {
@@ -1675,6 +1720,15 @@ function hugo_convert(string $body, callable $pageUuid): array
 
     // Markdown images of files in the bundle: ![alt](file.jpg).
     $body = preg_replace_callback('/!\[([^\]]*)\]\(([^)\s\/:]+)\)/', fn ($m) => $image($m[2], ['alt' => $m[1]]), $body);
+
+    // Goldmark attribute under an image: {class="inline"} goes onto the <img>.
+    $body = preg_replace('/\(image: ([^)\s]+)\)\n\{class="([\w -]+)"\}/', '(image: $1 imgclass: $2)', $body);
+    if (preg_match('/^\{(?:[.#][\w-]+|[\w-]+=)[^}\n]*\}$/m', $body, $attr)) {
+        throw new RuntimeException("Unknown Markdown attribute: {$attr[0]}");
+    }
+
+    // Kirby's Markdown does not read _[text](url_with_underscores)_ as emphasis.
+    $body = preg_replace('/(?<![\w*])_(\[[^\]\n]+\]\([^)\s]+\))_(?![\w*])/', '*$1*', $body);
 
     $body = preg_replace_callback(
         '/\[([^\]]+)\]\(\{\{<\s*ref\s+"([^"]+)"\s*>\}\}\)/',
@@ -1794,9 +1848,14 @@ build.list = 'never'
 +++
 
 ![A picture of Sven](sven.jpg)
+{class="inline"}
 
 {{< rawhtml >}}
-<ul class="built"><li>Reader</li></ul>
+<ul class="built">
+<li>Reader</li>
+
+<li>Hypo</li>
+</ul>
 {{< /rawhtml >}}
 MD);
         self::jpeg("$c/about/sven.jpg");
@@ -1931,7 +1990,7 @@ final class ImportTest extends TestCase
         $about = $this->kirby->page('about');
         $this->assertSame('Personal blog', $about->label()->value());
         $this->assertSame('2026-09-12', $about->lastmod()->value());
-        $this->assertSame("(image: sven.jpg)\n\n<ul class=\"built\"><li>Reader</li></ul>", $about->text()->value());
+        $this->assertSame("(image: sven.jpg imgclass: inline)\n\n<ul class=\"built\">\n<li>Reader</li>\n<li>Hypo</li>\n</ul>", $about->text()->value());
         $this->assertSame('A picture of Sven', $about->file('sven.jpg')->alt()->value());
 
         $this->assertSame('all', $this->kirby->page('archive')->stream()->value());
@@ -1943,8 +2002,13 @@ final class ImportTest extends TestCase
     public function testKeepsFileTimesAndIsDeterministic(): void
     {
         $post = $this->root . '/content/photos/20260311_aika';
-        $this->assertSame(HugoFixture::TIME, filemtime("$post/photo.txt"));
-        $this->assertSame(HugoFixture::TIME, filemtime("$post/IMG_2334.JPG"));
+        // Files take the time of their post: the same on every clone, as Hugo's sitemap.
+        $time = (new \DateTimeImmutable('2026-03-11 20:40:00', new \DateTimeZone('Europe/Berlin')))->getTimestamp();
+        $this->assertSame($time, filemtime("$post/photo.txt"));
+        $this->assertSame($time, filemtime("$post/IMG_2334.JPG"));
+        $this->assertSame($time, filemtime("$post/IMG_2334.JPG.txt"));
+        $about = (new \DateTimeImmutable('2026-09-12 00:00:00', new \DateTimeZone('Europe/Berlin')))->getTimestamp();
+        $this->assertSame($about, filemtime($this->root . '/content/about/about.txt'));
 
         $again = $this->root . '/content-again';
         hugo_import($this->hugo, $again, 'blog_read_exif');
@@ -1956,6 +2020,22 @@ final class ImportTest extends TestCase
         file_put_contents($this->hugo . '/notes/gemma.md', "+++\ndate = '2026-06-13T09:00:00'\ntitle = \"Gemma\"\ntype = \"note\"\n+++\n\n{{< youtube abc >}}\n");
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessageMatches('!notes/gemma\.md.*youtube!');
+        hugo_import($this->hugo, $this->root . '/content-broken', 'blog_read_exif');
+    }
+
+    public function testStopsOnAFolderInsideABundle(): void
+    {
+        mkdir($this->hugo . '/photos/aika/content');
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Unexpected folder in bundle');
+        hugo_import($this->hugo, $this->root . '/content-broken', 'blog_read_exif');
+    }
+
+    public function testStopsOnMissingTitleAndNamesTheFile(): void
+    {
+        file_put_contents($this->hugo . '/notes/gemma.md', "+++\ndate = '2026-06-13T09:00:00'\ntype = \"note\"\n+++\n\nText\n");
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessageMatches('!notes/gemma\.md: Missing front matter: title!');
         hugo_import($this->hugo, $this->root . '/content-broken', 'blog_read_exif');
     }
 
@@ -1982,7 +2062,6 @@ Expected: FAIL, `Call to undefined function hugo_import()`.
 - [ ] **Schritt 4: `bin/lib/hugo.php` ergänzen (am Ende anhängen)**
 
 ```php
-
 /** Stable 16-char id, used as Kirby UUID. */
 function hugo_uid(string $s): string
 {
@@ -2002,8 +2081,8 @@ function hugo_write(string $path, array $fields, int $mtime): void
     touch($path, $mtime);
 }
 
-/** Copies a file and keeps its time. On macOS as APFS clone: no extra space. */
-function hugo_copy(string $src, string $dst): void
+/** Copies a file with the given time. On macOS as APFS clone: no extra space. */
+function hugo_copy(string $src, string $dst, int $mtime): void
 {
     $done = false;
     if (PHP_OS_FAMILY === 'Darwin') {
@@ -2013,33 +2092,43 @@ function hugo_copy(string $src, string $dst): void
     if (!$done && !copy($src, $dst)) {
         throw new RuntimeException("Cannot copy $src");
     }
-    touch($dst, filemtime($src));
+    touch($dst, $mtime);
 }
 
-/** Files of a bundle folder, without index.md and dot files. */
+/** Files of a bundle folder, without index.md and dot files. A folder inside stops the import. */
 function hugo_bundle_files(?string $dir): array
 {
     if ($dir === null) {
         return [];
     }
-    return array_values(array_filter(scandir($dir), fn ($f) => $f[0] !== '.' && $f !== 'index.md'));
+    $files = [];
+    foreach (scandir($dir) as $name) {
+        if ($name[0] === '.' || $name === 'index.md') {
+            continue;
+        }
+        if (is_dir("$dir/$name")) {
+            throw new RuntimeException("Unexpected folder in bundle: $dir/$name");
+        }
+        $files[] = $name;
+    }
+    return $files;
 }
 
-/** Copies one file and writes its meta file: template, texts, EXIF, UUID. */
-function hugo_import_file(string $src, string $dst, string $uuid, array $texts, callable $exif): void
+/** Copies one file and writes its meta file (template, texts, EXIF, UUID), both with the given time. */
+function hugo_import_file(string $src, string $dst, string $uuid, array $texts, callable $exif, int $mtime): void
 {
     $ext = strtolower(pathinfo($src, PATHINFO_EXTENSION));
     $image = in_array($ext, HUGO_IMAGE_EXTENSIONS, true);
     if (!$image && $ext !== 'json') {
         throw new RuntimeException("Unknown file type: $src");
     }
-    hugo_copy($src, $dst);
+    hugo_copy($src, $dst, $mtime);
     $meta = ['template' => $image ? 'image' : 'route'];
     if ($image) {
         $meta += array_filter($texts, fn ($v) => $v !== '') + $exif($src);
     }
     $meta['uuid'] = $uuid;
-    hugo_write("$dst.txt", $meta, filemtime($src));
+    hugo_write("$dst.txt", $meta, $mtime);
 }
 
 /** Every post of the four sections, by slug. */
@@ -2088,7 +2177,12 @@ function hugo_import_post(array $post, string $content, callable $pageUuid, call
     if ($unknown = array_diff(array_keys($fm), HUGO_POST_KEYS)) {
         throw new RuntimeException('Unknown front matter: ' . implode(', ', $unknown));
     }
-    if (($fm['type'] ?? '') !== $post['type']) {
+    foreach (['title', 'date', 'type'] as $key) {
+        if (!is_string($fm[$key] ?? null) || $fm[$key] === '') {
+            throw new RuntimeException("Missing front matter: $key");
+        }
+    }
+    if ($fm['type'] !== $post['type']) {
         throw new RuntimeException("type is not {$post['type']}");
     }
     [$body, $images, $map] = hugo_convert($post['body'], $pageUuid);
@@ -2102,6 +2196,8 @@ function hugo_import_post(array $post, string $content, callable $pageUuid, call
     }
 
     $date = hugo_date($fm['date']);
+    // Content and files take the time of the post: the same on every clone, as Hugo's sitemap.
+    $time = hugo_time($date);
     $fields = ['title' => $fm['title'], 'date' => $date, 'intro' => $intro, 'text' => $text];
     if (isset($fm['cover'])) {
         $fields['cover'] = ['file://' . $fileUuid($fm['cover'])];
@@ -2123,9 +2219,9 @@ function hugo_import_post(array $post, string $content, callable $pageUuid, call
 
     $folder = $content . '/' . $post['section'] . '/'
         . ($post['draft'] ? '_drafts/' . $post['slug'] : str_replace('-', '', substr($date, 0, 10)) . '_' . $post['slug']);
-    hugo_write("$folder/{$post['type']}.txt", $fields, filemtime($post['md']));
+    hugo_write("$folder/{$post['type']}.txt", $fields, $time);
     foreach ($files as $name) {
-        hugo_import_file($post['dir'] . '/' . $name, "$folder/$name", $fileUuid($name), $images[$name] ?? [], $exif);
+        hugo_import_file($post['dir'] . '/' . $name, "$folder/$name", $fileUuid($name), $images[$name] ?? [], $exif, $time);
     }
     return count($files);
 }
@@ -2145,16 +2241,17 @@ function hugo_import_about(string $hugo, string $content, callable $pageUuid, ca
     if ($map !== null) {
         throw new RuntimeException("$md: map on the about page");
     }
+    $time = isset($fm['lastmod']) ? hugo_time(hugo_date($fm['lastmod'])) : HUGO_FIXED_TIME;
     hugo_write("$content/about/about.txt", [
         'title' => $fm['title'],
         'label' => $fm['label'] ?? '',
         'lastmod' => $fm['lastmod'] ?? '',
         'text' => trim($text),
         'uuid' => hugo_uid('about'),
-    ], filemtime($md));
+    ], $time);
     $files = hugo_bundle_files("$hugo/about");
     foreach ($files as $name) {
-        hugo_import_file("$hugo/about/$name", "$content/about/$name", hugo_uid("file:about/$name"), $images[$name] ?? [], $exif);
+        hugo_import_file("$hugo/about/$name", "$content/about/$name", hugo_uid("file:about/$name"), $images[$name] ?? [], $exif, $time);
     }
     return count($files);
 }
@@ -2168,12 +2265,15 @@ function hugo_import_archive(string $hugo, string $content): void
         }
         $md = "$hugo/archive/$entry";
         [$fm] = hugo_front_matter(file_get_contents($md));
+        if ($unknown = array_diff(array_keys($fm), ['title', 'layout', 'params.stream', 'build.list'])) {
+            throw new RuntimeException("$md: unknown front matter " . implode(', ', $unknown));
+        }
         $child = $entry === '_index.md' ? '' : '/' . substr($entry, 0, -3);
         hugo_write("$content/archive$child/archive.txt", [
             'title' => $fm['title'],
             'stream' => $fm['params.stream'],
             'uuid' => hugo_uid("archive$child"),
-        ], filemtime($md));
+        ], HUGO_FIXED_TIME);
     }
 }
 
@@ -2197,14 +2297,17 @@ function hugo_import(string $hugo, string $content, callable $exif): array
     foreach (array_keys(HUGO_SECTIONS) as $section) {
         $md = "$hugo/$section/_index.md";
         [$fm] = hugo_front_matter(file_get_contents($md));
-        hugo_write("$content/$section/$section.txt", ['title' => $fm['title'], 'uuid' => hugo_uid("section:$section")], filemtime($md));
+        if ($unknown = array_diff(array_keys($fm), ['title', 'build.list', 'build.render'])) {
+            throw new RuntimeException("$md: unknown front matter " . implode(', ', $unknown));
+        }
+        hugo_write("$content/$section/$section.txt", ['title' => $fm['title'], 'uuid' => hugo_uid("section:$section")], HUGO_FIXED_TIME);
     }
 
     $counts = ['photo' => 0, 'trip' => 0, 'note' => 0, 'essay' => 0, 'drafts' => 0, 'files' => 0];
     foreach ($posts as $post) {
         try {
             $counts['files'] += hugo_import_post($post, $content, $pageUuid, $exif);
-        } catch (RuntimeException $e) {
+        } catch (Throwable $e) {
             throw new RuntimeException($post['md'] . ': ' . $e->getMessage(), 0, $e);
         }
         $counts[$post['type']]++;
@@ -2215,7 +2318,10 @@ function hugo_import(string $hugo, string $content, callable $exif): array
 
     $md = "$hugo/search/_index.md";
     [$fm] = hugo_front_matter(file_get_contents($md));
-    hugo_write("$content/search/search.txt", ['title' => $fm['title'], 'uuid' => hugo_uid('search')], filemtime($md));
+    if ($unknown = array_diff(array_keys($fm), ['title', 'layout', 'build.list'])) {
+        throw new RuntimeException("$md: unknown front matter " . implode(', ', $unknown));
+    }
+    hugo_write("$content/search/search.txt", ['title' => $fm['title'], 'uuid' => hugo_uid('search')], HUGO_FIXED_TIME);
 
     // One fixed time for all folders: Kirby's Site::modified() reads them too.
     $items = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($content, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::SELF_FIRST);
@@ -2858,7 +2964,7 @@ printf(
 - [ ] **Schritt 5: Echten Bestand importieren**
 
 Run: `make kirby-seed FORCE=1`
-Expected: `Imported 297 posts (235 photo, 37 trip, 21 note, 4 essay), 2 drafts, 743 files.`
+Expected: `Imported 297 posts (235 photo, 37 trip, 21 note, 4 essay), 2 drafts, 742 files.`
 
 Bricht der Import mit einer Fundstelle ab, steht im Bestand etwas, das die Tests nicht abdecken. Dann: anhalten und berichten, nicht im Import improvisieren.
 
