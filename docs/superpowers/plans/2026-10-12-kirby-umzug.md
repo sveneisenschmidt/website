@@ -23,9 +23,30 @@
 |---|---|---|---|
 | 1 | Grundgerüst (dieser Plan) | ½ Tag | Kirby läuft lokal, Tests grün, `make kirby-restore-test` grün |
 | 2 | Inhaltsmodell und Import | 1 Tag | 297 Seiten und rund 720 Bilder in Kirby, Import beliebig oft wiederholbar |
-| 3 | Templates | 2 bis 3 Tage | Startseite, Archiv, Beitrag, Suche, 404, RSS, Sitemap, `llms.txt`, Karte, EXIF, Pop, ntfy |
+| 3 | Templates | 2 bis 3 Tage | Startseite, Archiv, Beitrag, Suche, 404, RSS mit festen GUIDs, Sitemap, `llms.txt`, Karte, EXIF, Besucher-Block auf About |
 | 4 | URLs | ½ bis 1 Tag | `scripts/check-urls.sh` gegen die Live-Sitemap: 0 Abweichungen, Schrägstrich am Ende bleibt |
 | 5 | Staging und Umschalten | ½ Tag | Document Root zeigt auf Kirby, Hugo liegt 2 Wochen als Rückweg bereit |
+
+### Rückbau der Hugo-Notlösungen (Entscheidungen 2026-10-12)
+
+Was nur existiert, weil Hugo statisch ist, fällt weg oder zieht in Kirby. Grundlage: Bestandsaufnahme vom 2026-10-12.
+
+| Heute | Entscheidung | Phase |
+|---|---|---|
+| Pop zählt Besuche per JavaScript (`layouts/_partials/pop.html`, `page-id.html`) | Plugin „Besucher“ ersetzt Pop (erledigt, `www/site/plugins/analytics`). Pop wird nach dem Hugo-Rückweg abgeschaltet. | 5 |
+| Pop-Daten Jan bis Okt 2026 (`var/data.db` auf dem Server) | Einmal als Tageszahlen pro Seite in `content/.analytics/` übernehmen, alte URLs über `data/redirects.yaml` zugeordnet. Danach die Rohdaten mit den Fingerprints löschen (Sven auf dem Server). | 4 |
+| Statistik-Block auf About holt Zahlen von Pop | Snippet zeigt die Zahlen aus „Besucher“, auf dem Server gerendert | 3 |
+| Suche mit Pagefind, im CI gebaut | Kirby-Suche über Titel, Anriss, Text und Alternativtexte, auf dem Server; `search.js` holt Ergebnisse beim Tippen | 3 |
+| Build alle 2 Stunden für geplante Beiträge | Fällt weg. Veröffentlichen im Panel macht einen Beitrag sofort sichtbar, Zukunftsdaten gibt es nicht. | 5 |
+| ntfy beim Deploy, wenn ein Beitrag neu ist | Fällt weg. Der ntfy-Server ist nur im Tailnet erreichbar, Sven veröffentlicht selbst. | 5 |
+| Weiterleitungen als `RedirectMatch` aus `data/redirects.yaml` | Weiterleitungen werden Inhalt auf dem Server, gestartet mit den Einträgen aus `data/redirects.yaml`. Ändert sich Slug oder Datum eines veröffentlichten Beitrags, legt ein Hook die Weiterleitung an. | 4 |
+| RSS mit eingefrorenen GUIDs (`rss: keep`, 270 Beiträge, `layouts/home.rss.xml`) | Der Kirby-Feed gibt dieselben GUIDs byte-gleich aus, inklusive `?source=rss`; die Zuordnung kommt aus den Weiterleitungen | 3, 4 |
+| IndexNow liest den Schlüssel aus `static/` | Schlüsseldatei nach `www/`, Pfad in `.github/workflows/indexnow.yml` anpassen | 5 |
+| Bild-Cache `resources/_gen` in Git, Hugo-Version fest | Fällt weg. Kirby rechnet Vorschaubilder beim ersten Abruf; nach dem Umschalten einmal alle Seiten und Bilder abrufen. Smart Crop wird Mitte plus Fokuspunkt im Panel. | 5 |
+| `.htaccess`-Header (Kompression, Cache, ETag) aus `layouts/home.htaccess` | In `www/.htaccess` übernehmen, mit langem Cache für `media/` | 5 |
+| `scripts/check-urls.sh` mit Pop-Zahlen | Neu schreiben: alte URLs gegen Kirby und die Weiterleitungen, ohne Pop | 4 |
+| `static/llms.txt` von Hand, veraltet | Aus den Inhalten erzeugen, Einleitung als Feld | 3 |
+| `to-srgb.sh`, `make push`, `check-hugo`, Pagefind-Attribute, `home.searchmeta.json`, `cover-alt.html` | Fällt weg (sRGB-Treiber, Panel mit Verlauf, Alternativtext als Dateifeld) | 5 |
 
 ### Was Phase 2 bis 5 wissen müssen
 
