@@ -47,6 +47,9 @@
 - **Phase 3, Restore-Test:** `bin/page-paths.php` listet nur Seiten. Routen wie `/sitemap.xml`, `/robots.txt`, `/llms.txt` und der Feed kommen in Phase 3 dazu.
 - **Phase 5, PHP in `backup.sh`:** Das Skript ruft `php` aus dem PATH, auf dem Server ist das 8.4. Wie in `restore-test.sh`: `PHP="${PHP:-php}"`.
 - **Phase 5, Debug:** Auf dem Server bleibt `debug` in `env.php` aus. Mit Debug an funktioniert der Dev-Zugang wieder.
+- **Phase 3, EXIF-Zeile wie Hugo:** Brennweite auf ganze Zahl runden plus `mm`. Blende `ƒ/` plus ganze Zahl, sonst eine Nachkommastelle. Belichtung `1/N` wird `1/Ns`, sonst eine Nachkommastelle plus `s`. ISO als ` · ISO n` hinter der Belichtung, ohne Belichtung allein `ISO n`. Gemessen gegen Hugos Ausgabe: 737 von 742 Fotos gleich.
+- **Phase 3, Bild-Blueprint:** Bekommt `files/image.yml` je `create:`-Optionen (Größe, Format), rechnet Kirby die Datei vor dem `after`-Hook neu, und EXIF ist weg. Dann EXIF in `file.create:before` aus `$upload->root()` lesen.
+- **Phase 5, Objektiv bei 5 Fotos:** In `2026-02-19-dawn` (`IMG_0957`, `IMG_0972`, `IMG_0996`, `IMG_1009`, `IMG_1024`) liest PHP das Objektiv nicht, iOS hat die Dateien verändert. Nach dem letzten Import im Panel eintragen: `EF-S55-250mm f/4-5.6 IS STM`.
 - **Beim Merge in `main`:** den Block `kirby-state` aus `.git/info/exclude` entfernen.
 - **Nach dem Umschalten:** Die Skills `write-post` und `journey-post` werden gelöscht. Bis dahin bleiben sie, weil Sven mit Hugo weiter schreibt.
 
@@ -1054,6 +1057,34 @@ final class ExifTest extends TestCase
             unlink($path);
         }
     }
+
+    public function testFieldsFromExifSections(): void
+    {
+        // Canon EOS R5: ISO only in tag 0x8832, which PHP does not name.
+        $this->assertSame(
+            ['camera' => 'Canon EOS R5', 'focal' => '35', 'aperture' => '1.8', 'shutter' => '1/100', 'iso' => '12800'],
+            blog_exif_fields([
+                'IFD0' => ['Make' => 'Canon', 'Model' => 'Canon EOS R5'],
+                'EXIF' => ['FocalLength' => '35/1', 'FNumber' => '9/5', 'ExposureTime' => '1/100', 'UndefinedTag:0x8832' => 12800],
+            ])
+        );
+    }
+
+    public function testLeavesOutZeroAndBrokenValues(): void
+    {
+        $this->assertSame([], blog_exif_fields([
+            'EXIF' => ['FocalLength' => '0/1', 'FNumber' => '0/0', 'ExposureTime' => '0/1', 'ISOSpeedRatings' => 0],
+        ]));
+    }
+
+    public function testShutterSpeeds(): void
+    {
+        $this->assertSame('1/250', blog_shutter(1 / 250));
+        $this->assertSame('1/3', blog_shutter(1 / 3));
+        $this->assertSame('0.8', blog_shutter(0.8));
+        $this->assertSame('2.5', blog_shutter(2.5));
+        $this->assertSame('30', blog_shutter(30.0));
+    }
 }
 ```
 
@@ -1082,7 +1113,7 @@ Kirby::plugin('sveneisenschmidt/blog', []);
 ```
 
 Run: `make kirby-test`
-Expected: FAIL, `Call to undefined function blog_read_exif()`.
+Expected: FAIL, `Call to undefined function blog_read_exif()` (und `blog_camera`, `blog_exif_fields`, `blog_shutter`).
 
 - [ ] **Schritt 6: `www/site/plugins/blog/exif.php` schreiben**
 
@@ -1096,6 +1127,8 @@ use Kirby\Cms\File;
  * fields: camera, lens, focal, aperture, shutter, iso. The values carry no
  * units; the templates format them.
  */
+
+const BLOG_EXIF_FIELDS = ['camera', 'lens', 'focal', 'aperture', 'shutter', 'iso'];
 
 /** Evaluate an EXIF rational such as "450/10". */
 function blog_rational($v): ?float
@@ -1130,13 +1163,21 @@ function blog_camera(string $make, string $model): string
     return trim($make . ' ' . $model);
 }
 
-/** EXIF of an image file, as file fields. Missing values are left out. */
-function blog_read_exif(string $path): array
+/** Shutter speed: "1/250" when 1/t is a whole number, otherwise seconds ("0.8", "2.5"). */
+function blog_shutter(float $t): string
 {
-    if (!function_exists('exif_read_data') || !is_file($path)) {
-        return [];
+    if ($t < 1) {
+        $n = 1 / $t;
+        if (abs($n - round($n)) < 0.05) {
+            return '1/' . (int)round($n);
+        }
     }
-    $d = @exif_read_data($path, null, true) ?: [];
+    return blog_num($t);
+}
+
+/** File fields from the sections exif_read_data() returns. Missing or zero values are left out. */
+function blog_exif_fields(array $d): array
+{
     $exif = $d['EXIF'] ?? [];
     $ifd0 = $d['IFD0'] ?? [];
     $out = [];
@@ -1151,43 +1192,72 @@ function blog_read_exif(string $path): array
         $out['lens'] = trim($lens);
     }
 
-    if (($f = blog_rational($exif['FocalLength'] ?? null)) !== null) {
+    if (($f = blog_rational($exif['FocalLength'] ?? null)) !== null && $f > 0) {
         $out['focal'] = blog_num($f);
     }
 
-    if (($a = blog_rational($exif['FNumber'] ?? null)) !== null) {
+    if (($a = blog_rational($exif['FNumber'] ?? null)) !== null && $a > 0) {
         $out['aperture'] = blog_num($a);
     }
 
     if (($t = blog_rational($exif['ExposureTime'] ?? null)) !== null && $t > 0) {
-        $out['shutter'] = $t >= 1 ? blog_num($t) : '1/' . (int)round(1 / $t);
+        $out['shutter'] = blog_shutter($t);
     }
 
-    $iso = $exif['ISOSpeedRatings'] ?? $exif['RecommendedExposureIndex'] ?? $exif['PhotographicSensitivity'] ?? null;
+    // In Hugo's order. The Canon EOS R5 writes ISO only in the tags 0x8832
+    // (RecommendedExposureIndex) and 0x8833 (ISOSpeed), which PHP does not name.
+    $iso = $exif['ISOSpeedRatings']
+        ?? $exif['RecommendedExposureIndex'] ?? $exif['UndefinedTag:0x8832']
+        ?? $exif['ISOSpeed'] ?? $exif['UndefinedTag:0x8833']
+        ?? $exif['PhotographicSensitivity']
+        ?? null;
     if (is_array($iso)) {
         $iso = reset($iso);
     }
-    if (is_numeric($iso)) {
+    if (is_numeric($iso) && (int)$iso > 0) {
         $out['iso'] = (string)(int)$iso;
     }
 
     return $out;
 }
 
-/** Store the EXIF of an uploaded image. A value already in the file's content wins. */
-function blog_store_exif(File $file): void
+/** EXIF of an image file, as file fields. */
+function blog_read_exif(string $path): array
+{
+    if (!function_exists('exif_read_data') || !is_file($path)) {
+        return [];
+    }
+    return blog_exif_fields(@exif_read_data($path, null, true) ?: []);
+}
+
+/**
+ * Store the EXIF of an uploaded image. On upload a value already in the
+ * file's content wins. A replaced photo is a new file: all six fields come
+ * from it, and a value the new file does not have is cleared.
+ */
+function blog_store_exif(File $file, bool $replace = false): void
 {
     if ($file->type() !== 'image') {
         return;
     }
+    $exif = blog_read_exif($file->root());
     $update = [];
-    foreach (blog_read_exif($file->root()) as $key => $value) {
-        if ($file->content()->get($key)->isEmpty()) {
+    foreach (BLOG_EXIF_FIELDS as $key) {
+        $value = $exif[$key] ?? null;
+        if ($replace) {
+            $update[$key] = $value;
+        } elseif ($value !== null && $file->content()->get($key)->isEmpty()) {
             $update[$key] = $value;
         }
     }
-    if ($update !== []) {
-        kirby()->impersonate('kirby', fn () => $file->update($update));
+    if ($update === []) {
+        return;
+    }
+    try {
+        $file->kirby()->impersonate('kirby', fn () => $file->update($update));
+    } catch (Throwable $e) {
+        // The upload itself worked; the fields can be filled in in the Panel.
+        error_log('blog_store_exif: ' . $e->getMessage());
     }
 }
 ```
@@ -1195,7 +1265,7 @@ function blog_store_exif(File $file): void
 - [ ] **Schritt 7: Test grün**
 
 Run: `make kirby-test`
-Expected: `OK (7 tests, 12 assertions)`, keine Warnung.
+Expected: alles grün, keine Warnung.
 
 - [ ] **Checkpoint:** Commit auf `kirby` (`tests/fixtures/exif.jpg tests/Unit/ExifTest.php tests/bootstrap.php phpunit.xml bin/lib/hugo.php www/site/plugins/blog`).
 
@@ -1207,6 +1277,8 @@ Expected: `OK (7 tests, 12 assertions)`, keine Warnung.
 - Neu: `tests/Integration/ExifUploadTest.php`
 - Ändern: `www/site/plugins/blog/index.php`
 
+Nach der Review: Der Hook `file.replace:after` liest EXIF aus einem ersetzten Foto und leert Felder, die die neue Datei nicht hat.
+
 - [ ] **Schritt 1: `tests/Integration/ExifUploadTest.php` anlegen**
 
 ```php
@@ -1214,6 +1286,7 @@ Expected: `OK (7 tests, 12 assertions)`, keine Warnung.
 
 namespace Website\Tests\Integration;
 
+use Kirby\Data\Txt;
 use PHPUnit\Framework\TestCase;
 use Website\Tests\Support\TestSite;
 
@@ -1248,13 +1321,46 @@ final class ExifUploadTest extends TestCase
         $this->assertSame('1/250', $file->shutter()->value());
         $this->assertSame('3200', $file->iso()->value());
     }
+
+    public function testValueGivenOnCreateWins(): void
+    {
+        $kirby = TestSite::app($this->root);
+        $file = $kirby->impersonate('kirby', fn () => $kirby->site()
+            ->createChild(['slug' => 'aika', 'template' => 'photo', 'content' => ['title' => 'Aika']])
+            ->createFile([
+                'source' => __DIR__ . '/../fixtures/exif.jpg',
+                'filename' => 'aika.jpg',
+                'content' => ['camera' => 'My Camera'],
+            ]));
+
+        $this->assertSame('My Camera', $file->camera()->value());
+        $this->assertSame('Test Lens 24mm', $file->lens()->value());
+    }
+
+    public function testReplaceTakesTheExifOfTheNewFile(): void
+    {
+        $kirby = TestSite::app($this->root);
+        $plain = $this->root . '/plain.jpg';
+        imagejpeg(imagecreatetruecolor(8, 8), $plain, 70);
+        $file = $kirby->impersonate('kirby', fn () => $kirby->site()
+            ->createChild(['slug' => 'aika', 'template' => 'photo', 'content' => ['title' => 'Aika']])
+            ->createFile(['source' => __DIR__ . '/../fixtures/exif.jpg', 'filename' => 'aika.jpg']));
+
+        $kirby->impersonate('kirby', fn () => $file->replace($plain));
+
+        // Read from disk: the new file has no EXIF, so all six fields are gone.
+        $meta = array_change_key_case(Txt::decode(file_get_contents($file->root() . '.txt')));
+        foreach (['camera', 'lens', 'focal', 'aperture', 'shutter', 'iso'] as $field) {
+            $this->assertArrayNotHasKey($field, $meta);
+        }
+    }
 }
 ```
 
 - [ ] **Schritt 2: Test rot**
 
 Run: `make kirby-test`
-Expected: FAIL in `testUploadStoresExifAsFileFields`, `camera` ist leer.
+Expected: FAIL in `testUploadStoresExifAsFileFields` (`camera` ist leer) und `testReplaceTakesTheExifOfTheNewFile`.
 
 - [ ] **Schritt 3: Hook eintragen**
 
@@ -1275,8 +1381,9 @@ require_once __DIR__ . '/exif.php';
 Kirby::plugin('sveneisenschmidt/blog', [
     'hooks' => [
         // EXIF goes into the file's content once, so it is in every backup
-        // and can be corrected in the Panel.
+        // and can be corrected in the Panel. A replaced photo brings its own.
         'file.create:after' => fn (File $file) => blog_store_exif($file),
+        'file.replace:after' => fn (File $newFile) => blog_store_exif($newFile, true),
     ],
     'tags' => [
         // Where the map of a post sits in its text. Route and points are
@@ -1291,7 +1398,7 @@ Kirby::plugin('sveneisenschmidt/blog', [
 - [ ] **Schritt 4: Test grün**
 
 Run: `make kirby-test`
-Expected: alles grün.
+Expected: `OK (13 tests, 33 assertions)`.
 
 - [ ] **Checkpoint:** Commit auf `kirby` (`tests/Integration/ExifUploadTest.php www/site/plugins/blog/index.php`).
 
@@ -2699,6 +2806,11 @@ require $root . '/vendor/autoload.php';
 require $root . '/www/kirby/bootstrap.php';
 require_once $root . '/www/site/plugins/blog/exif.php';
 require_once $root . '/bin/lib/hugo.php';
+
+if (!function_exists('exif_read_data')) {
+    fwrite(STDERR, "PHP has no exif extension: the import would lose all camera data.\n");
+    exit(1);
+}
 
 // Local development login. Only ever created locally by this script;
 // accounts are state and never go into git.
