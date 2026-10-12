@@ -31,7 +31,11 @@ const BLOG_ASSISTANT_IMAGE_TEXTS = ['alt', 'caption', 'photographer'];
 /** What guard.php checks, for the tool descriptions. */
 const BLOG_ASSISTANT_TEXT_RULES = 'Texts: no raw HTML. KirbyText tags only (image: file name), (map:) and (link: page://<uuid> text: …). Links only to URLs from the user\'s messages, from web search results of this chat, or already in the field. Captions: Markdown links by the same rule, otherwise plain text.';
 
-/** Tool definitions for the request. strict: the input always matches the schema. */
+/**
+ * Tool definitions for the request. Not strict: with all tools strict the API
+ * refuses the request ("compiled grammar is too large"); the propose and read
+ * functions check every input themselves.
+ */
 function blog_assistant_tools(): array
 {
     $str = ['type' => 'string'];
@@ -46,7 +50,6 @@ function blog_assistant_tools(): array
     $tool = fn (string $name, string $description, array $properties) => [
         'name' => $name,
         'description' => $description,
-        'strict' => true,
         'input_schema' => $object($properties),
     ];
     $post = $str + ['description' => 'Post id as find_posts returns it, or "about"'];

@@ -301,7 +301,9 @@ final class AssistantChatTest extends AssistantTestCase
     {
         foreach (blog_assistant_tools() as $tool) {
             $this->assertMatchesRegularExpression('/^(find|read|view|propose|ask)_/', $tool['name']);
-            $this->assertTrue($tool['strict']);
+            // No strict mode: with all tools strict, the API refuses the request
+            // ("compiled grammar is too large"). The server checks every input itself.
+            $this->assertArrayNotHasKey('strict', $tool);
         }
     }
 
