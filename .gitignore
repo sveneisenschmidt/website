@@ -35,12 +35,18 @@ data.db*
 
 # Kirby: von Composer installiert
 /www/kirby/
-# Plugins aus Composer; nur das eigene Plugin blog liegt in Git.
+# Plugins aus Composer; nur die eigenen Plugins (blog, changelog, analytics) liegen in Git.
 /www/site/plugins/*
 !/www/site/plugins/blog/
+!/www/site/plugins/changelog/
+!/www/site/plugins/analytics/
 /vendor/
 
 # Kirby: lokale Ausgabe
 /backups/
 /.restore-test/
 /.phpunit.cache/
+
+# Lokale Dateien für Claude: nur launch.json liegt in Git.
+/.claude/*
+!/.claude/launch.json
