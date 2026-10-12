@@ -75,7 +75,7 @@ check-staged:
 - **Enden einer Runde:** Für die Prüfung der Marker kennt der Server die ungekürzten Enden. Sie stehen nur in den Metadaten des Uploads in `storage/`, nie bei Claude, und gehen mit dem Upload.
 - **URL eindeutig:** Der Slug wird in den vier Bereichen und bei den Seiten oberster Ebene geprüft, Entwürfe eingeschlossen.
 - **Aufräumen:** Ordner anderer Chats gehen 7 Tage nach ihrer letzten Nutzung. Im laufenden Chat geht jeder Upload 7 Tage nach seiner Annahme, auch wenn eine offene Karte ihn braucht. Die Karte meldet beim Klick dann „nicht mehr da“. „Neuer Chat“ und Abmelden löschen den Ordner des Chats.
-- **Panel:** Die Karte „Neuer Entwurf“ zeigt kleine Vorschauen der Fotos (Spec: „Fotos mit Texten“). Neben dem Eingabefeld sitzt ein Knopf zum Anhängen, für Geräte ohne Ziehen. Beispiel-Knöpfe und „Anders formulieren“ aus Luisas Ansicht entfallen, sie schickten fertige Anweisungen an Claude. Vorschauen und Knopf brauchen Svens Ja (Aufgabe 15).
+- **Panel:** Die Karte „Neuer Entwurf“ zeigt kleine Vorschauen der Fotos (Spec: „Fotos mit Texten“). Neben dem Eingabefeld sitzt ein Knopf zum Anhängen, für Geräte ohne Ziehen. Beispiel-Knöpfe und „Anders formulieren“ aus Luisas Ansicht entfallen, sie schickten fertige Anweisungen an Claude. Vorschauen und Knopf: Svens Ja am 2026-10-12, ebenso zum Weglassen der Beispiel-Knöpfe.
 
 ---
 
