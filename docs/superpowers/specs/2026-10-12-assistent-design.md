@@ -10,7 +10,7 @@ Sven schreibt Beiträge im Panel mit Claude. Der Assistent übernimmt die Arbeit
 
 1. **Daily Photo:** Sven zieht Fotos in den Chat und schreibt ein paar Sätze. Der Assistent schlägt einen neuen Entwurf vor: Typ, Titel, Slug, Datum, Anriss, Text, Alternativtexte, Bildunterschriften, Fotograf, Titelbild.
 2. **Reise-Tag mit Karte:** Sven nennt die Orte des Tages. Der Entwurf kommt mit Route (OSRM) und Kartenpunkten in einer Karte.
-3. **Texte überarbeiten:** In bestehenden Beiträgen schlägt der Assistent Änderungen an einzelnen Passagen vor, als A/B/C.
+3. **Texte überarbeiten:** In bestehenden Beiträgen schlägt der Assistent Änderungen an einzelnen Passagen oder ganzen Feldern vor, auf Wunsch in mehreren Fassungen.
 4. **Fahrrad-Runde aus GPX:** Sven zieht eine GPX-Datei in den Chat. Der Entwurf oder Beitrag bekommt die gefahrene Linie, an beiden Enden zufällig gekürzt.
 
 Alles kommt in einem Schritt (Svens Wahl). Die Karte sieht Sven erst ab Phase 3; bis dahin prüft er Routen an den Zahlen auf der Karte (km, Punkte, Marker).
@@ -57,6 +57,15 @@ Alles kommt in einem Schritt (Svens Wahl). Die Karte sieht Sven erst ab Phase 3;
 - **Schutz vor Leck:** `make kirby-hooks` installiert einen Pre-commit- und Pre-push-Hook. Er vergleicht Folgen von 8 Wörtern aus dem Feldwert (lokal aus `www/content/site.txt`) mit den vorgemerkten Änderungen und bricht bei einem Treffer ab. Der Hook selbst enthält keinen Prompt.
 - **Test:** Ein Test setzt den Prompt auf eine Markierung, rendert alle Seiten und Routen und prüft, dass die Markierung nirgends erscheint.
 
+## Grundsatz: Tools sind offen, Verhalten steht im Prompt
+
+Svens Wunsch (2026-10-12): Kein Verhalten aus `write-post` oder `journey-post` steckt in einem Tool. Die Tools bilden nur drei Dinge ab:
+- das Inhaltsmodell (welche Felder, Dateien und Bereiche es gibt),
+- Sicherheit (Uploads, GPX-Kürzung, Prüfung der Texte),
+- Datenintegrität (eindeutige URLs, veraltete Karten, alles oder nichts).
+
+Alles andere steht im Prompt: Stimme, Titel- und Slug-Wahl, wie viele Fassungen er anbietet, welche Orte Marker bekommen, Rundung von Kilometern, Wahl des Titelbilds, Reihenfolge der Fotos, Uhrzeit eines Beitrags. Tool-Beschreibungen sagen nur, was ein Tool tut, nie, wie Sven schreibt.
+
 ## Tools
 
 Lese-Tools laufen sofort. Vorschlags-Tools ändern nichts, sie erzeugen eine Karte. Jeder vorgeschlagene Text geht durch `guard.php`.
@@ -65,17 +74,17 @@ Lese-Tools laufen sofort. Vorschlags-Tools ändern nichts, sie erzeugen eine Kar
 |---|---|---|---|
 | `find_posts` | lesen | Typ (oder leer), Suchtext, Zeitraum | höchstens 20 Beiträge, neueste zuerst, mit ID, Titel, Datum, Status, und die Gesamtzahl |
 | `read_post` | lesen | Beitrags-ID oder `about` | Felder, Dateien mit Texten und EXIF, Route (km, Punkte, Marker) |
-| `view_photo` | lesen | Datei- oder Upload-ID, optional ein Ausschnitt | Vorschau, lange Kante 1568 px; ein Ausschnitt aus dem Original hilft bei Vogelarten |
+| `view_photo` | lesen | Datei- oder Upload-ID, optional ein Ausschnitt | Vorschau, lange Kante 1568 px, oder ein Ausschnitt aus dem Original |
 | `web_search` | lesen | Anthropic-Server-Tool | höchstens 5 pro Anfrage |
-| `propose_post` | Karte | Typ, Titel, Slug, Datum (`YYYY-MM-DD`), Anriss, Text, Fotos (Upload-ID, Alternativtext, Bildunterschrift, Fotograf), Titelbild, Reise, optional Route (Stationen oder GPX-Upload, Marker, Zoom) | neuer Entwurf mit allem in einem Klick |
-| `propose_edit` | Karte | Beitrags-ID, Feld (`intro` oder `text`), eine Passage, die genau einmal vorkommt, 1 bis 3 neue Fassungen | geänderte Passage, bei mehreren Fassungen A/B/C |
-| `propose_field` | Karte | Beitrags-ID, Feld (`title`, `intro`, `trip`), neuer Wert | ganzes Feld ersetzt |
-| `propose_photo_texts` | Karte | Datei-ID, Alternativtext, Bildunterschrift, Fotograf | geänderte Datei-Felder |
+| `propose_post` | Karte | Typ, Slug, Datum und Uhrzeit, alle Felder des Beitrags-Blueprints, Fotos (Upload-ID und die Felder des Bild-Blueprints), Titelbild, optional Route (Stationen oder GPX-Upload, Marker, Zoom) | neuer Entwurf mit allem in einem Klick |
+| `propose_edit` | Karte | Seiten-ID, Textfeld, eine Passage, die genau einmal vorkommt, eine oder mehrere neue Fassungen | geänderte Passage; bei mehreren Fassungen wählt Sven per Knopf |
+| `propose_field` | Karte | Seiten-ID, ein Feld des Blueprints, neuer Wert | ganzes Feld ersetzt |
+| `propose_file_fields` | Karte | Datei-ID, Felder des Bild-Blueprints außer den Kameradaten | geänderte Datei-Felder |
 | `propose_route` | Karte | Beitrags-ID (nur `photo` und `trip`), Stationen oder GPX-Upload, Marker, Zoom | Route für einen bestehenden Beitrag |
 | `ask_choice` | Frage | Frage, Optionen | Knöpfe; Svens Wahl kommt als nächste Nachricht |
 
 Zur Route:
-- **Stationen:** Ortsmitten mit `lat`, `lon`, `label`, `marker` ja/nein, nie Adressen. Eine Anfrage an OSRM pro Vorschlag, mit eigenem User-Agent und ohne Wiederholung. Die Karte zeigt km und Fahrzeit.
+- **Stationen:** `lat`, `lon`, `label`, `marker` ja/nein. Eine Anfrage an OSRM pro Vorschlag, mit eigenem User-Agent und ohne Wiederholung. Die Karte zeigt km und Fahrzeit.
 - **Vereinfachung:** Douglas-Peucker mit 0,0005° für OSRM und 0,0002° für GPX, Koordinaten auf 5 Stellen, GeoJSON `LineString`.
 - **Marker:** Ihre Labels sind reiner Text, höchstens 60 Zeichen.
 
@@ -107,16 +116,16 @@ Jede Karte zeigt, was sich ändert. Svens Klick führt `apply.php` unter seinem 
 | Karte | Zeigt | Klick bewirkt |
 |---|---|---|
 | Neuer Entwurf | Felder, Fotos mit Texten, Route mit km und Markern | Entwurf im richtigen Bereich, alles oder nichts: Dateien werden kopiert, Uploads erst nach Erfolg gelöscht; EXIF aus der Annahme als Datei-Felder; `route.json` mit Template `route` |
-| Passage | Satz-Vergleich, jeder Link hervorgehoben | ersetzt die Passage; bei A/B/C die gewählte Fassung |
+| Passage | Vergleich, jeder Link hervorgehoben | ersetzt die Passage; bei mehreren Fassungen die gewählte |
 | Feld | Vorher, Nachher | ersetzt das Feld |
-| Fototexte | Vorher, Nachher | Datei-Felder |
+| Datei-Felder | Vorher, Nachher | Datei-Felder |
 | Route | alte und neue Route: km, Punkte, Marker | ersetzt Route, Punkte und Zoom; die alte `route.json` bleibt als Zustand in `content/.assistant/routes/` |
 
 - **Veröffentlichte Beiträge und About:** Ein Klick schreibt in Kirbys Änderungsversion, nicht in die veröffentlichte Fassung. Live geht es erst mit Svens „Speichern“ im Panel, und er kann es dort verwerfen.
 - **Entwürfe:** Ein Klick schreibt direkt in den Entwurf.
 - **Veraltete Karte:** Ist die Passage nicht mehr genau einmal da, das Feld nicht mehr gleich „Vorher“ oder die Route nicht mehr die alte, speichert der Klick nichts und sagt das.
-- **Slug:** Der Server prüft Slug und Titel über alle vier Bereiche, Entwürfe eingeschlossen. Eine Kollision geht als Fehler an Claude zurück, es gibt nie einen automatischen Zusatz.
-- **Datum:** Claude gibt den Tag, der Server setzt die Uhrzeit (jetzt bei heute, sonst 12:00, bei einem zweiten Beitrag am selben Tag eine Stunde später), Berliner Zeit, nie in der Zukunft.
+- **Slug:** Die URL muss eindeutig sein. Der Server prüft den Slug über alle vier Bereiche, Entwürfe eingeschlossen. Eine Kollision geht als Fehler an Claude zurück; einen neuen Namen wählt Claude.
+- **Datum:** Claude gibt Datum und Uhrzeit, Berliner Zeit. Der Server prüft nur das Format und dass sie nicht in der Zukunft liegen (Svens Entscheidung zum Rückbau: keine geplanten Beiträge).
 - **Dateinamen:** Der Server legt die endgültigen Dateinamen schon beim Vorschlag fest. Doppelte Namen und Uploads, die schon eine andere offene Karte nutzt, lehnt er ab.
 
 ## Prüfung der Texte (`guard.php`)
@@ -150,8 +159,9 @@ Aus Luisas `AssistantTest` werden nur die Fälle übernommen, die hier gelten: C
 Neue Tests:
 - **Uploads:** lehnen PHP, `.htaccess`, SVG, Polyglot-Dateien, zu viele Pixel und fremde Upload-IDs ab; das Entfernen der Metadaten behält das Bild und entfernt GPS.
 - **GPX:** gehärtetes Lesen, zufällige Kürzung an beiden Enden, Marker in der Zone abgelehnt. Kein Punkt aus den gekürzten Bereichen erscheint je in einer Anfrage an den Transport.
-- **Neuer Entwurf:** alles oder nichts, Slug-Kollision über alle Bereiche, Datum und Uhrzeit, Route im selben Klick.
-- **Passage:** Passage, A/B/C, veraltete Karte; Schreiben in die Änderungsversion bei veröffentlichten Beiträgen.
+- **Neuer Entwurf:** alles oder nichts, Slug-Kollision über alle Bereiche, Datum nicht in der Zukunft, Route im selben Klick.
+- **Offenheit:** Kein Tool lehnt etwas aus Stilgründen ab; die Tests prüfen nur Inhaltsmodell, Sicherheit und Integrität.
+- **Passage:** Passage, mehrere Fassungen, veraltete Karte; Schreiben in die Änderungsversion bei veröffentlichten Beiträgen.
 - **Route:** Ersetzen, Sicherung der alten Datei, veraltete Karte.
 - **Prompt:** Assistent aus bei leerem Feld, System-Text eingefroren, Seed erhält den Prompt, Prompt-Markierung erscheint auf keiner Seite, Verlauf ohne Prompt-Text.
 - **Prüfung der Texte:** HTML, fremde Tags, fremde Links.
