@@ -34,6 +34,7 @@ data.db*
 
 # Kirby: von Composer installiert
 /www/kirby/
+/www/site/plugins/markdown-field/
 /vendor/
 
 # Kirby: lokale Ausgabe

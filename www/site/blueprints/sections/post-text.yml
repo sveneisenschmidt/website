@@ -2,12 +2,12 @@ type: fields
 fields:
   intro:
     label: Anriss
-    type: textarea
+    type: markdown
     size: small
     uploads: image
     help: Steht auf der Startseite und über dem Text.
   text:
     label: Text
-    type: textarea
+    type: markdown
     size: huge
     uploads: image

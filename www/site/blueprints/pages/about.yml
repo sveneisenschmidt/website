@@ -10,7 +10,7 @@ columns:
     fields:
       text:
         label: Text
-        type: textarea
+        type: markdown
         size: huge
         uploads: image
   sidebar:

@@ -4,6 +4,7 @@
     "type": "project",
     "license": "proprietary",
     "require": {
+        "fabianmichael/kirby-markdown-field": "^4.0",
         "getkirby/cms": "^5.6.1"
     },
     "require-dev": {
@@ -19,7 +20,8 @@
         "sort-packages": true
     },
     "extra": {
-        "kirby-cms-path": "www/kirby"
+        "kirby-cms-path": "www/kirby",
+        "kirby-plugin-path": "www/site/plugins"
     },
     "autoload-dev": {
         "psr-4": {
