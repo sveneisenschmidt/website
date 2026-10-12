@@ -1,0 +1,16 @@
+title: Reisen
+icon: map
+options:
+  changeSlug: false
+  changeStatus: false
+  changeTemplate: false
+  delete: false
+  duplicate: false
+sections:
+  posts:
+    type: pages
+    label: Reisen
+    template: trip
+    sortBy: date desc
+    image:
+      query: page.cover.toFile

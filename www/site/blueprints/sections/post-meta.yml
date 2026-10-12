@@ -1,0 +1,21 @@
+type: fields
+fields:
+  date:
+    label: Datum
+    type: date
+    time:
+      step:
+        unit: second
+        size: 1
+      display: HH:mm:ss
+    default: now
+    required: true
+  cover:
+    label: Titelbild
+    type: files
+    multiple: false
+    query: page.images
+    uploads: image
+  pick:
+    label: Hervorgehoben
+    type: toggle

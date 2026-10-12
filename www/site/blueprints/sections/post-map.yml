@@ -1,0 +1,24 @@
+type: fields
+fields:
+  route:
+    label: Route (GeoJSON)
+    type: files
+    multiple: false
+    query: page.files.filterBy("extension", "json")
+    uploads: route
+  mappoints:
+    label: Kartenpunkte
+    type: structure
+    fields:
+      lat:
+        label: Breite
+        type: text
+      lon:
+        label: Länge
+        type: text
+      label:
+        label: Name
+        type: text
+  mapzoom:
+    label: Karte zoombar
+    type: toggle

@@ -1,0 +1,48 @@
+title: Website
+columns:
+  - width: 1/2
+    sections:
+      photos:
+        type: pages
+        label: Fotos
+        parent: site.find("photos")
+        template: photo
+        sortBy: date desc
+        limit: 10
+        image:
+          query: page.cover.toFile
+      trips:
+        type: pages
+        label: Reisen
+        parent: site.find("trips")
+        template: trip
+        sortBy: date desc
+        limit: 10
+        image:
+          query: page.cover.toFile
+  - width: 1/2
+    sections:
+      notes:
+        type: pages
+        label: Notizen
+        parent: site.find("notes")
+        template: note
+        sortBy: date desc
+        limit: 10
+        image: false
+      essays:
+        type: pages
+        label: Essays
+        parent: site.find("essays")
+        template: essay
+        sortBy: date desc
+        limit: 10
+        image: false
+      pages:
+        type: pages
+        label: Seiten
+        create: false
+        templates:
+          - about
+          - archive
+          - search

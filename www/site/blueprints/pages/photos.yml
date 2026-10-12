@@ -1,0 +1,16 @@
+title: Fotos
+icon: images
+options:
+  changeSlug: false
+  changeStatus: false
+  changeTemplate: false
+  delete: false
+  duplicate: false
+sections:
+  posts:
+    type: pages
+    label: Fotos
+    template: photo
+    sortBy: date desc
+    image:
+      query: page.cover.toFile

@@ -6,6 +6,9 @@
  * not in backups, imported per host. See env.example.php.
  */
 
+// Dates in the Panel (default: now) and in feeds are Berlin time.
+date_default_timezone_set('Europe/Berlin');
+
 $env = is_file(__DIR__ . '/env.php') ? require __DIR__ . '/env.php' : [];
 
 // The media salt is state, not host config: it lives in .salt, which is part

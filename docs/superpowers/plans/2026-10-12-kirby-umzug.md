@@ -53,6 +53,7 @@
 - **Phase 3, Markdown wie Hugo:** `'markdown' => ['breaks' => false]` (Kirby macht sonst aus jedem Zeilenumbruch ein `<br>`, betrifft `photos/pipes`) und `'smartypants' => true` für typografische Anführungszeichen und Striche wie Hugos Typographer.
 - **Phase 3, Templates:** Titelbild ohne Alternativtext nimmt den Seitentitel (wie `cover-alt.html`, betrifft `wild-horeses` und `hypo`). Kartenpunkte als Zahlen ausgeben (`(float)`), nicht als Text. Stream und Archiv sortieren nach dem Feld `date`: 21 Tage haben zwei Beiträge, `num` allein ordnet sie nach Ordnernamen.
 - **Phase 4, Links:** Die URL muss aus einem Page Model kommen (`url()`), nicht nur aus Routen: auch `(link: page://…)` und die Panel-Vorschau nutzen sie. Im Inhalt stehen 43 feste Links der Form `/YYYY-MM-DD-slug/`, die bleiben gültig. Links auf `/log/…`, `/posts` und `/topics` sind schon bei Hugo tot.
+- **Phase 4, Slug ändern:** Im Panel lässt sich der Slug eines Beitrags ändern, damit ändert sich die URL. Phase 4 legt fest, ob das gesperrt wird (`changeSlug: false`) oder eine Weiterleitung entsteht.
 - **Beim Merge in `main`:** den Block `kirby-state` aus `.git/info/exclude` entfernen.
 - **Nach dem Umschalten:** Die Skills `write-post` und `journey-post` werden gelöscht. Bis dahin bleiben sie, weil Sven mit Hugo weiter schreibt.
 
@@ -257,6 +258,9 @@ Expected: 4 Zeilen, jede nennt `.gitignore` als Quelle.
  * Host-specific values (debug and the like) go into env.php: not in git,
  * not in backups, imported per host. See env.example.php.
  */
+
+// Dates in the Panel (default: now) and in feeds are Berlin time.
+date_default_timezone_set('Europe/Berlin');
 
 $env = is_file(__DIR__ . '/env.php') ? require __DIR__ . '/env.php' : [];
 
@@ -2362,7 +2366,10 @@ Labels im Panel sind deutsch, wie bei Luisa.
 
 namespace Website\Tests\Integration;
 
+use Kirby\Cms\Page;
+use Kirby\Data\Data;
 use Kirby\Filesystem\Dir;
+use Kirby\Form\Form;
 use PHPUnit\Framework\TestCase;
 use Website\Tests\Support\HugoFixture;
 use Website\Tests\Support\TestSite;
@@ -2415,6 +2422,40 @@ final class BlueprintTest extends TestCase
             $this->assertNotNull($trip->file('A6404180.jpeg')->blueprint()->field($field), "image: $field");
         }
     }
+
+    public function testAnUnchangedPanelSaveKeepsTheImportedValues(): void
+    {
+        $kirby = TestSite::app($this->root);
+        $kirby->impersonate('kirby');
+
+        // A post late in the evening: if the date field rounds, an unchanged
+        // save moves it to the next day (and its folder number).
+        $photo = $kirby->page('photos')->createChild([
+            'slug' => 'late-night',
+            'template' => 'photo',
+            'content' => ['title' => 'Late night', 'date' => '2026-02-24 23:59:40'],
+        ])->changeStatus('listed');
+        $this->assertSame('2026-02-24 23:59:40', $this->panelSave($photo)['date']);
+
+        $trip = $kirby->page('trips/2026-summer-vacation-5');
+        $stored = $this->panelSave($trip);
+        foreach (['date', 'cover', 'route', 'trip', 'mappoints', 'mapzoom'] as $field) {
+            // Files and structures come back decoded, the content file holds YAML.
+            $imported = $trip->content()->get($field)->value();
+            $expected = is_array($stored[$field]) ? Data::decode($imported, 'yaml') : $imported;
+            $this->assertSame($expected, $stored[$field], "trip: $field");
+        }
+    }
+
+    /**
+     * What the Panel stores when the form is saved without a change: the form
+     * values go back through a fresh form of the same page.
+     */
+    private function panelSave(Page $page): array
+    {
+        $values = Form::for($page)->toFormValues();
+        return Form::for($page)->submit($values, force: true)->toStoredValues();
+    }
 }
 ```
 
@@ -2434,11 +2475,13 @@ fields:
     label: Anriss
     type: textarea
     size: small
+    uploads: image
     help: Steht auf der Startseite und über dem Text.
   text:
     label: Text
     type: textarea
     size: huge
+    uploads: image
 ```
 
 `www/site/blueprints/sections/post-meta.yml`:
@@ -2449,7 +2492,11 @@ fields:
   date:
     label: Datum
     type: date
-    time: true
+    time:
+      step:
+        unit: second
+        size: 1
+      display: HH:mm:ss
     default: now
     required: true
   cover:
@@ -2457,6 +2504,7 @@ fields:
     type: files
     multiple: false
     query: page.images
+    uploads: image
   pick:
     label: Hervorgehoben
     type: toggle
@@ -2472,6 +2520,7 @@ fields:
     type: files
     multiple: false
     query: page.files.filterBy("extension", "json")
+    uploads: route
   mappoints:
     label: Kartenpunkte
     type: structure
@@ -2566,7 +2615,7 @@ columns:
             accept: all
             options:
               type: query
-              query: page.siblings.pluck("trip", ",", true)
+              query: page.parent.childrenAndDrafts.pluck("trip", ",", true)
       images:
         extends: sections/post-images
       map:
@@ -2651,6 +2700,7 @@ columns:
         label: Text
         type: textarea
         size: huge
+        uploads: image
   sidebar:
     width: 1/3
     sections:
@@ -2694,6 +2744,7 @@ sections:
     type: pages
     label: Unterseiten
     template: archive
+    create: false
 ```
 
 `www/site/blueprints/pages/search.yml`:
@@ -2809,6 +2860,10 @@ columns:
         type: pages
         label: Seiten
         create: false
+        templates:
+          - about
+          - archive
+          - search
 ```
 
 - [ ] **Schritt 8: Test grün**

@@ -1,0 +1,19 @@
+title: Essay
+icon: book
+num: date
+status:
+  draft: Entwurf
+  listed: Veröffentlicht
+columns:
+  main:
+    width: 2/3
+    sections:
+      body:
+        extends: sections/post-text
+  sidebar:
+    width: 1/3
+    sections:
+      meta:
+        extends: sections/post-meta
+      images:
+        extends: sections/post-images

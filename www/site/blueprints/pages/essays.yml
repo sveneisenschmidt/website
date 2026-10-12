@@ -1,0 +1,15 @@
+title: Essays
+icon: book
+options:
+  changeSlug: false
+  changeStatus: false
+  changeTemplate: false
+  delete: false
+  duplicate: false
+sections:
+  posts:
+    type: pages
+    label: Essays
+    template: essay
+    sortBy: date desc
+    image: false

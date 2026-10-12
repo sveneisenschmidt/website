@@ -1,0 +1,6 @@
+title: Suche
+icon: search
+options:
+  changeSlug: false
+  changeStatus: false
+  delete: false

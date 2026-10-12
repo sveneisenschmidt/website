@@ -1,0 +1,25 @@
+title: Archiv
+icon: archive
+options:
+  changeSlug: false
+  changeStatus: false
+  delete: false
+sections:
+  settings:
+    type: fields
+    fields:
+      stream:
+        label: Inhalt
+        type: select
+        required: true
+        options:
+          all: Alle Beiträge
+          photos: Fotos
+          trips: Reisen
+          notes: Notizen
+          essays: Essays
+  streams:
+    type: pages
+    label: Unterseiten
+    template: archive
+    create: false

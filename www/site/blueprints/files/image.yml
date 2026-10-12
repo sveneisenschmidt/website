@@ -1,0 +1,40 @@
+title: Bild
+accept:
+  type: image
+columns:
+  - width: 1/2
+    fields:
+      alt:
+        label: Alternativtext
+        type: text
+      caption:
+        label: Bildunterschrift
+        type: text
+        help: Markdown für Links.
+      photographer:
+        label: Fotografiert von
+        type: text
+  - width: 1/2
+    fields:
+      camera:
+        label: Kamera
+        type: text
+      lens:
+        label: Objektiv
+        type: text
+      focal:
+        label: Brennweite (mm)
+        type: text
+        width: 1/2
+      aperture:
+        label: Blende (f/)
+        type: text
+        width: 1/2
+      shutter:
+        label: Belichtungszeit (s)
+        type: text
+        width: 1/2
+      iso:
+        label: ISO
+        type: text
+        width: 1/2

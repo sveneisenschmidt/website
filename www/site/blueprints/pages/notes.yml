@@ -1,0 +1,15 @@
+title: Notizen
+icon: text
+options:
+  changeSlug: false
+  changeStatus: false
+  changeTemplate: false
+  delete: false
+  duplicate: false
+sections:
+  posts:
+    type: pages
+    label: Notizen
+    template: note
+    sortBy: date desc
+    image: false

@@ -1,0 +1,29 @@
+title: Über mich
+icon: user
+options:
+  changeSlug: false
+  changeStatus: false
+  delete: false
+columns:
+  main:
+    width: 2/3
+    fields:
+      text:
+        label: Text
+        type: textarea
+        size: huge
+        uploads: image
+  sidebar:
+    width: 1/3
+    sections:
+      meta:
+        type: fields
+        fields:
+          label:
+            label: Bezeichnung
+            type: text
+          lastmod:
+            label: Zuletzt geprüft
+            type: date
+      images:
+        extends: sections/post-images

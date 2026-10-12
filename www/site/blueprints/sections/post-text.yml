@@ -1,0 +1,13 @@
+type: fields
+fields:
+  intro:
+    label: Anriss
+    type: textarea
+    size: small
+    uploads: image
+    help: Steht auf der Startseite und über dem Text.
+  text:
+    label: Text
+    type: textarea
+    size: huge
+    uploads: image
