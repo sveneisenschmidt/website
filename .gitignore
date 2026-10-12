@@ -17,3 +17,26 @@ data.db*
 
 # Editor
 .zed/
+
+# Kirby: Zustand lebt in Backups, nie in Git
+/www/content/
+/www/site/accounts/
+/www/site/config/env.php
+/www/site/config/.salt
+/www/site/config/.license
+/www/.htpasswd
+
+# Kirby: erzeugt, entsteht aus den Inhalten neu
+/www/media/
+/www/site/cache/
+/www/site/sessions/
+/www/site/logs/
+
+# Kirby: von Composer installiert
+/www/kirby/
+/vendor/
+
+# Kirby: lokale Ausgabe
+/backups/
+/.restore-test/
+/.phpunit.cache/

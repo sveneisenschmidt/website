@@ -1,4 +1,4 @@
-.PHONY: dev build publish check-deps check-hugo srgb logs
+.PHONY: dev build publish check-deps check-hugo srgb logs check-main
 
 check-deps:
 	@command -v hugo >/dev/null 2>&1 || { echo "hugo is required but not installed. Install with: brew install hugo"; exit 1; }
@@ -26,7 +26,12 @@ check-hugo: check-deps
 	have=$$(hugo version | sed -n 's/^hugo v\([0-9.]*\).*/\1/p'); \
 	test "$$have" = "$$want" || { echo "hugo $$have on this Mac, deploy.yml builds with $$want. Install $$want, or raise deploy.yml in the same commit as resources/_gen."; exit 1; }
 
-push: check-hugo srgb
+# make push committet alles und pusht main. Auf einem anderen Branch landet der
+# Commit dort, und gepusht wird ein alter Stand von main.
+check-main:
+	@test "$$(git branch --show-current)" = main || { echo "make push nur auf main, gerade: $$(git branch --show-current)"; exit 1; }
+
+push: check-main check-hugo srgb
 	hugo --gc
 	git add -A
 	git commit -m "Update site $$(date +%Y-%m-%d\ %H:%M)" || true
@@ -50,3 +55,53 @@ logs:
 	@goaccess logs/access.log -o logs/report.html --log-format='%h - - [%d:%t %^] "%r" %s %b "%R" "%u" "%^" "%^"' --date-format='%d/%b/%Y' --time-format='%H:%M:%S'
 	@echo "Report generated: logs/report.html"
 	@open logs/report.html
+
+# Kirby, Umzug von Hugo (Plan: docs/superpowers/plans/2026-10-12-kirby-umzug.md).
+# Die Ziele tragen das Präfix kirby-, bis Hugo beim Umschalten wegfällt.
+WWW := www
+# PHP für die kirby-Ziele. Die Seite läuft auf dem Server mit PHP 8.5
+# (.php-version), lokal ist es dieselbe Version. Anderes PHP: make PHP=...
+PHP ?= php
+# Port von make kirby-dev. Luisas Seite nutzt lokal 8000.
+KIRBY_PORT := 8010
+
+.PHONY: kirby-config
+kirby-config:
+	@$(PHP) bin/init-config.php $(WWW)
+
+.PHONY: kirby-test
+kirby-test:
+	@test -x vendor/bin/phpunit || { echo "PHPUnit fehlt. Erst: composer install"; exit 1; }
+	@$(PHP) vendor/bin/phpunit
+
+.PHONY: kirby-seed
+kirby-seed:
+	$(PHP) bin/seed.php $(if $(filter 1,$(FORCE)),--force,)
+
+# Nur localhost: der PHP-Server liefert jede Datei unter www/ aus, auch
+# content/ und site/. Anders als Hugos make dev nie an 0.0.0.0 binden.
+.PHONY: kirby-dev
+kirby-dev:
+	@test -f vendor/autoload.php || { echo "Kirby fehlt. Erst: composer install"; exit 1; }
+	@test -f $(WWW)/site/config/env.php || { echo "Keine Konfiguration. Erst: make kirby-config"; exit 1; }
+	@test -d $(WWW)/content || { echo "Keine Inhalte. Erst: make kirby-seed"; exit 1; }
+	@$(PHP) -r 'if (PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION !== trim(file_get_contents(".php-version"))) fwrite(STDERR, "Hinweis: hier PHP ".PHP_VERSION.", .php-version sagt ".trim(file_get_contents(".php-version"))."\n");'
+	@echo "Seite: http://localhost:$(KIRBY_PORT)  Panel: http://localhost:$(KIRBY_PORT)/panel  (Ende mit Ctrl+C)"
+	@set -o pipefail; PHP_CLI_SERVER_WORKERS=4 $(PHP) -S localhost:$(KIRBY_PORT) -t $(WWW) $(WWW)/kirby/router.php 2>&1 | grep --line-buffered -v -E '(Accepted|Closing)$$'
+
+.PHONY: kirby-backup
+kirby-backup:
+	bin/backup.sh $(WWW) backups
+
+.PHONY: kirby-restore
+kirby-restore:
+	@test -n "$(BACKUP)" || { echo "Aufruf: make kirby-restore BACKUP=backups/website-....tar.gz"; exit 1; }
+	bin/restore.sh $(BACKUP) $(WWW)
+
+.PHONY: kirby-restore-test
+kirby-restore-test:
+	PHP=$(PHP) bin/restore-test.sh $(WWW)
+
+.PHONY: kirby-lint
+kirby-lint:
+	@find $(WWW)/site $(WWW)/index.php bin tests -name '*.php' -print0 | xargs -0 -n1 $(PHP) -l >/dev/null && echo "lint ok"

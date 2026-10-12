@@ -20,6 +20,12 @@
         "public"
       ],
       "port": 1314
+    },
+    {
+      "name": "kirby-dev",
+      "runtimeExecutable": "make",
+      "runtimeArgs": ["kirby-dev"],
+      "port": 8010
     }
   ]
 }

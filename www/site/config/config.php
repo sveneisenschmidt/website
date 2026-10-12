@@ -1,0 +1,42 @@
+<?php
+
+/**
+ * Shared configuration. Lives in git.
+ * Host-specific values (debug and the like) go into env.php: not in git,
+ * not in backups, imported per host. See env.example.php.
+ */
+
+$env = is_file(__DIR__ . '/env.php') ? require __DIR__ . '/env.php' : [];
+
+// The media salt is state, not host config: it lives in .salt, which is part
+// of every backup. If it changed, every image URL would change.
+$salt = is_file(__DIR__ . '/.salt') ? trim(file_get_contents(__DIR__ . '/.salt')) : null;
+
+// A host config without .salt means the salt got lost: restore it from a
+// backup. Kirby would otherwise derive a salt from the content path, and
+// every media URL would change without an error.
+if (is_file(__DIR__ . '/env.php') && ($salt === null || $salt === '')) {
+    throw new RuntimeException('site/config/.salt is missing: restore it from a backup.');
+}
+
+return array_replace_recursive([
+    'debug' => false,
+    // Search engines may index the site. Set per host in env.php.
+    'public' => false,
+    'locale' => 'en_US.utf-8',
+    'content' => array_filter(['salt' => $salt]),
+    'panel' => [
+        'install' => false,
+        'language' => 'de',
+    ],
+    'hooks' => [
+        // The local dev login from bin/seed.php (an address under .test) works
+        // only with debug on. Should a local backup with accounts ever reach
+        // the server (debug off there), nobody can log in with it.
+        'user.login:before' => function (Kirby\Cms\User $user) {
+            if (str_ends_with($user->email(), '.test') && option('debug') !== true) {
+                throw new Kirby\Exception\PermissionException('The dev login works only locally.');
+            }
+        },
+    ],
+], $env);

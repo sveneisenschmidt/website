@@ -1,0 +1,37 @@
+# Kirby .htaccess
+
+Options -Indexes
+
+# BEGIN staging auth
+# Password protection while the site is not public (Kirby is free on a
+# password-protected staging site). Apache needs the absolute path to
+# .htpasswd: the deploy replaces __HTPASSWD__ and removes the "#" below.
+# Remove this block at launch.
+#AuthType Basic
+#AuthName "sven.eisenschmidt.website staging"
+#AuthUserFile __HTPASSWD__
+#Require valid-user
+# END staging auth
+
+<IfModule mod_rewrite.c>
+
+RewriteEngine on
+
+# Block files and folders beginning with a dot, such as .git,
+# except for the .well-known folder
+RewriteRule (^|/)\.(?!well-known\/) index.php [L]
+
+# Block direct access to content, site and kirby folders
+RewriteRule ^content/(.*) index.php [L]
+RewriteRule ^site/(.*) index.php [L]
+RewriteRule ^kirby/(.*) index.php [L]
+
+# Make site links work
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*) index.php [L]
+
+</IfModule>
+
+# Pass the Authorization header to PHP
+SetEnvIf Authorization "(.+)" HTTP_AUTHORIZATION=$1
