@@ -265,7 +265,7 @@ function hugo_posts(string $hugo): array
     $posts = [];
     foreach (HUGO_SECTIONS as $section => $type) {
         foreach (scandir("$hugo/$section") as $entry) {
-            if ($entry[0] === '.' || $entry[0] === '_') {
+            if ($entry[0] === '.' || $entry === '_index.md') {
                 continue;
             }
             $path = "$hugo/$section/$entry";
@@ -413,6 +413,13 @@ function hugo_import(string $hugo, string $content, callable $exif): array
 {
     if (file_exists($content)) {
         throw new RuntimeException("$content exists");
+    }
+    // Only the folders the import knows; anything else would be lost without a word.
+    $known = [...array_keys(HUGO_SECTIONS), 'about', 'archive', 'search'];
+    foreach (scandir($hugo) as $entry) {
+        if ($entry[0] !== '.' && !in_array($entry, $known, true)) {
+            throw new RuntimeException("Unknown entry: $hugo/$entry");
+        }
     }
     $posts = hugo_posts($hugo);
     $pageUuid = fn (string $slug) => isset($posts[$slug])

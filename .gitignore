@@ -20,6 +20,7 @@ data.db*
 
 # Kirby: Zustand lebt in Backups, nie in Git
 /www/content/
+/www/content.new/
 /www/site/accounts/
 /www/site/config/env.php
 /www/site/config/.salt
@@ -34,7 +35,9 @@ data.db*
 
 # Kirby: von Composer installiert
 /www/kirby/
-/www/site/plugins/markdown-field/
+# Plugins aus Composer; nur das eigene Plugin blog liegt in Git.
+/www/site/plugins/*
+!/www/site/plugins/blog/
 /vendor/
 
 # Kirby: lokale Ausgabe

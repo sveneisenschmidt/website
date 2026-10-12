@@ -76,6 +76,7 @@ kirby-test:
 
 .PHONY: kirby-seed
 kirby-seed:
+	@test -f vendor/autoload.php || { echo "Kirby fehlt. Erst: composer install"; exit 1; }
 	$(PHP) bin/seed.php $(if $(filter 1,$(FORCE)),--force,)
 
 # Nur localhost: der PHP-Server liefert jede Datei unter www/ aus, auch

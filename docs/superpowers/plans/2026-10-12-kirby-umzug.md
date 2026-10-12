@@ -54,6 +54,9 @@
 - **Phase 3, Templates:** Titelbild ohne Alternativtext nimmt den Seitentitel (wie `cover-alt.html`, betrifft `wild-horeses` und `hypo`). Kartenpunkte als Zahlen ausgeben (`(float)`), nicht als Text. Stream und Archiv sortieren nach dem Feld `date`: 21 Tage haben zwei Beiträge, `num` allein ordnet sie nach Ordnernamen.
 - **Phase 4, Links:** Die URL muss aus einem Page Model kommen (`url()`), nicht nur aus Routen: auch `(link: page://…)` und die Panel-Vorschau nutzen sie. Im Inhalt stehen 43 feste Links der Form `/YYYY-MM-DD-slug/`, die bleiben gültig. Links auf `/log/…`, `/posts` und `/topics` sind schon bei Hugo tot.
 - **Phase 4, Slug ändern:** Im Panel lässt sich der Slug eines Beitrags ändern, damit ändert sich die URL. Phase 4 legt fest, ob das gesperrt wird (`changeSlug: false`) oder eine Weiterleitung entsteht.
+- **Phase 5, Markdown-Plugin:** `www/site/plugins/markdown-field` kommt aus Composer, ist in `.gitignore` und muss trotzdem hoch. Der Upload darf nicht nach `.gitignore` filtern. Danach prüfen, dass `www/site/plugins/markdown-field/index.php` auf dem Server liegt: ohne das Plugin löscht jedes Speichern im Panel Anriss und Text. `BlueprintTest` fällt lokal ohne Plugin durch.
+- **Phase 5, Seed nur lokal:** `bin/seed.php` braucht den Hugo-Ordner `content/`. Auf dem Server gibt es ihn nicht, ein Aufruf dort scheitert, bevor er etwas löscht.
+- **Bis zum Umschalten, auf `main`:** Den Kirby-Block der `.gitignore` und `check-main` im Makefile auch auf `main` committen. Dann schützt nicht nur `.git/info/exclude` auf diesem Mac, und `git merge main` nach `kirby` gibt dort keine Konflikte.
 - **Beim Merge in `main`:** den Block `kirby-state` aus `.git/info/exclude` entfernen.
 - **Nach dem Umschalten:** Die Skills `write-post` und `journey-post` werden gelöscht. Bis dahin bleiben sie, weil Sven mit Hugo weiter schreibt.
 
@@ -703,6 +706,7 @@ echo "Seeded 4 pages into www/content.\n";
 
 .PHONY: kirby-seed
 kirby-seed:
+	@test -f vendor/autoload.php || { echo "Kirby fehlt. Erst: composer install"; exit 1; }
 	$(PHP) bin/seed.php $(if $(filter 1,$(FORCE)),--force,)
 
 # Nur localhost: der PHP-Server liefert jede Datei unter www/ aus, auch
@@ -2035,6 +2039,22 @@ final class ImportTest extends TestCase
         hugo_import($this->hugo, $this->root . '/content-broken', 'blog_read_exif');
     }
 
+    public function testStopsOnAnUnknownContentFolder(): void
+    {
+        mkdir($this->hugo . '/posts/brand-new', 0755, true);
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessageMatches('!Unknown entry: .*/posts!');
+        hugo_import($this->hugo, $this->root . '/content-broken', 'blog_read_exif');
+    }
+
+    public function testStopsOnAnUnderscoreEntryOtherThanIndex(): void
+    {
+        file_put_contents($this->hugo . '/notes/_draft.md', "+++\ntitle = \"X\"\n+++\n");
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('_draft.md');
+        hugo_import($this->hugo, $this->root . '/content-broken', 'blog_read_exif');
+    }
+
     public function testStopsOnMissingTitleAndNamesTheFile(): void
     {
         file_put_contents($this->hugo . '/notes/gemma.md', "+++\ndate = '2026-06-13T09:00:00'\ntype = \"note\"\n+++\n\nText\n");
@@ -2141,7 +2161,7 @@ function hugo_posts(string $hugo): array
     $posts = [];
     foreach (HUGO_SECTIONS as $section => $type) {
         foreach (scandir("$hugo/$section") as $entry) {
-            if ($entry[0] === '.' || $entry[0] === '_') {
+            if ($entry[0] === '.' || $entry === '_index.md') {
                 continue;
             }
             $path = "$hugo/$section/$entry";
@@ -2289,6 +2309,13 @@ function hugo_import(string $hugo, string $content, callable $exif): array
 {
     if (file_exists($content)) {
         throw new RuntimeException("$content exists");
+    }
+    // Only the folders the import knows; anything else would be lost without a word.
+    $known = [...array_keys(HUGO_SECTIONS), 'about', 'archive', 'search'];
+    foreach (scandir($hugo) as $entry) {
+        if ($entry[0] !== '.' && !in_array($entry, $known, true)) {
+            throw new RuntimeException("Unknown entry: $hugo/$entry");
+        }
     }
     $posts = hugo_posts($hugo);
     $pageUuid = fn (string $slug) => isset($posts[$slug])
@@ -2439,7 +2466,7 @@ final class BlueprintTest extends TestCase
 
         $trip = $kirby->page('trips/2026-summer-vacation-5');
         $stored = $this->panelSave($trip);
-        foreach (['date', 'cover', 'route', 'trip', 'mappoints', 'mapzoom'] as $field) {
+        foreach (['date', 'intro', 'text', 'cover', 'route', 'trip', 'mappoints', 'mapzoom'] as $field) {
             // Files and structures come back decoded, the content file holds YAML.
             $imported = $trip->content()->get($field)->value();
             $expected = is_array($stored[$field]) ? Data::decode($imported, 'yaml') : $imported;
@@ -2989,8 +3016,22 @@ function rrmdir(string $dir): void
     rmdir($dir);
 }
 
+// Import next to www/content and swap only on success: a failed import
+// (an unknown field in a new post) leaves the current content as it is.
+$staging = $content . '.new';
+rrmdir($staging);
+try {
+    $counts = hugo_import($root . '/content', $staging, 'blog_read_exif');
+} catch (Throwable $e) {
+    rrmdir($staging);
+    fwrite(STDERR, "Import failed, www/content is unchanged.\n" . $e->getMessage() . "\n");
+    exit(1);
+}
 rrmdir($content);
-$counts = hugo_import($root . '/content', $content, 'blog_read_exif');
+if (!rename($staging, $content)) {
+    fwrite(STDERR, "Cannot move $staging to $content.\n");
+    exit(1);
+}
 
 // Dev account, only if no account exists yet (keeps a real local account untouched).
 $accounts = $root . '/www/site/accounts';

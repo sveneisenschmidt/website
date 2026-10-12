@@ -75,7 +75,7 @@ final class BlueprintTest extends TestCase
 
         $trip = $kirby->page('trips/2026-summer-vacation-5');
         $stored = $this->panelSave($trip);
-        foreach (['date', 'cover', 'route', 'trip', 'mappoints', 'mapzoom'] as $field) {
+        foreach (['date', 'intro', 'text', 'cover', 'route', 'trip', 'mappoints', 'mapzoom'] as $field) {
             // Files and structures come back decoded, the content file holds YAML.
             $imported = $trip->content()->get($field)->value();
             $expected = is_array($stored[$field]) ? Data::decode($imported, 'yaml') : $imported;

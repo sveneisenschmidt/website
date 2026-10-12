@@ -48,8 +48,22 @@ function rrmdir(string $dir): void
     rmdir($dir);
 }
 
+// Import next to www/content and swap only on success: a failed import
+// (an unknown field in a new post) leaves the current content as it is.
+$staging = $content . '.new';
+rrmdir($staging);
+try {
+    $counts = hugo_import($root . '/content', $staging, 'blog_read_exif');
+} catch (Throwable $e) {
+    rrmdir($staging);
+    fwrite(STDERR, "Import failed, www/content is unchanged.\n" . $e->getMessage() . "\n");
+    exit(1);
+}
 rrmdir($content);
-$counts = hugo_import($root . '/content', $content, 'blog_read_exif');
+if (!rename($staging, $content)) {
+    fwrite(STDERR, "Cannot move $staging to $content.\n");
+    exit(1);
+}
 
 // Dev account, only if no account exists yet (keeps a real local account untouched).
 $accounts = $root . '/www/site/accounts';

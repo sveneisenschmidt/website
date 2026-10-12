@@ -144,6 +144,22 @@ final class ImportTest extends TestCase
         hugo_import($this->hugo, $this->root . '/content-broken', 'blog_read_exif');
     }
 
+    public function testStopsOnAnUnknownContentFolder(): void
+    {
+        mkdir($this->hugo . '/posts/brand-new', 0755, true);
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessageMatches('!Unknown entry: .*/posts!');
+        hugo_import($this->hugo, $this->root . '/content-broken', 'blog_read_exif');
+    }
+
+    public function testStopsOnAnUnderscoreEntryOtherThanIndex(): void
+    {
+        file_put_contents($this->hugo . '/notes/_draft.md', "+++\ntitle = \"X\"\n+++\n");
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('_draft.md');
+        hugo_import($this->hugo, $this->root . '/content-broken', 'blog_read_exif');
+    }
+
     public function testStopsOnMissingTitleAndNamesTheFile(): void
     {
         file_put_contents($this->hugo . '/notes/gemma.md', "+++\ndate = '2026-06-13T09:00:00'\ntype = \"note\"\n+++\n\nText\n");
