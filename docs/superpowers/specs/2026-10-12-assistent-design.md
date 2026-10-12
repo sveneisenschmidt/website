@@ -1,112 +1,167 @@
 # Assistent im Panel: Design
 
-Stand: 2026-10-12. Entschieden mit Sven im Chat. Grundlage ist der Assistent von concertshotsbyluisa.de (`../concertshotsbyluisa/www/site/plugins/assistant`, Issue #18 dort).
+Stand: 2026-10-12, Fassung 2 nach einer adversarialen Review. Entschieden mit Sven im Chat. Grundlage ist der Assistent von concertshotsbyluisa.de (`../concertshotsbyluisa/www/site/plugins/assistant`). Wo diese Spec „neu“ sagt, gibt es das bei Luisa nicht.
 
 ## Ziel
 
-Sven schreibt Beiträge im Panel mit Claude. Der Assistent ersetzt die Claude-Code-Skills `write-post` und `journey-post`. Er schlägt vor, Svens Klick übernimmt.
+Sven schreibt Beiträge im Panel mit Claude. Der Assistent übernimmt die Arbeit der Claude-Code-Skills `write-post` und `journey-post`. Er schlägt vor, Svens Klick übernimmt.
 
 ## Aufgaben
 
-1. **Daily Photo schreiben:** Sven zieht Fotos in den Chat und schreibt ein paar Sätze, meist auf Deutsch. Der Assistent schlägt einen neuen Entwurf vor: Typ, Titel, Slug, Datum, Anriss, Text in Svens Stimme, Alternativtexte, Titelbild.
-2. **Reise-Tag mit Karte:** Sven nennt die Orte des Tages. Der Assistent holt die Strecke von OSRM und schlägt Route und Kartenpunkte vor, dazu den Beitrag wie bisher `journey-post`.
-3. **Texte überarbeiten:** In einem bestehenden Beitrag schlägt der Assistent Änderungen an Titel, Anriss oder Text vor, bei Formulierungen als A/B/C.
-4. **Fahrrad-Runde aus GPX:** Sven zieht eine GPX-Datei in den Chat. Der Assistent macht daraus die Route und schneidet 500 m um Start und Ziel ab, damit Svens Adresse nicht in der Route steht.
+1. **Daily Photo:** Sven zieht Fotos in den Chat und schreibt ein paar Sätze. Der Assistent schlägt einen neuen Entwurf vor: Typ, Titel, Slug, Datum, Anriss, Text, Alternativtexte, Bildunterschriften, Fotograf, Titelbild.
+2. **Reise-Tag mit Karte:** Sven nennt die Orte des Tages. Der Entwurf kommt mit Route (OSRM) und Kartenpunkten in einer Karte.
+3. **Texte überarbeiten:** In bestehenden Beiträgen schlägt der Assistent Änderungen an einzelnen Passagen vor, als A/B/C.
+4. **Fahrrad-Runde aus GPX:** Sven zieht eine GPX-Datei in den Chat. Der Entwurf oder Beitrag bekommt die gefahrene Linie, an beiden Enden zufällig gekürzt.
+
+Alles kommt in einem Schritt (Svens Wahl). Die Karte sieht Sven erst ab Phase 3; bis dahin prüft er Routen an den Zahlen auf der Karte (km, Punkte, Marker).
 
 ## Nicht im Umfang
 
-- Löschen und Veröffentlichen. Beides bleibt im Panel bei Sven.
-- Kamera-Daten schreiben. EXIF kommt beim Upload aus der Datei (Plugin `blog`).
-- Das Kirby-MCP auf dem Server. Es kommt nur lokal als Dev-Abhängigkeit (`bnomei/kirby-mcp`, `--dev`).
+- Löschen und Veröffentlichen von Entwürfen. Beides bleibt im Panel bei Sven.
+- Kamera-Daten schreiben. Sie kommen aus der Datei.
+- Release-Posts zu Hypo (sie brauchen die Issues eines GitHub-Meilensteins) und das Studium von Svens Diffs bei Essays. Dafür bleibt Claude Code lokal; die Skills werden erst gelöscht, wenn Sven das entscheidet.
+- Das Kirby-MCP. Es kommt getrennt als lokale Dev-Abhängigkeit (`bnomei/kirby-mcp`, `--dev`).
 
 ## Aufbau
 
-Übernahme von Luisas Plugin mit umbenannten Präfixen (`cbl_` zu `blog_`, Plugin-ID `sveneisenschmidt/assistant`):
+Übernahme von Luisas Plugin mit umbenannten Präfixen (`cbl_` zu `blog_`, Plugin-ID `sveneisenschmidt/assistant`).
 
-| Datei | Aufgabe | Änderung gegenüber Luisa |
-|---|---|---|
-| `www/site/plugins/assistant/index.php` | Panel-Bereich „Assistent“ und „Protokoll“, API-Routen, Knopf an Beiträgen | Knopf an den vier Beitrags-Templates statt an Serien |
-| `claude.php` | Anfrage an die Anthropic-API über Kirbys `Remote` | unverändert |
-| `chat.php` | Chat in der Kirby-Session, eine Runde pro Anfrage, System-Prompt | Prompt kommt aus dem Feld, nicht aus dem Code |
-| `tools.php` | Lese- und Vorschlags-Tools | neue Tools, siehe unten |
-| `apply.php` | Svens Klick auf eine Karte | neue Kartentypen |
-| `log.php` | Protokoll in `content/.assistant/<Jahr>-<Monat>.jsonl` | unverändert |
-| `uploads.php` (neu) | Fotos und GPX aus dem Chat, vorübergehend | neu |
-| `route.php` (neu) | OSRM-Abfrage, Vereinfachung, GPX-Kürzung | neu, aus `fetch-route.py` und `gpx-to-route.py` |
-| `index.js`, `index.css` | Panel-Ansicht | Upload-Feld im Chat, neue Karten |
+| Datei | Aufgabe |
+|---|---|
+| `www/site/plugins/assistant/index.php` | Panel-Bereich „Assistent“ und „Protokoll“, API-Routen, Knopf an Beiträgen und an About |
+| `claude.php` | Anfrage an die Anthropic-API über Kirbys `Remote`, wie bei Luisa |
+| `chat.php` | Chat, eine Runde pro Anfrage; System-Text pro Chat eingefroren |
+| `tools.php` | Lese- und Vorschlags-Tools |
+| `apply.php` | Svens Klick auf eine Karte |
+| `guard.php` (neu) | Prüft jeden vorgeschlagenen Text, bevor eine Karte entsteht |
+| `uploads.php` (neu) | Annahme, Prüfung und Aufräumen der Uploads |
+| `route.php` (neu) | OSRM, Vereinfachung, GPX-Lesen und Kürzung |
+| `log.php` | Protokoll in `content/.assistant/<Jahr>-<Monat>.jsonl`, nur Metadaten |
+| `index.js`, `index.css` | Panel-Ansicht mit Upload im Chat und den neuen Karten |
 
-Der Schlüssel für die Anthropic-API steht als `assistantKey` in `env.php`, gesetzt vom Deploy (Phase 5). Ohne Schlüssel ist der Assistent aus, wie bei Luisa.
+- `.gitignore` bekommt `!/www/site/plugins/assistant/`, sonst wäre das Plugin ignoriert.
+- Nur Konten mit der Rolle `admin` sehen den Bereich, die API-Routen und den Reiter Assistent.
+- `site.yml` bekommt Reiter: „Beiträge“ (die heutigen Abschnitte) und „Assistent“ (Prompt und Modell).
 
 ## System-Prompt
 
-**Der Prompt liegt nie in Git.** Das Repo ist öffentlich, Sven will den Prompt nicht zeigen (2026-10-12).
+**Der Prompt steht nie in Git, nicht im Plan und nicht in Tests.** Das Repo ist öffentlich.
 
-- Der ganze Prompt steht im Feld `assistantPrompt` unter Website › Assistent, also in `content/site.txt`. Das ist Zustand: auf dem Server, im Backup, nie in Git. Sven ändert ihn im Panel.
-- Inhalt: die Arbeitsweise (nichts ohne Klick speichern, nichts erfinden, Kirby-Format mit `(image: datei.jpg)`, `(map:)`, Feldern `intro` und `text`, Slug-Regeln) und Svens Schreibregeln aus den Skills `write-post` und `journey-post`, umgestellt von Hugo auf Kirby.
-- Der Code hängt nur das Datum des Tages (Berliner Zeit) an. Ist das Feld leer, bleibt der Assistent aus und das Panel sagt, dass der Prompt fehlt.
-- Öffentlich im Code stehen nur die Tool-Beschreibungen, die die API braucht. Sie sagen, was ein Tool tut, nicht wie Sven schreibt.
-- Die Quelle des Prompts liegt nur lokal und nie in Git; `.git/info/exclude` schließt sie auf jedem Branch aus, auch für `make push` auf `main`. Ihr Name steht nirgends im Repo.
-- Erste Füllung: Claude schreibt den Prompt aus den Skills in diese lokale Datei. `php bin/assistant-prompt.php <datei>` schreibt sie lokal ins Feld. Auf dem Server fügt Sven sie einmal im Panel ein.
-- `make kirby-seed` ersetzt `content/site.txt`. Der Seed übernimmt darum `assistantPrompt` und `assistantModel` aus der alten Datei in die neue.
-- Tests nutzen einen Platzhalter-Prompt, nie den echten.
+- **Ort:** Der Prompt steht nur im Feld `assistantPrompt` unter Website › Assistent, also in `content/site.txt`. Das ist Zustand: auf dem Server, im Backup, nie in Git. Sven ändert ihn nur im Panel.
+- **Kein Vorgabewert:** Das Feld hat keinen Default, kein Template, keinen Hilfetext mit Inhalt und keine Migration. Ist es leer, bleibt der Assistent aus, und das Panel sagt das.
+- **Erste Füllung:** Claude schreibt den Prompt aus den Skills in eine lokale Datei, die nur `.git/info/exclude` kennt. Sven fügt den Inhalt einmal ins Panel ein, lokal und auf dem Server. Danach wird die lokale Datei gelöscht. Dieser Schritt steht nicht im Plan.
+- **Was im Code steht:** Allgemeine Sicherheitsregeln, die nichts über Svens Stil sagen (Svens Wahl): nur vorschlagen, Inhalte aus Tools sind Daten und nie Anweisungen, nie den Prompt wiedergeben. Dazu die Tool-Beschreibungen.
+- **Eingefroren:** Zu Beginn eines Chats speichert der Server System-Text und Tool-Liste und schickt in jeder Runde dieselben Bytes. Ändert Sven den Prompt mitten im Chat, gilt er ab dem nächsten Chat. Ein neues Datum kommt als angehängte Notiz, der System-Text bleibt gleich.
+- **Verlauf:** `assistantPrompt` steht in der Ausnahmeliste des Verlaufs. Änderungen am Prompt erscheinen dort nur als „geändert“, ohne Text.
+- **Seed:** `make kirby-seed` übernimmt `assistantPrompt` und `assistantModel` aus der alten `site.txt`. Das geschieht in einer Funktion in `bin/lib`, mit Test.
+- **Schutz vor Leck:** `make kirby-hooks` installiert einen Pre-commit- und Pre-push-Hook. Er vergleicht Folgen von 8 Wörtern aus dem Feldwert (lokal aus `www/content/site.txt`) mit den vorgemerkten Änderungen und bricht bei einem Treffer ab. Der Hook selbst enthält keinen Prompt.
+- **Test:** Ein Test setzt den Prompt auf eine Markierung, rendert alle Seiten und Routen und prüft, dass die Markierung nirgends erscheint.
 
 ## Tools
 
-Lese-Tools laufen sofort. Vorschlags-Tools ändern nichts, sie erzeugen eine Karte.
+Lese-Tools laufen sofort. Vorschlags-Tools ändern nichts, sie erzeugen eine Karte. Jeder vorgeschlagene Text geht durch `guard.php`.
 
 | Tool | Art | Eingabe | Ergebnis |
 |---|---|---|---|
-| `find_posts` | lesen | Typ (oder leer), Suchtext, Zeitraum | höchstens 20 Beiträge mit ID, Titel, Datum, Status |
-| `read_post` | lesen | Beitrags-ID | Felder, Dateien mit Alternativtext, Bildunterschrift, Fotograf und EXIF |
-| `view_photo` | lesen | Datei-ID oder Upload-ID | Vorschau (lange Kante 1568 px, JPEG) mit Texten |
+| `find_posts` | lesen | Typ (oder leer), Suchtext, Zeitraum | höchstens 20 Beiträge, neueste zuerst, mit ID, Titel, Datum, Status, und die Gesamtzahl |
+| `read_post` | lesen | Beitrags-ID oder `about` | Felder, Dateien mit Texten und EXIF, Route (km, Punkte, Marker) |
+| `view_photo` | lesen | Datei- oder Upload-ID, optional ein Ausschnitt | Vorschau, lange Kante 1568 px; ein Ausschnitt aus dem Original hilft bei Vogelarten |
 | `web_search` | lesen | Anthropic-Server-Tool | höchstens 5 pro Anfrage |
-| `propose_post` | Karte | Typ, Titel, Slug, Datum, Anriss, Text, Upload-IDs, Alternativtext je Upload, Titelbild, Reise (bei Reisen) | neuer Entwurf |
-| `propose_text` | Karte | Beitrags-ID, Feld (`title`, `intro`, `text`), 1 bis 3 Varianten | geänderter Text; bei 2 oder 3 Varianten wählt Sven per Knopf A, B oder C |
+| `propose_post` | Karte | Typ, Titel, Slug, Datum (`YYYY-MM-DD`), Anriss, Text, Fotos (Upload-ID, Alternativtext, Bildunterschrift, Fotograf), Titelbild, Reise, optional Route (Stationen oder GPX-Upload, Marker, Zoom) | neuer Entwurf mit allem in einem Klick |
+| `propose_edit` | Karte | Beitrags-ID, Feld (`intro` oder `text`), eine Passage, die genau einmal vorkommt, 1 bis 3 neue Fassungen | geänderte Passage, bei mehreren Fassungen A/B/C |
+| `propose_field` | Karte | Beitrags-ID, Feld (`title`, `intro`, `trip`), neuer Wert | ganzes Feld ersetzt |
 | `propose_photo_texts` | Karte | Datei-ID, Alternativtext, Bildunterschrift, Fotograf | geänderte Datei-Felder |
-| `propose_route` | Karte | Beitrags-ID, Stationen in Fahrtreihenfolge (`lat`, `lon`, `label`, `marker` ja/nein) | `route.json` und Kartenpunkte im Beitrag |
-| `propose_gpx_route` | Karte | Beitrags-ID, Upload-ID der GPX, Marker (`lat`, `lon`, `label`) | gekürzte `route.json` und Kartenpunkte |
+| `propose_route` | Karte | Beitrags-ID (nur `photo` und `trip`), Stationen oder GPX-Upload, Marker, Zoom | Route für einen bestehenden Beitrag |
 | `ask_choice` | Frage | Frage, Optionen | Knöpfe; Svens Wahl kommt als nächste Nachricht |
 
-Regeln für die Tools:
-- Ziel sind nur Beiträge (`photo`, `trip`, `note`, `essay`) und About. Schreibbar sind `title`, `intro`, `text`, bei Dateien `alt`, `caption`, `photographer`, bei Reisen `trip`, dazu Route und Kartenpunkte.
-- `propose_route` fragt OSRM schon beim Vorschlag ab. Die Karte zeigt km und Fahrzeit (wie `fetch-route.py`); bei einem Fehler bekommt Claude die Meldung zurück, und es entsteht keine Karte.
-- Route-Vereinfachung wie `fetch-route.py`: Douglas-Peucker mit 0,0005°, Koordinaten auf 5 Stellen gerundet, GeoJSON `LineString`.
-- GPX-Kürzung wie `gpx-to-route.py`: Alle Punkte innerhalb von 500 m um den ersten und den letzten Punkt fallen weg. Auf den Startpunkt kommt nie ein Marker.
+Zur Route:
+- **Stationen:** Ortsmitten mit `lat`, `lon`, `label`, `marker` ja/nein, nie Adressen. Eine Anfrage an OSRM pro Vorschlag, mit eigenem User-Agent und ohne Wiederholung. Die Karte zeigt km und Fahrzeit.
+- **Vereinfachung:** Douglas-Peucker mit 0,0005° für OSRM und 0,0002° für GPX, Koordinaten auf 5 Stellen, GeoJSON `LineString`.
+- **Marker:** Ihre Labels sind reiner Text, höchstens 60 Zeichen.
+
+## GPX und Svens Zuhause
+
+Svens Runden beginnen und enden zu Hause. Eine Kürzung um eine feste Länge legt alle Enden auf einen Kreis um sein Zuhause. Das war bei drei Runden so und ist am 2026-10-12 auf `main` korrigiert.
+
+- Der Server liest die GPX-Datei und löscht sie gleich danach. Zeitstempel, Gerätedaten und Erweiterungen werden nie gespeichert und nie an Claude geschickt.
+- Jedes Ende wird um eine zufällige Länge zwischen 700 und 1200 m entlang der Strecke gekürzt, an beiden Enden verschieden. Die Längen werden nirgends gespeichert.
+- Claude bekommt nur die gekürzte, vereinfachte Linie, ihre Länge und Dauer.
+- Marker, die näher als 1200 m an den ungekürzten Enden liegen, lehnt der Server ab.
+- Eine Runde, die mitten in der Fahrt an Svens Zuhause vorbeiführt, bleibt sichtbar. Das nimmt Sven in Kauf.
+- GPX lesen mit `XMLReader`, ohne DOCTYPE, höchstens 5 MB und 100.000 Punkte.
+
+## Uploads
+
+- **Ablage:** in `storage/assistant/` neben `www/` und `vendor/`, also außerhalb des Document Root. In `.gitignore`, mit einem `.htaccess`, das alles verbietet.
+- **Ein Ordner pro Chat:** mit zufälliger ID, die nur in der Session steht. Dateinamen vergibt der Server: zufälliger Hex-Name plus die Endung des erkannten Typs.
+- **Erlaubte Typen:** JPEG, PNG, WebP, geprüft mit `finfo` und `getimagesize`, höchstens 64 Megapixel und 60 MB. Dazu GPX nach dem Abschnitt oben.
+- **Eine Datei pro Anfrage.** Jede Upload-ID wird gegen ein festes Muster und gegen die Liste dieses Chats geprüft.
+- **Metadaten:** Beim Annehmen eines JPEG liest der Server EXIF in Felder und entfernt danach die Metadaten-Segmente (APP1 mit EXIF und XMP, APP13) verlustfrei. So enthält kein Original GPS, wenn es später öffentlich wird.
+- **Vorschauen:** liegen als Dateien im Ordner des Chats. Die Session speichert nur IDs. Jede Vorschau geht genau einmal an Claude, beim Upload.
+- **Aufräumen:** bei jeder Anfrage an den Assistenten und beim Abmelden. Gelöscht wird nach letzter Nutzung. Uploads, die eine offene Karte braucht, bleiben stehen. Spätestens nach 7 Tagen ist alles weg.
 
 ## Karten und Klick
 
-Wie bei Luisa: Jede Karte zeigt, was sich ändert. Text-Karten zeigen Vorher und Nachher. Svens Klick führt `apply.php` unter seinem Konto aus, darum steht jede Änderung im Verlauf.
+Jede Karte zeigt, was sich ändert. Svens Klick führt `apply.php` unter seinem Konto aus, darum steht jede Änderung im Verlauf. Nach dem Klick bekommt Claude eine Notiz mit dem Ergebnis, bei neuen Entwürfen mit der neuen Seiten-ID.
 
-| Karte | Klick bewirkt |
-|---|---|
-| Neuer Entwurf | Seite als Entwurf im richtigen Bereich (`photos`, `trips`, `notes`, `essays`). Die Uploads werden als Dateien mit Template `image` angelegt, mit Alternativtext; der Hook `file.create:after` liest EXIF. Titelbild gesetzt. |
-| Text | Feld gespeichert. Bei A/B/C speichert der Knopf der gewählten Variante. |
-| Fototexte | Felder der Datei gespeichert |
-| Route | `route.json` als Datei mit Template `route` angelegt oder ersetzt, `route` und `mappoints` gesetzt; fehlt `(map:)` im Text, wird es ans Ende angehängt |
+| Karte | Zeigt | Klick bewirkt |
+|---|---|---|
+| Neuer Entwurf | Felder, Fotos mit Texten, Route mit km und Markern | Entwurf im richtigen Bereich, alles oder nichts: Dateien werden kopiert, Uploads erst nach Erfolg gelöscht; EXIF aus der Annahme als Datei-Felder; `route.json` mit Template `route` |
+| Passage | Satz-Vergleich, jeder Link hervorgehoben | ersetzt die Passage; bei A/B/C die gewählte Fassung |
+| Feld | Vorher, Nachher | ersetzt das Feld |
+| Fototexte | Vorher, Nachher | Datei-Felder |
+| Route | alte und neue Route: km, Punkte, Marker | ersetzt Route, Punkte und Zoom; die alte `route.json` bleibt als Zustand in `content/.assistant/routes/` |
 
-Nach jedem Klick bekommt Claude mit Svens nächster Nachricht eine Zeile, was entschieden wurde (wie bei Luisa).
+- **Veröffentlichte Beiträge und About:** Ein Klick schreibt in Kirbys Änderungsversion, nicht in die veröffentlichte Fassung. Live geht es erst mit Svens „Speichern“ im Panel, und er kann es dort verwerfen.
+- **Entwürfe:** Ein Klick schreibt direkt in den Entwurf.
+- **Veraltete Karte:** Ist die Passage nicht mehr genau einmal da, das Feld nicht mehr gleich „Vorher“ oder die Route nicht mehr die alte, speichert der Klick nichts und sagt das.
+- **Slug:** Der Server prüft Slug und Titel über alle vier Bereiche, Entwürfe eingeschlossen. Eine Kollision geht als Fehler an Claude zurück, es gibt nie einen automatischen Zusatz.
+- **Datum:** Claude gibt den Tag, der Server setzt die Uhrzeit (jetzt bei heute, sonst 12:00, bei einem zweiten Beitrag am selben Tag eine Stunde später), Berliner Zeit, nie in der Zukunft.
+- **Dateinamen:** Der Server legt die endgültigen Dateinamen schon beim Vorschlag fest. Doppelte Namen und Uploads, die schon eine andere offene Karte nutzt, lehnt er ab.
 
-## Uploads im Chat
+## Prüfung der Texte (`guard.php`)
 
-- Sven zieht Fotos (JPEG, PNG, WebP) oder eine GPX-Datei in den Chat, höchstens 20 Dateien pro Upload (Server: `max_file_uploads = 20`, `upload_max_filesize = 512M`).
-- Der Server legt sie in `site/cache/assistant/uploads/<Session>/` ab, jede mit einer Upload-ID. Das ist erzeugte Datei-Ablage, nie im Backup.
-- Claude bekommt von Fotos nur verkleinerte Vorschauen. Die Originale bleiben bis zum Klick liegen.
-- Der Klick auf „Neuer Entwurf“ verschiebt die Originale in den Entwurf. „Neuer Chat“ und das Ende der Session löschen den Ordner. Ordner älter als 2 Tage löscht der nächste Upload.
+Text aus Fotos, GPX, Websuche oder alten Beiträgen kann Anweisungen enthalten. Darum prüft der Code jeden vorgeschlagenen Text, nicht nur der Prompt:
+
+- Kein rohes HTML. Von den KirbyText-Tags nur `(image: …)`, `(map:)` und `(link: page://… text: …)`.
+- Links nur auf URLs, die in Svens Nachrichten, in den Quellen der Websuche dieses Chats oder schon im Feld stehen.
+- Bildunterschriften: Markdown-Links nach derselben Regel, sonst reiner Text.
+- Ein Verstoß geht als Fehler an Claude zurück, es entsteht keine Karte.
+- Im Chat sind nur Links aus den Quellen der Websuche klickbar, mit sichtbarem Host.
+
+## Kosten und Modell
+
+- Modell nach Wahl unter Website › Assistent, Standard Claude Opus 5.5.
+- Richtwerte: etwa 0,20 bis 0,30 US-Dollar für ein Daily Photo mit 4 Fotos in 3 Runden, etwa 0,50 US-Dollar mit 20 Fotos.
+- Der Cache für den eingefrorenen System-Text und die Vorschauen gilt eine Stunde, damit eine Pause im Chat nicht alles neu kostet.
+- Eigener API-Schlüssel mit Ausgabegrenze, getrennt von Luisas, als `assistantKey` in `env.php`.
 
 ## Fehler
 
-- API-Fehler, Zeitüberschreitung, fehlender Schlüssel: wie bei Luisa, die Panel-Ansicht zeigt die Meldung, der Chat bleibt wie vorher.
-- OSRM nicht erreichbar oder ohne Route: Claude bekommt die Meldung als Tool-Ergebnis, es entsteht keine Karte.
-- GPX ohne Punkte oder kürzer als 1 km nach der Kürzung: Meldung an Claude, keine Karte.
-- Ein Klick auf eine Karte, deren Ziel sich inzwischen geändert hat (Text nicht mehr gleich „Vorher“): Hinweis statt Speichern, wie bei Luisa.
+- **API-Fehler, Zeitüberschreitung, fehlender Schlüssel, leerer Prompt:** Die Panel-Ansicht zeigt die Meldung, der Chat bleibt wie vorher.
+- **OSRM nicht erreichbar oder ohne Route:** Claude bekommt die Meldung, es entsteht keine Karte.
+- **GPX ohne Punkte oder kürzer als 3 km nach der Kürzung:** Claude bekommt die Meldung, es entsteht keine Karte.
+- **Fehler mitten in einer Karte:** Der Entwurf wird verworfen, die Uploads bleiben, „Nochmal versuchen“ funktioniert.
 
 ## Tests
 
-- `AssistantTest` von Luisa wird mitportiert. Die Option `blog.assistant.transport` ersetzt Claude, die Tests rufen keine API auf.
-- Neue Tests: jede Karte bis zum Klick (Entwurf mit Uploads und EXIF, Text mit A/B/C, Fototexte, Route), OSRM mit einer festen Antwort (Option für den HTTP-Aufruf), Douglas-Peucker, GPX-Kürzung um 500 m, Aufräumen der Uploads.
-- Der Restore-Test bleibt grün: `content/.assistant` und das Prompt-Feld sind Zustand und kommen ins Backup.
-- Ein Test prüft, dass `bin/seed.php` den Prompt erhält, und `git grep` in `make kirby-lint` prüft, dass kein Prompt-Text aus der lokalen Datei im Repo steht.
+Aus Luisas `AssistantTest` werden nur die Fälle übernommen, die hier gelten: Chat-Runden, Abbrechen, Fehler, Protokoll, Text-Karte, Entscheidungsnotiz. Die Option `blog.assistant.transport` ersetzt Claude, `blog.assistant.http` ersetzt OSRM. Kein Test ruft das Netz.
 
-## Reihenfolge
+Neue Tests:
+- **Uploads:** lehnen PHP, `.htaccess`, SVG, Polyglot-Dateien, zu viele Pixel und fremde Upload-IDs ab; das Entfernen der Metadaten behält das Bild und entfernt GPS.
+- **GPX:** gehärtetes Lesen, zufällige Kürzung an beiden Enden, Marker in der Zone abgelehnt. Kein Punkt aus den gekürzten Bereichen erscheint je in einer Anfrage an den Transport.
+- **Neuer Entwurf:** alles oder nichts, Slug-Kollision über alle Bereiche, Datum und Uhrzeit, Route im selben Klick.
+- **Passage:** Passage, A/B/C, veraltete Karte; Schreiben in die Änderungsversion bei veröffentlichten Beiträgen.
+- **Route:** Ersetzen, Sicherung der alten Datei, veraltete Karte.
+- **Prompt:** Assistent aus bei leerem Feld, System-Text eingefroren, Seed erhält den Prompt, Prompt-Markierung erscheint auf keiner Seite, Verlauf ohne Prompt-Text.
+- **Prüfung der Texte:** HTML, fremde Tags, fremde Links.
+- **Zugriff:** Konten ohne Rolle `admin` haben keinen Zugriff.
+- **Restore-Test:** bleibt grün, `content/.assistant` ist Zustand.
 
-Der Assistent kommt nach Phase 2 und vor Phase 3. Er braucht nur das Inhaltsmodell und die Blueprints. Templates (Phase 3) und URLs (Phase 4) betreffen ihn nicht. Verlauf und Statistik (Plugins `changelog` und `analytics` von Luisa) kommen davor, der Verlauf zeigt dann auch die Klicks im Assistenten.
+## Voraussetzungen und Phase 5
+
+- **Vor dem ersten Prompt (Sven, auf `main`):** Den Kirby-Block der `.gitignore` samt `/.claude/*` committen. `make push` auf `main` soll abbrechen, wenn etwas unter `www/` oder `.claude/` vorgemerkt ist.
+- **Phase 5, Abnahme auf Staging mit gemessenen Zeiten:** ein Upload von 20 Fotos, eine Opus-Runde mit Fotos, OSRM aus dem Web-PHP, ein GPX-Import. Die Limits von Web-PHP und Apache auf All-Inkl sind bisher nur aus der Kommandozeile bekannt.
+- **Phase 5, CI:** In diesem öffentlichen Repo läuft kein Pull-Request auf dem Runner im Homelab. Schlüssel liegen in einer geschützten Umgebung.
+- **Phase 3:** zeichnet die Karte und nennt OpenStreetMap als Quelle der Routen (ODbL). Tooltips der Marker als reiner Text.
+- **Bekanntes Risiko:** Andere Seiten im selben All-Inkl-Konto können mit ihrem PHP Prompt, Schlüssel und Uploads lesen.
