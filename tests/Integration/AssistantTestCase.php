@@ -2,6 +2,9 @@
 
 namespace Website\Tests\Integration;
 
+use Closure;
+use Kirby\Session\Session;
+use Kirby\Session\Sessions;
 use Website\Tests\Support\TestSite;
 
 /**
@@ -13,7 +16,10 @@ abstract class AssistantTestCase extends IntegrationTestCase
 {
     protected const PROMPT = 'PROMPT-CANARY-7f3a';
 
-    /** Scripted answers of Claude, one per request, and the request bodies sent. */
+    /**
+     * Scripted answers of Claude, one per request, and the request bodies
+     * sent. An answer may be a closure: it runs while Claude "answers".
+     */
     protected array $replies = [];
     protected array $requests = [];
 
@@ -29,7 +35,8 @@ abstract class AssistantTestCase extends IntegrationTestCase
         $this->options = [
             'blog.assistant.transport' => function (array $body) {
                 $this->requests[] = $body;
-                return array_shift($this->replies) ?? [500, []];
+                $reply = array_shift($this->replies) ?? [500, []];
+                return $reply instanceof Closure ? $reply($body) : $reply;
             },
             'blog.assistant.http' => function (string $url) {
                 $this->osrmCalls[] = $url;
@@ -51,9 +58,10 @@ abstract class AssistantTestCase extends IntegrationTestCase
         parent::tearDown();
     }
 
+    /** A scripted answer; without blocks it says "Ok.": an answer without content is an error. */
     protected function reply(string $stop, array ...$content): void
     {
-        $this->replies[] = [200, ['stop_reason' => $stop, 'content' => $content]];
+        $this->replies[] = [200, ['stop_reason' => $stop, 'content' => $content === [] ? [$this->text('Ok.')] : $content]];
     }
 
     protected function tool(string $id, string $name, array $input): array
@@ -74,6 +82,28 @@ abstract class AssistantTestCase extends IntegrationTestCase
             $chat = blog_assistant_next();
         }
         return $chat;
+    }
+
+    /**
+     * The session of this test as a parallel request of the same browser
+     * sees it: its own Session object on the same token and files.
+     */
+    protected function otherRequest(): Session
+    {
+        return (new Sessions($this->root . '/sessions'))->get($this->kirby->session()->token(), 'manual');
+    }
+
+    /** True when a request holds the lock on this test's session file. */
+    protected function sessionLocked(): bool
+    {
+        [$expiry, $id] = explode('.', (string)$this->kirby->session()->token());
+        $handle = fopen($this->root . "/sessions/$expiry.$id.sess", 'r+');
+        $free = flock($handle, LOCK_EX | LOCK_NB);
+        if ($free) {
+            flock($handle, LOCK_UN);
+        }
+        fclose($handle);
+        return !$free;
     }
 
     /** The newest card of a chat. */

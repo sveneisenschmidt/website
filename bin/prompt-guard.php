@@ -14,7 +14,9 @@
  *        php prompt-guard.php pre-push < "<local ref> <local sha> <remote ref> <remote sha>" lines
  */
 
-const PROMPT_GUARD_WORDS = 8;
+// The runs of words, shared with the assistant's check of its proposals.
+// The copy in the hooks folder finds them next to itself.
+require_once is_file(__DIR__ . '/prompt-words.php') ? __DIR__ . '/prompt-words.php' : __DIR__ . '/../www/site/plugins/assistant/words.php';
 
 /** The prompt from a site.txt (Kirby's text format), or "". */
 function prompt_guard_prompt(string $file): string
@@ -28,23 +30,6 @@ function prompt_guard_prompt(string $file): string
         }
     }
     return '';
-}
-
-/** Lowercase words, without punctuation and Markdown. */
-function prompt_guard_words(string $text): array
-{
-    return preg_split('/[^\p{L}\p{N}]+/u', mb_strtolower($text), -1, PREG_SPLIT_NO_EMPTY) ?: [];
-}
-
-/** Every run of PROMPT_GUARD_WORDS words of a text, as keys. */
-function prompt_guard_runs(string $text): array
-{
-    $words = prompt_guard_words($text);
-    $runs = [];
-    for ($i = 0; $i + PROMPT_GUARD_WORDS <= count($words); $i++) {
-        $runs[implode(' ', array_slice($words, $i, PROMPT_GUARD_WORDS))] = true;
-    }
-    return $runs;
 }
 
 /** The files of a unified diff whose added lines hold a run of the prompt. */

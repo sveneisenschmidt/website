@@ -22,9 +22,18 @@ const BLOG_ASSISTANT_SESSION = 'blog.assistant';
 /** Rounds per message of Sven's, so a tool loop cannot run on forever. */
 const BLOG_ASSISTANT_MAX_ROUNDS = 12;
 
-/** From this many items, or images, the Panel suggests a new chat. */
+/**
+ * From this many items, or images, the Panel suggests a new chat. A chat
+ * takes no more images than that: every request carries them all.
+ */
 const BLOG_ASSISTANT_LONG = 40;
 const BLOG_ASSISTANT_IMAGES = 40;
+
+/** Image bytes a request carries at most, as base64: Anthropic takes 32 MB per request. */
+const BLOG_ASSISTANT_IMAGE_BYTES = 30 * 1024 * 1024;
+
+/** view_photo calls per round; more answer as an error. */
+const BLOG_ASSISTANT_VIEWS = 5;
 
 /**
  * The fixed rules in code. They say nothing about how Sven writes: that is
@@ -52,6 +61,13 @@ function blog_assistant_system(string $prompt): array
     ];
 }
 
+/** The prompt the chat was started with: its frozen system text without the fixed rules. */
+function blog_assistant_frozen_prompt(array $chat): string
+{
+    $text = (string)($chat['system'][0]['text'] ?? '');
+    return str_starts_with($text, BLOG_ASSISTANT_SAFETY . "\n\n") ? substr($text, strlen(BLOG_ASSISTANT_SAFETY) + 2) : $text;
+}
+
 function blog_assistant_empty(): array
 {
     return [
@@ -61,6 +77,24 @@ function blog_assistant_empty(): array
         // URLs from Sven's messages and from the web search: the links a card may hold.
         'mine' => [], 'sources' => [],
     ];
+}
+
+/**
+ * Locks the session and reads it anew. A parallel request of the same
+ * browser ("Abbrechen" while a round runs, a click on a card, an upload)
+ * may have written it since this request read it; without the lock, this
+ * request would write its old copy back. The lock holds until the session
+ * is written: at the end of the request, or before a request to Claude.
+ */
+function blog_assistant_lock(): void
+{
+    kirby()->session()->prepareForWriting();
+}
+
+/** Writes the session and frees its lock. */
+function blog_assistant_unlock(): void
+{
+    kirby()->session()->commit();
 }
 
 function blog_assistant_load(): array
@@ -77,6 +111,7 @@ function blog_assistant_decisions(): array
 /** A line Claude gets with Sven's next message, such as a decision on a card. */
 function blog_assistant_note(string $note): void
 {
+    blog_assistant_lock();
     $notes = kirby()->session()->get(BLOG_ASSISTANT_SESSION . '.notes') ?? [];
     $notes[] = $note;
     kirby()->session()->set(BLOG_ASSISTANT_SESSION . '.notes', $notes);
@@ -85,6 +120,39 @@ function blog_assistant_note(string $note): void
 function blog_assistant_store(array $chat): void
 {
     kirby()->session()->set(BLOG_ASSISTANT_SESSION, $chat);
+}
+
+/**
+ * The images the next request of a chat carries: those of its messages
+ * and the uploads waiting for the next message. How many, and their bytes
+ * as base64.
+ */
+function blog_assistant_image_load(array $chat): array
+{
+    $files = [];
+    $walk = function (array $blocks) use (&$walk, &$files): void {
+        foreach ($blocks as $block) {
+            if (($block['type'] ?? '') === 'blog_image') {
+                $files[] = (string)$block['file'];
+            } elseif (($block['type'] ?? '') === 'tool_result' && is_array($block['content'] ?? null)) {
+                $walk($block['content']);
+            }
+        }
+    };
+    foreach ($chat['messages'] as $message) {
+        if (is_array($message['content'] ?? null)) {
+            $walk($message['content']);
+        }
+    }
+    $count = $chat['images'] ?? 0;
+    foreach (blog_uploads_state()['pending'] as $id) {
+        if ((blog_uploads_meta($id)['kind'] ?? '') === 'image') {
+            $files[] = "$id.preview.jpg";
+            $count++;
+        }
+    }
+    $bytes = array_sum(array_map(fn ($file) => blog_uploads_base64(blog_uploads_size($file)), $files));
+    return ['count' => $count, 'bytes' => $bytes];
 }
 
 /** Upload ids the open cards of the chat still need. */
@@ -144,9 +212,10 @@ function blog_assistant_context(?string $ref): ?string
 /**
  * Adds Sven's message, with the uploads waiting for it, and runs the first
  * round. On a failed request nothing stays: the chat is as before, the
- * uploads wait again, and the Panel puts the text back.
+ * uploads wait again, and the Panel puts the text back. $mine: the links
+ * of the text are Sven's, so cards may hold them.
  */
-function blog_assistant_send(string $text, ?string $context = null): array
+function blog_assistant_send(string $text, ?string $context = null, bool $mine = true): array
 {
     $text = trim($text);
     if ($text === '') {
@@ -154,7 +223,6 @@ function blog_assistant_send(string $text, ?string $context = null): array
     }
     $prompt = blog_assistant_prompt() ?? throw new BlogAssistantError('prompt');
     $chat = blog_assistant_load();
-    $before = $chat;
     // Frozen for the chat: the model (thinking blocks are bound to it), the
     // system text and the tools (the same bytes keep the prompt cache).
     $chat['model'] ??= blog_assistant_model();
@@ -178,7 +246,7 @@ function blog_assistant_send(string $text, ?string $context = null): array
         $chat['images'] = ($chat['images'] ?? 0) + (($meta['kind'] ?? '') === 'image' ? 1 : 0);
     }
     $blocks[] = ['type' => 'text', 'text' => implode("\n\n", $lines)];
-    foreach (blog_guard_links($text) as $url) {
+    foreach ($mine ? blog_guard_links($text) : [] as $url) {
         $chat['mine'][$url] = true;
     }
 
@@ -203,17 +271,39 @@ function blog_assistant_send(string $text, ?string $context = null): array
     try {
         $chat = blog_assistant_round($chat);
     } catch (Throwable $e) {
+        // Nothing was stored before the round: the chat is as it was.
         $e = blog_assistant_error($e);
         blog_assistant_turn_end($chat, $e->kind);
-        blog_assistant_store($before);
         throw $e;
     }
     blog_uploads_sent($uploads);
+    blog_assistant_lock();
     if (!$chat['next'] && (blog_assistant_load()['run'] ?? 0) === ($chat['run'] ?? 0)) {
         $chat = blog_assistant_turn_end($chat, 'ok');
     }
-    kirby()->session()->remove(BLOG_ASSISTANT_SESSION . '.notes');
+    // The notes that went with the message; a click during the round added its own after them.
+    $now = kirby()->session()->get(BLOG_ASSISTANT_SESSION . '.notes') ?? [];
+    kirby()->session()->set(BLOG_ASSISTANT_SESSION . '.notes', array_slice($now, array_slice($now, 0, count($notes)) === $notes ? count($notes) : 0));
     return blog_assistant_keep($chat);
+}
+
+/**
+ * Sven's pick in the open choice, by its number. The option is Claude's
+ * text: it goes as his answer, but a link in it is no link of his
+ * (security review, 2026-10-12). A choice is open until he writes again.
+ */
+function blog_assistant_choose(int $index, ?string $context = null): array
+{
+    $open = null;
+    foreach (blog_assistant_load()['items'] as $item) {
+        $open = match ($item['type']) {
+            'choice' => $item,
+            'me' => null,
+            default => $open,
+        };
+    }
+    $option = $open['options'][$index] ?? throw new InvalidArgumentException('Keine offene Auswahl');
+    return blog_assistant_send($option, $context, false);
 }
 
 /** Any failure as the error the Panel shows; a non-API one is logged for Sven. */
@@ -232,6 +322,7 @@ function blog_assistant_error(Throwable $e): BlogAssistantError
  */
 function blog_assistant_keep(array $chat): array
 {
+    blog_assistant_lock();
     $current = blog_assistant_load();
     if (($current['run'] ?? 0) !== ($chat['run'] ?? 0)) {
         return $current;
@@ -269,6 +360,7 @@ function blog_assistant_next(): array
 /** Stops a running tool loop. The answer of a round already running is dropped. */
 function blog_assistant_stop(): array
 {
+    blog_assistant_lock();
     $chat = blog_assistant_turn_end(blog_assistant_load(), 'stopped');
     $chat['next'] = false;
     $chat['run'] = ($chat['run'] ?? 0) + 1;
@@ -280,6 +372,7 @@ function blog_assistant_stop(): array
 /** "Neuer Chat": the old chat goes with its uploads; the prompt counts anew. */
 function blog_assistant_reset(): array
 {
+    blog_assistant_lock();
     $chat = blog_assistant_empty();
     // A round still running must not bring the old chat back.
     $chat['run'] = (blog_assistant_load()['run'] ?? 0) + 1;
@@ -313,6 +406,7 @@ function blog_assistant_round(array $chat): array
     $answer = '';
     $start = count($chat['items']);
     $searched = false;
+    $views = 0;
     foreach ($content as $block) {
         // Search results: every URL counts as a source a card may link to.
         // Shown below the answer when the answer carries no citations.
@@ -344,8 +438,12 @@ function blog_assistant_round(array $chat): array
         if ($block['type'] !== 'tool_use') {
             continue;
         }
+        if ($block['name'] === 'view_photo' && ++$views > BLOG_ASSISTANT_VIEWS) {
+            $results[] = ['type' => 'tool_result', 'tool_use_id' => $block['id'], 'content' => 'At most ' . BLOG_ASSISTANT_VIEWS . ' view_photo calls per round. Call it again in the next round.', 'is_error' => true];
+            continue;
+        }
         try {
-            $results[] = blog_assistant_tool($chat, $block, $progress, $choice);
+            $results[] = blog_assistant_tool($chat, $block, $progress, $choice, $results);
         } catch (Throwable $e) {
             // One broken call answers as an error; the round goes on.
             error_log('blog assistant tool ' . $block['name'] . ': ' . $e->getMessage());
@@ -390,9 +488,10 @@ function blog_assistant_round(array $chat): array
 
 /**
  * Runs one tool call and returns its tool_result. A propose tool adds a
- * card, a choice adds buttons, a read tool adds a progress line.
+ * card, a choice adds buttons, a read tool adds a progress line. $results:
+ * the results of this round so far, which go with the next request.
  */
-function blog_assistant_tool(array &$chat, array $block, array &$progress, bool &$choice): array
+function blog_assistant_tool(array &$chat, array $block, array &$progress, bool &$choice, array $results = []): array
 {
     $name = $block['name'];
     $input = $block['input'] ?? [];
@@ -412,7 +511,7 @@ function blog_assistant_tool(array &$chat, array $block, array &$progress, bool 
         $chat['items'][] = ['type' => 'choice', 'question' => (string)$input['question'], 'options' => array_values(array_map('strval', $input['options']))];
         return $result('The options are shown to the user. The pick comes as the next message.');
     }
-    $read = blog_assistant_read($name, $input);
+    $read = blog_assistant_read($name, $input, blog_assistant_image_load(['messages' => [...$chat['messages'], ['role' => 'user', 'content' => $results]]] + $chat));
     $chat['images'] = ($chat['images'] ?? 0) + count(array_filter($read, fn ($c) => $c['type'] === 'blog_image'));
     if ($label = blog_assistant_progress($name)) {
         $progress[] = $label;

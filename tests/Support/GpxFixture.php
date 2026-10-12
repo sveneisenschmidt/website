@@ -30,6 +30,53 @@ final class GpxFixture
         return self::ride()[0];
     }
 
+    /** Meters as degrees of longitude and latitude at home. */
+    private static function degrees(float $east, float $north): array
+    {
+        return [$east / (111320 * cos(deg2rad(self::CENTER[1]))), $north / 111320];
+    }
+
+    /**
+     * A standstill at home before or after a ride: one point per second for
+     * $seconds, each up to $meters off, spread like GPS noise but the same
+     * in every run.
+     */
+    public static function standstill(int $seconds, float $meters): array
+    {
+        [$lon, $lat] = self::home();
+        $points = [];
+        for ($i = 0; $i < $seconds; $i++) {
+            [$dLon, $dLat] = self::degrees($meters * sin($i * 1.7), $meters * cos($i * 2.3));
+            $points[] = [$lon + $dLon, $lat + $dLat];
+        }
+        return $points;
+    }
+
+    /** A ride from home $meters to the east, a point every 20 m: it ends elsewhere. */
+    public static function oneWay(float $meters): array
+    {
+        [$lon, $lat] = self::home();
+        $points = [];
+        for ($walked = 0; $walked <= $meters; $walked += 20) {
+            $points[] = [$lon + self::degrees($walked, 0)[0], $lat];
+        }
+        return $points;
+    }
+
+    /** $laps rounds of a circle with $radius meters that starts and ends at home. */
+    public static function laps(int $laps, float $radius): array
+    {
+        [$lon, $lat] = self::home();
+        [$dLon, $dLat] = self::degrees($radius, $radius);
+        $points = [];
+        for ($degree = 0; $degree < 360 * $laps; $degree += 3) {
+            $angle = deg2rad($degree);
+            $points[] = [$lon - $dLon + $dLon * cos($angle), $lat + $dLat * sin($angle)];
+        }
+        $points[] = [$lon, $lat];
+        return $points;
+    }
+
     /** A GPX 1.1 file with times, an elevation and a device extension per point. */
     public static function xml(array $points): string
     {

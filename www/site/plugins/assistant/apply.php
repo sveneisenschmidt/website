@@ -26,6 +26,11 @@ final class BlogAssistantStale extends RuntimeException
 /** Applies or discards a proposal; $version picks one of several versions. Returns the chat. */
 function blog_assistant_decide(string $id, string $action, ?int $version = null): array
 {
+    if (!in_array($action, ['apply', 'discard'], true)) {
+        throw new InvalidArgumentException('Unbekannte Entscheidung');
+    }
+    // A second click on the same card waits for the first and then sees its decision.
+    blog_assistant_lock();
     $chat = blog_assistant_load();
     $proposal = $chat['proposals'][$id] ?? throw new InvalidArgumentException('Vorschlag nicht gefunden');
     // Decisions live in their own session key: a round that runs meanwhile

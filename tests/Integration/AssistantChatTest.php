@@ -60,6 +60,22 @@ final class AssistantChatTest extends AssistantTestCase
         $this->assertSame([$id], array_column(blog_uploads_pending(), 'id'), 'The upload waits again.');
     }
 
+    public function testAnAnswerWithoutContentIsNoAnswer(): void
+    {
+        $this->expectErrorLog();
+        foreach ([['stop_reason' => 'end_turn', 'content' => []], ['stop_reason' => 'end_turn'], ['content' => 'text'], ['content' => ['a' => ['type' => 'text', 'text' => 'x']]]] as $body) {
+            $this->replies[] = [200, $body];
+            try {
+                blog_assistant_send('Hallo');
+                $this->fail('No error: ' . json_encode($body));
+            } catch (BlogAssistantError $e) {
+                $this->assertSame('busy', $e->kind);
+            }
+            $this->assertSame([], blog_assistant_load()['messages']);
+            $this->assertSame([], blog_assistant_load()['items']);
+        }
+    }
+
     public function testAnEmptyBalanceIsItsOwnError(): void
     {
         $this->expectErrorLog();
@@ -84,6 +100,33 @@ final class AssistantChatTest extends AssistantTestCase
 
         $this->assertFalse($chat['next']);
         $this->assertSame(['type' => 'choice', 'question' => 'Welcher Tag?', 'options' => ['A', 'B']], end($chat['items']));
+    }
+
+    /**
+     * The probe choice.php of the security review: an option is Claude's
+     * text. Picked, it goes to Claude as Sven's answer, but a link in it
+     * is no link of his.
+     */
+    public function testAPickedOptionBringsNoLinkOfSvens(): void
+    {
+        $this->reply('tool_use', $this->tool('t1', 'ask_choice', ['question' => 'Quelle verlinken?', 'options' => ['Ja, mit Quelle https://evil.example/promo', 'Nein']]));
+        blog_assistant_send('Schreib was über die Tour.');
+        $this->reply('tool_use', $this->tool('t2', 'propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => 'Mehr bei [der Quelle](https://evil.example/promo).']));
+        $this->reply('end_turn');
+
+        $state = $this->kirby->api()->call('blog-assistant/send', 'POST', ['body' => ['choice' => 0]]);
+        while ($state['next']) {
+            $state = blog_assistant_next();
+        }
+
+        $this->assertSame('Ja, mit Quelle https://evil.example/promo', $this->lastText($this->requests[1]));
+        $this->assertSame(['type' => 'me', 'text' => 'Ja, mit Quelle https://evil.example/promo'], array_intersect_key(array_values(array_filter($state['items'], fn ($i) => $i['type'] === 'me'))[1], ['type' => 1, 'text' => 1]));
+        $this->assertSame([], blog_assistant_load()['mine']);
+        $this->assertStringContainsString('not allowed', $this->results(2)[0]['content']);
+        $this->assertSame([], blog_assistant_load()['proposals']);
+
+        $this->expectException(\InvalidArgumentException::class);
+        blog_assistant_choose(1);
     }
 
     public function testAnswersAfterAStoppedLoopJoinTheToolResults(): void
@@ -111,6 +154,71 @@ final class AssistantChatTest extends AssistantTestCase
 
         $this->assertFalse($kept['next']);
         $this->assertSame(['type' => 'note', 'text' => 'Abgebrochen. Nichts geändert.'], end($kept['items']));
+    }
+
+    /**
+     * The probe sess1.php of the security review: request A runs a round,
+     * request B ("Abbrechen") stores the stopped chat meanwhile. A must see
+     * B's write before it stores; Claude's late answer is dropped.
+     */
+    public function testAStopDuringARoundWinsOverItsAnswer(): void
+    {
+        $this->reply('tool_use', $this->tool('t1', 'read_post', ['post' => 'photos/test-photo']));
+        blog_assistant_send('Lies das Foto.');
+        $session = $this->kirby->session();
+        $session->commit();
+        // Kirby may hold the lock from earlier in a request, after renewing the session.
+        $session->prepareForWriting();
+        $locked = null;
+        $this->replies[] = function () use (&$locked) {
+            $locked = $this->sessionLocked();
+            if (!$locked) {
+                $b = $this->otherRequest();
+                $chat = $b->get('blog.assistant');
+                $chat['run']++;
+                $chat['next'] = false;
+                $chat['items'][] = ['type' => 'note', 'text' => 'Abgebrochen. Nichts geändert.'];
+                $b->set('blog.assistant', $chat);
+                $b->commit();
+            }
+            return [200, ['stop_reason' => 'end_turn', 'content' => [$this->text('Late answer.')]]];
+        };
+
+        $chat = blog_assistant_next();
+        $session->commit();
+
+        $this->assertFalse($locked, 'The session is free while Claude answers.');
+        $stored = $this->otherRequest()->get('blog.assistant');
+        foreach ([$chat, $stored] as $state) {
+            $this->assertSame(1, $state['run']);
+            $this->assertSame(['type' => 'note', 'text' => 'Abgebrochen. Nichts geändert.'], end($state['items']));
+            $this->assertNotContains('Late answer.', array_column($state['items'], 'text'));
+        }
+    }
+
+    public function testWhatComesDuringARoundStays(): void
+    {
+        $this->kirby->session()->set('blog.assistant.notes', ['(A note from before.)']);
+        $this->kirby->session()->commit();
+        $this->replies[] = function () {
+            // Request B: a click on a card and an upload while Claude answers.
+            $b = $this->otherRequest();
+            $b->set('blog.assistant.notes', [...$b->get('blog.assistant.notes', []), '(A click meanwhile.)']);
+            $state = $b->get('blog.assistant.uploads') ?? ['folder' => null, 'items' => [], 'pending' => []];
+            $state['items']['u00000000000000bb'] = 'image';
+            $state['pending'][] = 'u00000000000000bb';
+            $b->set('blog.assistant.uploads', $state);
+            $b->commit();
+            return [200, ['stop_reason' => 'end_turn', 'content' => [$this->text('Gut.')]]];
+        };
+
+        blog_assistant_send('Hallo.');
+        $this->kirby->session()->commit();
+
+        $this->assertStringStartsWith('(A note from before.)', $this->lastText($this->requests[0]));
+        $stored = $this->otherRequest();
+        $this->assertSame(['(A click meanwhile.)'], $stored->get('blog.assistant.notes'), 'The note waits for the next message.');
+        $this->assertSame(['u00000000000000bb'], $stored->get('blog.assistant.uploads')['pending']);
     }
 
     public function testABrokenToolCallAnswersAsError(): void
@@ -277,6 +385,74 @@ final class AssistantChatTest extends AssistantTestCase
         $this->assertSame([], blog_uploads_pending());
         $this->assertSame(['text'], array_column($this->requests[1]['messages'][2]['content'], 'type'));
         $this->assertSame(['type' => 'blog_image', 'file' => "$id.preview.jpg"], blog_assistant_load()['messages'][0]['content'][0], 'The session keeps the name, not the bytes.');
+    }
+
+    /** A crop of an upload: view_photo makes a new image of it. */
+    private function crop(string $id): array
+    {
+        return ['photo' => $id, 'crop' => ['x' => 0.1, 'y' => 0.1, 'w' => 0.5, 'h' => 0.5]];
+    }
+
+    public function testAChatTakesAtMost40Images(): void
+    {
+        $chat = blog_assistant_load();
+        $chat['images'] = 38;
+        blog_assistant_store($chat);
+        $first = blog_uploads_accept($this->jpeg(40, 30, 'a.jpg'), 'a.jpg')['id'];
+        blog_uploads_accept($this->jpeg(40, 30, 'b.jpg'), 'b.jpg');
+        try {
+            blog_uploads_accept($this->jpeg(40, 30, 'c.jpg'), 'c.jpg');
+            $this->fail('A 41st image');
+        } catch (BlogAssistantError $e) {
+            $this->assertStringContainsString('40 Bilder', $e->getMessage());
+        }
+        $this->assertCount(2, blog_uploads_pending());
+
+        $this->reply('tool_use', $this->tool('t1', 'view_photo', $this->crop($first)));
+        $this->reply('end_turn');
+        $this->chat('Schau genauer hin.');
+
+        $result = $this->results(1)[0]['content'];
+        $this->assertSame(['text'], array_column($result, 'type'));
+        $this->assertStringContainsString('40 images', $result[0]['text']);
+    }
+
+    public function testARequestCarriesAt30MbOfImages(): void
+    {
+        // An image of the chat as large as a request can carry, as base64.
+        $big = 'v' . str_repeat('0', 16) . '.jpg';
+        file_put_contents(blog_uploads_dir() . '/' . $big, str_repeat("\x00", 23 * 1024 * 1024));
+        $chat = blog_assistant_load();
+        $chat['messages'][] = ['role' => 'user', 'content' => [['type' => 'blog_image', 'file' => $big], ['type' => 'text', 'text' => 'x']]];
+        $chat['messages'][] = ['role' => 'assistant', 'content' => [['type' => 'text', 'text' => 'y']]];
+        blog_assistant_store($chat);
+
+        try {
+            blog_uploads_accept($this->jpeg(40, 30), 'a.jpg');
+            $this->fail('Too much for a request');
+        } catch (BlogAssistantError $e) {
+            $this->assertStringContainsString('zu groß', $e->getMessage());
+        }
+        $this->assertSame([], glob(dirname(blog_uploads_dir()) . '/*/u*') ?: [], 'Nothing stays behind.');
+    }
+
+    public function testARoundViewsAtMostFivePhotos(): void
+    {
+        $id = blog_uploads_accept($this->jpeg(40, 30), 'a.jpg')['id'];
+        $this->reply('end_turn');
+        $this->chat('Hier.');
+        $this->reply('tool_use', ...array_map(fn ($i) => $this->tool("t$i", 'view_photo', $this->crop($id)), range(1, 6)));
+        $this->reply('end_turn');
+
+        $this->chat('Schau dir Ausschnitte an.');
+
+        $results = $this->results(2);
+        $this->assertCount(6, $results);
+        foreach (array_slice($results, 0, 5) as $result) {
+            $this->assertSame('image', $result['content'][0]['type']);
+        }
+        $this->assertTrue($results[5]['is_error']);
+        $this->assertStringContainsString('At most 5', $results[5]['content']);
     }
 
     public function testAnUploadRequestTakesExactlyOneFile(): void

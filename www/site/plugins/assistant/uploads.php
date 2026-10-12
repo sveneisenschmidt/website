@@ -33,8 +33,13 @@ const BLOG_UPLOAD_ID = '/^u[0-9a-f]{16}$/';
 const BLOG_UPLOAD_IMAGE = '/^[uv][0-9a-f]{16}(?:\.preview)?\.jpg$/';
 const BLOG_UPLOAD_FOLDER = '/^[0-9a-f]{32}$/';
 
-/** Code in an image file: such a file is refused. */
-const BLOG_UPLOAD_CODE = '/<\?php|<script|<html/i';
+/**
+ * Code in an image file: such a file is refused. PHP's short echo tag
+ * counts with the text it runs, up to "?>" or the end of the file: the
+ * three bytes "<?=" alone come by chance in the image data of large
+ * photos, a few times in 20 MB.
+ */
+const BLOG_UPLOAD_CODE = '/<\?php|<\?=[\x20-\x7E\t\r\n]*?(?:\?>|\z)|<script|<html/i';
 
 function blog_uploads_root(): string
 {
@@ -60,6 +65,7 @@ function blog_uploads_save(array $state): void
 /** The folder of this chat, created on first use. Every call counts as use. */
 function blog_uploads_dir(): string
 {
+    blog_assistant_lock();
     $state = blog_uploads_state();
     if ($state['folder'] === null) {
         $state['folder'] = bin2hex(random_bytes(16));
@@ -83,6 +89,9 @@ function blog_uploads_error(string $text): BlogAssistantError
  */
 function blog_uploads_accept(string $tmp, string $name): array
 {
+    // A 64-megapixel photo and its previews take a while on a slow host.
+    // set_time_limit may be disabled on a host; then its limit stays.
+    @set_time_limit(60);
     $size = (int)@filesize($tmp);
     if ($size === 0) {
         throw blog_uploads_error('Die Datei ist leer.');
@@ -121,9 +130,14 @@ function blog_uploads_accept(string $tmp, string $name): array
     } catch (RuntimeException) {
         throw blog_uploads_error('Die Datei ist beschädigt.');
     }
+    // Every request of the chat carries every image: a chat takes 40, and
+    // no more bytes than a request to Claude can carry.
+    $load = blog_assistant_image_load(blog_assistant_load());
+    if ($load['count'] >= BLOG_ASSISTANT_IMAGES) {
+        throw blog_uploads_error('Dieser Chat hat schon ' . BLOG_ASSISTANT_IMAGES . ' Bilder. Für weitere beginn einen neuen Chat.');
+    }
     $id = 'u' . bin2hex(random_bytes(8));
     $dir = blog_uploads_dir();
-    F::write("$dir/$id.$ext", $bytes);
     $turned = $orientation >= 5 && $orientation <= 8;
     $meta = [
         'kind' => 'image',
@@ -136,14 +150,20 @@ function blog_uploads_accept(string $tmp, string $name): array
         'time' => time(),
     ];
     try {
+        F::write("$dir/$id.$ext", $bytes);
         blog_uploads_image("$dir/$id.$ext", $orientation, null, BLOG_UPLOAD_PREVIEW, "$id.preview.jpg");
-        blog_uploads_image("$dir/$id.$ext", $orientation, null, BLOG_UPLOAD_THUMB, "$id.thumb.jpg");
-    } catch (Throwable) {
-        // Any failure, also an Error from GD, leaves no half upload behind.
+        // The thumb comes from the upright preview: the original is decoded once.
+        blog_uploads_image("$dir/$id.preview.jpg", 1, null, BLOG_UPLOAD_THUMB, "$id.thumb.jpg");
+        if ($load['bytes'] + blog_uploads_base64((int)filesize("$dir/$id.preview.jpg")) > BLOG_ASSISTANT_IMAGE_BYTES) {
+            throw blog_uploads_error('Die Bilder dieses Chats sind zusammen zu groß für eine Anfrage an Claude. Für weitere beginn einen neuen Chat.');
+        }
+        return blog_uploads_register($id, $meta);
+    } catch (Throwable $e) {
+        // Any failure after the first write, also an Error from GD or in the
+        // metadata, leaves no half upload behind.
         array_map(fn ($file) => F::remove($file), glob("$dir/$id.*") ?: []);
-        throw blog_uploads_error('Das Bild lässt sich nicht lesen.');
+        throw $e instanceof BlogAssistantError ? $e : blog_uploads_error('Das Bild lässt sich nicht lesen.');
     }
-    return blog_uploads_register($id, $meta);
 }
 
 /** A GPX file: read, deleted at once; only the cut line and its numbers stay. */
@@ -162,7 +182,9 @@ function blog_uploads_accept_gpx(string $tmp, string $name): array
 
 function blog_uploads_register(string $id, array $meta): array
 {
-    F::write(blog_uploads_dir() . "/$id.json", json_encode($meta, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+    // Camera texts in another encoding than UTF-8 keep their readable part.
+    F::write(blog_uploads_dir() . "/$id.json", json_encode($meta, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR));
+    blog_assistant_lock();
     $state = blog_uploads_state();
     $state['items'][$id] = $meta['kind'];
     $state['pending'][] = $id;
@@ -213,6 +235,7 @@ function blog_uploads_pending(): array
 /** Marks uploads as sent: they went with a message. */
 function blog_uploads_sent(array $ids): void
 {
+    blog_assistant_lock();
     $state = blog_uploads_state();
     $state['pending'] = array_values(array_diff($state['pending'], $ids));
     blog_uploads_save($state);
@@ -226,9 +249,10 @@ function blog_uploads_blocks(string $id): array
         return [];
     }
     if ($meta['kind'] === 'gpx') {
+        // Without its file name: a name like "Home to the lake" tells where a ride began.
         $text = isset($meta['error'])
-            ? "Upload $id (GPX, {$meta['name']}): not usable. {$meta['error']}"
-            : "Upload $id (GPX, {$meta['name']}): {$meta['km']} km"
+            ? "Upload $id (GPX): not usable. {$meta['error']}"
+            : "Upload $id (GPX): {$meta['km']} km"
                 . ($meta['seconds'] !== null ? ', ' . blog_route_duration($meta['seconds']) : '')
                 . ', ' . count($meta['line']) . ' points, both ends cut. Line (GeoJSON, lon/lat): '
                 . json_encode(['type' => 'LineString', 'coordinates' => $meta['line']]);
@@ -279,6 +303,22 @@ function blog_uploads_read(string $file): ?string
     return $data === false ? null : $data;
 }
 
+/** The size of an image file of this chat's folder in bytes, 0 when it is gone. */
+function blog_uploads_size(string $file): int
+{
+    $folder = blog_uploads_state()['folder'];
+    if ($folder === null || !preg_match(BLOG_UPLOAD_IMAGE, $file)) {
+        return 0;
+    }
+    return (int)@filesize(blog_uploads_root() . "/$folder/$file");
+}
+
+/** Bytes as base64 carries them, as a request to Claude does. */
+function blog_uploads_base64(int $bytes): int
+{
+    return 4 * (int)ceil($bytes / 3);
+}
+
 /** The thumbnail of an image upload as data URL for a card, or null. */
 function blog_uploads_thumb(string $id): ?string
 {
@@ -288,6 +328,15 @@ function blog_uploads_thumb(string $id): ?string
     }
     $data = @file_get_contents(blog_uploads_root() . '/' . $state['folder'] . "/$id.thumb.jpg");
     return $data === false ? null : 'data:image/jpeg;base64,' . base64_encode($data);
+}
+
+/** The result of a GD call; GD reports a failure as false, this throws it. */
+function blog_uploads_gd(mixed $result, string $call): mixed
+{
+    if ($result === false) {
+        throw new RuntimeException("GD: $call failed.");
+    }
+    return $result;
 }
 
 /**
@@ -314,12 +363,12 @@ function blog_uploads_image(string $source, int $orientation = 1, ?array $crop =
         $h = imagesy($image);
         $x = (int)round(max(0.0, min(1.0, (float)$crop['x'])) * $w);
         $y = (int)round(max(0.0, min(1.0, (float)$crop['y'])) * $h);
-        $image = imagecrop($image, [
+        $image = blog_uploads_gd(imagecrop($image, [
             'x' => $x,
             'y' => $y,
             'width' => max(1, min($w - $x, (int)round((float)$crop['w'] * $w))),
             'height' => max(1, min($h - $y, (int)round((float)$crop['h'] * $h))),
-        ]) ?: throw new RuntimeException('The crop is empty.');
+        ]), 'imagecrop');
     }
     $long = max(imagesx($image), imagesy($image));
     if ($long > $max) {
@@ -327,18 +376,18 @@ function blog_uploads_image(string $source, int $orientation = 1, ?array $crop =
         // returns false on some GD builds (Homebrew PHP 8.5).
         $w = max(1, (int)round(imagesx($image) * $max / $long));
         $h = max(1, (int)round(imagesy($image) * $max / $long));
-        $scaled = imagecreatetruecolor($w, $h);
+        $scaled = blog_uploads_gd(imagecreatetruecolor($w, $h), 'imagecreatetruecolor');
         imagealphablending($scaled, false);
         imagesavealpha($scaled, true);
-        imagecopyresampled($scaled, $image, 0, 0, 0, 0, $w, $h, imagesx($image), imagesy($image));
+        blog_uploads_gd(imagecopyresampled($scaled, $image, 0, 0, 0, 0, $w, $h, imagesx($image), imagesy($image)), 'imagecopyresampled');
         $image = $scaled;
     }
     // Transparent areas become white, not black.
-    $flat = imagecreatetruecolor(imagesx($image), imagesy($image));
-    imagefill($flat, 0, 0, imagecolorallocate($flat, 255, 255, 255));
-    imagecopy($flat, $image, 0, 0, 0, 0, imagesx($image), imagesy($image));
+    $flat = blog_uploads_gd(imagecreatetruecolor(imagesx($image), imagesy($image)), 'imagecreatetruecolor');
+    blog_uploads_gd(imagefill($flat, 0, 0, blog_uploads_gd(imagecolorallocate($flat, 255, 255, 255), 'imagecolorallocate')), 'imagefill');
+    blog_uploads_gd(imagecopy($flat, $image, 0, 0, 0, 0, imagesx($image), imagesy($image)), 'imagecopy');
     $name ??= 'v' . bin2hex(random_bytes(8)) . '.jpg';
-    imagejpeg($flat, blog_uploads_dir() . '/' . $name, 80);
+    blog_uploads_gd(@imagejpeg($flat, blog_uploads_dir() . '/' . $name, 80), 'imagejpeg');
     return $name;
 }
 
@@ -346,9 +395,9 @@ function blog_uploads_image(string $source, int $orientation = 1, ?array $crop =
 function blog_uploads_orient(GdImage $image, int $orientation): GdImage
 {
     if (in_array($orientation, [2, 5, 7], true)) {
-        imageflip($image, IMG_FLIP_HORIZONTAL);
+        blog_uploads_gd(imageflip($image, IMG_FLIP_HORIZONTAL), 'imageflip');
     } elseif ($orientation === 4) {
-        imageflip($image, IMG_FLIP_VERTICAL);
+        blog_uploads_gd(imageflip($image, IMG_FLIP_VERTICAL), 'imageflip');
     }
     $angle = match ($orientation) {
         3 => 180,
@@ -356,14 +405,25 @@ function blog_uploads_orient(GdImage $image, int $orientation): GdImage
         6, 7 => 270,
         default => 0,
     };
-    return $angle === 0 ? $image : imagerotate($image, $angle, 0);
+    return $angle === 0 ? $image : blog_uploads_gd(imagerotate($image, $angle, 0), 'imagerotate');
 }
 
 /**
- * A JPEG without metadata segments, lossless: APP1 (EXIF, XMP), APP13
- * (IPTC) and the MPF index go, and whatever follows the end of the image
- * (motion photos, gain maps). Everything else stays byte for byte. An
- * orientation other than 1 comes back as an EXIF segment with only that tag.
+ * The segments of a JPEG that stay (security review, 2026-10-12): what
+ * draws the image (SOFn, DHT, DAC, DQT, DRI, SOS with its scan data and
+ * RSTn), and APP0 JFIF, APP2 ICC_PROFILE and APP14 Adobe for its colours.
+ * Everything else goes: EXIF and XMP, IPTC, comments, C2PA in APP11, MPF,
+ * thumbnails, segments not known today.
+ */
+const BLOG_JPEG_KEEP = [0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF, 0xDB, 0xDD];
+const BLOG_JPEG_APP_KEEP = [0xE0 => "JFIF\x00", 0xE2 => "ICC_PROFILE\x00", 0xEE => 'Adobe'];
+
+/**
+ * A JPEG with only the segments of BLOG_JPEG_KEEP, lossless: every scan
+ * of a progressive JPEG stays, what lies between them is checked as well,
+ * and whatever follows the end of the image goes (motion photos, gain
+ * maps). An orientation other than 1 comes back as an EXIF segment with
+ * only that tag.
  */
 function blog_jpeg_strip(string $jpeg, int $orientation = 1): string
 {
@@ -379,7 +439,8 @@ function blog_jpeg_strip(string $jpeg, int $orientation = 1): string
     }
     $pos = 2;
     $length = strlen($jpeg);
-    while ($pos + 4 <= $length) {
+    $scans = 0;
+    while ($pos + 2 <= $length) {
         if ($jpeg[$pos] !== "\xFF") {
             throw new RuntimeException('Broken JPEG');
         }
@@ -388,29 +449,52 @@ function blog_jpeg_strip(string $jpeg, int $orientation = 1): string
             $pos++;
             continue;
         }
-        if ($marker === 0xDA) {
-            // Start of scan: the image data up to its end marker stays as it is.
-            $end = strpos($jpeg, "\xFF\xD9", $pos);
-            if ($end === false) {
-                throw new RuntimeException('JPEG without end');
+        if ($marker === 0xD9) {
+            if ($scans === 0) {
+                throw new RuntimeException('JPEG without image data');
             }
-            return $out . substr($jpeg, $pos, $end + 2 - $pos);
+            return $out . "\xFF\xD9";
+        }
+        if ($pos + 4 > $length) {
+            throw new RuntimeException('Broken JPEG');
         }
         $size = unpack('n', substr($jpeg, $pos + 2, 2))[1];
         if ($size < 2 || $pos + 2 + $size > $length) {
             throw new RuntimeException('Broken JPEG');
         }
         $segment = substr($jpeg, $pos, 2 + $size);
-        $drop = $marker === 0xE1 || $marker === 0xED || ($marker === 0xE2 && substr($segment, 4, 4) === "MPF\x00");
-        if (!$drop) {
+        $pos += 2 + $size;
+        if ($marker === 0xDA) {
+            // Start of scan: its data runs to the next marker that is not a
+            // stuffed 0xFF00, a fill byte or a restart marker RSTn.
+            $end = $pos;
+            while (($end = strpos($jpeg, "\xFF", $end)) !== false && $end + 1 < $length) {
+                $next = ord($jpeg[$end + 1]);
+                if ($next !== 0x00 && $next !== 0xFF && ($next < 0xD0 || $next > 0xD7)) {
+                    break;
+                }
+                $end++;
+            }
+            if ($end === false || $end + 1 >= $length) {
+                throw new RuntimeException('JPEG without end');
+            }
+            $out .= $segment . substr($jpeg, $pos, $end - $pos);
+            $pos = $end;
+            $scans++;
+            continue;
+        }
+        $app = BLOG_JPEG_APP_KEEP[$marker] ?? null;
+        if (in_array($marker, BLOG_JPEG_KEEP, true) || ($app !== null && substr($segment, 4, strlen($app)) === $app)) {
             $out .= $segment;
         }
-        $pos += 2 + $size;
     }
-    throw new RuntimeException('JPEG without image data');
+    throw new RuntimeException('JPEG without end');
 }
 
-/** A PNG without text and EXIF chunks (eXIf, tEXt, zTXt, iTXt, tIME), lossless. */
+/** The chunks of a PNG that stay: what draws the image, its colours, its size and its animation. */
+const BLOG_PNG_KEEP = ['IHDR', 'PLTE', 'IDAT', 'IEND', 'tRNS', 'gAMA', 'cHRM', 'sRGB', 'iCCP', 'cICP', 'sBIT', 'pHYs', 'bKGD', 'acTL', 'fcTL', 'fdAT'];
+
+/** A PNG with only the chunks of BLOG_PNG_KEEP, lossless: text, EXIF, time, C2PA (caBX) and unknown chunks go. */
 function blog_png_strip(string $png): string
 {
     $signature = "\x89PNG\r\n\x1a\n";
@@ -426,7 +510,7 @@ function blog_png_strip(string $png): string
         if ($pos + 12 + $size > $length) {
             throw new RuntimeException('Broken PNG');
         }
-        if (!in_array($type, ['eXIf', 'tEXt', 'zTXt', 'iTXt', 'tIME'], true)) {
+        if (in_array($type, BLOG_PNG_KEEP, true)) {
             $out .= substr($png, $pos, 12 + $size);
         }
         $pos += 12 + $size;
@@ -437,7 +521,10 @@ function blog_png_strip(string $png): string
     throw new RuntimeException('PNG without end');
 }
 
-/** A WebP without EXIF and XMP chunks, lossless. */
+/** The chunks of a WebP that stay: the image, its alpha, its animation and its colour profile. */
+const BLOG_WEBP_KEEP = ['VP8 ', 'VP8L', 'VP8X', 'ALPH', 'ANIM', 'ANMF', 'ICCP'];
+
+/** A WebP with only the chunks of BLOG_WEBP_KEEP, lossless: EXIF, XMP and unknown chunks go. */
 function blog_webp_strip(string $webp): string
 {
     if (substr($webp, 0, 4) !== 'RIFF' || substr($webp, 8, 4) !== 'WEBP') {
@@ -453,11 +540,13 @@ function blog_webp_strip(string $webp): string
             throw new RuntimeException('Broken WebP');
         }
         $chunk = substr($webp, $pos, 8 + $size + ($size & 1));
-        if ($type === 'VP8X') {
-            // The flags of the extended format name EXIF (0x08) and XMP (0x04): they go with the chunks.
-            $chunk[8] = chr(ord($chunk[8]) & ~0x0C);
+        if ($type === 'VP8X' && $size >= 1) {
+            // The flags of the extended format: ICC (0x20), alpha (0x10) and
+            // animation (0x02) stay; EXIF (0x08), XMP (0x04) and the
+            // reserved bits go with their chunks.
+            $chunk[8] = chr(ord($chunk[8]) & 0x32);
         }
-        if ($type !== 'EXIF' && $type !== 'XMP ') {
+        if (in_array($type, BLOG_WEBP_KEEP, true)) {
             $body .= $chunk;
         }
         $pos += 8 + $size + ($size & 1);
@@ -500,8 +589,9 @@ function blog_uploads_reset(): void
 
 /**
  * Runs with every request to the assistant. Folders of other chats go
- * 7 days after their last use. In this chat, uploads go 7 days after they
- * came, even when an open card needs them: such a card then finds them gone.
+ * 7 days after their last use; any other folder stays. In this chat,
+ * uploads go 7 days after they came, even when an open card needs them:
+ * such a card then finds them gone, and Claude learns which ones went.
  */
 function blog_uploads_cleanup(): void
 {
@@ -513,19 +603,28 @@ function blog_uploads_cleanup(): void
     }
     foreach (glob($root . '/*', GLOB_ONLYDIR) ?: [] as $dir) {
         $last = @filemtime($dir . '/.last') ?: (int)@filemtime($dir);
-        if (basename($dir) !== $current && $last < $limit) {
+        if (preg_match(BLOG_UPLOAD_FOLDER, basename($dir)) && basename($dir) !== $current && $last < $limit) {
             Dir::remove($dir);
         }
     }
     if ($current === null) {
         return;
     }
+    $gone = [];
     foreach (glob("$root/$current/u*.json") ?: [] as $file) {
         $meta = json_decode((string)file_get_contents($file), true);
         if (($meta['time'] ?? 0) < $limit) {
             foreach (glob("$root/$current/" . basename($file, '.json') . '.*') ?: [] as $part) {
                 F::remove($part);
             }
+            $gone[] = basename($file, '.json');
         }
+    }
+    if ($gone !== []) {
+        blog_assistant_lock();
+        $state = blog_uploads_state();
+        $state['pending'] = array_values(array_diff($state['pending'], $gone));
+        blog_uploads_save($state);
+        blog_assistant_note('(Uploads deleted ' . BLOG_UPLOAD_DAYS . ' days after they came, no longer available: ' . implode(', ', $gone) . '.)');
     }
 }

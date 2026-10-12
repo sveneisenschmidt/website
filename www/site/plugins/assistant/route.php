@@ -28,6 +28,17 @@ const BLOG_GPX_TRIM_MAX = 1200;
 /** No marker closer than this to an end of the ride before trimming, in meters. */
 const BLOG_GPX_ZONE = 1200;
 
+/**
+ * The uncut ends stay on the server for the marker check, to 3 decimals
+ * only. Rounding moves a point by at most 0.0005° in each direction, 56 m
+ * at most, 79 m together: the check adds that.
+ */
+const BLOG_GPX_ENDS_DECIMALS = 3;
+const BLOG_GPX_ZONE_SLACK = 80;
+
+/** A ride that never gets farther than this from its ends gives no route, in meters. */
+const BLOG_GPX_NEAR = 1500;
+
 /** A ride shorter than this after trimming gives no route, in meters. */
 const BLOG_GPX_MIN_LENGTH = 3000;
 
@@ -124,20 +135,29 @@ function blog_route_line(string $json): array
 }
 
 /**
- * The indexes of the first and last point that stay when $head meters
- * along the line go at the start and $tail meters at the end.
+ * The indexes of the first and last point that stay when both ends are
+ * cut: the start until $head meters along the line lie behind it and the
+ * point is $head meters or more from both ends in a straight line, the end
+ * the same with $tail. Rides start and end at home, and a standstill there
+ * walks along the line without leaving (security review, 2026-10-12). The
+ * distance counts for the point as Claude gets it, to 5 decimals.
  */
 function blog_route_cut(array $points, float $head, float $tail): array
 {
+    $ends = [$points[0], $points[count($points) - 1]];
+    $away = function (array $point, float $length) use ($ends): bool {
+        $point = [round((float)$point[0], 5), round((float)$point[1], 5)];
+        return blog_route_distance($ends[0], $point) >= $length && blog_route_distance($ends[1], $point) >= $length;
+    };
     $first = 0;
     $walked = 0.0;
-    while ($first < count($points) - 1 && $walked < $head) {
+    while ($first < count($points) - 1 && ($walked < $head || !$away($points[$first], $head))) {
         $walked += blog_route_distance($points[$first], $points[$first + 1]);
         $first++;
     }
     $last = count($points) - 1;
     $walked = 0.0;
-    while ($last > $first && $walked < $tail) {
+    while ($last > $first && ($walked < $tail || !$away($points[$last], $tail))) {
         $walked += blog_route_distance($points[$last], $points[$last - 1]);
         $last--;
     }
@@ -189,6 +209,7 @@ function blog_gpx_read(string $path): array
     $points = [];
     $times = [];
     $inPoint = false;
+    $parts = ['trk' => 0, 'trkseg' => 0];
     try {
         $reader = XMLReader::fromUri($path, null, LIBXML_NONET);
         while ($reader->read()) {
@@ -212,6 +233,9 @@ function blog_gpx_read(string $path): array
                 $times[array_key_last($times)] = $time === false ? null : $time;
             } elseif ($reader->nodeType === XMLReader::END_ELEMENT && $reader->localName === 'trkpt') {
                 $inPoint = false;
+            } elseif ($reader->nodeType === XMLReader::ELEMENT && isset($parts[$reader->localName]) && ++$parts[$reader->localName] > 1) {
+                // Each track and segment would need its own cut: one ride per file.
+                throw new RuntimeException('Die GPX-Datei hat mehr als einen Track oder mehr als ein Segment. Eine Fahrt pro Datei.');
             }
         }
         if (libxml_get_errors() !== []) {
@@ -229,14 +253,27 @@ function blog_gpx_read(string $path): array
  * The line Claude may see of a ride: both ends cut by their own random
  * length, simplified. Rides start and end at home: a fixed length would
  * put all ends on a circle around it. The lengths are not kept. "ends"
- * holds the uncut ends for the marker check; it stays on the server.
- * A track without points or shorter than 3 km after the cut gives "error",
+ * holds the uncut ends, rounded, for the marker check; it stays on the
+ * server. A track without points, one that never gets farther than 1.5 km
+ * from its ends, or one shorter than 3 km after the cut gives "error",
  * the message Claude gets.
  */
 function blog_gpx_line(array $points, array $times): array
 {
     if (count($points) < 2) {
         return ['error' => 'The GPX file has no track points.'];
+    }
+    $ends = [$points[0], $points[count($points) - 1]];
+    // Laps around the block show the block, cut or not.
+    $far = false;
+    foreach ($points as $point) {
+        if (blog_route_distance($ends[0], $point) > BLOG_GPX_NEAR && blog_route_distance($ends[1], $point) > BLOG_GPX_NEAR) {
+            $far = true;
+            break;
+        }
+    }
+    if (!$far) {
+        return ['error' => 'The GPX track never gets farther than 1.5 km from its start and end. It gives no route.'];
     }
     [$first, $last] = blog_route_cut($points, random_int(BLOG_GPX_TRIM_MIN, BLOG_GPX_TRIM_MAX), random_int(BLOG_GPX_TRIM_MIN, BLOG_GPX_TRIM_MAX));
     $kept = array_slice($points, $first, $last - $first + 1);
@@ -248,6 +285,6 @@ function blog_gpx_line(array $points, array $times): array
         'line' => blog_route_round(blog_route_simplify($kept, BLOG_GPX_EPSILON)),
         'km' => round($length / 1000, 1),
         'seconds' => isset($times[$first], $times[$last]) ? max(0, $times[$last] - $times[$first]) : null,
-        'ends' => [$points[0], $points[count($points) - 1]],
+        'ends' => array_map(fn ($end) => [round((float)$end[0], BLOG_GPX_ENDS_DECIMALS), round((float)$end[1], BLOG_GPX_ENDS_DECIMALS)], $ends),
     ];
 }

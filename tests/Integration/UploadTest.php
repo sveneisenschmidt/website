@@ -3,6 +3,7 @@
 namespace Website\Tests\Integration;
 
 use BlogAssistantError;
+use RuntimeException;
 use Website\Tests\Support\GpxFixture;
 
 /**
@@ -59,6 +60,68 @@ final class UploadTest extends AssistantTestCase
         $this->assertSame([240, 150], array_slice(getimagesize("$dir/{$upload['id']}.thumb.jpg"), 0, 2));
     }
 
+    public function testAFailedWriteOfAPreviewIsAnError(): void
+    {
+        $source = $this->jpeg(40, 30);
+        // GD cannot write where a folder stands; imagejpeg() then returns false.
+        mkdir(blog_uploads_dir() . '/v0000000000000000.jpg');
+
+        $this->expectException(RuntimeException::class);
+        blog_uploads_image($source, 1, null, 20, 'v0000000000000000.jpg');
+    }
+
+    public function testExpiredUploadsAreNamedToClaude(): void
+    {
+        $id = blog_uploads_accept($this->jpeg(8, 8), 'a.jpg')['id'];
+        $dir = dirname(blog_uploads_meta($id)['path']);
+        $meta = json_decode(file_get_contents("$dir/$id.json"), true);
+        file_put_contents("$dir/$id.json", json_encode(['time' => time() - 8 * 86400] + $meta));
+
+        blog_uploads_cleanup();
+
+        $this->assertSame([], blog_uploads_pending());
+        $this->reply('end_turn');
+        blog_assistant_send('Hier ist das Foto.');
+        $text = $this->lastText($this->requests[0]);
+        $this->assertStringContainsString($id, $text);
+        $this->assertStringContainsString('7 days', $text);
+        $this->assertSame(['text'], array_column($this->requests[0]['messages'][0]['content'], 'type'));
+    }
+
+    public function testAnUploadHasItsOwnTimeLimit(): void
+    {
+        set_time_limit(0);
+        try {
+            blog_uploads_accept($this->jpeg(8, 8), 'a.jpg');
+            $this->assertSame('60', ini_get('max_execution_time'));
+        } finally {
+            set_time_limit(0);
+        }
+    }
+
+    /**
+     * The probe up4.php of the security review: a camera name in Latin-1,
+     * not UTF-8. It broke the JSON of the upload after its files were
+     * written; they stayed behind.
+     */
+    public function testACameraNameInAnotherEncodingBreaksNothing(): void
+    {
+        ob_start();
+        imagejpeg(imagecreatetruecolor(64, 48), null, 90);
+        $plain = (string)ob_get_clean();
+        $model = "Caf\xE9 Cam\x00";
+        $tiff = "MM\x00\x2A" . pack('N', 8) . pack('n', 1) . pack('nnNN', 0x0110, 2, strlen($model), 26) . pack('N', 0) . $model;
+        $app1 = "Exif\x00\x00" . $tiff;
+        file_put_contents($this->root . '/latin1.jpg', "\xFF\xD8\xFF\xE1" . pack('n', strlen($app1) + 2) . $app1 . substr($plain, 2));
+
+        $upload = blog_uploads_accept($this->root . '/latin1.jpg', 'a.jpg');
+
+        $meta = blog_uploads_meta($upload['id']);
+        $this->assertSame("Caf\u{FFFD} Cam", $meta['exif']['camera']);
+        $this->assertEqualsCanonicalizing(['.json', '.jpg', '.preview.jpg', '.thumb.jpg'], array_map(fn ($f) => substr(basename($f), 17), $this->stored()));
+        $this->assertNotFalse(json_encode(blog_assistant_view(blog_assistant_load())));
+    }
+
     public function testCodeAndOtherTypesAreRefused(): void
     {
         file_put_contents($this->root . '/shell.php', '<?php system($_GET["c"]);');
@@ -69,7 +132,13 @@ final class UploadTest extends AssistantTestCase
         file_put_contents($this->root . '/logo.svg', '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>');
         $this->refused($this->root . '/logo.svg', 'logo.svg', 'Nur JPEG');
         $this->refused($this->gpsJpeg(1, 'poly.jpg', 64, 48, true), 'poly.jpg', 'Code');
-        $this->assertSame([], $this->stored());
+        // PHP's short echo tag, in a comment segment (probe up1.php of the security review).
+        file_put_contents($this->root . '/short.jpg', "\xFF\xD8" . $this->segment(0xFE, '<?= `id` ?>') . substr(file_get_contents($this->jpeg(8, 8)), 2));
+        $this->refused($this->root . '/short.jpg', 'short.jpg', 'Code');
+        // The three bytes alone come by chance in large photos, a few times in 20 MB of noise.
+        file_put_contents($this->root . '/chance.jpg', "\xFF\xD8" . $this->segment(0xFE, "<?=\x00\xFF\x13") . substr(file_get_contents($this->jpeg(8, 8)), 2));
+        $this->assertSame('image', blog_uploads_accept($this->root . '/chance.jpg', 'chance.jpg')['kind']);
+        $this->assertCount(4, $this->stored(), 'Only the upload by chance.');
     }
 
     public function testTooManyPixelsAreRefused(): void
@@ -99,6 +168,54 @@ final class UploadTest extends AssistantTestCase
         $this->assertNotFalse(imagecreatefromwebp($webp['path']));
     }
 
+    /** A JPEG segment: marker and data. */
+    private function segment(int $marker, string $data): string
+    {
+        return "\xFF" . chr($marker) . pack('n', strlen($data) + 2) . $data;
+    }
+
+    /**
+     * The probe up1.php of the security review: metadata where a list of
+     * what goes would miss it. Only what draws the image stays.
+     */
+    public function testOnlyWhatDrawsTheImageStays(): void
+    {
+        $image = imagecreatetruecolor(64, 48);
+        imagefilledrectangle($image, 0, 0, 32, 48, imagecolorallocate($image, 255, 0, 0));
+        $encode = function (callable $write) use ($image): string {
+            ob_start();
+            $write($image);
+            return (string)ob_get_clean();
+        };
+        $plain = $encode(fn ($i) => imagejpeg($i, null, 90));
+        $png = $encode(fn ($i) => imagepng($i));
+        $webp = $encode(fn ($i) => imagewebp($i));
+        imageinterlace($image, true);
+        $progressive = $encode(fn ($i) => imagejpeg($i, null, 90));
+        $second = strpos($progressive, "\xFF\xDA", strpos($progressive, "\xFF\xDA") + 2);
+        $this->assertNotFalse($second, 'A progressive JPEG has more than one scan.');
+        $chunk = 'GPS-LEAK c2pa jumb';
+        $webp .= 'XTRA' . pack('V', 9) . "GPS-LEAK!\x00";
+        $cases = [
+            // C2PA in APP11, an address in a comment, data after the end.
+            'c2pa.jpg' => "\xFF\xD8" . $this->segment(0xEB, "JP\x00\x00\x00\x00\x00\x01jumb c2pa GPS-LEAK 51.34N") . $this->segment(0xFE, 'GPS-LEAK Home Street 5') . substr($plain, 2) . 'GPS-LEAK',
+            // XMP between the scans of a progressive JPEG.
+            'scans.jpg' => substr($progressive, 0, $second) . $this->segment(0xE1, "http://ns.adobe.com/xap/1.0/\x00<x:xmpmeta>GPS-LEAK 51.34</x:xmpmeta>") . substr($progressive, $second),
+            'cabx.png' => substr($png, 0, 33) . pack('N', strlen($chunk)) . 'caBX' . $chunk . pack('N', crc32('caBX' . $chunk)) . substr($png, 33),
+            'chunk.webp' => substr_replace($webp, pack('V', strlen($webp) - 8), 4, 4),
+        ];
+        $stored = [];
+        foreach ($cases as $name => $bytes) {
+            file_put_contents($this->root . '/' . $name, $bytes);
+            $stored[$name] = file_get_contents(blog_uploads_meta(blog_uploads_accept($this->root . '/' . $name, $name)['id'])['path']);
+
+            $this->assertStringNotContainsString('GPS-LEAK', $stored[$name], $name);
+            $this->assertSame([64, 48], array_slice(getimagesizefromstring($stored[$name]), 0, 2), $name);
+            $this->assertInstanceOf(\GdImage::class, imagecreatefromstring($stored[$name]), $name);
+        }
+        $this->assertSame(substr_count($progressive, "\xFF\xDA"), substr_count($stored['scans.jpg'], "\xFF\xDA"), 'Every scan stays.');
+    }
+
     public function testForeignUploadIdsAreRefused(): void
     {
         $id = blog_uploads_accept($this->jpeg(8, 8), 'a.jpg')['id'];
@@ -124,7 +241,7 @@ final class UploadTest extends AssistantTestCase
         $this->assertNull($meta['path']);
         $this->assertEqualsWithDelta(13.8, $meta['km'], 0.6);
         foreach ($meta['line'] as $point) {
-            $this->assertGreaterThan(650, blog_route_distance(GpxFixture::home(), $point));
+            $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, blog_route_distance(GpxFixture::home(), $point));
         }
         $stored = file_get_contents(dirname($this->stored()[0]) . '/' . $upload['id'] . '.json');
         foreach (['Test Device', 'Morning ride', '2026-', '<hr>', 'ele'] as $leak) {
@@ -132,6 +249,7 @@ final class UploadTest extends AssistantTestCase
         }
         $text = blog_uploads_blocks($upload['id'])[0]['text'];
         $this->assertStringContainsString('both ends cut', $text);
+        $this->assertStringNotContainsString('morning', strtolower($text), 'A file name can name a place; Claude gets none.');
         $this->assertStringNotContainsString(json_encode(array_map(fn ($v) => round($v, 5), GpxFixture::home())), $text);
     }
 
@@ -141,7 +259,7 @@ final class UploadTest extends AssistantTestCase
         $this->refused($path, 'evil.gpx', 'DOCTYPE');
         $this->assertFileDoesNotExist($path);
 
-        $short = blog_uploads_accept(GpxFixture::write($this->root, GpxFixture::xml(GpxFixture::ride(400))), 'short.gpx');
+        $short = blog_uploads_accept(GpxFixture::write($this->root, GpxFixture::xml(GpxFixture::oneWay(4000))), 'short.gpx');
 
         $this->assertStringContainsString('shorter than 3 km', blog_uploads_blocks($short['id'])[0]['text']);
     }
@@ -152,7 +270,9 @@ final class UploadTest extends AssistantTestCase
         $dir = dirname(blog_uploads_meta($id)['path']);
         $old = $this->root . '/storage/assistant/' . str_repeat('a', 32);
         $recent = $this->root . '/storage/assistant/' . str_repeat('b', 32);
-        foreach ([$old => 8, $recent => 6] as $folder => $days) {
+        // Not a folder of a chat: the cleanup leaves it alone, however old.
+        $other = $this->root . '/storage/assistant/backup';
+        foreach ([$old => 8, $recent => 6, $other => 30] as $folder => $days) {
             mkdir($folder);
             touch($folder . '/.last', time() - $days * 86400);
         }
@@ -161,6 +281,7 @@ final class UploadTest extends AssistantTestCase
 
         $this->assertDirectoryDoesNotExist($old);
         $this->assertDirectoryExists($recent);
+        $this->assertDirectoryExists($other);
         $this->assertNotNull(blog_uploads_meta($id)['path']);
 
         $meta = json_decode(file_get_contents("$dir/$id.json"), true);

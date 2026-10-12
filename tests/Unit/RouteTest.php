@@ -43,13 +43,18 @@ final class RouteTest extends TestCase
         $this->assertSame([[12.12346, 51.1], [12.2, 51.2]], blog_route_round([[12.123456, 51.1], [12.1234564, 51.1000001], [12.2, 51.2]]));
     }
 
-    public function testCutWalksAlongTheLine(): void
+    public function testCutWalksAlongTheLineAndAwayFromBothEnds(): void
     {
         $ride = GpxFixture::ride();
         [$first, $last] = blog_route_cut($ride, 700, 1200);
         $this->assertGreaterThanOrEqual(700, blog_route_length(array_slice($ride, 0, $first + 1)));
         $this->assertLessThan(750, blog_route_length(array_slice($ride, 0, $first + 1)));
         $this->assertGreaterThanOrEqual(1200, blog_route_length(array_slice($ride, $last)));
+        // In a straight line too, from both ends: a ride ends where it began.
+        foreach ([$ride[0], end($ride)] as $end) {
+            $this->assertGreaterThanOrEqual(700, blog_route_distance($end, $ride[$first]));
+            $this->assertGreaterThanOrEqual(1200, blog_route_distance($end, $ride[$last]));
+        }
     }
 
     public function testAGpxFileIsReadWithItsTimesOnly(): void
@@ -62,7 +67,10 @@ final class RouteTest extends TestCase
 
     public function testAGpxFileIsReadHardened(): void
     {
+        $point = '<trkpt lat="51.1" lon="12.1"/>';
         $cases = [
+            'einen Track' => "<gpx><trk><trkseg>$point</trkseg></trk><trk><trkseg>$point</trkseg></trk></gpx>",
+            'ein Segment' => "<gpx><trk><trkseg>$point</trkseg><trkseg>$point</trkseg></trk></gpx>",
             'DOCTYPE' => '<?xml version="1.0"?><!DOCTYPE gpx [<!ENTITY x SYSTEM "file:///etc/passwd">]><gpx><trk><trkseg><trkpt lat="51.1" lon="12.1"><name>&x;</name></trkpt></trkseg></trk></gpx>',
             'kein gültiges XML' => '<gpx><trk><trkpt lat="51" lon="12"></trk>',
             'gültigen Koordinaten' => '<gpx><trk><trkseg><trkpt lat="x" lon="12"/></trkseg></trk></gpx>',
@@ -70,12 +78,15 @@ final class RouteTest extends TestCase
             '5 MB' => str_repeat(' ', 5 * 1024 * 1024 + 1),
         ];
         foreach ($cases as $message => $xml) {
+            // PHPUnit's own failure is a RuntimeException too: it must not land in the catch.
+            $error = null;
             try {
                 blog_gpx_read($this->gpx($xml));
-                $this->fail("No error: $message");
             } catch (RuntimeException $e) {
-                $this->assertStringContainsString($message, $e->getMessage());
+                $error = $e->getMessage();
             }
+            $this->assertNotNull($error, "No error: $message");
+            $this->assertStringContainsString($message, $error);
         }
     }
 
@@ -90,20 +101,46 @@ final class RouteTest extends TestCase
             $heads[] = blog_route_distance($home, $line['line'][0]);
             $tails[] = blog_route_distance($home, end($line['line']));
             foreach ($line['line'] as $point) {
-                $this->assertGreaterThan(650, blog_route_distance($home, $point));
+                $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, blog_route_distance($home, $point));
             }
-            $this->assertSame([$ride[0], $ride[360]], $line['ends']);
+            $this->assertSame([array_map(fn ($v) => round($v, 3), $ride[0]), array_map(fn ($v) => round($v, 3), $ride[360])], $line['ends'], 'The ends stay on the server, to 3 decimals.');
         }
-        $this->assertGreaterThanOrEqual(650, min([...$heads, ...$tails]));
+        $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, min([...$heads, ...$tails]));
         $this->assertLessThan(1250, max([...$heads, ...$tails]));
         $this->assertGreaterThan(1, count(array_unique(array_map('round', $heads))), 'The cut changes from ride to ride.');
         $this->assertNotSame(array_map('round', $heads), array_map('round', $tails), 'Start and end are cut differently.');
     }
 
+    public function testAStandstillAtHomeDoesNotShortenTheCut(): void
+    {
+        // Five minutes of GPS noise at home before and after the ride walk
+        // more than a kilometre along the track without leaving home.
+        $home = GpxFixture::home();
+        $points = [...GpxFixture::standstill(300, 4), ...GpxFixture::ride(), ...GpxFixture::standstill(300, 4)];
+        $this->assertGreaterThan(1200, blog_route_length(GpxFixture::standstill(300, 4)));
+        for ($run = 0; $run < 20; $run++) {
+            $line = blog_gpx_line($points, array_fill(0, count($points), null));
+            foreach ($line['line'] as $point) {
+                $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, blog_route_distance($home, $point));
+            }
+        }
+    }
+
+    public function testLapsNearHomeGiveNoRoute(): void
+    {
+        $laps = GpxFixture::laps(4, 300);
+        $this->assertGreaterThan(3000, blog_route_length($laps));
+
+        $line = blog_gpx_line($laps, array_fill(0, count($laps), null));
+
+        $this->assertStringContainsString('1.5 km', $line['error']);
+        $this->assertArrayNotHasKey('line', $line);
+    }
+
     public function testAShortOrEmptyTrackGivesClaudeAMessage(): void
     {
         $this->assertSame(['error' => 'The GPX file has no track points.'], blog_gpx_line([], []));
-        $short = blog_gpx_line(GpxFixture::ride(500), []);
+        $short = blog_gpx_line(GpxFixture::oneWay(4000), []);
         $this->assertStringContainsString('shorter than 3 km', $short['error']);
         $this->assertArrayNotHasKey('line', $short);
     }

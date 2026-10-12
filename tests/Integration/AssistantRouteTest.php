@@ -122,6 +122,25 @@ final class AssistantRouteTest extends AssistantTestCase
         $this->assertSame([], $this->osrmCalls);
     }
 
+    public function testTheZoneHoldsAroundTheEndsBeforeTheyWereRounded(): void
+    {
+        $this->trip('listed');
+        $home = GpxFixture::home();
+        $id = blog_uploads_accept(GpxFixture::write($this->root, GpxFixture::xml(GpxFixture::ride())), 'ride.gpx')['id'];
+        // 1199 m from home, on the side away from the stored, rounded end.
+        $rounded = array_map(fn ($v) => round($v, 3), $home);
+        $east = ($home[0] - $rounded[0]) * 111320 * cos(deg2rad($home[1]));
+        $north = ($home[1] - $rounded[1]) * 111320;
+        $norm = sqrt($east ** 2 + $north ** 2);
+        $marker = ['lat' => $home[1] + 1199 * $north / $norm / 111320, 'lon' => $home[0] + 1199 * $east / $norm / (111320 * cos(deg2rad($home[1]))), 'label' => 'Near'];
+        $this->assertLessThan(1200, blog_route_distance($home, [$marker['lon'], $marker['lat']]));
+
+        $chat = $this->propose(['gpx' => $id, 'markers' => [$marker]]);
+
+        $this->assertSame([], $chat['proposals']);
+        $this->assertStringContainsString('closer than 1200 m', $this->results(1)[0]['content']);
+    }
+
     public function testAGpxRouteNeverShowsTheCutEnds(): void
     {
         $this->trip('listed');
@@ -140,12 +159,12 @@ final class AssistantRouteTest extends AssistantTestCase
         preg_match_all('/\[(-?\d+\.\d+),(-?\d+\.\d+)\]/', json_encode($this->requests), $pairs, PREG_SET_ORDER);
         $this->assertGreaterThan(30, count($pairs));
         foreach ($pairs as [, $lon, $lat]) {
-            $this->assertGreaterThan(650, blog_route_distance($home, [(float)$lon, (float)$lat]));
+            $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, blog_route_distance($home, [(float)$lon, (float)$lat]));
         }
         $trip = $this->kirby->site()->find('trips')->findPageOrDraft('day-1');
         $file = blog_assistant_file_ref($trip, blog_assistant_list($trip->version('changes')->read()['route'])[0]);
         foreach (blog_route_line(file_get_contents($file->root())) as $point) {
-            $this->assertGreaterThan(650, blog_route_distance($home, $point));
+            $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, blog_route_distance($home, $point));
         }
         $this->assertNull(blog_uploads_meta($id), 'The GPX upload goes after the click.');
     }

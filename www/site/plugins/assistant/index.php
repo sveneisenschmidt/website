@@ -139,7 +139,10 @@ App::plugin('sveneisenschmidt/assistant', [
                 'method' => 'POST',
                 'action' => function () {
                     $body = $this->requestBody();
-                    return blog_assistant_api(fn () => blog_assistant_send((string)($body['text'] ?? ''), $body['page'] ?? null));
+                    // A pick in a choice comes as its number, never as text.
+                    return blog_assistant_api(fn () => isset($body['choice'])
+                        ? blog_assistant_choose((int)$body['choice'], $body['page'] ?? null)
+                        : blog_assistant_send((string)($body['text'] ?? ''), $body['page'] ?? null));
                 },
             ],
             [

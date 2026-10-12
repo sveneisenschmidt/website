@@ -38,7 +38,7 @@ final class AssistantEditTest extends AssistantTestCase
     public function testAFieldOfAPublishedPostGoesIntoTheChanges(): void
     {
         $card = $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'intro', 'value' => 'A new intro.']);
-        $this->assertSame([['Anriss', 'Test intro', 'A new intro.']], $card['diff']);
+        $this->assertSame([['Anriss', 'Test intro', 'A new intro.', [], []]], $card['diff']);
         $this->assertStringContainsString('Änderungen', $card['where']);
         $this->assertSame('Test intro', $this->page()->intro()->value(), 'Nothing changes before the click.');
 
@@ -145,11 +145,40 @@ final class AssistantEditTest extends AssistantTestCase
         $this->assertSame('field', $this->card($chat)['kind']);
     }
 
+    public function testAVersionIsCheckedInItsField(): void
+    {
+        // An old reference definition renders nothing until a version uses it.
+        $this->page()->update(['text' => "It rained.\n\n[1]: //evil.example/"]);
+        $this->assertStringContainsString('not allowed', $this->refusal('propose_edit', ['post' => 'photos/test-photo', 'field' => 'text', 'passage' => 'It rained.', 'versions' => ['It [rained][1].']]));
+    }
+
+    public function testOldMarkupOfAFieldStaysEditable(): void
+    {
+        // Imported posts keep raw HTML from Hugo's rawhtml shortcode.
+        $this->page()->update(['text' => "<iframe src=\"https://video.test/embed/1\"></iframe>\n\nIt rained all day."]);
+        $card = $this->propose('propose_edit', ['post' => 'photos/test-photo', 'field' => 'text', 'passage' => 'It rained all day.', 'versions' => ['It poured.']]);
+        $this->assertSame('edit', $card['kind']);
+        $this->assertStringContainsString('HTML', $this->refusal('propose_edit', ['post' => 'photos/test-photo', 'field' => 'text', 'passage' => 'It rained all day.', 'versions' => ['<iframe src="https://video.test/embed/2"></iframe>']]));
+    }
+
+    public function testTheCardKnowsTheLinksOfItsTexts(): void
+    {
+        $uuid = $this->post->uuid()->toString();
+        $this->page()->update(['text' => 'See [old](https://old.test).']);
+        $value = "See [new](https://new.test/page), https://new.test/page and (link: $uuid text: this photo).";
+        $this->reply('tool_use', $this->tool('t1', 'propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => $value]));
+        $this->reply('end_turn');
+
+        $card = $this->card($this->chat('Verlinke https://new.test/page bitte.'));
+
+        $this->assertSame(['Text', 'See [old](https://old.test).', $value, ['https://old.test'], ['https://new.test/page', "(link: $uuid text: this photo)"]], $card['diff'][0]);
+    }
+
     public function testTheTextsOfAnImage(): void
     {
         $this->upload(__DIR__ . '/../fixtures/exif.jpg', 'a.jpg');
         $card = $this->propose('propose_file_fields', ['file' => 'photos/test-photo/a.jpg', 'fields' => [['name' => 'alt', 'value' => 'A dog on a beach'], ['name' => 'photographer', 'value' => 'Nadine']]]);
-        $this->assertSame([['Alternativtext', '', 'A dog on a beach'], ['Fotografiert von', '', 'Nadine']], $card['diff']);
+        $this->assertSame([['Alternativtext', '', 'A dog on a beach', [], []], ['Fotografiert von', '', 'Nadine', [], []]], $card['diff']);
 
         blog_assistant_decide($card['id'], 'apply');
 
@@ -157,6 +186,22 @@ final class AssistantEditTest extends AssistantTestCase
         $this->assertSame('A dog on a beach', $file->version('changes')->read()['alt']);
         $this->assertSame('TEST-CAM', $file->camera()->value());
         $this->assertStringContainsString('caption', $this->refusal('propose_file_fields', ['file' => 'photos/test-photo/a.jpg', 'fields' => [['name' => 'caption', 'value' => '(image: a.jpg)']]]));
+    }
+
+    public function testADecisionIsApplyOrDiscard(): void
+    {
+        $card = $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'intro', 'value' => 'X']);
+
+        foreach (['', 'yes', 'Apply'] as $action) {
+            try {
+                blog_assistant_decide($card['id'], $action);
+                $this->fail("Took the action \"$action\"");
+            } catch (\InvalidArgumentException) {
+            }
+        }
+
+        $this->assertArrayNotHasKey($card['id'], blog_assistant_decisions());
+        $this->assertFalse($this->page()->version('changes')->exists());
     }
 
     public function testADiscardedCardChangesNothingAndIsNamedNextTime(): void
@@ -185,6 +230,23 @@ final class AssistantEditTest extends AssistantTestCase
 
         $this->assertSame('discarded', blog_assistant_decisions()[$card['id']]['state']);
         $this->assertSame(0, blog_assistant_view(blog_assistant_load())['open']);
+    }
+
+    public function testNoProposalRepeatsThePrompt(): void
+    {
+        // A marker of 10 words; any 8 of them in a row are a run of the prompt.
+        $this->kirby->site()->update(['assistantPrompt' => 'PROMPT-CANARY-7f3a alpha bravo charlie delta echo foxtrot golf hotel india']);
+        $run = 'Alpha, *bravo* charlie delta echo foxtrot golf hotel';
+        $this->upload(__DIR__ . '/../fixtures/exif.jpg', 'a.jpg');
+
+        $this->assertStringContainsString('prompt', $this->refusal('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => "We rode. $run."]));
+        $this->assertStringContainsString('prompt', $this->refusal('propose_field', ['post' => 'photos/test-photo', 'field' => 'title', 'value' => $run]));
+        $this->assertStringContainsString('prompt', $this->refusal('propose_file_fields', ['file' => 'photos/test-photo/a.jpg', 'fields' => [['name' => 'alt', 'value' => $run]]]));
+        $this->assertStringContainsString('prompt', $this->refusal('propose_post', [
+            'type' => 'note', 'slug' => 'alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel', 'date' => '2026-10-01 20:40:00', 'title' => 'T', 'intro' => '', 'text' => '',
+            'pick' => false, 'trip' => '', 'photos' => [], 'cover' => '', 'route' => ['stations' => [], 'gpx' => '', 'markers' => [], 'zoom' => false],
+        ]));
+        $this->assertSame('field', $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => 'Alpha bravo charlie delta echo foxtrot golf, and hotel.'])['kind'], 'Seven words in a row are no run.');
     }
 
     public function testToolsJudgeNoStyle(): void

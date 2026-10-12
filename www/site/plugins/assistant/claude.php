@@ -59,6 +59,9 @@ function blog_assistant_model(): string
  */
 function blog_assistant_post(array $body): array
 {
+    // A request to Claude takes long: "Abbrechen" and clicks on cards must
+    // get into the session meanwhile.
+    blog_assistant_unlock();
     $transport = option('blog.assistant.transport');
     if ($transport instanceof Closure) {
         [$status, $response] = $transport($body);
@@ -94,6 +97,12 @@ function blog_assistant_post(array $body): array
     if ($status === 200) {
         if (($response['stop_reason'] ?? null) === 'refusal') {
             throw new BlogAssistantError('refusal');
+        }
+        // An answer without a list of blocks is no answer: nothing goes into the chat.
+        $content = $response['content'] ?? null;
+        if (!is_array($content) || $content === [] || !array_is_list($content) || array_filter($content, fn ($block) => !is_string($block['type'] ?? null)) !== []) {
+            error_log('blog assistant: Anthropic 200 without content');
+            throw new BlogAssistantError('busy');
         }
         return $response;
     }

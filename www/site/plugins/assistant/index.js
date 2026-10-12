@@ -57,9 +57,20 @@ function markdown(text, sources) {
   }
   return html.join("");
 }
-// Texts on a card stay as they are, with every link marked.
-function marked(text) {
-  return escape(text).replace(/(!?\[[^\]]*\]\([^)\s]+\)|\(link:[^)]*\)|https?:\/\/[^\s<]+)/g, '<mark class="blog-ai-link">$1</mark>');
+// Texts on a card stay as they are. The server renders each text as the
+// site does and names its links (plugins/assistant/guard.php): exactly
+// those are marked, wherever the text writes them.
+function marked(text, links) {
+  const found = [...new Set(links || [])].filter((link) => link !== "").sort((a, b) => b.length - a.length);
+  if (found.length === 0) return escape(text);
+  const pattern = new RegExp(found.map((link) => link.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"), "g");
+  let html = "";
+  let last = 0;
+  for (const match of text.matchAll(pattern)) {
+    html += escape(text.slice(last, match.index)) + '<mark class="blog-ai-link">' + escape(match[0]) + "</mark>";
+    last = match.index + match[0].length;
+  }
+  return html + escape(text.slice(last));
 }
 
 // "So arbeitet der Assistent": beside the chat, behind the info button on phones.
@@ -174,22 +185,24 @@ panel.plugin("sveneisenschmidt/assistant", {
             props: { text: ABOUT, cancelButton: false, submitButton: "Schließen" },
           });
         },
-        async send(text = this.text) {
+        // choice: the number of an option in the open choice. It goes as that
+        // number; the server takes the option's text (plugins/assistant/chat.php).
+        async send(text = this.text, choice = null) {
           text = text.trim();
           if (text === "" || this.busy || this.uploading) return;
           this.error = null;
           this.busy = true;
-          this.text = "";
+          if (choice === null) this.text = "";
           // His message shows at once, before the first round answers.
           this.chat.items.push({ type: "me", text, ts: Math.floor(Date.now() / 1000), files: this.chat.pending.map((file) => file.name) });
           this.grow();
           this.scroll();
           try {
-            const state = await this.post("send", { text, page: this.context?.id ?? null });
+            const state = await this.post("send", choice === null ? { text, page: this.context?.id ?? null } : { choice, page: this.context?.id ?? null });
             if (state.error) {
               this.error = state.error;
               this.accessError = state.error.kind === "access";
-              this.text = text;
+              if (choice === null) this.text = text;
               return;
             }
             // The page counts for this one message.
@@ -198,7 +211,7 @@ panel.plugin("sveneisenschmidt/assistant", {
               await this.loop();
             }
           } catch (e) {
-            this.text = text;
+            if (choice === null) this.text = text;
             this.$panel.error(e);
           } finally {
             this.busy = false;
@@ -295,8 +308,8 @@ panel.plugin("sveneisenschmidt/assistant", {
         md(text) {
           return markdown(text, this.chat.sources);
         },
-        marked(text) {
-          return marked(text);
+        marked(text, links) {
+          return marked(text, links);
         },
         host(url) {
           return hostOf(url);
@@ -405,7 +418,7 @@ panel.plugin("sveneisenschmidt/assistant", {
                       <p class="blog-ai-who">Assistent</p>
                       <p class="blog-ai-say">{{ item.question }}</p>
                       <div class="blog-ai-choice">
-                        <k-button v-for="option in item.options" :key="option" size="sm" variant="filled" :disabled="busy || answered(index)" @click="send(option)">{{ option }}</k-button>
+                        <k-button v-for="(option, o) in item.options" :key="option" size="sm" variant="filled" :disabled="busy || answered(index)" @click="send(option, o)">{{ option }}</k-button>
                       </div>
                     </div>
                     <section v-else-if="item.type === 'card' && item.proposal" :key="index" class="blog-ai-indent blog-ai-card" :aria-label="'Vorschlag: ' + item.proposal.title">
@@ -416,7 +429,7 @@ panel.plugin("sveneisenschmidt/assistant", {
                       <dl v-if="item.proposal.rows" class="blog-ai-rows">
                         <template v-for="row in item.proposal.rows">
                           <dt :key="row[0] + 't'">{{ row[0] }}</dt>
-                          <dd :key="row[0] + 'd'" :class="{ 'blog-ai-empty': !row[1] }" v-html="row[1] ? marked(row[1]) : 'leer'"></dd>
+                          <dd :key="row[0] + 'd'" :class="{ 'blog-ai-empty': !row[1] }" v-html="row[1] ? marked(row[1], row[2]) : 'leer'"></dd>
                         </template>
                       </dl>
                       <ul v-if="item.proposal.photos && item.proposal.photos.length" class="blog-ai-photos">
@@ -425,7 +438,7 @@ panel.plugin("sveneisenschmidt/assistant", {
                           <dl class="blog-ai-rows">
                             <dt>Datei</dt><dd>{{ photo.filename }}</dd>
                             <dt>Alternativtext</dt><dd :class="{ 'blog-ai-empty': !photo.alt }">{{ photo.alt || 'leer' }}</dd>
-                            <dt>Bildunterschrift</dt><dd :class="{ 'blog-ai-empty': !photo.caption }" v-html="photo.caption ? marked(photo.caption) : 'leer'"></dd>
+                            <dt>Bildunterschrift</dt><dd :class="{ 'blog-ai-empty': !photo.caption }" v-html="photo.caption ? marked(photo.caption, photo.marks) : 'leer'"></dd>
                             <dt>Fotografiert von</dt><dd :class="{ 'blog-ai-empty': !photo.photographer }">{{ photo.photographer || 'leer' }}</dd>
                           </dl>
                         </li>
@@ -434,23 +447,23 @@ panel.plugin("sveneisenschmidt/assistant", {
                         <p :key="'f' + r" class="blog-ai-field">{{ row[0] }}</p>
                         <div :key="'o' + r" class="blog-ai-diff blog-ai-old">
                           <span>{{ item.proposal.unsaved ? 'Vorher, nicht gespeichert' : 'Vorher' }}</span>
-                          <p :class="{ 'blog-ai-empty': !row[1] }" v-html="row[1] ? marked(row[1]) : 'leer'"></p>
+                          <p :class="{ 'blog-ai-empty': !row[1] }" v-html="row[1] ? marked(row[1], row[3]) : 'leer'"></p>
                         </div>
                         <div :key="'n' + r" class="blog-ai-diff blog-ai-new">
                           <span>Nachher</span>
-                          <p :class="{ 'blog-ai-empty': !row[2] }" v-html="row[2] ? marked(row[2]) : 'leer'"></p>
+                          <p :class="{ 'blog-ai-empty': !row[2] }" v-html="row[2] ? marked(row[2], row[4]) : 'leer'"></p>
                         </div>
                       </template>
                       <template v-if="item.proposal.kind === 'edit'">
                         <p class="blog-ai-field">{{ item.proposal.field }}</p>
                         <div class="blog-ai-diff blog-ai-old">
                           <span>{{ item.proposal.unsaved ? 'Vorher, nicht gespeichert' : 'Vorher' }}</span>
-                          <p v-html="marked(item.proposal.passage)"></p>
+                          <p v-html="marked(item.proposal.passage, item.proposal.passageMarks)"></p>
                         </div>
                         <div v-for="(version, v) in item.proposal.versions" :key="'v' + v" class="blog-ai-diff blog-ai-new">
                           <span>{{ item.proposal.versions.length > 1 ? 'Fassung ' + (v + 1) : 'Nachher' }}</span>
                           <div class="blog-ai-version">
-                            <p v-html="marked(version)"></p>
+                            <p v-html="marked(version, (item.proposal.versionMarks || [])[v])"></p>
                             <k-button v-if="item.proposal.versions.length > 1 && ['open', 'failed'].includes(item.proposal.state)" size="sm" variant="filled" theme="positive" :disabled="busy" @click="decide(item.id, 'apply', v)">Diese Fassung übernehmen</k-button>
                           </div>
                         </div>

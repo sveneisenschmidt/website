@@ -872,6 +872,53 @@ final class GpxFixture
         return self::ride()[0];
     }
 
+    /** Meters as degrees of longitude and latitude at home. */
+    private static function degrees(float $east, float $north): array
+    {
+        return [$east / (111320 * cos(deg2rad(self::CENTER[1]))), $north / 111320];
+    }
+
+    /**
+     * A standstill at home before or after a ride: one point per second for
+     * $seconds, each up to $meters off, spread like GPS noise but the same
+     * in every run.
+     */
+    public static function standstill(int $seconds, float $meters): array
+    {
+        [$lon, $lat] = self::home();
+        $points = [];
+        for ($i = 0; $i < $seconds; $i++) {
+            [$dLon, $dLat] = self::degrees($meters * sin($i * 1.7), $meters * cos($i * 2.3));
+            $points[] = [$lon + $dLon, $lat + $dLat];
+        }
+        return $points;
+    }
+
+    /** A ride from home $meters to the east, a point every 20 m: it ends elsewhere. */
+    public static function oneWay(float $meters): array
+    {
+        [$lon, $lat] = self::home();
+        $points = [];
+        for ($walked = 0; $walked <= $meters; $walked += 20) {
+            $points[] = [$lon + self::degrees($walked, 0)[0], $lat];
+        }
+        return $points;
+    }
+
+    /** $laps rounds of a circle with $radius meters that starts and ends at home. */
+    public static function laps(int $laps, float $radius): array
+    {
+        [$lon, $lat] = self::home();
+        [$dLon, $dLat] = self::degrees($radius, $radius);
+        $points = [];
+        for ($degree = 0; $degree < 360 * $laps; $degree += 3) {
+            $angle = deg2rad($degree);
+            $points[] = [$lon - $dLon + $dLon * cos($angle), $lat + $dLat * sin($angle)];
+        }
+        $points[] = [$lon, $lat];
+        return $points;
+    }
+
     /** A GPX 1.1 file with times, an elevation and a device extension per point. */
     public static function xml(array $points): string
     {
@@ -941,13 +988,18 @@ final class RouteTest extends TestCase
         $this->assertSame([[12.12346, 51.1], [12.2, 51.2]], blog_route_round([[12.123456, 51.1], [12.1234564, 51.1000001], [12.2, 51.2]]));
     }
 
-    public function testCutWalksAlongTheLine(): void
+    public function testCutWalksAlongTheLineAndAwayFromBothEnds(): void
     {
         $ride = GpxFixture::ride();
         [$first, $last] = blog_route_cut($ride, 700, 1200);
         $this->assertGreaterThanOrEqual(700, blog_route_length(array_slice($ride, 0, $first + 1)));
         $this->assertLessThan(750, blog_route_length(array_slice($ride, 0, $first + 1)));
         $this->assertGreaterThanOrEqual(1200, blog_route_length(array_slice($ride, $last)));
+        // In a straight line too, from both ends: a ride ends where it began.
+        foreach ([$ride[0], end($ride)] as $end) {
+            $this->assertGreaterThanOrEqual(700, blog_route_distance($end, $ride[$first]));
+            $this->assertGreaterThanOrEqual(1200, blog_route_distance($end, $ride[$last]));
+        }
     }
 
     public function testAGpxFileIsReadWithItsTimesOnly(): void
@@ -960,7 +1012,10 @@ final class RouteTest extends TestCase
 
     public function testAGpxFileIsReadHardened(): void
     {
+        $point = '<trkpt lat="51.1" lon="12.1"/>';
         $cases = [
+            'einen Track' => "<gpx><trk><trkseg>$point</trkseg></trk><trk><trkseg>$point</trkseg></trk></gpx>",
+            'ein Segment' => "<gpx><trk><trkseg>$point</trkseg><trkseg>$point</trkseg></trk></gpx>",
             'DOCTYPE' => '<?xml version="1.0"?><!DOCTYPE gpx [<!ENTITY x SYSTEM "file:///etc/passwd">]><gpx><trk><trkseg><trkpt lat="51.1" lon="12.1"><name>&x;</name></trkpt></trkseg></trk></gpx>',
             'kein gültiges XML' => '<gpx><trk><trkpt lat="51" lon="12"></trk>',
             'gültigen Koordinaten' => '<gpx><trk><trkseg><trkpt lat="x" lon="12"/></trkseg></trk></gpx>',
@@ -968,12 +1023,15 @@ final class RouteTest extends TestCase
             '5 MB' => str_repeat(' ', 5 * 1024 * 1024 + 1),
         ];
         foreach ($cases as $message => $xml) {
+            // PHPUnit's own failure is a RuntimeException too: it must not land in the catch.
+            $error = null;
             try {
                 blog_gpx_read($this->gpx($xml));
-                $this->fail("No error: $message");
             } catch (RuntimeException $e) {
-                $this->assertStringContainsString($message, $e->getMessage());
+                $error = $e->getMessage();
             }
+            $this->assertNotNull($error, "No error: $message");
+            $this->assertStringContainsString($message, $error);
         }
     }
 
@@ -988,20 +1046,46 @@ final class RouteTest extends TestCase
             $heads[] = blog_route_distance($home, $line['line'][0]);
             $tails[] = blog_route_distance($home, end($line['line']));
             foreach ($line['line'] as $point) {
-                $this->assertGreaterThan(650, blog_route_distance($home, $point));
+                $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, blog_route_distance($home, $point));
             }
-            $this->assertSame([$ride[0], $ride[360]], $line['ends']);
+            $this->assertSame([array_map(fn ($v) => round($v, 3), $ride[0]), array_map(fn ($v) => round($v, 3), $ride[360])], $line['ends'], 'The ends stay on the server, to 3 decimals.');
         }
-        $this->assertGreaterThanOrEqual(650, min([...$heads, ...$tails]));
+        $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, min([...$heads, ...$tails]));
         $this->assertLessThan(1250, max([...$heads, ...$tails]));
         $this->assertGreaterThan(1, count(array_unique(array_map('round', $heads))), 'The cut changes from ride to ride.');
         $this->assertNotSame(array_map('round', $heads), array_map('round', $tails), 'Start and end are cut differently.');
     }
 
+    public function testAStandstillAtHomeDoesNotShortenTheCut(): void
+    {
+        // Five minutes of GPS noise at home before and after the ride walk
+        // more than a kilometre along the track without leaving home.
+        $home = GpxFixture::home();
+        $points = [...GpxFixture::standstill(300, 4), ...GpxFixture::ride(), ...GpxFixture::standstill(300, 4)];
+        $this->assertGreaterThan(1200, blog_route_length(GpxFixture::standstill(300, 4)));
+        for ($run = 0; $run < 20; $run++) {
+            $line = blog_gpx_line($points, array_fill(0, count($points), null));
+            foreach ($line['line'] as $point) {
+                $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, blog_route_distance($home, $point));
+            }
+        }
+    }
+
+    public function testLapsNearHomeGiveNoRoute(): void
+    {
+        $laps = GpxFixture::laps(4, 300);
+        $this->assertGreaterThan(3000, blog_route_length($laps));
+
+        $line = blog_gpx_line($laps, array_fill(0, count($laps), null));
+
+        $this->assertStringContainsString('1.5 km', $line['error']);
+        $this->assertArrayNotHasKey('line', $line);
+    }
+
     public function testAShortOrEmptyTrackGivesClaudeAMessage(): void
     {
         $this->assertSame(['error' => 'The GPX file has no track points.'], blog_gpx_line([], []));
-        $short = blog_gpx_line(GpxFixture::ride(500), []);
+        $short = blog_gpx_line(GpxFixture::oneWay(4000), []);
         $this->assertStringContainsString('shorter than 3 km', $short['error']);
         $this->assertArrayNotHasKey('line', $short);
     }
@@ -1076,6 +1160,17 @@ const BLOG_GPX_TRIM_MAX = 1200;
 
 /** No marker closer than this to an end of the ride before trimming, in meters. */
 const BLOG_GPX_ZONE = 1200;
+
+/**
+ * The uncut ends stay on the server for the marker check, to 3 decimals
+ * only. Rounding moves a point by at most 0.0005° in each direction, 56 m
+ * at most, 79 m together: the check adds that.
+ */
+const BLOG_GPX_ENDS_DECIMALS = 3;
+const BLOG_GPX_ZONE_SLACK = 80;
+
+/** A ride that never gets farther than this from its ends gives no route, in meters. */
+const BLOG_GPX_NEAR = 1500;
 
 /** A ride shorter than this after trimming gives no route, in meters. */
 const BLOG_GPX_MIN_LENGTH = 3000;
@@ -1173,20 +1268,29 @@ function blog_route_line(string $json): array
 }
 
 /**
- * The indexes of the first and last point that stay when $head meters
- * along the line go at the start and $tail meters at the end.
+ * The indexes of the first and last point that stay when both ends are
+ * cut: the start until $head meters along the line lie behind it and the
+ * point is $head meters or more from both ends in a straight line, the end
+ * the same with $tail. Rides start and end at home, and a standstill there
+ * walks along the line without leaving (security review, 2026-10-12). The
+ * distance counts for the point as Claude gets it, to 5 decimals.
  */
 function blog_route_cut(array $points, float $head, float $tail): array
 {
+    $ends = [$points[0], $points[count($points) - 1]];
+    $away = function (array $point, float $length) use ($ends): bool {
+        $point = [round((float)$point[0], 5), round((float)$point[1], 5)];
+        return blog_route_distance($ends[0], $point) >= $length && blog_route_distance($ends[1], $point) >= $length;
+    };
     $first = 0;
     $walked = 0.0;
-    while ($first < count($points) - 1 && $walked < $head) {
+    while ($first < count($points) - 1 && ($walked < $head || !$away($points[$first], $head))) {
         $walked += blog_route_distance($points[$first], $points[$first + 1]);
         $first++;
     }
     $last = count($points) - 1;
     $walked = 0.0;
-    while ($last > $first && $walked < $tail) {
+    while ($last > $first && ($walked < $tail || !$away($points[$last], $tail))) {
         $walked += blog_route_distance($points[$last], $points[$last - 1]);
         $last--;
     }
@@ -1238,6 +1342,7 @@ function blog_gpx_read(string $path): array
     $points = [];
     $times = [];
     $inPoint = false;
+    $parts = ['trk' => 0, 'trkseg' => 0];
     try {
         $reader = XMLReader::fromUri($path, null, LIBXML_NONET);
         while ($reader->read()) {
@@ -1261,6 +1366,9 @@ function blog_gpx_read(string $path): array
                 $times[array_key_last($times)] = $time === false ? null : $time;
             } elseif ($reader->nodeType === XMLReader::END_ELEMENT && $reader->localName === 'trkpt') {
                 $inPoint = false;
+            } elseif ($reader->nodeType === XMLReader::ELEMENT && isset($parts[$reader->localName]) && ++$parts[$reader->localName] > 1) {
+                // Each track and segment would need its own cut: one ride per file.
+                throw new RuntimeException('Die GPX-Datei hat mehr als einen Track oder mehr als ein Segment. Eine Fahrt pro Datei.');
             }
         }
         if (libxml_get_errors() !== []) {
@@ -1278,14 +1386,27 @@ function blog_gpx_read(string $path): array
  * The line Claude may see of a ride: both ends cut by their own random
  * length, simplified. Rides start and end at home: a fixed length would
  * put all ends on a circle around it. The lengths are not kept. "ends"
- * holds the uncut ends for the marker check; it stays on the server.
- * A track without points or shorter than 3 km after the cut gives "error",
+ * holds the uncut ends, rounded, for the marker check; it stays on the
+ * server. A track without points, one that never gets farther than 1.5 km
+ * from its ends, or one shorter than 3 km after the cut gives "error",
  * the message Claude gets.
  */
 function blog_gpx_line(array $points, array $times): array
 {
     if (count($points) < 2) {
         return ['error' => 'The GPX file has no track points.'];
+    }
+    $ends = [$points[0], $points[count($points) - 1]];
+    // Laps around the block show the block, cut or not.
+    $far = false;
+    foreach ($points as $point) {
+        if (blog_route_distance($ends[0], $point) > BLOG_GPX_NEAR && blog_route_distance($ends[1], $point) > BLOG_GPX_NEAR) {
+            $far = true;
+            break;
+        }
+    }
+    if (!$far) {
+        return ['error' => 'The GPX track never gets farther than 1.5 km from its start and end. It gives no route.'];
     }
     [$first, $last] = blog_route_cut($points, random_int(BLOG_GPX_TRIM_MIN, BLOG_GPX_TRIM_MAX), random_int(BLOG_GPX_TRIM_MIN, BLOG_GPX_TRIM_MAX));
     $kept = array_slice($points, $first, $last - $first + 1);
@@ -1297,7 +1418,7 @@ function blog_gpx_line(array $points, array $times): array
         'line' => blog_route_round(blog_route_simplify($kept, BLOG_GPX_EPSILON)),
         'km' => round($length / 1000, 1),
         'seconds' => isset($times[$first], $times[$last]) ? max(0, $times[$last] - $times[$first]) : null,
-        'ends' => [$points[0], $points[count($points) - 1]],
+        'ends' => array_map(fn ($end) => [round((float)$end[0], BLOG_GPX_ENDS_DECIMALS), round((float)$end[1], BLOG_GPX_ENDS_DECIMALS)], $ends),
     ];
 }
 ```
@@ -1585,7 +1706,7 @@ final class UploadTest extends AssistantTestCase
         $this->assertNull($meta['path']);
         $this->assertEqualsWithDelta(13.8, $meta['km'], 0.6);
         foreach ($meta['line'] as $point) {
-            $this->assertGreaterThan(650, blog_route_distance(GpxFixture::home(), $point));
+            $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, blog_route_distance(GpxFixture::home(), $point));
         }
         $stored = file_get_contents(dirname($this->stored()[0]) . '/' . $upload['id'] . '.json');
         foreach (['Test Device', 'Morning ride', '2026-', '<hr>', 'ele'] as $leak) {
@@ -1602,7 +1723,7 @@ final class UploadTest extends AssistantTestCase
         $this->refused($path, 'evil.gpx', 'DOCTYPE');
         $this->assertFileDoesNotExist($path);
 
-        $short = blog_uploads_accept(GpxFixture::write($this->root, GpxFixture::xml(GpxFixture::ride(400))), 'short.gpx');
+        $short = blog_uploads_accept(GpxFixture::write($this->root, GpxFixture::xml(GpxFixture::oneWay(4000))), 'short.gpx');
 
         $this->assertStringContainsString('shorter than 3 km', blog_uploads_blocks($short['id'])[0]['text']);
     }
@@ -1934,6 +2055,15 @@ function blog_uploads_thumb(string $id): ?string
     return $data === false ? null : 'data:image/jpeg;base64,' . base64_encode($data);
 }
 
+/** The result of a GD call; GD reports a failure as false, this throws it. */
+function blog_uploads_gd(mixed $result, string $call): mixed
+{
+    if ($result === false) {
+        throw new RuntimeException("GD: $call failed.");
+    }
+    return $result;
+}
+
 /**
  * A JPEG of an image for Claude: upright, optionally cropped (fractions
  * x, y, w, h), its long edge at most $max pixels. Written into the chat's
@@ -1958,23 +2088,31 @@ function blog_uploads_image(string $source, int $orientation = 1, ?array $crop =
         $h = imagesy($image);
         $x = (int)round(max(0.0, min(1.0, (float)$crop['x'])) * $w);
         $y = (int)round(max(0.0, min(1.0, (float)$crop['y'])) * $h);
-        $image = imagecrop($image, [
+        $image = blog_uploads_gd(imagecrop($image, [
             'x' => $x,
             'y' => $y,
             'width' => max(1, min($w - $x, (int)round((float)$crop['w'] * $w))),
             'height' => max(1, min($h - $y, (int)round((float)$crop['h'] * $h))),
-        ]) ?: throw new RuntimeException('The crop is empty.');
+        ]), 'imagecrop');
     }
     $long = max(imagesx($image), imagesy($image));
     if ($long > $max) {
-        $image = imagescale($image, max(1, (int)round(imagesx($image) * $max / $long)), max(1, (int)round(imagesy($image) * $max / $long)), IMG_BICUBIC);
+        // imagecopyresampled, not imagescale: imagescale with IMG_BICUBIC
+        // returns false on some GD builds (Homebrew PHP 8.5).
+        $w = max(1, (int)round(imagesx($image) * $max / $long));
+        $h = max(1, (int)round(imagesy($image) * $max / $long));
+        $scaled = blog_uploads_gd(imagecreatetruecolor($w, $h), 'imagecreatetruecolor');
+        imagealphablending($scaled, false);
+        imagesavealpha($scaled, true);
+        blog_uploads_gd(imagecopyresampled($scaled, $image, 0, 0, 0, 0, $w, $h, imagesx($image), imagesy($image)), 'imagecopyresampled');
+        $image = $scaled;
     }
     // Transparent areas become white, not black.
-    $flat = imagecreatetruecolor(imagesx($image), imagesy($image));
-    imagefill($flat, 0, 0, imagecolorallocate($flat, 255, 255, 255));
-    imagecopy($flat, $image, 0, 0, 0, 0, imagesx($image), imagesy($image));
+    $flat = blog_uploads_gd(imagecreatetruecolor(imagesx($image), imagesy($image)), 'imagecreatetruecolor');
+    blog_uploads_gd(imagefill($flat, 0, 0, blog_uploads_gd(imagecolorallocate($flat, 255, 255, 255), 'imagecolorallocate')), 'imagefill');
+    blog_uploads_gd(imagecopy($flat, $image, 0, 0, 0, 0, imagesx($image), imagesy($image)), 'imagecopy');
     $name ??= 'v' . bin2hex(random_bytes(8)) . '.jpg';
-    imagejpeg($flat, blog_uploads_dir() . '/' . $name, 80);
+    blog_uploads_gd(@imagejpeg($flat, blog_uploads_dir() . '/' . $name, 80), 'imagejpeg');
     return $name;
 }
 
@@ -1982,9 +2120,9 @@ function blog_uploads_image(string $source, int $orientation = 1, ?array $crop =
 function blog_uploads_orient(GdImage $image, int $orientation): GdImage
 {
     if (in_array($orientation, [2, 5, 7], true)) {
-        imageflip($image, IMG_FLIP_HORIZONTAL);
+        blog_uploads_gd(imageflip($image, IMG_FLIP_HORIZONTAL), 'imageflip');
     } elseif ($orientation === 4) {
-        imageflip($image, IMG_FLIP_VERTICAL);
+        blog_uploads_gd(imageflip($image, IMG_FLIP_VERTICAL), 'imageflip');
     }
     $angle = match ($orientation) {
         3 => 180,
@@ -1992,7 +2130,7 @@ function blog_uploads_orient(GdImage $image, int $orientation): GdImage
         6, 7 => 270,
         default => 0,
     };
-    return $angle === 0 ? $image : imagerotate($image, $angle, 0);
+    return $angle === 0 ? $image : blog_uploads_gd(imagerotate($image, $angle, 0), 'imagerotate');
 }
 
 /**
@@ -4945,7 +5083,7 @@ Expected: `OK (139 tests, …)`.
 - Ändern: `www/site/plugins/assistant/tools.php`, `www/site/plugins/assistant/apply.php`
 - Neu: `tests/Integration/AssistantRouteTest.php`
 
-Stationen gehen einmal an OSRM, ein GPX-Upload liefert seine gekürzte Linie. Marker näher als 1200 m an den ungekürzten Enden einer Runde lehnt der Server ab. Der Klick ersetzt Route, Punkte und Zoom; die alte Datei bleibt als Zustand in `content/.assistant/routes/`. Ist die Route nicht mehr die alte, speichert der Klick nichts. Der Test prüft jede Anfrage an den Transport: kein Koordinatenpaar liegt näher als 650 m an Svens Zuhause (die kürzeste Kürzung ist 700 m entlang der Strecke).
+Stationen gehen einmal an OSRM, ein GPX-Upload liefert seine gekürzte Linie. Marker näher als 1200 m an den ungekürzten Enden einer Runde lehnt der Server ab. Der Klick ersetzt Route, Punkte und Zoom; die alte Datei bleibt als Zustand in `content/.assistant/routes/`. Ist die Route nicht mehr die alte, speichert der Klick nichts. Der Test prüft jede Anfrage an den Transport: kein Koordinatenpaar liegt näher als 700 m an Svens Zuhause (die kürzeste Kürzung ist 700 m entlang der Strecke und in Luftlinie von beiden Enden).
 
 - [ ] **Schritt 1: `tests/Integration/AssistantRouteTest.php` anlegen**
 
@@ -5092,12 +5230,12 @@ final class AssistantRouteTest extends AssistantTestCase
         preg_match_all('/\[(-?\d+\.\d+),(-?\d+\.\d+)\]/', json_encode($this->requests), $pairs, PREG_SET_ORDER);
         $this->assertGreaterThan(30, count($pairs));
         foreach ($pairs as [, $lon, $lat]) {
-            $this->assertGreaterThan(650, blog_route_distance($home, [(float)$lon, (float)$lat]));
+            $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, blog_route_distance($home, [(float)$lon, (float)$lat]));
         }
         $trip = $this->kirby->site()->find('trips')->findPageOrDraft('day-1');
         $file = blog_assistant_file_ref($trip, blog_assistant_list($trip->version('changes')->read()['route'])[0]);
         foreach (blog_route_line(file_get_contents($file->root())) as $point) {
-            $this->assertGreaterThan(650, blog_route_distance($home, $point));
+            $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, blog_route_distance($home, $point));
         }
         $this->assertNull(blog_uploads_meta($id), 'The GPX upload goes after the click.');
     }
@@ -6287,6 +6425,27 @@ Expected: Ohne offene Vorschläge kommt keine Rückfrage. Der Chat ist leer. `ls
 - [ ] **Schritt 9: Server stoppen und berichten**
 
 Server stoppen. Bericht an Sven: was in den Schritten 1 bis 8 zu sehen war, mit Bildschirmfotos von Karte und Protokoll. Dazu die zwei Fragen aus „Entscheidungen zur Sicherheit über die Spec hinaus“: Sollen die Vorschauen auf der Karte und der Knopf zum Anhängen bleiben?
+
+---
+
+## Härtung nach der Sicherheits-Review (2026-10-12)
+
+Test für Test umgesetzt, erst rot, dann grün. Ersetzt sind die Blöcke von Aufgabe 4 (Fixture, Test, `route.php`), die Vorschau-Funktion in Aufgabe 5 und die Zusicherungen mit 650 m; in den übrigen Blöcken der Aufgaben 3 und 5 bis 10 gilt bei Abweichungen der Code im Repo.
+
+1. Prüfung der Texte am gerenderten HTML: `guard.php` rendert jeden Vorschlag wie die Website (KirbyTags, dann Markdown, im Kontext der Seite, neue Entwürfe als Seite im Speicher), liest ihn mit dem HTML5-Parser und lässt nur erlaubte Elemente, Attribute und Links durch; die Karten markieren genau die Links, die der Server nennt.
+2. Vorschauen: jeder Rückgabewert von GD wird geprüft, das Daumenbild entsteht aus der Vorschau, der Upload setzt `set_time_limit(60)`.
+3. Entfällt vorerst: Sven ist der einzige Nutzer (2026-10-12).
+4. GPX: Jedes Ende wird gekürzt, bis Strecke und Luftlinie zu beiden ungekürzten Enden die Zufallslänge erreichen; Runden, die nie weiter als 1,5 km wegführen, gibt es nicht als Route; nur ein Track mit einem Segment; Claude bekommt keinen Dateinamen; die Enden stehen auf 3 Stellen gerundet, die Zone wächst um 80 m.
+5. Session: Vor jedem Lesen, das zurückgeschrieben wird, sperrt und liest der Server die Session neu; während der Anfrage an Claude hält er keine Sperre.
+6. `ask_choice`: Die Wahl kommt als Nummer, der Server nimmt den Text der Option und übernimmt keine Links daraus.
+7. Metadaten als Positivliste: JPEG behält nur Bilddaten (alle Scans), JFIF, ICC und Adobe; PNG und WebP nur ihre Bild-, Farb- und Animations-Chunks.
+8. Kein Vorschlag darf 8 Wörter am Stück aus dem Prompt des Chats enthalten; die Wortfolgen teilt sich `guard.php` mit dem Git-Hook (`words.php`, danach `make kirby-hooks` neu ausführen).
+9. Ungültiges UTF-8 in EXIF wird ersetzt; jeder Fehler nach dem ersten Schreiben räumt die Dateien des Uploads weg.
+10. Code-Prüfung: `<?=` mit folgendem Code bis `?>` oder Dateiende gilt als Code; die drei Bytes allein kommen in großen Fotos zufällig vor.
+11. Aufräumen löscht nur Ordner von Chats; abgelaufene Uploads nennt die nächste Nachricht an Claude.
+12. `blog_assistant_decide` nimmt nur `apply` und `discard`.
+13. Eine Antwort mit Status 200 ohne Inhaltsblöcke gilt als `busy`; in den Chat kommt nichts.
+14. Grenzen: höchstens 40 Bilder pro Chat, 30 MB Bilder pro Anfrage (als base64 gezählt), 5 Aufrufe von `view_photo` pro Runde.
 
 ---
 

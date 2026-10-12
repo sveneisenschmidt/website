@@ -8,11 +8,19 @@ namespace Website\Tests\Integration;
  */
 final class GuardTest extends IntegrationTestCase
 {
-    private const FILES = ['a.jpg', 'b.jpg'];
+    protected function setUp(): void
+    {
+        parent::setUp();
+        foreach (['a.jpg', 'b.jpg'] as $name) {
+            $this->upload($this->jpeg(8, 8, $name), $name);
+        }
+    }
 
+    /** A text for the field "text" of the photo with the images a.jpg and b.jpg; without $map, of a note. */
     private function markdown(string $text, array $allowed = [], bool $map = true): ?string
     {
-        return blog_guard_markdown($text, $allowed, self::FILES, $map);
+        $page = $map ? $this->post : $this->kirby->page('notes/a-note') ?? $this->post('notes', 'note', 'a-note', 'A note');
+        return blog_guard_markdown($text, $allowed, $page);
     }
 
     public function testPlainMarkdownPasses(): void
@@ -56,6 +64,46 @@ final class GuardTest extends IntegrationTestCase
         foreach (['[x](https://evil.test)', 'Go to https://evil.test/path now.', "[x][1]\n\n[1]: https://evil.test", '![x](https://evil.test/p.png)', '[x](javascript:alert(1))', '[x](/2024-01-01-old/)'] as $text) {
             $this->assertStringContainsString('not allowed', (string)$this->markdown($text, $allowed), $text);
         }
+    }
+
+    /**
+     * The probes of the security review (2026-10-12): Markdown makes links
+     * of nested brackets, of reference definitions in lists, quotes and
+     * code, and of link texts, where regexes on the source see none.
+     */
+    public function testLinksHiddenFromRegexesAreRefused(): void
+    {
+        $uuid = $this->post->uuid()->toString();
+        $probes = [
+            '[a [b] c](javascript:alert(document.cookie))',
+            '[a [b] c](//evil.example/)',
+            '[a [b] c](https:\\\\evil.example/)',
+            '![a [b] c](//evil.example/p.png)',
+            "[x][1]\n\n- [1]: //evil.example/",
+            "[x][1]\n\n> [1]: javascript:alert(1)",
+            "[x][1]\n\n[1]: //evil.example/",
+            "[x][1]\n\n   [1]: javascript:alert(1)",
+            "[x][1]\n\n\t[1]: //evil.example/",
+            '[a `]` b](//evil.example/)',
+            '[a\\]](//evil.example/)',
+            '[x](//evil.example/ "t")',
+            '(see https://evil.example)',
+            '<_x onmouseover=alert(1)>hi</_x>',
+            "- [1]: javascript:alert(1)\n- [x][1]",
+            "> [1]: //evil.example/\n>\n> see [x][1]",
+            "(link: $uuid text: [a [b] c](//evil.example))",
+        ];
+        foreach ($probes as $text) {
+            $this->assertNotNull($this->markdown($text, ['https://ok.example']), $text);
+        }
+        $this->assertNotNull(blog_guard_caption('[a [b] c](javascript:alert(1))', []));
+        $this->assertNotNull(blog_guard_caption('x ![a [b] c](//evil.example/p.png)', []));
+    }
+
+    public function testImagesComeOnlyFromThisPost(): void
+    {
+        $this->assertStringContainsString('(image:', (string)$this->markdown('![x](https://ok.example/p.png)', ['https://ok.example/p.png']));
+        $this->assertStringContainsString('names no image', (string)$this->markdown('(image: photos/test-photo/a.jpg)'));
     }
 
     public function testLinksTargetsAreFound(): void
