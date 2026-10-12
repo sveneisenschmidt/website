@@ -1,0 +1,35 @@
+.blog-log {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--table-color-back);
+  color: var(--color-text);
+  border-radius: var(--rounded);
+  box-shadow: var(--shadow);
+  font-size: var(--text-sm);
+}
+.blog-log th,
+.blog-log td {
+  padding: var(--spacing-2) var(--spacing-3);
+  text-align: start;
+  vertical-align: top;
+  border-bottom: 1px solid var(--table-color-border);
+}
+.blog-log th {
+  font-family: var(--font-mono);
+  color: var(--table-color-th-text);
+  background: var(--table-color-th-back);
+  font-weight: normal;
+}
+.blog-log-time {
+  white-space: nowrap;
+  font-family: var(--font-mono);
+}
+.blog-log-change {
+  overflow-wrap: anywhere;
+}
+.blog-log-change del {
+  color: var(--color-text-dimmed);
+}
+.blog-log-change ins {
+  text-decoration: none;
+}

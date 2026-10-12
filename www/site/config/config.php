@@ -41,7 +41,7 @@ return array_replace_recursive([
             foreach ($types as $slug => [$label, $icon]) {
                 $menu[$slug] = ['label' => $label, 'icon' => $icon, 'link' => "pages/$slug", 'current' => fn () => $inType($slug)];
             }
-            return [...$menu, '-', 'users', 'system'];
+            return [...$menu, '-', 'besucher', 'verlauf', '-', 'users', 'system'];
         },
     ],
     'hooks' => [

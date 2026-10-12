@@ -1493,8 +1493,8 @@ final class HugoTest extends TestCase
             'route' => 'route.json',
             'zoom' => true,
             'points' => [
-                ['lat' => '50.8297', 'lon' => '0.3924', 'label' => "Norman's Bay, East Sussex"],
-                ['lat' => '50.8224', 'lon' => '-0.0970', 'label' => 'Brighton'],
+                ['label' => "Norman's Bay, East Sussex", 'lat' => '50.8297', 'lon' => '0.3924'],
+                ['label' => 'Brighton', 'lat' => '50.8224', 'lon' => '-0.0970'],
             ],
         ], $map);
     }
@@ -1710,7 +1710,7 @@ function hugo_convert(string $body, callable $pageUuid): array
             if (count($parts) < 2 || !is_numeric(trim($parts[0])) || !is_numeric(trim($parts[1]))) {
                 throw new RuntimeException("Invalid map line: $line");
             }
-            $points[] = ['lat' => trim($parts[0]), 'lon' => trim($parts[1]), 'label' => trim($parts[2] ?? '')];
+            $points[] = ['label' => trim($parts[2] ?? ''), 'lat' => trim($parts[0]), 'lon' => trim($parts[1])];
         }
         $map = ['route' => $attrs['route'] ?? '', 'zoom' => ($attrs['zoom'] ?? '') === 'true', 'points' => $points];
         return '(map:)';
@@ -2552,14 +2552,14 @@ fields:
     label: Kartenpunkte
     type: structure
     fields:
+      label:
+        label: Name
+        type: text
       lat:
         label: Breite
         type: text
       lon:
         label: Länge
-        type: text
-      label:
-        label: Name
         type: text
   mapzoom:
     label: Karte zoombar

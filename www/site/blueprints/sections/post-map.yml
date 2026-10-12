@@ -10,14 +10,14 @@ fields:
     label: Kartenpunkte
     type: structure
     fields:
+      label:
+        label: Name
+        type: text
       lat:
         label: Breite
         type: text
       lon:
         label: Länge
-        type: text
-      label:
-        label: Name
         type: text
   mapzoom:
     label: Karte zoombar

@@ -67,8 +67,8 @@ final class HugoTest extends TestCase
             'route' => 'route.json',
             'zoom' => true,
             'points' => [
-                ['lat' => '50.8297', 'lon' => '0.3924', 'label' => "Norman's Bay, East Sussex"],
-                ['lat' => '50.8224', 'lon' => '-0.0970', 'label' => 'Brighton'],
+                ['label' => "Norman's Bay, East Sussex", 'lat' => '50.8297', 'lon' => '0.3924'],
+                ['label' => 'Brighton', 'lat' => '50.8224', 'lon' => '-0.0970'],
             ],
         ], $map);
     }
