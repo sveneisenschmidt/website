@@ -31,6 +31,9 @@ const BLOG_CHANGELOG_ACTIONS = [
 /** Fields that are not content: never logged. */
 const BLOG_CHANGELOG_SKIP = ['uuid', 'password'];
 
+/** Fields whose values never go into the log: a change shows as "geändert". */
+const BLOG_CHANGELOG_SECRET = ['assistantprompt'];
+
 const BLOG_CHANGELOG_MAX = 200;
 
 function blog_changelog_dir(): string
@@ -151,6 +154,11 @@ function blog_changelog_diff(ModelWithContent $old, ModelWithContent $new): arra
         $from = (string)($a[$key] ?? '');
         $to = (string)($b[$key] ?? '');
         if ($from === $to) {
+            continue;
+        }
+        // The assistant's prompt lives only in content/site.txt (spec, "System-Prompt").
+        if (in_array(strtolower($key), BLOG_CHANGELOG_SECRET, true)) {
+            $changes[] = ['field' => $key, 'label' => blog_changelog_label($new, $key), 'old' => '', 'new' => 'geändert'];
             continue;
         }
         // Lists (structure, files, pages): the rows that went and came.

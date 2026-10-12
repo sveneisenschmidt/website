@@ -3,6 +3,7 @@
 namespace Website\Tests\Support;
 
 use Kirby\Cms\App;
+use Kirby\Cms\Blueprint;
 use Kirby\Filesystem\Dir;
 
 /**
@@ -31,8 +32,12 @@ final class TestSite
         return $root;
     }
 
-    public static function app(string $root, array $options = []): App
+    /** $props: further App props, such as roles. */
+    public static function app(string $root, array $options = [], array $props = []): App
     {
+        // Kirby caches blueprints per process. A blueprint can depend on the
+        // user (Website › Assistent), so every test site starts without them.
+        Blueprint::$loaded = [];
         return new App([
             'roots' => [
                 'index' => $root,
@@ -47,6 +52,7 @@ final class TestSite
             ],
             'urls' => ['index' => 'http://localhost'],
             'options' => $options,
+            ...$props,
         ]);
     }
 

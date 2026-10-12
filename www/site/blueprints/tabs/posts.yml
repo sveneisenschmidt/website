@@ -1,4 +1,7 @@
-title: Website
+# Website › Beiträge. The site blueprint itself is PHP (plugins/assistant):
+# the tab "Assistent" shows for admins only.
+label: Beiträge
+icon: page
 columns:
   - width: 1/2
     sections:

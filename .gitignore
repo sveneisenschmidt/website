@@ -35,11 +35,12 @@ data.db*
 
 # Kirby: von Composer installiert
 /www/kirby/
-# Plugins aus Composer; nur die eigenen Plugins (blog, changelog, analytics) liegen in Git.
+# Plugins aus Composer; nur die eigenen Plugins (blog, changelog, analytics, assistant) liegen in Git.
 /www/site/plugins/*
 !/www/site/plugins/blog/
 !/www/site/plugins/changelog/
 !/www/site/plugins/analytics/
+!/www/site/plugins/assistant/
 /vendor/
 
 # Kirby: lokale Ausgabe
@@ -50,3 +51,6 @@ data.db*
 # Lokale Dateien für Claude: nur launch.json liegt in Git.
 /.claude/*
 !/.claude/launch.json
+
+# Assistent: Uploads der Chats, neben www/ und vendor/, nie in Git
+/storage/

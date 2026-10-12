@@ -16,11 +16,13 @@ abstract class IntegrationTestCase extends TestCase
     protected Page $post;
     /** Options for the test site, on top of config.php. */
     protected array $options = [];
+    /** Further App props for the test site, such as roles. */
+    protected array $props = [];
 
     protected function setUp(): void
     {
         $this->root = TestSite::create();
-        $this->kirby = TestSite::app($this->root, $this->options);
+        $this->kirby = TestSite::app($this->root, $this->options, $this->props);
         $this->post = $this->post();
     }
 
