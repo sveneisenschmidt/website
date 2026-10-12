@@ -41,8 +41,13 @@ return array_replace_recursive([
             foreach ($types as $slug => [$label, $icon]) {
                 $menu[$slug] = ['label' => $label, 'icon' => $icon, 'link' => "pages/$slug", 'current' => fn () => $inType($slug)];
             }
-            return [...$menu, '-', 'besucher', 'verlauf', '-', 'users', 'system'];
+            return [...$menu, '-', 'besucher', 'verlauf', 'assistent', '-', 'users', 'system'];
         },
+        // Kirby's page buttons plus "Assistent" (plugins/assistant). It shows
+        // on posts and About, for admins only.
+        'viewButtons' => [
+            'page' => ['open', 'preview', '-', 'assistant', 'settings', 'languages', 'status'],
+        ],
     ],
     'hooks' => [
         // The local dev login from bin/seed.php (an address under .test) works
