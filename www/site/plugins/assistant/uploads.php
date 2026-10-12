@@ -138,7 +138,8 @@ function blog_uploads_accept(string $tmp, string $name): array
     try {
         blog_uploads_image("$dir/$id.$ext", $orientation, null, BLOG_UPLOAD_PREVIEW, "$id.preview.jpg");
         blog_uploads_image("$dir/$id.$ext", $orientation, null, BLOG_UPLOAD_THUMB, "$id.thumb.jpg");
-    } catch (RuntimeException) {
+    } catch (Throwable) {
+        // Any failure, also an Error from GD, leaves no half upload behind.
         array_map(fn ($file) => F::remove($file), glob("$dir/$id.*") ?: []);
         throw blog_uploads_error('Das Bild lässt sich nicht lesen.');
     }
@@ -322,7 +323,15 @@ function blog_uploads_image(string $source, int $orientation = 1, ?array $crop =
     }
     $long = max(imagesx($image), imagesy($image));
     if ($long > $max) {
-        $image = imagescale($image, max(1, (int)round(imagesx($image) * $max / $long)), max(1, (int)round(imagesy($image) * $max / $long)), IMG_BICUBIC);
+        // imagecopyresampled, not imagescale: imagescale with IMG_BICUBIC
+        // returns false on some GD builds (Homebrew PHP 8.5).
+        $w = max(1, (int)round(imagesx($image) * $max / $long));
+        $h = max(1, (int)round(imagesy($image) * $max / $long));
+        $scaled = imagecreatetruecolor($w, $h);
+        imagealphablending($scaled, false);
+        imagesavealpha($scaled, true);
+        imagecopyresampled($scaled, $image, 0, 0, 0, 0, $w, $h, imagesx($image), imagesy($image));
+        $image = $scaled;
     }
     // Transparent areas become white, not black.
     $flat = imagecreatetruecolor(imagesx($image), imagesy($image));

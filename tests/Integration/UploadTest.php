@@ -50,6 +50,15 @@ final class UploadTest extends AssistantTestCase
         $this->assertSame([48, 64], array_slice(getimagesize($preview), 0, 2));
     }
 
+    public function testALargePhotoGetsAScaledPreviewAndThumb(): void
+    {
+        $upload = blog_uploads_accept($this->gpsJpeg(1, 'big.jpg', 3200, 2000), 'big.jpg');
+
+        $dir = dirname(blog_uploads_meta($upload['id'])['path']);
+        $this->assertSame([1568, 980], array_slice(getimagesize("$dir/{$upload['id']}.preview.jpg"), 0, 2));
+        $this->assertSame([240, 150], array_slice(getimagesize("$dir/{$upload['id']}.thumb.jpg"), 0, 2));
+    }
+
     public function testCodeAndOtherTypesAreRefused(): void
     {
         file_put_contents($this->root . '/shell.php', '<?php system($_GET["c"]);');
