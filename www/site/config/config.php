@@ -31,6 +31,18 @@ return array_replace_recursive([
     'panel' => [
         'install' => false,
         'language' => 'de',
+        // Each post type gets its own entry in the menu, linked to its page in
+        // the tree under Site. Site is current only outside these four pages.
+        'menu' => function (Kirby\Cms\App $kirby) {
+            $types = ['photos' => ['Fotos', 'image'], 'trips' => ['Reisen', 'map'], 'notes' => ['Notizen', 'text'], 'essays' => ['Essays', 'book']];
+            $path = $kirby->path();
+            $inType = fn (string $slug) => preg_match('!^panel/pages/' . $slug . '(\+|/|$)!', $path) === 1;
+            $menu = ['site' => ['current' => fn (?string $current) => $current === 'site' && !array_filter(array_keys($types), $inType)]];
+            foreach ($types as $slug => [$label, $icon]) {
+                $menu[$slug] = ['label' => $label, 'icon' => $icon, 'link' => "pages/$slug", 'current' => fn () => $inType($slug)];
+            }
+            return [...$menu, '-', 'users', 'system'];
+        },
     ],
     'hooks' => [
         // The local dev login from bin/seed.php (an address under .test) works
