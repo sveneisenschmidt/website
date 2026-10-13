@@ -25,6 +25,8 @@ const actions = {
   "user.changeName": "Name geändert",
   "user.changeRole": "Rolle geändert",
   "user.changePassword": "Passwort geändert",
+  "user.login": "Angemeldet",
+  "user.login:failed": "Anmeldung fehlgeschlagen",
 };
 
 panel.plugin("website/changelog", {
@@ -35,6 +37,10 @@ panel.plugin("website/changelog", {
         when(time) {
           // "11.10.2026, 09:17": the date format of the Panel lists.
           return new Date(time).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+        },
+        who(e) {
+          // Nobody is logged in during a failed login.
+          return e.name || (e.action === "user.login:failed" ? "Unbekannt" : "Automatisch");
         },
         what(e) {
           const text = actions[e.action] || e.action;
@@ -54,7 +60,7 @@ panel.plugin("website/changelog", {
             <tbody>
               <tr v-for="(e, i) in entries" :key="i">
                 <td class="blog-log-time">{{ when(e.time) }}</td>
-                <td>{{ e.name || "Automatisch" }}</td>
+                <td>{{ who(e) }}</td>
                 <td>{{ what(e) }}</td>
                 <td><k-link v-if="e.link" :to="e.link">{{ e.title }}</k-link><span v-else>{{ e.title }}</span></td>
                 <td>
