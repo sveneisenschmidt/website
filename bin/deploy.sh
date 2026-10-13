@@ -35,6 +35,7 @@
 #    becomes a hard link to it and takes no new space.
 # 4. Create env.php and, on a new site, .salt. bin/set-env.php sets `url` to
 #    SITE_URL, and `assistantKey` to ANTHROPIC_API_KEY when it is set.
+#    Deny web access to shared/ and backups/.
 # 5. Switch: .htaccess and `current` point to the new release. One rename
 #    replaces each of them. Then clear the page cache.
 #    The page cache holds the HTML of every page that Kirby rendered.
@@ -184,6 +185,12 @@ printf '%s' "${ANTHROPIC_API_KEY:-}" | remote "$RPHP '$DEPLOY_PATH/set-env.php' 
 # Only PHP reads these files, and PHP runs as the user of the hosting
 # account. No other user needs them, and env.php holds the assistant's key.
 remote "cd '$config' && chmod 600 env.php .salt && { test ! -e .license || chmod 600 .license; }"
+# Apache must never serve shared/ or backups/. server/deny.htaccess denies
+# every request to them, also when the rewrite rule of .htaccess is lost.
+# Mode 700 keeps Apache, which runs as another user, out of the snapshots
+# and the accounts. PHP runs as the account user and still reads them.
+rsync -tpz ${RSYNC_SSH[@]+"${RSYNC_SSH[@]}"} server/deny.htaccess "$DEST/shared/.htaccess"
+remote "mkdir -p '$BACKUP_DIR' && cp '$SHARED/.htaccess' '$BACKUP_DIR/.htaccess' && chmod 700 '$BACKUP_DIR' '$SHARED/site/accounts'"
 
 echo "== Switch to $ID"
 switch_to "$ID"

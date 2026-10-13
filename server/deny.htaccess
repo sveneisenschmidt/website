@@ -1,0 +1,9 @@
+# The .htaccess of shared/ and backups/ in the site folder on the server.
+# bin/deploy.sh uploads it on every deploy. The rewrite rule of
+# server/root.htaccess already hides both folders. This file also denies
+# every request, so Apache serves no file from them if that rule is lost.
+# www/media is a symlink into shared/media. Apache looks for .htaccess files
+# along the path of the request, not along the target of a symlink. The
+# images under /media/ therefore still load.
+
+Require all denied
