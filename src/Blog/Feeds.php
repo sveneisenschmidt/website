@@ -44,7 +44,7 @@ final class Feeds
                 . '      <title>' . Xml::encode($post->title()->value()) . "</title>\n"
                 . "      <link>$link</link>\n"
                 . '      <pubDate>' . $post->date()->toDate(self::RSS_DATE) . "</pubDate>\n"
-                . '      <guid isPermaLink="true">' . ($frozen[parse_url($post->url(), PHP_URL_PATH)] ?? $post->url()) . "?source=rss</guid>\n"
+                . '      <guid isPermaLink="true">' . Xml::encode(($frozen[parse_url($post->url(), PHP_URL_PATH)] ?? $post->url()) . '?source=rss') . "</guid>\n"
                 . '      <description><![CDATA[' . self::rssDescription($post, $link) . "]]></description>\n"
                 . "    </item>\n";
         }

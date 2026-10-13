@@ -3,6 +3,7 @@
 namespace Website\Blog;
 
 use Kirby\Data\Json;
+use Throwable;
 use Website\Models\PostPage;
 
 /**
@@ -38,12 +39,26 @@ final class Redirects
         JsonFile::write(self::file(), array_values($redirects));
     }
 
-    /** The new path for an old path, or null. A path matches with or without the slash at the end. */
+    /**
+     * The new path for an old path, or null. A path matches with or without
+     * the slash at the end. Router puts the base URL in front of the target,
+     * so a target must start with "/": a target such as ".example.com" would
+     * lead to another host. A broken file gives null for every path, so the
+     * pages stay up. The writers still fail on it, so no write replaces the
+     * redirects with an empty list.
+     */
     public static function target(string $path): ?string
     {
-        foreach (self::all() as $redirect) {
+        try {
+            $redirects = self::all();
+        } catch (Throwable $e) {
+            error_log('blog redirects: ' . $e->getMessage());
+            return null;
+        }
+        foreach ($redirects as $redirect) {
             if (trim($redirect['from'], '/') === trim($path, '/')) {
-                return $redirect['to'];
+                $to = $redirect['to'];
+                return str_starts_with($to, '/') && !str_starts_with($to, '//') ? $to : null;
             }
         }
         return null;

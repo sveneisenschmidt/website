@@ -54,8 +54,10 @@ if ($new === $env) {
 
 // Write a temporary file and rename it, so no request reads half a file.
 $tmp = $file . '.tmp';
-file_put_contents($tmp, "<?php\n\nreturn " . var_export($new, true) . ";\n");
 // The file holds the assistant's key. Only the user of the hosting account,
-// which PHP runs as, may read it.
+// which PHP runs as, may read it. umask makes a new file so from the start;
+// chmod covers a .tmp file that an earlier run left behind.
+umask(0077);
+file_put_contents($tmp, "<?php\n\nreturn " . var_export($new, true) . ";\n");
 chmod($tmp, 0600);
 rename($tmp, $file);

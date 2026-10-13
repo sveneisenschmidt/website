@@ -4,6 +4,9 @@
 # updates the pinned commit and its version comment together. For Composer,
 # it changes only composer.lock, inside the version ranges of composer.json.
 # A new major version of Kirby needs a change of composer.json by hand.
+# Dependabot waits 7 days after a release before it proposes it. A
+# compromised release is often found and pulled within that time. Security
+# updates do not wait.
 version: 2
 updates:
   - package-ecosystem: composer
@@ -11,6 +14,8 @@ updates:
     versioning-strategy: lockfile-only
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     groups:
       composer:
         patterns: ["*"]
@@ -18,6 +23,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     groups:
       actions:
         patterns: ["*"]

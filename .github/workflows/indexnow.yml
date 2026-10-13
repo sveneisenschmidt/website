@@ -23,6 +23,7 @@ jobs:
           sparse-checkout: |
             bin
             www
+          persist-credentials: false
 
       # No setup-php: the job uses the PHP that the workflow CI installed on
       # the self-hosted runner.

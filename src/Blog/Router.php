@@ -27,7 +27,7 @@ final class Router
     {
         if (($to = Redirects::target($path)) !== null) {
             // Url::to() turns the path "/" into the home URL without the slash.
-            // An absolute URL passes through unchanged.
+            // Redirects::target() returns only paths of this site.
             return Response::redirect(kirby()->url('base') . $to, 301);
         }
         if (preg_match('!^(\d{4}-\d{2}-\d{2})-([a-z0-9-]+)(?:/([^/]+))?$!', $path, $m)) {

@@ -28,6 +28,12 @@ use Website\Blog\Types;
  * definitions in lists and quotes, and from link texts (security review of
  * 2026-10-12). The source is checked as well: a link target that renders as
  * text in the new value can render as a link next to other text of the field.
+ *
+ * Text from outside reaches Claude through these inputs: the EXIF strings
+ * for camera and lens and the cleaned file name of an upload (Uploads), the
+ * page titles in the context line (Chat), every field of a post, drafts and
+ * unsaved changes included (Content), and web search results. A new input
+ * needs the same checks.
  */
 final class Guard
 {

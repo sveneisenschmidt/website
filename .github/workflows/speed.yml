@@ -6,6 +6,9 @@ name: Speed
 # error of the API does.
 on:
   workflow_call:
+    secrets:
+      PAGESPEED_API_KEY:
+        required: true
   workflow_dispatch:
 
 permissions:
@@ -19,6 +22,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           sparse-checkout: bin
+          persist-credentials: false
 
       # PHP is on the runner from the workflow CI.
       - name: PageSpeed Insights

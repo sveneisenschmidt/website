@@ -172,7 +172,8 @@ config="$SHARED/site/config"
 remote "mkdir -p '$SHARED/content' '$SHARED/media' '$SHARED/site/accounts' '$SHARED/site/cache' '$SHARED/site/sessions' '$config' '$SHARED/storage'"
 # A site with content but without .salt lost it, and a new salt would change
 # every media URL. The script then stops: restore .salt from a backup.
-remote "mkdir -p '$config' && cd '$config' && { test -f env.php || printf '<?php\n\nreturn [\n    \x27debug\x27 => false,\n];\n' > env.php; } && { test -f .salt || { test '$layout' = none || { echo 'The site has content but no .salt. Restore .salt from a backup.' >&2; exit 1; }; $RPHP -r 'echo bin2hex(random_bytes(24)), \"\n\";' > .salt; }; }"
+# umask 077 creates env.php and .salt for the account user only.
+remote "umask 077 && mkdir -p '$config' && cd '$config' && { test -f env.php || printf '<?php\n\nreturn [\n    \x27debug\x27 => false,\n];\n' > env.php; } && { test -f .salt || { test '$layout' = none || { echo 'The site has content but no .salt. Restore .salt from a backup.' >&2; exit 1; }; $RPHP -r 'echo bin2hex(random_bytes(24)), \"\n\";' > .salt; }; }"
 # Kirby runs from releases/<id>/www/index.php. Without a fixed `url`, it
 # would build its URLs from that folder. The assistant's key goes over stdin:
 # other users of a shared host can read a command line with ps. Because stdin
