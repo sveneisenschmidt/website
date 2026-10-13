@@ -119,28 +119,28 @@ final class Log
         $answers = array_values(array_filter($entries, fn($e) => ($e['type'] ?? '') === 'answer'));
         $decisions = array_values(array_filter($entries, fn($e) => ($e['type'] ?? '') === 'decision'));
         $seconds = array_column($answers, 'seconds');
+        // Raw values: the Panel view formats dates and numbers, as the views
+        // "Verlauf" and "Besucher" do.
         $rows = array_map(fn($e) => [
-            'time' => date('d.m.Y H:i', strtotime($e['time'])),
+            'time' => (string) $e['time'],
             'name' => $e['name'] ?? $e['user'] ?? '',
             'chat' => ($e['chat'] ?? '?') . ' · ' . ($e['message'] ?? '?'),
-            'seconds' => number_format((float) ($e['seconds'] ?? 0), 1, ',', '') . ' s',
+            'seconds' => (float) ($e['seconds'] ?? 0),
             'rounds' => (int) ($e['rounds'] ?? 0),
-            'tools' => implode(', ', array_map(fn($name, $n) => $n > 1 ? "$name × $n" : $name, array_keys($e['tools'] ?? []), $e['tools'] ?? [])),
-            'outcome' => match ($e['outcome'] ?? '') {
-                'ok' => 'Fertig',
-                'stopped' => 'Abgebrochen',
-                default => 'Fehler: ' . ($e['outcome'] ?? '?'),
-            },
+            'tools' => (object) ($e['tools'] ?? []),
+            'outcome' => (string) ($e['outcome'] ?? ''),
             'model' => Claude::MODELS[$e['model'] ?? ''] ?? (string) ($e['model'] ?? ''),
-            'tokens' => number_format((int) ($e['tokensIn'] ?? 0), 0, ',', '.') . ' / ' . number_format((int) ($e['tokensOut'] ?? 0), 0, ',', '.'),
-            'cached' => ($e['tokensIn'] ?? 0) > 0 ? round(100 * ($e['tokensCached'] ?? 0) / $e['tokensIn']) . ' %' : '',
+            'tokensIn' => (int) ($e['tokensIn'] ?? 0),
+            'tokensOut' => (int) ($e['tokensOut'] ?? 0),
+            // The share of the input tokens that came from the prompt cache, in percent.
+            'cached' => ($e['tokensIn'] ?? 0) > 0 ? (int) round(100 * ($e['tokensCached'] ?? 0) / $e['tokensIn']) : null,
         ], $answers);
         return [
             'rows' => $rows,
             'totals' => [
                 'chats' => count(array_unique(array_filter(array_column($answers, 'chat')))),
                 'answers' => count($answers),
-                'seconds' => $seconds === [] ? '0' : number_format(array_sum($seconds) / count($seconds), 1, ',', ''),
+                'seconds' => $seconds === [] ? 0.0 : array_sum($seconds) / count($seconds),
                 'accepted' => count(array_filter($decisions, fn($d) => ($d['decision'] ?? '') === 'done')),
                 'discarded' => count(array_filter($decisions, fn($d) => ($d['decision'] ?? '') === 'discarded')),
             ],

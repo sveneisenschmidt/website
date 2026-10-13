@@ -101,10 +101,10 @@ final class Session
     }
 
     /**
-     * Writes the log line for the end of an answer. A stop ("Abbrechen")
-     * during the round writes that line itself, and a new chat ("Neuer Chat")
-     * drops the measurement. Both raise `ChatState::$run`, and this method
-     * then writes nothing. The lock comes first: otherwise a stop between the
+     * Writes the log line for the end of an answer. A stop ("Abbrechen") or
+     * a new chat ("Neuer Chat") during the round writes that line itself as
+     * "stopped". Both raise `ChatState::$run`, and this method then writes
+     * nothing. The lock comes first: otherwise a stop between the
      * check and the log line would log the answer twice.
      */
     public static function finish(ChatState $chat, string $outcome): ChatState

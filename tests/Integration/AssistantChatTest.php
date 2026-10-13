@@ -343,7 +343,27 @@ final class AssistantChatTest extends AssistantTestCase
         $this->assertStringNotContainsString(self::PROMPT, $raw);
         $view = Log::view();
         $this->assertSame(1, $view['totals']['answers']);
-        $this->assertSame('40 %', $view['rows'][0]['cached']);
+        $this->assertSame(40, $view['rows'][0]['cached']);
+    }
+
+    /**
+     * A new chat ("Neuer Chat") during an answer ends that answer like a
+     * stop: the Protokoll gets its line with the tokens used so far.
+     */
+    public function testANewChatDuringAnAnswerLogsItAsStopped(): void
+    {
+        $this->replies[] = [200, ['stop_reason' => 'tool_use', 'usage' => ['input_tokens' => 100, 'output_tokens' => 20],
+            'content' => [$this->tool('t1', 'find_posts', ['type' => '', 'query' => '', 'from' => '', 'to' => ''])]]];
+        Chat::send('Such alle Beiträge.');
+
+        Chat::reset();
+
+        $answer = Log::read()[0];
+        $this->assertSame('stopped', $answer['outcome']);
+        $this->assertSame(100, $answer['tokensIn']);
+        $this->assertCount(1, Log::read(), 'one line, also after a second reset');
+        Chat::reset();
+        $this->assertCount(1, Log::read());
     }
 
     public function testThereIsNoToolToDeleteOrPublish(): void

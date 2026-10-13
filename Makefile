@@ -1,14 +1,19 @@
 WWW := www
-# make ohne Ziel startet die Seite lokal.
+# make without a target serves the site locally.
 .DEFAULT_GOAL := dev
-# PHP für alle Ziele. Der Server nutzt PHP 8.5 (.php-version), lokal soll
-# es dieselbe Version sein. Ein anderes PHP wählt make PHP=...
+# PHP for every target. The server runs PHP 8.5 (.php-version), and the
+# local PHP should be the same version. make PHP=... picks another PHP.
 PHP ?= php
-# Port von make dev. Den Port 8000 nutzt lokal ein anderes Projekt.
+# The port of make dev. Another local project uses port 8000.
 PORT := 8010
 
-# Einmal nach dem Klonen: Abhängigkeiten, lokale Konfiguration, Git-Hooks.
-# Danach holt make pull die Inhalte vom Server.
+# Local values and keys from .env (template: .env.example). make passes them
+# to every target as environment variables.
+-include .env
+export SITE_URL DEPLOY_HOST DEPLOY_PATH DEBUG ANTHROPIC_API_KEY PAGESPEED_API_KEY
+
+# Once after cloning: dependencies, .env and .salt, git hooks. Then fill in
+# the values in .env, and make pull fetches the content from the server.
 .PHONY: setup
 setup:
 	composer install
@@ -20,26 +25,26 @@ config:
 
 .PHONY: test
 test:
-	@test -x vendor/bin/phpunit || { echo "PHPUnit fehlt. Zuerst composer install ausführen."; exit 1; }
+	@test -x vendor/bin/phpunit || { echo "PHPUnit is missing. Run composer install first."; exit 1; }
 	@$(PHP) vendor/bin/phpunit
 
-# Nur localhost, nie 0.0.0.0: Der PHP-Server ist laut PHP-Handbuch nicht für
-# ein öffentliches Netz gedacht, und lokal läuft Kirby im Debug-Modus.
-# Die Upload-Grenzen passen zum Assistenten: bis 60 MB pro Datei, und die
-# Vorschau eines Fotos mit 64 Megapixeln braucht rund 320 MB Speicher
+# localhost only, never 0.0.0.0: the PHP manual says the built-in server is
+# not meant for a public network, and Kirby runs in debug mode locally.
+# The upload limits fit the assistant: up to 60 MB per file, and the
+# preview of a 64-megapixel photo needs about 320 MB of memory
 # (src/Assistant/Uploads.php).
-# bin/dev-router.php sperrt content/, site/ und kirby/ wie www/.htaccess.
-# Der Seiten-Cache hält das HTML jeder Seite. Kirby leert ihn bei jeder
-# Änderung im Panel, aber nicht bei einer Änderung am Code. Darum leert
-# make dev ihn beim Start.
+# bin/dev-router.php blocks content/, site/ and kirby/ as www/.htaccess does.
+# The page cache holds the HTML of every page. Kirby clears it on every
+# change in the Panel, but not on a change of the code, so make dev clears
+# it at the start.
 .PHONY: dev
 dev:
-	@test -f vendor/autoload.php || { echo "Kirby fehlt. Zuerst composer install ausführen."; exit 1; }
-	@test -f $(WWW)/site/config/env.php || { echo "env.php fehlt. Zuerst make config ausführen."; exit 1; }
-	@test -d $(WWW)/content || { echo "Die Inhalte fehlen. Zuerst make pull ausführen."; exit 1; }
-	@$(PHP) -r 'if (PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION !== trim(file_get_contents(".php-version"))) fwrite(STDERR, "Hier läuft PHP ".PHP_VERSION.", .php-version verlangt ".trim(file_get_contents(".php-version")).".\n");'
+	@test -f vendor/autoload.php || { echo "Kirby is missing. Run composer install first."; exit 1; }
+	@test -f .env || { echo ".env is missing. Run make config first."; exit 1; }
+	@test -d $(WWW)/content || { echo "The content is missing. Run make pull first."; exit 1; }
+	@$(PHP) -r 'if (PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION !== trim(file_get_contents(".php-version"))) fwrite(STDERR, "This is PHP ".PHP_VERSION.", .php-version asks for ".trim(file_get_contents(".php-version")).".\n");'
 	@rm -rf $(WWW)/site/cache/localhost_$(PORT)
-	@echo "Seite: http://localhost:$(PORT)  Panel: http://localhost:$(PORT)/panel  (Ende mit Ctrl+C)"
+	@echo "Site: http://localhost:$(PORT)  Panel: http://localhost:$(PORT)/panel  (stop with Ctrl+C)"
 	@set -o pipefail; PHP_CLI_SERVER_WORKERS=4 $(PHP) -d upload_max_filesize=64M -d post_max_size=64M -d memory_limit=1024M -S localhost:$(PORT) -t $(WWW) bin/dev-router.php 2>&1 | grep --line-buffered -v -E '(Accepted|Closing)$$'
 
 .PHONY: backup
@@ -48,7 +53,7 @@ backup:
 
 .PHONY: restore
 restore:
-	@test -n "$(BACKUP)" || { echo "Aufruf: make restore BACKUP=backups/website-....tar.gz"; exit 1; }
+	@test -n "$(BACKUP)" || { echo "Usage: make restore BACKUP=backups/website-....tar.gz"; exit 1; }
 	bin/restore.sh $(BACKUP) $(WWW)
 
 .PHONY: restore-test
@@ -59,28 +64,27 @@ restore-test:
 lint:
 	@find src $(WWW)/site $(WWW)/index.php bin tests -name '*.php' -print0 | xargs -0 -n1 $(PHP) -l >/dev/null && echo "lint ok"
 
-# Formatiert den Code nach PER-CS 2.0 (.php-cs-fixer.dist.php). Der Workflow
-# CI prüft das Format.
+# Formats the code to PER-CS 2.0 (.php-cs-fixer.dist.php). The workflow CI
+# checks the format.
 .PHONY: format
 format:
 	@$(PHP) vendor/bin/php-cs-fixer fix --show-progress=none
 
-# Statische Analyse mit PHPStan (phpstan.neon). Der Workflow CI führt sie
-# auch aus.
+# Static analysis with PHPStan (phpstan.neon). The workflow CI runs it too.
 .PHONY: analyse
 analyse:
 	@$(PHP) vendor/bin/phpstan analyse --no-progress
 
-# Richtet die Git-Hooks pre-commit und pre-push ein. Sie stoppen einen Commit
-# oder Push mit Text aus dem Prompt des Assistenten (bin/prompt-guard.php).
-# Die Hooks laufen auf jedem Branch, auch auf main. make hooks kopiert
-# bin/prompt-guard.php und src/Assistant/Words.php in den Hook-Ordner von Git.
-# Nach einer Änderung an einer der beiden Dateien noch einmal aufrufen.
+# Installs the git hooks pre-commit and pre-push. They stop a commit or push
+# that contains text from the assistant's prompt (bin/prompt-guard.php). The
+# hooks run on every branch, main included. make hooks copies
+# bin/prompt-guard.php and src/Assistant/Words.php into the hooks folder of
+# git, so run it again after a change of either file.
 .PHONY: hooks
 hooks:
 	@hooks="$$(git rev-parse --git-path hooks)"; \
 	for hook in pre-commit pre-push; do \
-	  if [ -f "$$hooks/$$hook" ] && ! grep -q prompt-guard.php "$$hooks/$$hook"; then echo "$$hooks/$$hook gibt es schon und bleibt unverändert."; exit 1; fi; \
+	  if [ -f "$$hooks/$$hook" ] && ! grep -q prompt-guard.php "$$hooks/$$hook"; then echo "$$hooks/$$hook exists already and stays as it is."; exit 1; fi; \
 	done; \
 	cp bin/prompt-guard.php "$$hooks/prompt-guard.php"; \
 	cp src/Assistant/Words.php "$$hooks/prompt-words.php"; \
@@ -88,40 +92,34 @@ hooks:
 	  printf '#!/bin/sh\n# Written by make hooks. Stops a commit or push with text from the assistant prompt.\nexec %s "$$(git rev-parse --git-path hooks)/prompt-guard.php" %s\n' "$(PHP)" "$$hook" > "$$hooks/$$hook"; \
 	  chmod +x "$$hooks/$$hook"; \
 	done; \
-	echo "Die Hooks pre-commit und pre-push sind eingerichtet."
+	echo "The hooks pre-commit and pre-push are installed."
 
-# Prüft jede URL der Sitemap der Live-Seite und jede Weiterleitung
-# (bin/check-urls.php). Ohne SITE prüft es make dev, das dafür in einem
-# zweiten Terminal laufen muss. Gegen die Live-Seite:
-# make check-urls SITE=$(LIVE_URL). Die URLs kommen aus der Sitemap der
-# Live-Seite.
+# Checks every URL of the sitemap of the live site and every redirect
+# (bin/check-urls.php). Without SITE it checks make dev, which must run in a
+# second terminal. Against the live site: make check-urls SITE=$(SITE_URL).
 SITE ?= http://localhost:$(PORT)
 .PHONY: check-urls
-check-urls: live-path
-	@$(PHP) bin/check-urls.php $(SITE) $(LIVE_URL)/sitemap.xml
+check-urls: site-url
+	@$(PHP) bin/check-urls.php $(SITE) $(SITE_URL)/sitemap.xml
 
-# make pull erreicht den Server über den SSH-Alias website. Den Ordner auf
-# dem Server nennt die lokale Datei .env. Sie ist nicht in Git, weil der Pfad
-# das Hosting-Konto nennt:
-#   LIVE_URL=https://<domain>
-#   LIVE_PATH=/www/htdocs/<konto>/<domain>
-# Ein Deploy läuft nur über den Workflow CI.
-LIVE_HOST ?= website
--include .env
+.PHONY: site-url
+site-url:
+	@test -n "$(SITE_URL)" || { echo "SITE_URL is missing in .env (template: .env.example)." >&2; exit 1; }
 
-.PHONY: live-path
-live-path:
-	@test -n "$(LIVE_PATH)" || { echo "LIVE_PATH fehlt. Der Kommentar über LIVE_HOST im Makefile zeigt, was in .env steht." >&2; exit 1; }
-	@test -n "$(LIVE_URL)" || { echo "LIVE_URL fehlt. Der Kommentar über LIVE_HOST im Makefile zeigt, was in .env steht." >&2; exit 1; }
-	@test "$(notdir $(LIVE_PATH))" = "$(patsubst https://%,%,$(LIVE_URL))" || { echo "LIVE_PATH endet nicht im Ordner, der wie die Domain aus LIVE_URL heißt." >&2; exit 1; }
-
-# Ersetzt Inhalte und Konten in www/ durch den Stand des Servers.
+# Replaces the content and accounts in www/ with the state of the server
+# (bin/pull.sh). A deploy runs only in the workflow CI.
 .PHONY: pull
-pull: live-path
-	DEPLOY_HOST=$(LIVE_HOST) DEPLOY_PATH=$(LIVE_PATH) bin/pull.sh
+pull:
+	bin/pull.sh
 
-# Ruft jede Seite der Live-Seite und jedes Vorschaubild unter /media/ einmal
-# ab, damit Kirby sie vor dem ersten Besuch erzeugt (bin/warm.php).
+# Requests every page of the live site and every thumbnail under /media/
+# once, so Kirby creates them before the first visit (bin/warm.php).
 .PHONY: warm
-warm: live-path
-	@$(PHP) bin/warm.php $(LIVE_URL)
+warm: site-url
+	@$(PHP) bin/warm.php $(SITE_URL)
+
+# Measures the live site with PageSpeed Insights (bin/pagespeed.php). It
+# needs PAGESPEED_API_KEY in .env.
+.PHONY: speed
+speed: site-url
+	@$(PHP) bin/pagespeed.php $(SITE_URL)

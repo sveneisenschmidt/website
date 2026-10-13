@@ -2,6 +2,7 @@
 
 namespace Website\Tests\Integration;
 
+use Website\Analytics\Campaign;
 use Website\Analytics\Counter;
 use Website\Analytics\Months;
 use Website\Analytics\Totals;
@@ -261,6 +262,7 @@ final class AnalyticsTest extends IntegrationTestCase
         array $query = [],
     ): void {
         $_GET = $query;
+        Campaign::strip();
         $_SERVER['REMOTE_ADDR'] = $ip;
         $_SERVER['HTTP_USER_AGENT'] = $ua;
         $_SERVER['HTTP_HOST'] = 'localhost';

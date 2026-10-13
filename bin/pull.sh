@@ -6,15 +6,23 @@
 #    content and accounts are lost. Run make backup first to keep a copy.
 #
 # Environment:
+#   SITE_URL             required. The URL of the live site.
 #   DEPLOY_HOST          required. The ssh target, an alias or user@host.
-#   DEPLOY_PATH          required. The site folder on the server.
+#   DEPLOY_PATH          required. The site folder on the server. It has the
+#                        name of the host of SITE_URL.
 #   DEPLOY_SSH_KEY_FILE  optional. The private key for ssh.
 #   REMOTE_PHP           optional. The PHP command on the server, default php85.
 set -euo pipefail
 
+: "${SITE_URL:?SITE_URL missing}"
 : "${DEPLOY_HOST:?DEPLOY_HOST missing}"
 : "${DEPLOY_PATH:?DEPLOY_PATH missing}"
 DEPLOY_PATH="${DEPLOY_PATH%/}"
+SITE_HOST="${SITE_URL%/}"
+SITE_HOST="${SITE_HOST#*://}"
+# The same check as in bin/deploy.sh: a wrong DEPLOY_PATH must not read the
+# state of another site of the same account.
+[ "$(basename "$DEPLOY_PATH")" = "$SITE_HOST" ] || { echo "DEPLOY_PATH must end in the folder $SITE_HOST" >&2; exit 1; }
 BACKUP_DIR="$DEPLOY_PATH/backups"
 RPHP="${REMOTE_PHP:-php85}"
 

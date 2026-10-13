@@ -18,6 +18,9 @@ final class Route
 {
     public const OSRM = 'https://router.project-osrm.org/route/v1/driving/';
 
+    /** Seconds to wait for OSRM. After that the proposal fails with a message, and the Panel request ends. */
+    public const OSRM_TIMEOUT = 20;
+
     /**
      * The User-Agent for OSRM names the site and its use. The usage policy of
      * the public server asks for a User-Agent that identifies the client and
@@ -193,7 +196,7 @@ final class Route
             if ($http !== null) {
                 [$status, $body] = $http($url, self::agent());
             } else {
-                $remote = Remote::get($url, ['agent' => self::agent(), 'timeout' => 20]);
+                $remote = Remote::get($url, ['agent' => self::agent(), 'timeout' => self::OSRM_TIMEOUT]);
                 [$status, $body] = [$remote->code(), (string) $remote->content()];
             }
         } catch (Throwable $e) {

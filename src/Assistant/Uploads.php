@@ -39,6 +39,9 @@ final class Uploads
     /** `cleanup()` deletes uploads and unused chat folders after this many days. */
     public const DAYS = 7;
 
+    /** Seconds the processing of one upload may take: a 64-megapixel photo and its previews are slow on a slow host. */
+    public const TIME_LIMIT = 60;
+
     /**
      * Patterns for an upload id, for the image files that a message may name
      * ("u…" from an upload, "v…" from `image()`), and for a chat folder.
@@ -97,10 +100,9 @@ final class Uploads
      */
     public static function accept(string $tmp, string $name): array
     {
-        // A 64-megapixel photo and its previews take a while on a slow host.
         // A host can disable set_time_limit(); the @ hides the warning, and
         // the limit of the host applies.
-        @set_time_limit(60);
+        @set_time_limit(self::TIME_LIMIT);
         $size = (int) @filesize($tmp);
         if ($size === 0) {
             throw self::error('Die Datei ist leer.');

@@ -5,6 +5,7 @@ namespace Website\Tests\Integration;
 use Website\Blog\Exif;
 use Website\Blog\Images;
 use Website\Blog\Text;
+use Website\Tests\Support\TestSite;
 
 /**
  * The Kirby tags of the site. A Kirby tag is a command in the text, such as
@@ -80,6 +81,23 @@ final class TagTest extends IntegrationTestCase
         $this->assertSame(1, substr_count($html, 'loading="eager"'));
         $this->assertMatchesRegularExpression('!e-1600x-q80\\.webp"[^>]*loading="eager"\nfetchpriority="high"!s', $html);
         $this->assertMatchesRegularExpression('!c-1600x-q80\\.webp"[^>]*loading="lazy"!s', $html);
+    }
+
+    /**
+     * The web PHP of the host wrote 51.1547 as 51.15469999999999828… into
+     * the map points. config.php sets serialize_precision for every request.
+     */
+    public function testMapPointsAreShortWhatEverThePhpOfTheHost(): void
+    {
+        ini_set('serialize_precision', '17');
+        // A new folder: Kirby keeps a loaded config.php per path and would
+        // not run it again for the folder of setUp().
+        $root = TestSite::create();
+        TestSite::app($root, $this->options);
+        TestSite::remove($root);
+
+        $this->assertSame('-1', ini_get('serialize_precision'));
+        $this->assertSame('[51.1547]', json_encode([51.1547]));
     }
 
     public function testImgclassIsAPlainMarkdownImage(): void

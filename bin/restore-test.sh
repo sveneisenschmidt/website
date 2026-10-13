@@ -4,7 +4,7 @@
 # 1. Backs up www/ with bin/backup.sh.
 # 2. Copies the code of www/ to .restore-test/www, without state, env.php
 #    and generated files.
-# 3. Copies env.php and restores the backup into the copy.
+# 3. Copies env.php, where one exists, and restores the backup into the copy.
 # 4. Compares the checksums and file times of the state in both folders.
 # 5. Serves both folders with PHP's built-in web server, fetches every path
 #    of bin/page-paths.php from both, and compares the HTML.
@@ -36,7 +36,9 @@ echo "Backup: $ARCHIVE"
 rsync -a --exclude '/content' --exclude '/media' --exclude '/site/accounts' --exclude '/site/cache' \
   --exclude '/site/sessions' --exclude '/site/config/env.php' --exclude '/site/config/.salt' \
   --exclude '/site/config/.license' "$WWW/" "$TEST/www/"
-cp -p "$WWW/site/config/env.php" "$TEST/www/site/config/env.php"
+# Locally the configuration comes from .env, which make exports; an env.php
+# goes into the copy only where one exists.
+[ ! -f "$WWW/site/config/env.php" ] || cp -p "$WWW/site/config/env.php" "$TEST/www/site/config/env.php"
 ln -s ../vendor "$TEST/vendor"   # www/index.php loads ../vendor/autoload.php
 
 bin/restore.sh "$ARCHIVE" "$TEST/www" >/dev/null

@@ -49,7 +49,7 @@ final class Counter
         }
         // Feed readers rarely send a Referer header. The links in the feed
         // add ?source=rss, so the visit counts as coming from the feed.
-        $source = ($_GET['source'] ?? null) === 'rss' ? 'RSS' : null;
+        $source = Campaign::source() === 'rss' ? 'RSS' : null;
         try {
             self::count($id, $_SERVER['REMOTE_ADDR'] ?? '', $_SERVER['HTTP_USER_AGENT'] ?? '', $_SERVER['HTTP_REFERER'] ?? '', $source);
         } catch (Throwable $e) {
