@@ -8,8 +8,9 @@
 #    shared/site/accounts/ must have mode 700.
 # 2. A second release. `current` must point to it. Every folder and file
 #    must be readable for others, because Apache runs as another user.
-# 3. A release whose start page answers 500. The health check must fail,
-#    and the site must be back on the second release.
+# 3. A release whose posts answer 500 and whose start page answers 200. The
+#    health check must fail at the newest post. The site must be back on the
+#    second release, and its health check must pass.
 #
 # Usage: bin/deploy-test.sh
 set -euo pipefail
@@ -47,10 +48,14 @@ require "$www/index.php";
 PHP
 
 # A small state in shared/, in the layout of the server.
-mkdir -p "$SITE/shared/content/home" "$SITE/shared/content/error" "$SITE/shared/site/config"
+# The health check of bin/deploy.sh requests the newest post, so the state
+# has one note.
+mkdir -p "$SITE/shared/content/home" "$SITE/shared/content/error" "$SITE/shared/content/notes/20260101_hello" "$SITE/shared/site/config"
 printf 'Title: Personal Blog\n' > "$SITE/shared/content/site.txt"
 printf 'Title: Home\n' > "$SITE/shared/content/home/home.txt"
 printf 'Title: Error\n' > "$SITE/shared/content/error/error.txt"
+printf 'Title: Notes\n' > "$SITE/shared/content/notes/notes.txt"
+printf 'Title: Hello\n\n----\n\nDate: 2026-01-01 12:00:00\n\n----\n\nText: Hello.\n' > "$SITE/shared/content/notes/20260101_hello/note.txt"
 printf '0123456789abcdef0123456789abcdef0123456789abcdef\n' > "$SITE/shared/site/config/.salt"
 
 PHP_CLI_SERVER_WORKERS=4 "$PHP" -S "localhost:$PORT" -t "$SITE" "$TMP/router.php" >/dev/null 2>&1 &
@@ -78,15 +83,19 @@ unreadable="$(find "$SITE/releases/$second" \( -type d ! -perm -o+rx \) -o \( -t
 [ -z "$unreadable" ] || fail "the web server cannot read: $unreadable"
 echo "OK: $second"
 
-echo "## 3. Release with a failing start page"
-# A copy of the code whose start page fails.
+echo "## 3. Release with failing posts"
+# A copy of the code whose post template fails. The start page does not use
+# that template and still answers 200.
 mkdir "$TMP/broken"
 rsync -a --exclude '/.git/' --exclude '/vendor/' --exclude '/backups/' --exclude '/storage/' --exclude '/.restore-test/' \
   --exclude '/.claude/' --exclude '/www/content/' --exclude '/www/media/' --exclude '/www/kirby/' --exclude '/www/site/cache/' \
   --exclude '/www/site/sessions/' --exclude '/www/site/accounts/' ./ "$TMP/broken/"
-printf '<?php http_response_code(500); exit;\n' > "$TMP/broken/www/site/templates/home.php"
+printf '<?php http_response_code(500); exit;\n' > "$TMP/broken/www/site/templates/post.php"
 sleep 1
-! (cd "$TMP/broken" && bin/deploy.sh >/dev/null 2>&1) || fail "the deploy did not fail"
+! (cd "$TMP/broken" && bin/deploy.sh >"$TMP/broken.log" 2>&1) || fail "the deploy did not fail"
+grep -qx 'HTTP 500 /2026-01-01-hello/' "$TMP/broken.log" || fail "the health check did not fail at the newest post"
 [ "$(current)" = "$second" ] || fail "current is not back on $second"
+# The last line of the log is the newest post in the check after the switch back.
+tail -1 "$TMP/broken.log" | grep -qx 'HTTP 200 /2026-01-01-hello/' || fail "the deploy did not check $second again after the switch back"
 [ "$(status)" = 200 ] || fail "the site does not answer 200 after the switch back"
 echo "OK: back on $second"

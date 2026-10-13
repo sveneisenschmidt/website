@@ -45,7 +45,7 @@ backups/         the snapshots of the state
 
 The state is what only a backup can restore: content, accounts, `.salt` and `.license`. `env.php` is the configuration of one host. Kirby makes the generated files (media, cache, sessions) again from the state. The uploads are the files of the Panel assistant's chats.
 
-A release has a symlink into `shared/` for each of these paths. The switch replaces `.htaccess` in one rename. Then a health check requests the start page. If it does not answer 200, the site switches back to the previous release and the deploy fails. The newest 5 releases stay. To go back to an older version, run the deploy of its commit again in GitHub Actions.
+A release has a symlink into `shared/` for each of these paths. The switch replaces `.htaccess` in one rename. Then a health check requests the start page, the RSS feed and the newest post. If one of them does not answer 200, the site switches back to the previous release, the check runs again, and the deploy fails. The newest 5 releases stay. To go back to an older version, run the deploy of its commit again in GitHub Actions.
 
 After every deploy the workflow `Speed` measures the live site with PageSpeed Insights (`bin/pagespeed.php`, key in the secret `PAGESPEED_API_KEY`) and shows the scores on the page of the run.
 
