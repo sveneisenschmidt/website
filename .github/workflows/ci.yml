@@ -15,6 +15,12 @@ on:
 permissions:
   contents: read
 
+# Composer downloads from GitHub with the token of this run. The runner keeps
+# the global Composer config of earlier runs, and the token setup-php wrote
+# there ran out with its run.
+env:
+  COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ github.token }}"}}'
+
 jobs:
   test:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
