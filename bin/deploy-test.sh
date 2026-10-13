@@ -3,7 +3,9 @@
 # temporary folder, and PHP's built-in web server takes the place of Apache.
 # The workflow CI runs it. It needs port 8061 to be free.
 # 1. The first release of a site whose state is already in shared/.
-#    env.php and .salt must have mode 600.
+#    env.php and .salt must have mode 600. shared/ and backups/ must have
+#    the .htaccess that denies every request. backups/ and
+#    shared/site/accounts/ must have mode 700.
 # 2. A second release. `current` must point to it. Every folder and file
 #    must be readable for others, because Apache runs as another user.
 # 3. A release whose start page answers 500. The health check must fail,
@@ -61,6 +63,8 @@ bin/deploy.sh >/dev/null
 first="$(current)"
 [ "$(status)" = 200 ] || fail "the first release does not answer 200"
 [ -n "$(find "$SITE/shared/site/config" -name env.php -perm 600)" ] && [ -n "$(find "$SITE/shared/site/config" -name .salt -perm 600)" ] || fail "env.php or .salt is readable by others"
+cmp -s server/deny.htaccess "$SITE/shared/.htaccess" && cmp -s server/deny.htaccess "$SITE/backups/.htaccess" || fail "shared/ or backups/ has no .htaccess that denies every request"
+[ "$(find "$SITE/backups" "$SITE/shared/site/accounts" -maxdepth 0 -perm 700 | grep -c .)" = 2 ] || fail "backups/ or shared/site/accounts/ is open to others"
 echo "OK: $first"
 
 echo "## 2. Second release"

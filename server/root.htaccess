@@ -4,8 +4,8 @@
 # uploads the file. One rename then replaces the old .htaccess, and that
 # rename switches the site to the new release.
 # Every request goes to the www/ folder of the live release, so releases/,
-# shared/ and backups/ cannot be reached from outside. www/.htaccess holds
-# Kirby's rules.
+# shared/ and backups/ cannot be reached from outside. shared/ and backups/
+# also get server/deny.htaccess. www/.htaccess holds Kirby's rules.
 # The rule names the release folder, not the symlink `current`. PHP caches
 # a resolved symlink for up to 2 minutes (realpath_cache_ttl), so running
 # PHP processes would see a switch of the symlink that late.
