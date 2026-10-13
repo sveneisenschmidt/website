@@ -3,6 +3,8 @@
 namespace Website\Tests\Integration;
 
 use Kirby\Cms\Page;
+use Website\Assistant\Gpx;
+use Website\Assistant\Route;
 use Website\Tests\Support\GpxFixture;
 
 /**
@@ -63,7 +65,7 @@ final class AssistantRouteTest extends AssistantTestCase
         $new = blog_assistant_file_ref($trip, blog_assistant_list($changes['route'])[0]);
         $this->assertStringStartsWith('route-', $new->filename());
         $this->assertSame('route', $new->template());
-        $this->assertSame([[12.2823, 51.1547], [9.4797, 51.3127], [6.1724, 51.3704]], blog_route_line(file_get_contents($new->root())));
+        $this->assertSame([[12.2823, 51.1547], [9.4797, 51.3127], [6.1724, 51.3704]], Route::line(file_get_contents($new->root())));
         $this->assertSame([['label' => 'Groitzsch', 'lat' => '51.1547', 'lon' => '12.2823'], ['label' => 'Venlo', 'lat' => '51.3704', 'lon' => '6.1724']], blog_assistant_list($changes['mappoints']));
         $this->assertSame('false', $changes['mapzoom']);
         $kept = glob($this->root . '/content/.assistant/routes/trips+day-1-*-route.json');
@@ -81,7 +83,7 @@ final class AssistantRouteTest extends AssistantTestCase
 
         $trip = $this->kirby->site()->find('trips')->findPageOrDraft('day-1');
         $this->assertSame($uuid, $trip->file('route.json')->uuid()->toString());
-        $this->assertCount(3, blog_route_line(file_get_contents($trip->file('route.json')->root())));
+        $this->assertCount(3, Route::line(file_get_contents($trip->file('route.json')->root())));
         $this->assertSame('Groitzsch', $trip->mappoints()->toStructure()->first()->label()->value());
         $this->assertFalse($trip->version('changes')->exists());
         $this->assertCount(1, glob($this->root . '/content/.assistant/routes/*.json'));
@@ -132,7 +134,7 @@ final class AssistantRouteTest extends AssistantTestCase
         $north = ($home[1] - $rounded[1]) * 111320;
         $norm = sqrt($east ** 2 + $north ** 2);
         $marker = ['lat' => $home[1] + 1199 * $north / $norm / 111320, 'lon' => $home[0] + 1199 * $east / $norm / (111320 * cos(deg2rad($home[1]))), 'label' => 'Near'];
-        $this->assertLessThan(1200, blog_route_distance($home, [$marker['lon'], $marker['lat']]));
+        $this->assertLessThan(1200, Route::distance($home, [$marker['lon'], $marker['lat']]));
 
         $chat = $this->propose(['gpx' => $id, 'markers' => [$marker]]);
 
@@ -158,12 +160,12 @@ final class AssistantRouteTest extends AssistantTestCase
         preg_match_all('/\[(-?\d+\.\d+),(-?\d+\.\d+)\]/', json_encode($this->requests), $pairs, PREG_SET_ORDER);
         $this->assertGreaterThan(30, count($pairs));
         foreach ($pairs as [, $lon, $lat]) {
-            $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, blog_route_distance($home, [(float) $lon, (float) $lat]));
+            $this->assertGreaterThanOrEqual(Gpx::TRIM_MIN, Route::distance($home, [(float) $lon, (float) $lat]));
         }
         $trip = $this->kirby->site()->find('trips')->findPageOrDraft('day-1');
         $file = blog_assistant_file_ref($trip, blog_assistant_list($trip->version('changes')->read()['route'])[0]);
-        foreach (blog_route_line(file_get_contents($file->root())) as $point) {
-            $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, blog_route_distance($home, $point));
+        foreach (Route::line(file_get_contents($file->root())) as $point) {
+            $this->assertGreaterThanOrEqual(Gpx::TRIM_MIN, Route::distance($home, $point));
         }
         $this->assertNull(blog_uploads_meta($id), 'The GPX upload goes after the click.');
     }

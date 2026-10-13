@@ -4,6 +4,7 @@ use Kirby\Cms\File;
 use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
 use Kirby\Data\Yaml;
+use Website\Assistant\Route;
 use Website\Blog\Types;
 
 /**
@@ -103,10 +104,10 @@ function blog_assistant_route_summary(Page $page): ?array
     $json = $file !== null ? (string) file_get_contents($file->root()) : '';
     $points = blog_assistant_current($page, 'mappoints');
     $zoom = blog_assistant_current($page, 'mapzoom');
-    $line = blog_route_line($json);
+    $line = Route::line($json);
     return [
         'file' => $file?->filename(),
-        'km' => round(blog_route_length($line) / 1000, 1),
+        'km' => round(Route::length($line) / 1000, 1),
         'seconds' => null,
         'points' => count($line),
         'markers' => array_map(fn($p) => ['label' => (string) ($p['label'] ?? ''), 'lat' => (float) ($p['lat'] ?? 0), 'lon' => (float) ($p['lon'] ?? 0)], blog_assistant_list($points)),

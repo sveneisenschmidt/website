@@ -4,6 +4,8 @@ namespace Website\Tests\Integration;
 
 use BlogAssistantError;
 use RuntimeException;
+use Website\Assistant\Gpx;
+use Website\Assistant\Route;
 use Website\Tests\Support\GpxFixture;
 
 /**
@@ -241,7 +243,7 @@ final class UploadTest extends AssistantTestCase
         $this->assertNull($meta['path']);
         $this->assertEqualsWithDelta(13.8, $meta['km'], 0.6);
         foreach ($meta['line'] as $point) {
-            $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, blog_route_distance(GpxFixture::home(), $point));
+            $this->assertGreaterThanOrEqual(Gpx::TRIM_MIN, Route::distance(GpxFixture::home(), $point));
         }
         $stored = file_get_contents(dirname($this->stored()[0]) . '/' . $upload['id'] . '.json');
         foreach (['Test Device', 'Morning ride', '2026-', '<hr>', 'ele'] as $leak) {

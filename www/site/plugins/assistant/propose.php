@@ -5,6 +5,9 @@ use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
 use Kirby\Data\Yaml;
 use Kirby\Filesystem\F;
+use Website\Assistant\Gpx;
+use Website\Assistant\Route;
+use Website\Assistant\Words;
 use Website\Blog\Types;
 
 /**
@@ -40,7 +43,7 @@ function blog_assistant_name(ModelWithContent $model): string
 function blog_assistant_propose(array $chat, string $name, array $input): array|string
 {
     // Every value of the input, each on its own: texts, captions, labels, slug, file names.
-    $runs = prompt_guard_runs(blog_assistant_frozen_prompt($chat));
+    $runs = Words::runs(blog_assistant_frozen_prompt($chat));
     $error = null;
     array_walk_recursive($input, function ($value) use ($runs, &$error) {
         $error ??= is_string($value) ? blog_guard_prompt($value, $runs) : null;
@@ -306,8 +309,8 @@ function blog_assistant_route(array $route): array|string
         // are stored rounded; the zone grows by what rounding moves them.
         foreach ($markers as $marker) {
             foreach ($meta['ends'] as $end) {
-                if (blog_route_distance([$marker['lon'], $marker['lat']], $end) < BLOG_GPX_ZONE + BLOG_GPX_ZONE_SLACK) {
-                    return 'The marker "' . $marker['label'] . '" lies closer than ' . BLOG_GPX_ZONE . ' m to an end of the ride. Markers there are not possible.';
+                if (Route::distance([$marker['lon'], $marker['lat']], $end) < Gpx::ZONE + Gpx::ZONE_SLACK) {
+                    return 'The marker "' . $marker['label'] . '" lies closer than ' . Gpx::ZONE . ' m to an end of the ride. Markers there are not possible.';
                 }
             }
         }
@@ -318,7 +321,7 @@ function blog_assistant_route(array $route): array|string
             return 'A route takes at least two stations on the map: lat -90 to 90, lon -180 to 180.';
         }
         try {
-            $line = blog_route_osrm($points, option('blog.assistant.http')) + ['source' => 'OSRM', 'upload' => null];
+            $line = Route::osrm($points, option('blog.assistant.http')) + ['source' => 'OSRM', 'upload' => null];
         } catch (RuntimeException $e) {
             return $e->getMessage();
         }
@@ -334,7 +337,7 @@ function blog_assistant_route_rows(?array $route): array
     }
     return [
         'Länge' => number_format($route['km'], 1, ',', '.') . ' km' . (isset($route['source']) ? ' · ' . $route['source'] : ''),
-        'Fahrzeit' => $route['seconds'] === null ? '' : blog_route_duration($route['seconds']),
+        'Fahrzeit' => $route['seconds'] === null ? '' : Route::duration($route['seconds']),
         'Punkte' => (string) $route['points'],
         'Marker' => implode(', ', array_column($route['markers'], 'label')),
         'Karte zoombar' => $route['zoom'] ? 'ja' : 'nein',

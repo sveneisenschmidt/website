@@ -16,7 +16,6 @@ use Website\Blog\Types;
 
 require_once __DIR__ . '/claude.php';
 require_once __DIR__ . '/guard.php';
-require_once __DIR__ . '/route.php';
 require_once __DIR__ . '/uploads.php';
 require_once __DIR__ . '/content.php';
 require_once __DIR__ . '/tools.php';

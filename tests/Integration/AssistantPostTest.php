@@ -4,6 +4,7 @@ namespace Website\Tests\Integration;
 
 use Kirby\Cms\File;
 use RuntimeException;
+use Website\Assistant\Route;
 use Website\Blog\Exif;
 use Website\Blog\Types;
 
@@ -100,7 +101,7 @@ final class AssistantPostTest extends AssistantTestCase
         $this->assertArrayNotHasKey('GPS', exif_read_data($aika->root(), null, true) ?: []);
         $this->assertSame('dog.jpg', $draft->cover()->toFile()->filename());
         $this->assertSame('route', $draft->route()->toFile()->template());
-        $this->assertSame([[12.3, 51.3], [12.31, 51.31]], blog_route_line(file_get_contents($draft->route()->toFile()->root())));
+        $this->assertSame([[12.3, 51.3], [12.31, 51.31]], Route::line(file_get_contents($draft->route()->toFile()->root())));
         $this->assertSame(2, $draft->mappoints()->toStructure()->count());
         $this->assertSame('true', $draft->mapzoom()->value());
         $this->assertNull(blog_uploads_meta($a)['path'], 'The uploads go after success.');

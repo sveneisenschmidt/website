@@ -3,9 +3,8 @@
 use Kirby\Cms\Page;
 use Kirby\Text\KirbyTag;
 use Kirby\Uuid\Uuid;
+use Website\Assistant\Words;
 use Website\Blog\Types;
-
-require_once __DIR__ . '/words.php';
 
 /**
  * Checks every text Claude proposes, before a card exists. Text from photos,
@@ -378,12 +377,12 @@ function blog_guard_marks(string $text, ?Page $page = null, bool $caption = fals
 
 /**
  * Any proposed value: no run of 8 words of the chat's prompt, by the same
- * words as the git hook counts them (words.php). A card can end up on the
+ * words as the git hook counts them (Website\Assistant\Words). A card can end up on the
  * site, and the prompt never does.
  */
 function blog_guard_prompt(string $text, array $runs): ?string
 {
-    return $runs !== [] && array_intersect_key(prompt_guard_runs($text), $runs) !== []
+    return $runs !== [] && array_intersect_key(Words::runs($text), $runs) !== []
         ? 'This text repeats 8 or more words in a row of the system prompt. Proposals never quote it.'
         : null;
 }
