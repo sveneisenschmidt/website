@@ -1,0 +1,27 @@
+name: Speed
+
+# Measures the live site with PageSpeed Insights (bin/pagespeed.php). The
+# workflow CI runs it after every deploy; it also runs by hand. The result
+# table is on the page of the run. A low score does not fail the run, an
+# error of the API does.
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pagespeed:
+    runs-on: self-hosted
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: bin
+
+      # PHP is on the runner from the workflow CI.
+      - name: PageSpeed Insights
+        env:
+          PAGESPEED_API_KEY: ${{ secrets.PAGESPEED_API_KEY }}
+        run: php bin/pagespeed.php "${{ vars.SITE_URL }}"

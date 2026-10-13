@@ -140,3 +140,9 @@ jobs:
           export DEPLOY_SSH_KEY_FILE="$RUNNER_TEMP/deploy_key"
           export DEPLOY_KNOWN_HOSTS_FILE="$RUNNER_TEMP/known_hosts"
           bin/deploy.sh
+
+  # After every deploy: the speed of the live site (workflow Speed).
+  speed:
+    needs: deploy
+    uses: ./.github/workflows/speed.yml
+    secrets: inherit

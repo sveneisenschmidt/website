@@ -6,11 +6,13 @@ use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../../bin/indexnow.php';
 require_once __DIR__ . '/../../bin/warm.php';
+require_once __DIR__ . '/../../bin/pagespeed.php';
 
 /**
  * The parts of the scripts in bin/ that decide something without the
- * network: which sitemap URLs IndexNow gets, and which links the warm-up
- * requests.
+ * network: which sitemap URLs IndexNow gets, which links the warm-up
+ * requests, and what the speed test reads from an answer of PageSpeed
+ * Insights.
  */
 final class BinScriptsTest extends TestCase
 {
@@ -43,5 +45,46 @@ final class BinScriptsTest extends TestCase
 
         $this->assertSame(['/archive/', '/2026-10-12-new/'], $pages);
         $this->assertSame(['/media/pages/p/a1/photo-600x-q80.webp', '/media/pages/p/a1/photo-1600x-q80.webp'], $thumbnails);
+    }
+
+    public function testTheSpeedTestTakesTheNewestPostFromTheSitemap(): void
+    {
+        $sitemap = '<loc>https://example.com/</loc><loc>https://example.com/about/</loc>'
+            . '<loc>https://example.com/2026-10-12-new/</loc><loc>https://example.com/2026-10-01-old/</loc>';
+
+        $this->assertSame('https://example.com/2026-10-12-new/', pagespeed_newest_post($sitemap));
+        $this->assertNull(pagespeed_newest_post('<loc>https://example.com/</loc>'));
+    }
+
+    public function testTheSpeedTestReadsScoreMetricsFieldDataAndSavings(): void
+    {
+        $audit = fn(string $value, float $savings = 0) => ['displayValue' => $value, 'title' => "Audit $value", 'details' => ['overallSavingsMs' => $savings]];
+        $result = [
+            'lighthouseResult' => [
+                'categories' => ['performance' => ['score' => 0.87]],
+                'audits' => [
+                    'first-contentful-paint' => $audit('1.2 s'),
+                    'largest-contentful-paint' => $audit('2.5 s'),
+                    'total-blocking-time' => $audit('30 ms'),
+                    'cumulative-layout-shift' => $audit('0'),
+                    'render-blocking-resources' => $audit('a', 300),
+                    'uses-responsive-images' => $audit('b', 900),
+                    'unused-css-rules' => $audit('c', 120),
+                    'unused-javascript' => $audit('d', 50),
+                ],
+            ],
+            'loadingExperience' => ['metrics' => [
+                'LARGEST_CONTENTFUL_PAINT_MS' => ['percentile' => 2140],
+                'INTERACTION_TO_NEXT_PAINT' => ['percentile' => 80],
+                'CUMULATIVE_LAYOUT_SHIFT_SCORE' => ['percentile' => 3],
+            ]],
+        ];
+
+        $row = pagespeed_row($result);
+
+        $this->assertSame(87, $row['score']);
+        $this->assertSame('2.5 s', $row['lcp']);
+        $this->assertSame('LCP 2.1 s, INP 80 ms, CLS 0.03', $row['field']);
+        $this->assertSame(['Audit b (900 ms)', 'Audit a (300 ms)', 'Audit c (120 ms)'], $row['savings']);
     }
 }
