@@ -38,7 +38,7 @@ Was nur existiert, weil Hugo statisch ist, fällt weg oder zieht in Kirby. Grund
 | Statistik-Block auf About holt Zahlen von Pop | Snippet zeigt die Zahlen aus „Besucher“, auf dem Server gerendert | 3 |
 | Suche mit Pagefind, im CI gebaut | Kirby-Suche über Titel, Anriss, Text und Alternativtexte, auf dem Server; `search.js` holt Ergebnisse beim Tippen | 3 |
 | Build alle 2 Stunden für geplante Beiträge | Fällt weg. Veröffentlichen im Panel macht einen Beitrag sofort sichtbar, Zukunftsdaten gibt es nicht. | 5 |
-| ntfy beim Deploy, wenn ein Beitrag neu ist | Fällt weg. Der ntfy-Server ist nur im Tailnet erreichbar, Sven veröffentlicht selbst. | 5 |
+| Push-Nachricht beim Deploy, wenn ein Beitrag neu ist | Fällt weg, Sven veröffentlicht selbst. | 5 |
 | Weiterleitungen als `RedirectMatch` aus `data/redirects.yaml` | Weiterleitungen werden Inhalt auf dem Server, gestartet mit den Einträgen aus `data/redirects.yaml`. Ändert sich Slug oder Datum eines veröffentlichten Beitrags, legt ein Hook die Weiterleitung an. | 4 |
 | RSS mit eingefrorenen GUIDs (`rss: keep`, 270 Beiträge, `layouts/home.rss.xml`) | Der Kirby-Feed gibt dieselben GUIDs byte-gleich aus, inklusive `?source=rss`; die Zuordnung kommt aus den Weiterleitungen | 3, 4 |
 | IndexNow liest den Schlüssel aus `static/` | Schlüsseldatei nach `www/`, Pfad in `.github/workflows/indexnow.yml` anpassen | 5 |
@@ -56,7 +56,7 @@ Was nur existiert, weil Hugo statisch ist, fällt weg oder zieht in Kirby. Grund
 - **Aus concertshotsbyluisa übernehmen:** sRGB-Treiber (`plugins/portfolio/srgb.php`, Treiber `cbl-gd`), EXIF beim Hochladen (`plugins/portfolio/exif.php`), Seiten-Cache (`plugins/portfolio/cache.php`), Routen für `robots.txt`, `sitemap.xml` und `llms.txt` (`config/routes.php`), Inhaltsmigrationen (`plugins/portfolio/migrate.php`, `bin/migrate.php`).
 - **Server-Platz:** Der Hugo-Ordner `sven.eisenschmidt.website` belegt 4,4 GB. Kirby ersetzt ihn. Während Staging liegen beide parallel, rund 8,5 GB.
 - **Backups auf dem Server (Phase 5):** Gelöst in Luisas Repo, #49 (2026-10-12): `bin/backup.sh --snapshot` legt Snapshot-Ordner mit Hardlinks an, ein unveränderter Zustand ergibt keinen neuen Snapshot, `bin/restore.sh` nimmt Archiv oder Snapshot-Ordner. Phase 1 hat diese Fassung schon übernommen. Phase 5 übernimmt dazu aus #49: Deploy und `pull` mit `--snapshot`, das Aufräumen alter `.website-tmp-*` und die Snapshot-Prüfungen im Restore-Test.
-- **Phase 5 braucht von Sven:** Subdomain für Staging in KAS, PHP 8.5 für diese Domain, Kirby-Basic-Lizenz (99 EUR), PHP auf dem Runner im Homelab.
+- **Phase 5 braucht von Sven:** Subdomain für Staging in KAS, PHP 8.5 für diese Domain, Kirby-Basic-Lizenz (99 EUR), PHP auf dem eigenen Runner.
 - **Phase 5, Staging-Passwort:** `Require valid-user` sperrt auch `/.well-known/`. Erneuert All-Inkl Let's Encrypt über HTTP-01, schlägt das während Staging fehl. Abhilfe: `<If "%{REQUEST_URI} =~ m#^/\.well-known/#">Require all granted</If>` im Staging-Block.
 - **Phase 5, Salt:** `bin/init-config.php` legt eine neue `.salt` an, sobald die Datei fehlt, auch bei vorhandenen Inhalten. Für den Server muss das Skript abbrechen, wenn `content/` existiert und `.salt` fehlt.
 - **Phase 5, PHP auf dem Server:** Für Webseiten stellt KAS die Version je Domain ein (8.5). Das `php` in der SSH-Shell ist 8.4.24. Skripte, die der Deploy über SSH startet, laufen darum mit `php85`.

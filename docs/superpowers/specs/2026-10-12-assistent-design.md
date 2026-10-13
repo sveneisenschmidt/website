@@ -172,6 +172,6 @@ Neue Tests:
 
 - **Vor dem ersten Prompt (Sven, auf `main`):** Den Kirby-Block der `.gitignore` samt `/.claude/*` committen. `make push` auf `main` soll abbrechen, wenn etwas unter `www/` oder `.claude/` vorgemerkt ist.
 - **Phase 5, Abnahme auf Staging mit gemessenen Zeiten:** ein Upload von 20 Fotos, eine Opus-Runde mit Fotos, OSRM aus dem Web-PHP, ein GPX-Import. Die Limits von Web-PHP und Apache auf All-Inkl sind bisher nur aus der Kommandozeile bekannt.
-- **Phase 5, CI:** In diesem öffentlichen Repo läuft kein Pull-Request auf dem Runner im Homelab. Schlüssel liegen in einer geschützten Umgebung.
+- **Phase 5, CI:** In diesem öffentlichen Repo läuft kein Pull-Request auf dem eigenen Runner. Schlüssel liegen in einer geschützten Umgebung.
 - **Phase 3:** zeichnet die Karte und nennt OpenStreetMap als Quelle der Routen (ODbL). Tooltips der Marker als reiner Text.
 - **Bekanntes Risiko:** Andere Seiten im selben All-Inkl-Konto können mit ihrem PHP Prompt, Schlüssel und Uploads lesen.

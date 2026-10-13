@@ -1,7 +1,7 @@
 name: Deploy
 
 # Every push to main deploys the site: lint and tests first, then make deploy.
-# The repository is public and the runner sits in the homelab, so no pull
+# The repository is public and the runner is self-hosted, so no pull
 # request starts this workflow.
 on:
   push:
@@ -17,8 +17,7 @@ concurrency:
 jobs:
   deploy:
     if: github.actor == 'sveneisenschmidt'
-    # The Pi in the homelab (repo sveneisenschmidt/homelab, role github-runner).
-    runs-on: [self-hosted, Linux, ARM64]
+    runs-on: self-hosted
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7

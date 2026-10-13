@@ -30,7 +30,7 @@ make test
 
 ## Deploy
 
-Every push to `main` deploys: the workflow `Deploy` runs on the homelab runner. By hand:
+Every push to `main` deploys: the workflow `Deploy` runs on a self-hosted runner. By hand:
 
 ```bash
 make deploy
