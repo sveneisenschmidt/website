@@ -85,13 +85,13 @@ check-urls:
 # nennt die lokale .env (nie in Git, sie nennt das Hosting-Konto):
 #   LIVE_PATH=/www/htdocs/<konto>/sven.eisenschmidt.website
 # Den API-Schlüssel holt bin/deploy-env.sh aus der lokalen env.php. Lint und
-# Tests laufen vorher.
+# Tests laufen im Workflow Deploy als eigener Schritt, nicht hier.
 LIVE_HOST ?= website
 -include .env
 LIVE_URL ?= https://sven.eisenschmidt.website
 
 .PHONY: deploy
-deploy: lint test live-path
+deploy: live-path
 	. bin/deploy-env.sh && DEPLOY_HOST=$(LIVE_HOST) DEPLOY_PATH=$(LIVE_PATH) SITE_URL=$(LIVE_URL) bin/deploy.sh
 
 .PHONY: live-path

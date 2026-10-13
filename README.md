@@ -35,7 +35,7 @@ Every push to `main` deploys: the workflow `Deploy` runs on a self-hosted runner
 make deploy
 ```
 
-Lint and tests run first. The deploy takes a snapshot of the live state, then uploads the code. It never touches the content. At the end the start page must answer 200, and every page is requested once to fill the page cache.
+The workflow runs lint and tests first; `make deploy` by hand runs neither. The deploy takes a snapshot of the live state, then uploads the code. It never touches the content. At the end the start page must answer 200, and every page is requested once to fill the page cache.
 
 The workflow reads the host key of the server from the secret `DEPLOY_KNOWN_HOSTS` (the output of `ssh-keyscan` for the deploy host).
 

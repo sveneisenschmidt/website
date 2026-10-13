@@ -51,6 +51,10 @@ jobs:
       - name: Install
         run: composer install --no-interaction --no-progress
 
+      # make deploy runs neither: a failure here stops the run before the deploy.
+      - name: Lint and tests
+        run: make lint test
+
       # The runner keeps its files between jobs: key and known_hosts go to
       # $RUNNER_TEMP, which the runner empties after each job. The host key
       # comes from a secret, so a changed host key stops the deploy.
