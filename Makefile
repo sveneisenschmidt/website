@@ -90,6 +90,7 @@ deploy: lint test live-path
 .PHONY: live-path
 live-path:
 	@test -n "$(LIVE_PATH)" || { echo "LIVE_PATH fehlt: .env anlegen, siehe Kommentar im Makefile" >&2; exit 1; }
+	@test "$(notdir $(LIVE_PATH))" = sven.eisenschmidt.website || { echo "LIVE_PATH zeigt nicht auf den Ordner sven.eisenschmidt.website" >&2; exit 1; }
 
 # Ersetzt Inhalte und Konten in www/ durch den Stand des Servers.
 .PHONY: pull
