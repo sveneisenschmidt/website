@@ -6,7 +6,6 @@ PRODUCT.md
 node_modules/
 .DS_Store
 logs/
-.srgb-originals/
 
 *.db
 *.sqlite
