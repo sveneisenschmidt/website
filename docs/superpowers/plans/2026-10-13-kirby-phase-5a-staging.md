@@ -1325,8 +1325,8 @@ Der Controller trägt die Werte während der Abnahme ein.
 | Opus-Runde mit 4 Fotos: Dauer, Tokens (39) | |
 | OSRM-Route: Dauer (39) | |
 | GPX-Import: Dauer (39) | |
-| `make kirby-check-urls` gegen Staging: URLs, Weiterleitungen, Fehler, Dauer (39) | |
-| `make kirby-pull`: Dauer, Größe des Archivs (39) | |
+| `make kirby-check-urls` gegen Staging: URLs, Weiterleitungen, Fehler, Dauer (39) || 296 URLs, 539 Weiterleitungen, 0 Fehler, 6:42 min (1.374 Anfragen einzeln über HTTPS) |
+| `make kirby-pull`: Dauer, Größe des Archivs (39) || 2:52 min, 4,1 GB, 1.812 Dateien |
 
 ---
 

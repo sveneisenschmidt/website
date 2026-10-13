@@ -33,19 +33,27 @@ function check_get(string $url): array
     return [(int)(explode(' ', $headers[0] ?? '')[1] ?? 0), $location];
 }
 
+preg_match_all('!<loc>([^<]+)</loc>!', (string)file_get_contents($sitemap), $m);
+$redirects = json_decode((string)file_get_contents("$www/content/.redirects.json"), true) ?? [];
+
 $failures = [];
-$expect = function (string $path, int $status, ?string $location = null) use ($site, &$failures): void {
+$total = count($m[1]) + 2 * count($redirects);
+$count = 0;
+$started = microtime(true);
+$expect = function (string $path, int $status, ?string $location = null) use ($site, &$failures, &$count, $total, $started): void {
     [$got, $to] = check_get($site . $path);
     if ($got !== $status || ($location !== null && $to !== $site . $location)) {
         $failures[] = "$path: $got" . ($to ? " -> $to" : '') . ", expected $status" . ($location ? " -> $location" : '');
     }
+    // One request at a time, against staging several minutes: show progress.
+    if (++$count % 100 === 0) {
+        printf("  %d of %d requests, %.0f s\n", $count, $total, microtime(true) - $started);
+    }
 };
 
-preg_match_all('!<loc>([^<]+)</loc>!', (string)file_get_contents($sitemap), $m);
 foreach ($m[1] as $url) {
     $expect((string)parse_url($url, PHP_URL_PATH), 200);
 }
-$redirects = json_decode((string)file_get_contents("$www/content/.redirects.json"), true) ?? [];
 foreach ($redirects as $redirect) {
     $expect($redirect['from'], 301, $redirect['to']);
     $expect((string)parse_url($redirect['to'], PHP_URL_PATH), 200);
