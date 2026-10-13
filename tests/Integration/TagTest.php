@@ -132,6 +132,22 @@ final class TagTest extends IntegrationTestCase
         $this->assertStringNotContainsString('<b>', $html, 'a label is text');
     }
 
+    public function testARouteCannotEndItsScriptElement(): void
+    {
+        $trip = $this->post('trips', 'trip', 'a-trip', 'A Trip');
+        $route = $this->kirby->impersonate('kirby', fn() => $trip->createFile([
+            'source' => $this->write('route.json', '{"type":"Feature","properties":{"name":"</script><script>alert(1)</script>"},"geometry":{"type":"LineString","coordinates":[[12.24,51.12],[12.25,51.13]]}}'),
+            'filename' => 'route.json',
+            'template' => 'route',
+        ]));
+        $trip = $this->kirby->impersonate('kirby', fn() => $trip->update(['route' => [$route->uuid()->toString()]]));
+
+        $html = Text::html('(map:)', $trip);
+
+        $this->assertSame(1, substr_count($html, '</script>'));
+        $this->assertStringContainsString('"name":"\\u003C/script\\u003E\\u003Cscript\\u003Ealert(1)\\u003C/script\\u003E"', $html);
+    }
+
     private function write(string $name, string $content): string
     {
         file_put_contents($this->root . '/' . $name, $content);

@@ -86,6 +86,10 @@ for p in "${PATHS[@]}"; do
   fi
 done
 
+# Kirby keeps the failed logins of the last hour, with hashed IP addresses,
+# in site/accounts/.logins. A snapshot does not need them.
+rm -f "$STATE/site/accounts/.logins"
+
 [ -d "$STATE/content" ] || { echo "No content in $WWW" >&2; exit 1; }
 
 ( cd "$STATE" && find . -type f ! -name '.DS_Store' ! -name '._*' | LC_ALL=C sort | while read -r f; do sha256 "$f"; done ) > "$TMP/MANIFEST.sha256"

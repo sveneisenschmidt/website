@@ -7,10 +7,11 @@ PHP ?= php
 # The port of make dev. Another local project uses port 8000.
 PORT := 8010
 
-# Local values and keys from .env (template: .env.example). make passes them
-# to every target as environment variables.
+# Local values and keys from .env (template: .env.example). make passes the
+# values to every target as environment variables, and each key only to the
+# target that uses it: ANTHROPIC_API_KEY to dev, PAGESPEED_API_KEY to speed.
 -include .env
-export SITE_URL DEPLOY_HOST DEPLOY_PATH DEBUG ANTHROPIC_API_KEY PAGESPEED_API_KEY
+export SITE_URL DEPLOY_HOST DEPLOY_PATH DEBUG
 
 # Once after cloning: dependencies, .env and .salt, git hooks. Then fill in
 # the values in .env, and make pull fetches the content from the server.
@@ -38,6 +39,7 @@ test:
 # change in the Panel, but not on a change of the code, so make dev clears
 # it at the start.
 .PHONY: dev
+dev: export ANTHROPIC_API_KEY := $(ANTHROPIC_API_KEY)
 dev:
 	@test -f vendor/autoload.php || { echo "Kirby is missing. Run composer install first."; exit 1; }
 	@test -f .env || { echo ".env is missing. Run make config first."; exit 1; }
@@ -121,5 +123,6 @@ warm: site-url
 # Measures the live site with PageSpeed Insights (bin/pagespeed.php). It
 # needs PAGESPEED_API_KEY in .env.
 .PHONY: speed
+speed: export PAGESPEED_API_KEY := $(PAGESPEED_API_KEY)
 speed: site-url
 	@$(PHP) bin/pagespeed.php $(SITE_URL)

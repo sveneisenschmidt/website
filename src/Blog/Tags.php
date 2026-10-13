@@ -42,7 +42,12 @@ final class Tags
         foreach ($page->mappoints()->toStructure() as $point) {
             $points[] = ['label' => $point->label()->value(), 'lat' => (float) $point->lat()->value(), 'lon' => (float) $point->lon()->value()];
         }
-        $route = (string) ($page->route()->toFile()?->read() ?? '');
+        // The route file comes from the Panel and can hold any JSON. Encoded
+        // again with JSON_HEX_TAG, it has no "<", so a "</script>" in a
+        // property cannot end the script element of the snippet. A file that
+        // is no JSON gives no route; map.js could not read it either.
+        $data = json_decode((string) ($page->route()->toFile()?->read() ?? ''));
+        $route = $data === null ? '' : (string) json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP);
         return rtrim(snippet('map', ['zoomable' => $page->mapzoom()->toBool(), 'points' => $points, 'route' => $route], true), "\n");
     }
 }

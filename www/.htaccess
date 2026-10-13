@@ -6,6 +6,11 @@ Options -Indexes
 
 RewriteEngine on
 
+# A path under /releases/ or /current/ would serve the files of a release
+# folder directly. Such a path answers 404.
+RewriteCond %{THE_REQUEST} \s/+(releases|current)/ [NC]
+RewriteRule ^ - [R=404,L]
+
 # Block files and folders beginning with a dot, such as .git,
 # except for the .well-known folder
 RewriteRule (^|/)\.(?!well-known\/) index.php [L]

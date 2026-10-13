@@ -24,7 +24,7 @@ Last updated: <time datetime="<?= date('Y-m-d', $page->lastModified()) ?>"><?= d
 <?php snippet('stats') ?>
 </div>
 <?php if (Site::email() !== ''): ?>
-<p class="post-footer"><a href="mailto:<?= Site::email() ?>?subject=<?= rawurlencode('Re: ' . $page->title()->value()) ?>">Leave me a message</a>
+<p class="post-footer"><a href="mailto:<?= esc(Site::email()) ?>?subject=<?= rawurlencode('Re: ' . $page->title()->value()) ?>">Leave me a message</a>
 </p>
 <?php endif ?>
 </article>

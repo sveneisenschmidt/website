@@ -23,8 +23,21 @@ jobs:
           sparse-checkout: |
             bin
             www
+          persist-credentials: false
 
       # No setup-php: the job uses the PHP that the workflow CI installed on
       # the self-hosted runner.
       - name: Submit to IndexNow
         run: php bin/indexnow.php "${{ vars.SITE_URL }}"
+
+      # A scheduled run has no person who watches it.
+      - name: Push message
+        if: failure()
+        env:
+          NTFY_SERVER: ${{ secrets.NTFY_SERVER }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          NTFY_TOKEN: ${{ secrets.NTFY_TOKEN }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          curl -fsS -H "Authorization: Bearer $NTFY_TOKEN" -H "Title: Website: IndexNow failed" -H "Tags: warning" \
+            -d "Run: $RUN" "$NTFY_SERVER/$NTFY_TOPIC" > /dev/null

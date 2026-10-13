@@ -18,6 +18,8 @@
 # Local values and keys (template: .env.example). The server folder in it
 # names the hosting account.
 /.env
+/.env.*
+!/.env.example
 
 # Kirby: the state of the site (content, accounts, .salt, .license) and
 # env.php. bin/backup.sh saves the state; each host has its own env.php.

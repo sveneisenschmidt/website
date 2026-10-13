@@ -18,12 +18,6 @@ on:
 permissions:
   contents: read
 
-# Composer downloads packages from GitHub with the token of this run. The
-# runner keeps the global Composer config of earlier runs, and a token that
-# setup-php wrote there expired at the end of its own run.
-env:
-  COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ github.token }}"}}'
-
 jobs:
   test:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
@@ -33,6 +27,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       # The runner keeps PHP between jobs. setup-php takes about a minute, so
       # it runs only when Composer, an extension or the PHP version of
@@ -55,7 +50,14 @@ jobs:
         env:
           runner: self-hosted
 
+      # Composer downloads packages from GitHub with the token of this run.
+      # The runner keeps the global Composer config of earlier runs, and a
+      # token that setup-php wrote there expired at the end of its own run.
+      # Only the steps that run composer install get the token: this one,
+      # Deploy test and Deploy.
       - name: Install
+        env:
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ github.token }}"}}'
         run: composer install --no-interaction --no-progress
 
       - name: Lint
@@ -73,6 +75,8 @@ jobs:
       # Three deploys into a temporary folder on the runner, a switch back
       # after a failed health check included.
       - name: Deploy test
+        env:
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ github.token }}"}}'
         run: bin/deploy-test.sh
 
   # Merges a pull request of Dependabot when the job test passed. GitHub
@@ -93,8 +97,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           API: https://api.github.com/repos/${{ github.repository }}
           PR: ${{ github.event.pull_request.number }}
+          # The merge fails when the branch got a commit after the test.
+          SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          curl -fsS -X PUT -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API/pulls/$PR/merge" -d '{"merge_method":"merge"}'
+          curl -fsS -X PUT -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API/pulls/$PR/merge" -d "{\"merge_method\":\"merge\",\"sha\":\"$SHA\"}"
           curl -fsS -X POST -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API/actions/workflows/ci.yml/dispatches" -d '{"ref":"main"}'
 
   deploy:
@@ -112,18 +118,21 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       # The runner keeps its files between jobs, so the key and known_hosts
-      # go to $RUNNER_TEMP, which the runner empties after each job. The host
-      # key comes from a secret, so a changed host key stops the deploy.
+      # go to $RUNNER_TEMP. The last step deletes them, also after a failed
+      # or cancelled step. umask 077 creates both files for this user only.
+      # The host key comes from a secret, so a changed host key stops the
+      # deploy.
       - name: SSH key
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
         run: |
           [ -n "$DEPLOY_KNOWN_HOSTS" ] || { echo "The secret DEPLOY_KNOWN_HOSTS is missing. It must hold the output of ssh-keyscan for the deploy host."; exit 1; }
+          umask 077
           printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' > "$RUNNER_TEMP/deploy_key"
-          chmod 600 "$RUNNER_TEMP/deploy_key"
           ssh-keygen -y -f "$RUNNER_TEMP/deploy_key" > /dev/null || { echo "DEPLOY_SSH_KEY is not a valid private key"; exit 1; }
           printf '%s\n' "$DEPLOY_KNOWN_HOSTS" | tr -d '\r' > "$RUNNER_TEMP/known_hosts"
 
@@ -136,13 +145,38 @@ jobs:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SITE_URL: ${{ vars.SITE_URL }}
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ github.token }}"}}'
         run: |
           export DEPLOY_SSH_KEY_FILE="$RUNNER_TEMP/deploy_key"
           export DEPLOY_KNOWN_HOSTS_FILE="$RUNNER_TEMP/known_hosts"
           bin/deploy.sh
 
+      - name: Remove the SSH key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/deploy_key" "$RUNNER_TEMP/known_hosts"
+
   # After every deploy: the speed of the live site (workflow Speed).
   speed:
     needs: deploy
     uses: ./.github/workflows/speed.yml
-    secrets: inherit
+    secrets:
+      PAGESPEED_API_KEY: ${{ secrets.PAGESPEED_API_KEY }}
+
+  # A failed run that nobody watches sends a push message: a run on main and
+  # a run for a pull request of Dependabot. GitHub mails a failure only to
+  # the actor of the run, and these runs have a bot as their actor.
+  notify:
+    needs: [test, merge, deploy, speed]
+    if: failure() && (github.event_name != 'pull_request' || github.event.pull_request.user.login == 'dependabot[bot]')
+    runs-on: self-hosted
+    timeout-minutes: 5
+    steps:
+      - name: Push message
+        env:
+          NTFY_SERVER: ${{ secrets.NTFY_SERVER }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          NTFY_TOKEN: ${{ secrets.NTFY_TOKEN }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          curl -fsS -H "Authorization: Bearer $NTFY_TOKEN" -H "Title: Website: CI failed" -H "Tags: warning" \
+            -d "Run: $RUN" "$NTFY_SERVER/$NTFY_TOPIC" > /dev/null

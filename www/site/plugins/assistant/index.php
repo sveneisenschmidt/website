@@ -18,7 +18,8 @@ use Website\Assistant\Uploads;
  * model are set under Website › Assistent
  * (www/site/blueprints/tabs/assistant.yml). The API key is host config:
  * `assistantKey` in www/site/config/env.php. Kirby lets only a logged-in
- * Panel user reach the area and the API routes. The code is in
+ * Panel user reach the area and the API routes, and the API routes also
+ * require the role admin (`Panel::admin()`). The code is in
  * src/Assistant (namespace `Website\Assistant`, loaded by Composer); this
  * file only registers it with Kirby.
  */
@@ -103,7 +104,10 @@ App::plugin('website/assistant', [
             [
                 'pattern' => 'blog-assistant/check',
                 'method' => 'POST',
-                'action' => fn() => Claude::check(),
+                'action' => function () {
+                    Panel::admin();
+                    return Claude::check();
+                },
             ],
         ],
     ],

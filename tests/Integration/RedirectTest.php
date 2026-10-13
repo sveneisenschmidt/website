@@ -39,6 +39,36 @@ final class RedirectTest extends IntegrationTestCase
         $this->assertRedirect('/projects/', 'http://localhost/about/#things-i-built');
     }
 
+    public function testATargetOnAnotherHostIsIgnored(): void
+    {
+        // The base URL in front of ".example.com" would make
+        // http://localhost.example.com.
+        Redirects::write([['from' => '/away/', 'to' => '.example.com'], ['from' => '/twice/', 'to' => '//example.com']]);
+
+        $this->assertNull(Redirects::target('away'));
+        $this->assertNull(Redirects::target('twice'));
+    }
+
+    public function testABrokenFileKeepsThePagesUp(): void
+    {
+        file_put_contents(Redirects::file(), '[{"from": ');
+        // phpunit.xml fails a test on any output, so the log goes to a file.
+        $log = $this->root . '/php-errors.log';
+        $previous = ini_set('error_log', $log);
+
+        try {
+            $target = Redirects::target('posts/daily-photo-test');
+            $response = TestSite::app($this->root, $this->options, ['server' => ['REQUEST_URI' => '/2026-10-07-test-photo/', 'REQUEST_METHOD' => 'GET']])->render();
+        } finally {
+            ini_set('error_log', (string) $previous);
+        }
+
+        $this->assertNull($target);
+        $this->assertSame(200, $response?->code());
+        $this->assertStringContainsString('blog redirects: ', (string) file_get_contents($log));
+        $this->assertSame('[{"from": ', file_get_contents(Redirects::file()), 'nothing overwrites the broken file');
+    }
+
     /**
      * HEAD answers like GET, so a link checker sees the redirect and the
      * post, and no 404.

@@ -28,7 +28,7 @@ use Website\Blog\Site;
 <?= $page->bodyHtml() ?>
 </div>
 <?php if (Site::email() !== ''): ?>
-<p class="post-footer"><a href="mailto:<?= Site::email() ?>?subject=<?= rawurlencode('Re: ' . $page->title()->value()) ?>">Leave me a message</a>
+<p class="post-footer"><a href="mailto:<?= esc(Site::email()) ?>?subject=<?= rawurlencode('Re: ' . $page->title()->value()) ?>">Leave me a message</a>
 </p>
 <?php endif ?>
 </article>
