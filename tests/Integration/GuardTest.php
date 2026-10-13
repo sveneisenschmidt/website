@@ -5,8 +5,8 @@ namespace Website\Tests\Integration;
 use Website\Assistant\Guard;
 
 /**
- * Guard: every proposed text, before a card exists. The tests check
- * security and content model only, never style.
+ * `Guard` checks every text that Claude proposes, before a card exists. The
+ * tests cover security and the content model, not style.
  */
 final class GuardTest extends IntegrationTestCase
 {
@@ -19,7 +19,9 @@ final class GuardTest extends IntegrationTestCase
     }
 
     /**
-     * A text for the field "text" of the photo with the images a.jpg and b.jpg; without $map, of a note.
+     * Checks $text for the field "text" of the photo, which has the images
+     * a.jpg and b.jpg. With $map false, it checks it for a note. Returns the
+     * error, or null when the text passes.
      *
      * @param array<mixed> $allowed
      */
@@ -49,7 +51,8 @@ final class GuardTest extends IntegrationTestCase
             $this->assertStringContainsString('not allowed', (string) $this->markdown($text), $text);
         }
         $this->assertStringContainsString('names no image', (string) $this->markdown('(image: c.jpg)'));
-        // (image:) knows only imgclass: anything else is part of the file name.
+        // The tag (image:) takes only the option imgclass. Any other option is
+        // part of the file name.
         $this->assertStringContainsString('names no image', (string) $this->markdown('(image: a.jpg link: https://x.test)'));
         $this->assertStringContainsString('photo and trip', (string) $this->markdown('(map:)', [], false));
         $this->assertStringContainsString('page://', (string) $this->markdown('(link: https://x.test text: X)'));
@@ -74,9 +77,9 @@ final class GuardTest extends IntegrationTestCase
     }
 
     /**
-     * The probes of the security review (2026-10-12): Markdown makes links
-     * of nested brackets, of reference definitions in lists, quotes and
-     * code, and of link texts, where regexes on the source see none.
+     * Markdown makes links from nested brackets, from reference definitions
+     * in lists, quotes and code, and from link texts. A regex on the Markdown
+     * source finds none of these links, so each case must fail the check.
      */
     public function testLinksHiddenFromRegexesAreRefused(): void
     {

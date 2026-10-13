@@ -12,7 +12,8 @@ use Website\Assistant\Uploads;
 use Website\Tests\Support\GpxFixture;
 
 /**
- * Uploads: what the chat accepts, what it keeps and when it deletes.
+ * Uploads to the chat of the Panel assistant: which files it accepts, which
+ * data of a file it keeps, and when it deletes them.
  */
 final class UploadTest extends AssistantTestCase
 {
@@ -28,7 +29,8 @@ final class UploadTest extends AssistantTestCase
     }
 
     /**
-     * Files with an upload id in the storage folder.
+     * Returns the files in the storage folder whose names start with an
+     * upload id.
      *
      * @return array<mixed>
      */
@@ -71,7 +73,8 @@ final class UploadTest extends AssistantTestCase
     public function testAFailedWriteOfAPreviewIsAnError(): void
     {
         $source = $this->jpeg(40, 30);
-        // GD cannot write where a folder stands; imagejpeg() then returns false.
+        // GD cannot write a file where a folder of the same name exists, so
+        // imagejpeg() returns false.
         mkdir(Uploads::dir() . '/v0000000000000000.jpg');
 
         $this->expectException(RuntimeException::class);
@@ -108,9 +111,9 @@ final class UploadTest extends AssistantTestCase
     }
 
     /**
-     * The probe up4.php of the security review: a camera name in Latin-1,
-     * not UTF-8. It broke the JSON of the upload after its files were
-     * written; they stayed behind.
+     * A camera name in Latin-1 is not valid UTF-8, and json_encode() fails on
+     * it. The upload must replace the invalid byte and still write all four
+     * files.
      */
     public function testACameraNameInAnotherEncodingBreaksNothing(): void
     {
@@ -140,13 +143,14 @@ final class UploadTest extends AssistantTestCase
         file_put_contents($this->root . '/logo.svg', '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>');
         $this->refused($this->root . '/logo.svg', 'logo.svg', 'Nur JPEG');
         $this->refused($this->gpsJpeg(1, 'poly.jpg', 64, 48, true), 'poly.jpg', 'Code');
-        // PHP's short echo tag, in a comment segment (probe up1.php of the security review).
+        // PHP's short echo tag in a JPEG comment segment.
         file_put_contents($this->root . '/short.jpg', "\xFF\xD8" . $this->segment(0xFE, '<?= `id` ?>') . substr(file_get_contents($this->jpeg(8, 8)), 2));
         $this->refused($this->root . '/short.jpg', 'short.jpg', 'Code');
-        // The three bytes alone come by chance in large photos, a few times in 20 MB of noise.
+        // The three bytes "<?=" alone occur by chance in large photos, a few
+        // times in 20 MB of random data, so they are no reason to refuse.
         file_put_contents($this->root . '/chance.jpg', "\xFF\xD8" . $this->segment(0xFE, "<?=\x00\xFF\x13") . substr(file_get_contents($this->jpeg(8, 8)), 2));
         $this->assertSame('image', Uploads::accept($this->root . '/chance.jpg', 'chance.jpg')['kind']);
-        $this->assertCount(4, $this->stored(), 'Only the upload by chance.');
+        $this->assertCount(4, $this->stored(), 'Only the files of chance.jpg are stored.');
     }
 
     public function testTooManyPixelsAreRefused(): void
@@ -176,15 +180,15 @@ final class UploadTest extends AssistantTestCase
         $this->assertNotFalse(imagecreatefromwebp($webp['path']));
     }
 
-    /** A JPEG segment: marker and data. */
+    /** Returns a JPEG segment: the marker, the length and the data. */
     private function segment(int $marker, string $data): string
     {
         return "\xFF" . chr($marker) . pack('n', strlen($data) + 2) . $data;
     }
 
     /**
-     * The probe up1.php of the security review: metadata where a list of
-     * what goes would miss it. Only what draws the image stays.
+     * Metadata in places that a list of known metadata types would miss.
+     * The upload keeps only the data that draws the image.
      */
     public function testOnlyWhatDrawsTheImageStays(): void
     {
@@ -278,7 +282,8 @@ final class UploadTest extends AssistantTestCase
         $dir = dirname(Uploads::meta($id)['path']);
         $old = $this->root . '/storage/assistant/' . str_repeat('a', 32);
         $recent = $this->root . '/storage/assistant/' . str_repeat('b', 32);
-        // Not a folder of a chat: the cleanup leaves it alone, however old.
+        // A folder that belongs to no chat: the cleanup keeps it, however old
+        // it is.
         $other = $this->root . '/storage/assistant/backup';
         foreach ([$old => 8, $recent => 6, $other => 30] as $folder => $days) {
             mkdir($folder);

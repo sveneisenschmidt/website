@@ -16,13 +16,14 @@ parameters:
         - vendor/autoload.php
         - www/kirby/bootstrap.php
     ignoreErrors:
-        # Kirby answers content fields ($page->cover()), field methods
+        # Kirby resolves content fields ($page->cover()), field methods
         # ($field->toDate()), session values ($session->get()) and thumbnail
-        # sizes through __call.
+        # sizes in the magic method __call. PHPStan cannot see these methods.
         -
             identifier: method.notFound
             message: '#^Call to an undefined method Kirby\\(Cms\\(Page|Pages|Site|File|FileVersion|User|ModelWithContent)|Content\\Field|Session\\Session)(\|Kirby\\Cms\\[A-Za-z]+)?::#'
-        # Kirby binds route closures to the route.
+        # Kirby binds a route closure to the route object, so $this exists
+        # when the route runs.
         -
             identifier: variable.undefined
             message: '#^Undefined variable: \$this$#'

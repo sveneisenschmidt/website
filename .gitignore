@@ -11,21 +11,22 @@
 /.design/
 /DESIGN.md
 
-# Datenbanken, etwa die von Pop: Besucherdaten gehören nie ins öffentliche Repo
+# Datenbanken: Besucherdaten gehören nie in dieses öffentliche Repository.
 *.db
 *.sqlite*
 
-# Lokale Einstellungen für das Makefile, z. B. der Ordner auf dem Server (nennt das Hosting-Konto)
+# Lokale Einstellungen für das Makefile, etwa der Ordner auf dem Server. Er nennt das Hosting-Konto.
 /.env
 
-# Kirby: Zustand lebt in Backups, nie in Git
+# Kirby: der Zustand der Seite (Inhalte, Konten, .salt, .license) und env.php.
+# Den Zustand sichert bin/backup.sh, env.php hat jeder Host für sich.
 /www/content/
 /www/site/accounts/
 /www/site/config/env.php
 /www/site/config/.salt
 /www/site/config/.license
 
-# Kirby: erzeugt, entsteht aus den Inhalten neu
+# Kirby: erzeugte Dateien. Kirby erzeugt sie aus den Inhalten neu.
 /www/media/
 /www/site/cache/
 /www/site/sessions/
@@ -41,7 +42,7 @@
 !/www/site/plugins/analytics/
 !/www/site/plugins/assistant/
 
-# Assistent: Uploads der Chats, neben www/ und vendor/, nie in Git
+# Assistent: Uploads der Chats neben www/ (src/Assistant/Uploads.php)
 /storage/
 
 # Lokale Ausgabe: Backups, Restore-Test, PHPUnit, Formatierer

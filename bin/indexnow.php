@@ -1,11 +1,13 @@
 <?php
 
 /**
- * Sends the URLs of the sitemap that changed in the last 50 hours to
- * IndexNow (Bing, Yandex, ...). The workflow IndexNow runs it once a day;
- * the window covers one failed or late run, and IndexNow takes a URL
- * again without harm. The key is the name
- * of the file www/<key>.txt, which the site serves for IndexNow to check.
+ * Tells IndexNow which pages changed. IndexNow is a protocol that search
+ * engines such as Bing and Yandex use to learn about new URLs. The script
+ * sends every sitemap URL whose `lastmod` lies in the last 50 hours.
+ * The workflow IndexNow runs it once a day. 50 hours cover one failed or
+ * late run, and IndexNow accepts a URL that comes twice.
+ * The key is the name of the file www/<key>.txt. IndexNow fetches that file
+ * from the site to check that the key belongs to the site.
  *
  * Usage: php bin/indexnow.php <site-url>
  */

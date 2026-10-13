@@ -6,8 +6,9 @@ use Website\Blog\Feeds;
 use Website\Blog\Redirects;
 
 /**
- * A published post gets a new URL from a new slug or date: the old URL
- * leads there, and the feed keeps the post's GUID (Website\Blog\Redirects).
+ * A new slug or date gives a published post a new URL. The old URL
+ * redirects to it, and the feed keeps the GUID of the post
+ * (`Website\Blog\Redirects`).
  */
 final class MovedPostTest extends IntegrationTestCase
 {
@@ -25,7 +26,7 @@ final class MovedPostTest extends IntegrationTestCase
         $this->assertSame([['from' => '/2026-10-07-test-photo/', 'to' => '/2026-10-08-test-photo/', 'rss' => 'keep']], Redirects::all());
     }
 
-    public function testOlderRedirectsMoveOnAndKeepTheirGuid(): void
+    public function testOlderRedirectsPointToTheNewUrlAndKeepTheirGuid(): void
     {
         Redirects::write([['from' => '/posts/daily-photo-test/', 'to' => '/2026-10-07-test-photo/', 'pop' => 'keep', 'rss' => 'keep']]);
 

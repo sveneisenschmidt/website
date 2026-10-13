@@ -1,21 +1,29 @@
 #!/usr/bin/env bash
-# Backup of all site state, as one archive or as a snapshot folder.
+# Copies the state of a site into a backup: an archive, or a snapshot folder
+# with --snapshot. make backup writes an archive. bin/deploy.sh and
+# bin/pull.sh make a snapshot on the server.
 #
-# State = www/content, www/site/accounts, www/site/config/.salt, www/site/config/.license
-# Everything else is code (git), host config (env.php, imported per host)
-# or generated (media, cache, sessions).
+# The state is what git, Composer and Kirby cannot make again: content/,
+# site/accounts/, site/config/.salt and site/config/.license. env.php is
+# host config: each host has its own, so it is not in a backup. media/,
+# site/cache/ and site/sessions/ are generated: Kirby makes them again.
 #
-# Usage: bin/backup.sh [--snapshot] [www-root or shared/ of the server] [output-dir]
-# Output: <output-dir>/website-<UTC timestamp>.tar.gz containing state/, MANIFEST.sha256 and META.
+# Usage: bin/backup.sh [--snapshot] [state-root] [output-dir]
+#   state-root  the local www/ (default), or shared/ on the server. Both
+#               hold the state at the same paths.
+#   output-dir  default backups/.
 #
-# --snapshot writes the folder <output-dir>/website-<UTC timestamp>/ with the same
-# content instead (the deploy's backups on the server). A file that is the same
-# as in the newest snapshot (checksum, mtime, mode) becomes a hard link to it, so
-# it takes space only once. If the whole state (files and folders) is the same
-# as in the newest snapshot, no new snapshot is made and the script prints the
-# newest one.
+# The archive is <output-dir>/website-<UTC time>.tar.gz. It holds state/,
+# MANIFEST.sha256 with the SHA-256 checksum of every file, and META with the
+# time, the git commit, the Kirby and PHP versions and the file count.
 #
-# PHP: on the server the php of the ssh shell is 8.4, the deploy passes PHP=php85.
+# A snapshot is the folder <output-dir>/website-<UTC time>/ with the same
+# content. A file with the same checksum, mtime and mode as in the newest
+# snapshot becomes a hard link to it and takes no new space. When nothing in
+# the state changed, the script makes no snapshot and prints the newest one.
+#
+# On the server, `php` in the ssh shell is PHP 8.4. bin/deploy.sh and
+# bin/pull.sh set PHP=php85, the PHP of the site.
 set -euo pipefail
 
 SNAPSHOT=0
@@ -31,8 +39,6 @@ OUT="${2:-backups}"
 PHP="${PHP:-php}"
 PATHS=(content site/accounts site/config/.salt site/config/.license)
 
-# A site root (local www/) or the shared/ folder of the server: both hold
-# the state at the same paths (bin/deploy.sh).
 [ -d "$WWW/content" ] || { echo "No content in $WWW" >&2; exit 1; }
 mkdir -p "$OUT"
 
@@ -47,7 +53,8 @@ trap 'rm -rf "$TMP" ${NEW:+"$NEW"}' EXIT
 if [ "$SNAPSHOT" = 1 ]; then
   PREV=""
   for d in "$OUT"/website-*/; do [ -d "$d" ] && PREV="${d%/}"; done
-  # Its own temporary name, so a deploy and a pull at once do not meet.
+  # A unique temporary name: a deploy and a pull that run at the same time
+  # must not write into the same folder.
   NEW="$(mktemp -d "$OUT/.website-tmp-XXXXXX")"
   STATE="$NEW/state"
 else
@@ -62,16 +69,18 @@ for p in "${PATHS[@]}"; do
     if [ "$SNAPSHOT" = 1 ]; then
       # -a keeps mtimes and modes. rsync writes a new file and never changes
       # one in place, so a linked file in an older snapshot stays as it was.
-      # -c compares content: size and mtime alone would link a file rewritten
-      # within the same second, or one whose mtime was set back (migrate.php).
-      # GNU rsync (server, CI) links only a file with the same mode; macOS
+      # -c compares the content. Size and mtime alone would link a file that
+      # was rewritten within the same second, or one whose mtime was set back.
+      # GNU rsync (server, CI) links only a file with the same mode. macOS
       # openrsync also links a file whose mode alone changed.
       LINK=()
-      # rsync reads a relative --link-dest from the target folder, so it gets an absolute one.
+      # rsync resolves a relative --link-dest from the target folder, so the
+      # path must be absolute.
       [ -n "$PREV" ] && [ -d "$PREV/state/$dir" ] && LINK=(--link-dest="$(cd "$PREV/state/$dir" && pwd)")
       rsync -a -c --exclude '.DS_Store' --exclude '._*' ${LINK[@]+"${LINK[@]}"} "$WWW/$p" "$STATE/$dir/"
     else
-      # -p keeps mtimes and modes: a restore must be identical, not just equal in content.
+      # -p keeps mtimes and modes. A page without a `lastmod` field gets its
+      # date in the sitemap from the mtime of its content file.
       cp -Rp "$WWW/$p" "$STATE/$p"
     fi
   fi
@@ -81,9 +90,10 @@ done
 
 ( cd "$STATE" && find . -type f ! -name '.DS_Store' ! -name '._*' | LC_ALL=C sort | while read -r f; do sha256 "$f"; done ) > "$TMP/MANIFEST.sha256"
 
-# Same files with the same checksums, each of them a hard link into the newest
-# snapshot (so also the same mtime and mode), and the same folders (Kirby reads
-# a folder in content as a page): nothing changed.
+# The state is unchanged when the manifest equals the newest one, every file
+# is a hard link into the newest snapshot (so mtime and mode match too), and
+# the folders are the same. Folders count because Kirby reads every folder in
+# content/ as a page, an empty one too.
 dirs() { ( cd "$1" && find . -type d | LC_ALL=C sort ); }
 if [ "$SNAPSHOT" = 1 ] && [ -n "$PREV" ] && cmp -s "$TMP/MANIFEST.sha256" "$PREV/MANIFEST.sha256" \
    && [ -z "$(find "$STATE" -type f -links 1 | head -1)" ] \
@@ -105,9 +115,10 @@ fi
 
 if [ "$SNAPSHOT" = 1 ]; then
   mv "$TMP/MANIFEST.sha256" "$TMP/META" "$NEW/"
-  # The folder gets its final name only when it is complete. rename() fails on
-  # an existing folder, where mv would move it inside: two snapshots in the
-  # same second (deploy and pull) take the next free second.
+  # The folder gets its final name only when it is complete. PHP's rename()
+  # fails when the target folder exists, and mv would move the folder into it.
+  # When a deploy and a pull make a snapshot in the same second, the second
+  # snapshot takes the next free second.
   tries=0
   until "$PHP" -r 'exit(@rename($argv[1], $argv[2]) ? 0 : 1);' "$NEW" "$OUT/website-$STAMP"; do
     tries=$((tries + 1))
@@ -121,8 +132,9 @@ if [ "$SNAPSHOT" = 1 ]; then
 fi
 
 ARCHIVE="$OUT/website-$STAMP.tar.gz"
-# macOS tar would add AppleDouble "._*" entries; GNU tar on Linux would
-# extract them as real files and the restore would fail its file count.
+# macOS tar (bsdtar) adds AppleDouble "._*" entries for extended attributes.
+# GNU tar on Linux extracts them as real files, and bin/restore.sh then finds
+# more files than the manifest lists.
 if tar --version 2>/dev/null | grep -q bsdtar; then
   COPYFILE_DISABLE=1 tar --no-xattrs --no-mac-metadata -C "$TMP" -czf "$ARCHIVE" state MANIFEST.sha256 META
 else

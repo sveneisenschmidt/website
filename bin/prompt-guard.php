@@ -1,14 +1,15 @@
 <?php
 
 /**
- * Git hook against a leak of the assistant's prompt.
- * The prompt lives only in Website › Assistent, the field assistantPrompt
- * in www/content/site.txt; this repository is public. The hook stops a
- * commit or push whose added lines hold a run of 8 words of the prompt.
- * It holds no part of the prompt itself.
+ * Git hook that keeps the prompt of the Panel assistant out of this public
+ * repository. The prompt is stored only in the field `assistantPrompt` of
+ * www/content/site.txt (in the Panel: Website › Assistent), and content is
+ * not in git. The hook stops a commit or a push when its added lines contain
+ * a run of 8 consecutive words of the prompt. This file contains no part of
+ * the prompt.
  *
- * make hooks copies this file into the hooks folder of git, so it
- * runs on every branch, main included. Standalone: no Kirby, no Composer.
+ * make hooks copies this file and src/Assistant/Words.php into .git/hooks.
+ * The hook then runs on every branch and needs neither Kirby nor Composer.
  *
  * Usage: php prompt-guard.php pre-commit
  *        php prompt-guard.php pre-push < "<local ref> <local sha> <remote ref> <remote sha>" lines
@@ -16,14 +17,17 @@
 
 use Website\Assistant\Words;
 
-// The runs of words, shared with the assistant's check of its proposals
-// (src/Assistant/Words.php). The copy in the hooks folder finds them next
-// to itself, without Composer.
+// `Words` splits a text into runs of 8 words; the assistant uses it to
+// check its proposals too. In .git/hooks, make hooks puts it next to this
+// file as prompt-words.php.
 if (!class_exists(Words::class, false)) {
     require_once is_file(__DIR__ . '/prompt-words.php') ? __DIR__ . '/prompt-words.php' : __DIR__ . '/../src/Assistant/Words.php';
 }
 
-/** The prompt from a site.txt (Kirby's text format), or "". */
+/**
+ * Reads the field `assistantPrompt` from a site.txt in Kirby's text format.
+ * Returns "" when the file or the field is missing.
+ */
 function prompt_guard_prompt(string $file): string
 {
     if (!is_file($file)) {
@@ -31,6 +35,7 @@ function prompt_guard_prompt(string $file): string
     }
     foreach (preg_split('/\R----\s*\R/', (string) file_get_contents($file)) as $field) {
         if (preg_match('/^\s*assistant[-_ ]?prompt\s*:(.*)$/is', $field, $m)) {
+            // Kirby writes a line "----" inside a value as "\----".
             return trim(str_replace("\n\\----", "\n----", $m[1]));
         }
     }
@@ -38,7 +43,8 @@ function prompt_guard_prompt(string $file): string
 }
 
 /**
- * The files of a unified diff whose added lines hold a run of the prompt.
+ * Returns the files of a unified diff whose added lines contain a run of
+ * 8 words of the prompt.
  *
  * @return array<mixed>
  */
@@ -78,7 +84,7 @@ function prompt_guard_main(string $mode): int
     if ($mode === 'pre-push') {
         while (($line = fgets(STDIN)) !== false) {
             $sha = explode(' ', trim($line))[1] ?? '';
-            // A deleted branch pushes nothing.
+            // The push of a deleted branch has the sha 000…0 and no commits.
             if (preg_match('/^[0-9a-f]+$/', $sha) && trim($sha, '0') !== '') {
                 $diffs[] = (string) shell_exec('git log -p --no-color --no-ext-diff -U0 --format= ' . escapeshellarg($sha) . ' --not --remotes');
             }
@@ -93,7 +99,7 @@ function prompt_guard_main(string $mode): int
     if ($hits === []) {
         return 0;
     }
-    fwrite(STDERR, "Abbruch: Text aus dem Prompt (Website › Assistent) in:\n  " . implode("\n  ", array_unique($hits)) . "\nNichts committet oder gepusht.\n");
+    fwrite(STDERR, "Diese Dateien enthalten Text aus dem Prompt (Website › Assistent):\n  " . implode("\n  ", array_unique($hits)) . "\nDer Commit oder Push ist abgebrochen.\n");
     return 1;
 }
 

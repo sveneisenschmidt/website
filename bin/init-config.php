@@ -1,11 +1,13 @@
 <?php
 
 /**
- * Creates the local host config (env.php) and, for a fresh site only,
- * the media salt (.salt). Existing files stay untouched.
+ * Creates www/site/config/env.php and www/site/config/.salt when they do not
+ * exist. make setup and make config run it. An existing file stays as it is.
  *
- * env.php is config: per host, not in git, not in backups.
- * .salt is state: created once per site, then only ever restored from a backup.
+ * env.php is the host config: each host has its own, and it is neither in
+ * git nor in a backup. The local env.php turns on Kirby's debug mode.
+ * .salt is state: Kirby builds the media URLs with it. A new site gets it
+ * once. A site with content must restore its .salt from a backup.
  *
  * Usage: php bin/init-config.php [www-root]
  */

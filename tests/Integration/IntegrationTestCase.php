@@ -40,9 +40,9 @@ abstract class IntegrationTestCase extends TestCase
     }
 
     /**
-     * A post under its section page, as the Panel creates it. The section
-     * page ("photos", "trips", ...) is created once and published unlisted,
-     * like the import leaves it.
+     * Creates a post under its section page, as the Panel does. The section
+     * page ("photos", "trips", ...) is created once, unlisted, as on the live
+     * site.
      */
     protected function post(
         string $section = 'photos',
@@ -67,8 +67,8 @@ abstract class IntegrationTestCase extends TestCase
     }
 
     /**
-     * Upload to the post (or to $page) as the Panel does: through the image
-     * blueprint and our hooks.
+     * Uploads a file to the post (or to $page) as the Panel does: through the
+     * image blueprint and the hooks of the site.
      */
     protected function upload(string $source, string $filename, ?Page $page = null): File
     {

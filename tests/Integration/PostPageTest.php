@@ -3,8 +3,8 @@
 namespace Website\Tests\Integration;
 
 /**
- * A post in the frame of the site: head, article, timeline with the
- * neighbours.
+ * A post page in the layout of the site: the head, the article, and the
+ * timeline with the neighbouring posts.
  */
 final class PostPageTest extends IntegrationTestCase
 {
@@ -13,7 +13,7 @@ final class PostPageTest extends IntegrationTestCase
         $html = $this->post->render();
         $url = $this->post->url();
 
-        $this->assertStringContainsString('<title>Test Photo · Sven Eisenschmidt - Personal Blog</title>', $html);
+        $this->assertStringContainsString('<title>Test Photo · Personal Blog</title>', $html);
         $this->assertStringContainsString('<meta name="description" content="Test intro">', $html);
         $this->assertStringContainsString('<meta property="og:type" content="article">', $html);
         $this->assertStringContainsString('<meta property="article:published_time" content="2026-10-07T20:00:00+02:00">', $html);

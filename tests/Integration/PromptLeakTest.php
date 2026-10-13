@@ -9,19 +9,21 @@ use Website\Assistant\Session;
 use Website\Changelog\Log as Changelog;
 
 /**
- * The prompt is set to a marker. It goes to Claude and nowhere else: no
- * page, no route, no Panel view of the assistant, no log.
+ * The prompt is a marker text. It must go to Claude and nowhere else: not
+ * into a page, a route, a Panel view of the assistant or a log.
  */
 final class PromptLeakTest extends AssistantTestCase
 {
     public function testThePromptAppearsNowhere(): void
     {
-        // About cannot change its status in the Panel: it is created unlisted.
+        // The Panel allows no status change of About, so the test creates it
+        // unlisted.
         $this->kirby->site()->createChild(['slug' => 'about', 'template' => 'about', 'draft' => false, 'content' => ['title' => 'About', 'text' => 'Hello.']]);
         $this->post('notes', 'note', 'a-note', 'A note');
         $this->post('trips', 'trip', 'a-draft', 'A draft', 'draft');
         $this->upload(__DIR__ . '/../fixtures/exif.jpg', 'a.jpg');
-        // A chat with a card and a click, so Protokoll, Verlauf and the view have entries.
+        // A chat with a card and a click on it, so the log views "Protokoll"
+        // and "Verlauf" and the chat view have entries.
         $this->reply('tool_use', $this->tool('t1', 'propose_field', ['post' => 'photos/test-photo', 'field' => 'intro', 'value' => 'New.']));
         $this->reply('end_turn', $this->text('Steht oben.'));
         $chat = $this->chat('Mach den Anriss neu.');
@@ -36,7 +38,7 @@ final class PromptLeakTest extends AssistantTestCase
         foreach ($this->kirby->site()->index() as $page) {
             $outputs['/' . $page->uri()] = $this->kirby->render('/' . $page->uri())?->body();
         }
-        // Routes of the site (phase 3 adds sitemap, feed and the like): every pattern without a placeholder.
+        // Every route of the site whose pattern has no placeholder.
         foreach ($this->kirby->option('routes', []) as $route) {
             if (is_string($route['pattern'] ?? null) && !str_contains($route['pattern'], '(:')) {
                 $outputs[$route['pattern']] = $this->kirby->render('/' . $route['pattern'])?->body();

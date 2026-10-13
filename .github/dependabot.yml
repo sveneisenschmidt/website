@@ -1,8 +1,9 @@
-# Weekly updates as one pull request per ecosystem. The workflow CI tests
-# each of them, merges it when the tests pass and deploys it; the pinned
-# commits of the actions move with their version. Composer stays inside the
-# version ranges of composer.json: a new major version of Kirby is a change
-# by hand.
+# Dependabot opens one pull request a week for each ecosystem: the Composer
+# packages and the GitHub Actions. The workflow CI tests the pull request,
+# merges it when the tests pass, and deploys it. For an action, Dependabot
+# updates the pinned commit and its version comment together. For Composer,
+# it changes only composer.lock, inside the version ranges of composer.json.
+# A new major version of Kirby needs a change of composer.json by hand.
 version: 2
 updates:
   - package-ecosystem: composer
