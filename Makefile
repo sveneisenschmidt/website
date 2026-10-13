@@ -81,18 +81,13 @@ SITE ?= http://localhost:$(PORT)
 check-urls:
 	@$(PHP) bin/check-urls.php $(SITE)
 
-# Deploy der Live-Seite über den SSH-Alias website. Den Ordner auf dem Server
-# nennt die lokale .env (nie in Git, sie nennt das Hosting-Konto):
+# Der Server über den SSH-Alias website. Den Ordner auf dem Server nennt die
+# lokale .env (nie in Git, sie nennt das Hosting-Konto):
 #   LIVE_PATH=/www/htdocs/<konto>/sven.eisenschmidt.website
-# Den API-Schlüssel holt bin/deploy-env.sh aus der lokalen env.php. Lint und
-# Tests laufen hier nicht, im Workflow CI vor jedem Deploy.
+# Deployt wird nur über den Workflow CI.
 LIVE_HOST ?= website
 -include .env
 LIVE_URL ?= https://sven.eisenschmidt.website
-
-.PHONY: deploy
-deploy: live-path
-	. bin/deploy-env.sh && DEPLOY_HOST=$(LIVE_HOST) DEPLOY_PATH=$(LIVE_PATH) SITE_URL=$(LIVE_URL) bin/deploy.sh
 
 .PHONY: live-path
 live-path:

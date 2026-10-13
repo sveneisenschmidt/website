@@ -85,11 +85,13 @@ jobs:
           printf '%s\n' "$DEPLOY_KNOWN_HOSTS" | tr -d '\r' > "$RUNNER_TEMP/known_hosts"
 
       # Host, user and folder come from secrets, as they name the hosting
-      # account. Without an API key the deploy keeps the assistant's key.
+      # account. bin/set-env.php writes the assistant's key into env.php on
+      # the server.
       - name: Deploy
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SITE_URL: https://sven.eisenschmidt.website
         run: |
           export DEPLOY_SSH_KEY_FILE="$RUNNER_TEMP/deploy_key"

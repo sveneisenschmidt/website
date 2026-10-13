@@ -29,17 +29,11 @@ The workflow `CI` runs both for every pull request and every push to `main`.
 
 ## Deploy
 
-Every push to `main` deploys: the workflow `CI` runs the tests, then the deploy, on a self-hosted runner. By hand:
+Every push to `main` deploys: the workflow `CI` runs the tests, then the deploy, on a self-hosted runner. There is no deploy by hand. The deploy takes a snapshot of the live state, then uploads the code. It never touches the content. At the end the start page must answer 200, and every page is requested once to fill the page cache.
 
-```bash
-make deploy
-```
+The workflow reads the host key of the server from the secret `DEPLOY_KNOWN_HOSTS` (the output of `ssh-keyscan` for the deploy host) and the key of the Panel assistant from the secret `ANTHROPIC_API_KEY`.
 
-`make deploy` runs no tests. The deploy takes a snapshot of the live state, then uploads the code. It never touches the content. At the end the start page must answer 200, and every page is requested once to fill the page cache.
-
-The workflow reads the host key of the server from the secret `DEPLOY_KNOWN_HOSTS` (the output of `ssh-keyscan` for the deploy host).
-
-`make deploy` and `make pull` read the server folder from a local `.env`, which is not in git:
+`make pull` reads the server folder from a local `.env`, which is not in git:
 
 ```
 LIVE_PATH=/www/htdocs/<account>/sven.eisenschmidt.website
