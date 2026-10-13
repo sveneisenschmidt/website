@@ -284,15 +284,6 @@
   border-top: 1px solid var(--color-border);
   background: var(--color-background);
 }
-.blog-ai-examples {
-  display: flex;
-  gap: var(--spacing-2);
-  overflow-x: auto;
-}
-.blog-ai-examples .k-button {
-  flex: none;
-  white-space: nowrap;
-}
 .blog-ai-inrow {
   display: flex;
   gap: var(--spacing-2);

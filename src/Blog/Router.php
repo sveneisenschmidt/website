@@ -4,6 +4,7 @@ namespace Website\Blog;
 
 use Kirby\Cms\Page;
 use Kirby\Cms\Response;
+use Website\Analytics\Campaign;
 use Website\Models\PostPage;
 
 /**
@@ -57,7 +58,7 @@ final class Router
         if (trim($own, '/') === $path && ($request === '' || $request === $own)) {
             return $page;
         }
-        $query = $kirby->request()->query()->toString();
+        $query = http_build_query([...$kirby->request()->query()->toArray(), ...Campaign::params()]);
         return Response::redirect($url . ($query === '' ? '' : "?$query"), 301);
     }
 

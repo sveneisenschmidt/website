@@ -33,6 +33,15 @@ final class Chat
     /** Rounds per message of the Panel user. The limit ends a loop in which Claude keeps calling tools. */
     public const MAX_ROUNDS = 12;
 
+    /** The most tokens one answer of Claude may have, thinking included. */
+    public const MAX_TOKENS = 16000;
+
+    /** How much Claude thinks before it answers (`output_config.effort` of the API). */
+    public const EFFORT = 'medium';
+
+    /** Web searches per request. The API bills each search, and the assistant only looks facts up. */
+    public const SEARCHES = 5;
+
     /**
      * From this many items or images on, the Panel suggests a new chat.
      * `IMAGES` is also the most images one chat takes, because every request
@@ -99,8 +108,7 @@ final class Chat
 
     /**
      * The definition of Anthropic's web search tool, which runs on Anthropic's
-     * servers. `max_uses` allows 5 searches per request: the API bills each
-     * search, and the assistant only looks facts up.
+     * servers, at most `SEARCHES` times per request.
      *
      * @return array<string, mixed>
      */
@@ -109,7 +117,7 @@ final class Chat
         // Haiku supports only the basic version without dynamic filtering
         // (`Claude::fullModel()`).
         $type = Claude::fullModel($model) ? 'web_search_20260209' : 'web_search_20250305';
-        return ['type' => $type, 'name' => 'web_search', 'max_uses' => 5];
+        return ['type' => $type, 'name' => 'web_search', 'max_uses' => self::SEARCHES];
     }
 
     /**
@@ -345,6 +353,9 @@ final class Chat
     public static function reset(): ChatState
     {
         $chat = Session::change(function (ChatState $old): ChatState {
+            // An answer that still runs ends here like a stop. Without the
+            // line, the Protokoll would miss the tokens it used so far.
+            Log::end($old, 'stopped');
             $chat = new ChatState();
             // A higher run makes `keep()` drop the answer of a round that
             // still runs, so that round cannot bring the old chat back.
@@ -558,16 +569,16 @@ final class Chat
     {
         $body = [
             'model' => $chat->model,
-            'max_tokens' => 16000,
+            'max_tokens' => self::MAX_TOKENS,
             'system' => $chat->system,
             'tools' => $chat->tools,
             'messages' => Uploads::expand($chat->messages),
-            'output_config' => ['effort' => 'medium'],
+            'output_config' => ['effort' => self::EFFORT],
             // Caches the history for one hour like the system text, so after
             // a pause the photos in it do not cost a new cache write.
             'cache_control' => ['type' => 'ephemeral', 'ttl' => '1h'],
         ];
-        // A request to Claude can take up to 150 s (`Claude::request()`).
+        // A request to Claude can take up to `Claude::TIMEOUT` seconds.
         // Unlocking the session first lets "Abbrechen", clicks on cards and
         // uploads write it meanwhile.
         Session::unlock();

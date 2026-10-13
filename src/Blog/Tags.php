@@ -22,15 +22,15 @@ final class Tags
             return '';
         }
         if ($class = $tag->attr('imgclass')) {
-            return '<img src="' . esc($file->url()) . '" alt="' . $file->alt()->esc() . '" class="' . esc($class) . '">';
+            return rtrim(snippet('image-inline', ['file' => $file, 'class' => (string) $class], true), "\n");
         }
         return snippet('figure', ['file' => $file, 'page' => $tag->parent()], true);
     }
 
     /**
-     * The container that assets/js/map.js turns into a map. The points of the
-     * field `mappoints` go into data-points as JSON. The route file (GeoJSON,
-     * a JSON format for geographic data) goes inline into a JSON script element.
+     * The map of a post (snippets/map.php): the points of the field
+     * `mappoints` and the route file (GeoJSON, a JSON format for geographic
+     * data).
      */
     public static function map(KirbyTag $tag): string
     {
@@ -42,10 +42,7 @@ final class Tags
         foreach ($page->mappoints()->toStructure() as $point) {
             $points[] = ['label' => $point->label()->value(), 'lat' => (float) $point->lat()->value(), 'lon' => (float) $point->lon()->value()];
         }
-        $route = $page->route()->toFile()?->read() ?? '';
-        return '<div class="map"' . ($page->mapzoom()->toBool() ? ' data-zoomable="true"' : '')
-            . ' data-points="' . htmlspecialchars(json_encode($points, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP), ENT_QUOTES) . '">'
-            . ($route === '' ? '' : '<script type="application/json">' . $route . '</script>')
-            . "\n</div>";
+        $route = (string) ($page->route()->toFile()?->read() ?? '');
+        return rtrim(snippet('map', ['zoomable' => $page->mapzoom()->toBool(), 'points' => $points, 'route' => $route], true), "\n");
     }
 }

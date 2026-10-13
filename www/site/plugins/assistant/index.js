@@ -550,6 +550,20 @@ panel.plugin("website/assistant", {
     // The page "Protokoll": one row per answer, without the text of any message.
     "k-blog-assistant-log-view": {
       props: { rows: Array, totals: Object },
+      methods: {
+        when(time) {
+          return new Date(time).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+        },
+        number(value, digits = 0) {
+          return Number(value).toLocaleString("de-DE", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+        },
+        tools(tools) {
+          return Object.entries(tools).map(([name, count]) => (count > 1 ? name + " × " + count : name)).join(", ");
+        },
+        outcome(outcome) {
+          return { ok: "Fertig", stopped: "Abgebrochen" }[outcome] || "Fehler: " + outcome;
+        },
+      },
       template: `
         <k-panel-inside class="k-blog-assistant-log-view">
           <k-header>
@@ -559,7 +573,7 @@ panel.plugin("website/assistant", {
             </template>
           </k-header>
           <k-text class="blog-ai-log-intro">
-            <p>{{ totals.chats }} Chats · {{ totals.answers }} Antworten · im Schnitt {{ totals.seconds }} s pro Antwort · {{ totals.accepted }} Vorschläge angenommen · {{ totals.discarded }} verworfen.</p>
+            <p>{{ totals.chats }} Chats · {{ totals.answers }} Antworten · im Schnitt {{ number(totals.seconds, 1) }} s pro Antwort · {{ totals.accepted }} Vorschläge angenommen · {{ totals.discarded }} verworfen.</p>
             <p>Das Protokoll speichert keine Inhalte: nur wer, wann, wie lange, welche Werkzeuge und wie viele Tokens.</p>
           </k-text>
           <k-empty v-if="rows.length === 0" icon="robot">Noch keine Antworten.</k-empty>
@@ -570,16 +584,16 @@ panel.plugin("website/assistant", {
               </thead>
               <tbody>
                 <tr v-for="(row, i) in rows" :key="i">
-                  <td class="blog-ai-log-mono">{{ row.time }}</td>
+                  <td class="blog-ai-log-mono">{{ when(row.time) }}</td>
                   <td>{{ row.name }}</td>
                   <td class="blog-ai-log-mono">{{ row.chat }}</td>
-                  <td class="blog-ai-log-mono">{{ row.seconds }}</td>
+                  <td class="blog-ai-log-mono">{{ number(row.seconds, 1) }} s</td>
                   <td class="blog-ai-log-mono">{{ row.rounds }}</td>
-                  <td>{{ row.tools || "keine" }}</td>
-                  <td class="blog-ai-log-mono">{{ row.tokens }}</td>
-                  <td class="blog-ai-log-mono">{{ row.cached }}</td>
+                  <td>{{ tools(row.tools) || "keine" }}</td>
+                  <td class="blog-ai-log-mono">{{ number(row.tokensIn) }} / {{ number(row.tokensOut) }}</td>
+                  <td class="blog-ai-log-mono">{{ row.cached === null ? "" : row.cached + " %" }}</td>
                   <td>{{ row.model }}</td>
-                  <td>{{ row.outcome }}</td>
+                  <td>{{ outcome(row.outcome) }}</td>
                 </tr>
               </tbody>
             </table>

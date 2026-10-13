@@ -57,22 +57,21 @@ final class Feeds
      */
     private static function rssDescription(PostPage $post, string $link): string
     {
-        $html = '';
-        if ($cover = $post->coverImage()) {
+        $cover = null;
+        if ($file = $post->coverImage()) {
             // fit() changes the object it is called on, and the file keeps its
             // dimensions object for later calls. The clone keeps the file's size intact.
-            $size = (clone $cover->dimensions())->fit(768);
-            $html .= '<img src="' . $cover->thumb(['width' => 768, 'height' => 768, 'format' => 'webp', 'quality' => 80])->url()
-                . '" width="' . $size->width() . '" height="' . $size->height()
-                . '" alt="' . esc($post->title()->value() . ' cover image') . '" />';
+            $size = (clone $file->dimensions())->fit(768);
+            $cover = ['url' => $file->thumb(['width' => 768, 'height' => 768, 'format' => 'webp', 'quality' => 80])->url(), 'width' => $size->width(), 'height' => $size->height()];
         }
         $summary = $post->summary();
-        $more = $post->wordCount() - Text::words($summary);
-        $html .= '<p>' . esc($summary);
-        if ($more > 0) {
-            $html .= ' (<a href="' . $link . '" title="Continue reading ' . esc($post->title()->value()) . '">' . $more . ' more words</a>)';
-        }
-        return $html . '</p>';
+        return rtrim(snippet('feed-item', [
+            'post' => $post,
+            'cover' => $cover,
+            'summary' => $summary,
+            'more' => $post->wordCount() - Text::words($summary),
+            'link' => $link,
+        ], true), "\n");
     }
 
     /**

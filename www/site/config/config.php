@@ -10,6 +10,12 @@
 // feed use Berlin time.
 date_default_timezone_set('Europe/Berlin');
 
+// json_encode() writes a float with the digits of serialize_precision. The
+// web PHP of the host has a fixed value there and wrote the map point
+// 51.1547 as 51.15469999999999828332875040359795093536376953125 (live HTML,
+// 2026-10-13). -1 writes the shortest form that reads back as the same float.
+ini_set('serialize_precision', '-1');
+
 $env = is_file(__DIR__ . '/env.php') ? require __DIR__ . '/env.php' : [];
 
 // Kirby puts a hash with this salt into every media URL (the thumbnails

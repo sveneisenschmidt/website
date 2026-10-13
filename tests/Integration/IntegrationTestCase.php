@@ -6,6 +6,7 @@ use Kirby\Cms\App;
 use Kirby\Cms\File;
 use Kirby\Cms\Page;
 use PHPUnit\Framework\TestCase;
+use Website\Analytics\Campaign;
 use Website\Tests\Support\TestSite;
 
 abstract class IntegrationTestCase extends TestCase
@@ -29,6 +30,10 @@ abstract class IntegrationTestCase extends TestCase
 
     protected function setUp(): void
     {
+        // Campaign keeps the parameters of the last strip() in a static
+        // property; an earlier test must not leave its source behind.
+        $_GET = [];
+        Campaign::strip();
         $this->root = TestSite::create();
         $this->kirby = TestSite::app($this->root, $this->options, $this->props);
         $this->post = $this->post();

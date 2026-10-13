@@ -12,6 +12,30 @@
  * Usage: php bin/indexnow.php <site-url>
  */
 
+/**
+ * The URLs of a sitemap whose `lastmod` lies at or after $since, and the
+ * number of URLs in the sitemap.
+ *
+ * @return array{0: list<string>, 1: int}
+ */
+function indexnow_changed(string $sitemap, int $since): array
+{
+    preg_match_all('!<loc>([^<]+)</loc>\s*<lastmod>([^<]+)</lastmod>!', $sitemap, $entries, PREG_SET_ORDER);
+    $urls = [];
+    foreach ($entries as [, $loc, $lastmod]) {
+        if (strtotime($lastmod) >= $since) {
+            $urls[] = $loc;
+        }
+    }
+    return [$urls, count($entries)];
+}
+
+// Tests require this file for the function above; only a run as a script
+// sends anything.
+if (realpath($_SERVER['argv'][0] ?? '') !== __FILE__) {
+    return;
+}
+
 $site = rtrim($argv[1] ?? '', '/');
 $host = parse_url($site, PHP_URL_HOST);
 if (!preg_match('!^https://[^/]+$!', $site) || !is_string($host)) {
@@ -29,15 +53,8 @@ if ($xml === false) {
     fwrite(STDERR, "Cannot read $site/sitemap.xml\n");
     exit(1);
 }
-preg_match_all('!<loc>([^<]+)</loc>\s*<lastmod>([^<]+)</lastmod>!', $xml, $entries, PREG_SET_ORDER);
-$since = time() - 50 * 3600;
-$urls = [];
-foreach ($entries as [, $loc, $lastmod]) {
-    if (strtotime($lastmod) >= $since) {
-        $urls[] = $loc;
-    }
-}
-printf("%d of %d URLs changed in the last 50 hours\n", count($urls), count($entries));
+[$urls, $total] = indexnow_changed($xml, time() - 50 * 3600);
+printf("%d of %d URLs changed in the last 50 hours\n", count($urls), $total);
 if ($urls === []) {
     exit(0);
 }

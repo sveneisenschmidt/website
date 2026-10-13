@@ -3,6 +3,7 @@
 namespace Website\Tests\Integration;
 
 use Kirby\Http\Response;
+use Website\Analytics\Campaign;
 use Website\Tests\Support\TestSite;
 
 /**
@@ -47,6 +48,7 @@ final class RoutingTest extends IntegrationTestCase
         $this->assertSame(200, $this->get('/about/')->code());
 
         $_GET = ['source' => 'rss'];
+        Campaign::strip();
         $this->assertRedirect('/2026-10-07-test-photo?source=rss', 'http://localhost/2026-10-07-test-photo/?source=rss');
         $this->assertSame(200, $this->get('/2026-10-07-test-photo/?source=rss')->code());
     }

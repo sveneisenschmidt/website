@@ -31,6 +31,21 @@ final class Claude
 
     public const DEFAULT_MODEL = 'claude-opus-5-5';
 
+    /** The version of the Messages API that the request bodies follow. */
+    public const API_VERSION = '2023-06-01';
+
+    /** The beta feature that lets the API retry a refused request on another model. */
+    public const FALLBACK_BETA = 'server-side-fallback-2026-07-01';
+
+    /**
+     * Seconds one request to Claude may take. One round can take longer than
+     * PHP's default limit of 30 s, with Opus or with a web search.
+     */
+    public const TIMEOUT = 150;
+
+    /** The PHP time limit of a request: the timeout plus 30 s for the rest of the round. */
+    public const TIME_LIMIT = self::TIMEOUT + 30;
+
     /**
      * True for Opus and Sonnet. Only these models support the server-side
      * fallback after a refusal and the web search with dynamic filtering
@@ -70,25 +85,24 @@ final class Claude
             $key = self::key() ?? throw new Error('access');
             $headers = [
                 'x-api-key: ' . $key,
-                'anthropic-version: 2023-06-01',
+                'anthropic-version: ' . self::API_VERSION,
                 'content-type: application/json',
             ];
             // When the model refuses the request, the API retries it on a
             // fallback model of its own choice.
             if (self::fullModel($body['model'])) {
-                $headers[] = 'anthropic-beta: server-side-fallback-2026-07-01';
+                $headers[] = 'anthropic-beta: ' . self::FALLBACK_BETA;
                 $body['fallbacks'] = 'default';
             }
-            // One round can take longer than PHP's default limit of 30 s, with
-            // Opus or with a web search. A host can disable set_time_limit();
-            // the @ hides the warning, and the limit of the host applies.
-            @set_time_limit(180);
+            // A host can disable set_time_limit(); the @ hides the warning, and
+            // the limit of the host applies.
+            @set_time_limit(self::TIME_LIMIT);
             try {
                 $remote = Remote::request(self::API, [
                     'method' => 'POST',
                     'headers' => $headers,
                     'data' => json_encode($body, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
-                    'timeout' => 150,
+                    'timeout' => self::TIMEOUT,
                 ]);
             } catch (Throwable $e) {
                 error_log('blog assistant: Anthropic ' . $e::class . ': ' . $e->getMessage());
@@ -137,6 +151,7 @@ final class Claude
         try {
             self::request([
                 'model' => self::model(),
+                // The answer to "ping" needs a few tokens only.
                 'max_tokens' => 64,
                 'messages' => [['role' => 'user', 'content' => 'ping']],
             ]);

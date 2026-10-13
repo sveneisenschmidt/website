@@ -22,14 +22,6 @@
  * Usage: php bin/warm.php [--pages] <site-url>
  */
 
-$pagesOnly = ($argv[1] ?? '') === '--pages';
-$site = rtrim($argv[$pagesOnly ? 2 : 1] ?? '', '/');
-if (!preg_match('!^https?://[^/]+$!', $site)) {
-    fwrite(STDERR, "Usage: php bin/warm.php [--pages] <site-url>\n");
-    exit(1);
-}
-$headers = ['User-Agent: website-warm (bot)'];
-
 /**
  * Sends a GET request to each URL, 4 at a time, and calls
  * $done(url, status, body) for each response.
@@ -72,7 +64,7 @@ function warm_get(array $urls, array $headers, Closure $done): void
 /**
  * Returns the paths on this site that the HTML links: [pages, thumbnails].
  *
- * @return array<mixed>
+ * @return array{0: list<string>, 1: list<string>}
  */
 function warm_links(string $html, string $site): array
 {
@@ -105,6 +97,20 @@ function warm_links(string $html, string $site): array
     }
     return [array_keys($pages), array_keys($media)];
 }
+
+// Tests require this file for the functions above; only a run as a script
+// sends requests.
+if (realpath($_SERVER['argv'][0] ?? '') !== __FILE__) {
+    return;
+}
+
+$pagesOnly = ($argv[1] ?? '') === '--pages';
+$site = rtrim($argv[$pagesOnly ? 2 : 1] ?? '', '/');
+if (!preg_match('!^https?://[^/]+$!', $site)) {
+    fwrite(STDERR, "Usage: php bin/warm.php [--pages] <site-url>\n");
+    exit(1);
+}
+$headers = ['User-Agent: website-warm (bot)'];
 
 $started = microtime(true);
 $seen = ['/' => true, '/index.xml' => true, '/sitemap.xml' => true];
