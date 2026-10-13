@@ -7,7 +7,9 @@
 #    the .htaccess that denies every request. backups/ and
 #    shared/site/accounts/ must have mode 700.
 # 2. A second release. `current` must point to it. Every folder and file
-#    must be readable for others, because Apache runs as another user.
+#    must be readable for others, because Apache runs as another user. The
+#    release must still match its manifest after the requests. The check
+#    must name a changed file and an added file.
 # 3. A release whose posts answer 500 and whose start page answers 200. The
 #    health check must fail at the newest post. The site must be back on the
 #    second release, and its health check must pass.
@@ -81,6 +83,17 @@ second="$(current)"
 [ "$(status)" = 200 ] || fail "the second release does not answer 200"
 unreadable="$(find "$SITE/releases/$second" \( -type d ! -perm -o+rx \) -o \( -type f ! -perm -o+r \) | head -3)"
 [ -z "$unreadable" ] || fail "the web server cannot read: $unreadable"
+release="$SITE/releases/$second"
+"$PHP" bin/manifest.php check "$release" >/dev/null || fail "the second release differs from its manifest"
+# index.php can be a hard link into the first release. cp writes the copy
+# back into the same file, so both releases are whole again.
+cp "$release/www/index.php" "$TMP/index.php"
+printf '\n' >> "$release/www/index.php"
+touch "$release/www/extra.php"
+! out="$("$PHP" bin/manifest.php check "$release" 2>&1)" || fail "the check missed a changed file and an added file"
+grep -qx 'changed  www/index.php' <<<"$out" && grep -qx 'added    www/extra.php' <<<"$out" || fail "the check did not name the changed file and the added file"
+cp "$TMP/index.php" "$release/www/index.php"
+rm "$release/www/extra.php"
 echo "OK: $second"
 
 echo "## 3. Release with failing posts"

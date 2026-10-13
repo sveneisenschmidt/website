@@ -1,0 +1,50 @@
+name: Integrity
+
+# Once a day, checks the live release on the server against its manifest
+# (bin/manifest.php). A file that changed, appeared or went away outside CI
+# fails the run, and GitHub sends a mail about the failed run.
+on:
+  schedule:
+    # Every day at 5:30 UTC
+    - cron: "30 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: self-hosted
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: bin
+          persist-credentials: false
+
+      # As in the job deploy of the workflow CI: the key and known_hosts go
+      # to $RUNNER_TEMP, and the last step deletes them.
+      - name: SSH key
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          [ -n "$DEPLOY_KNOWN_HOSTS" ] || { echo "The secret DEPLOY_KNOWN_HOSTS is missing. It must hold the output of ssh-keyscan for the deploy host."; exit 1; }
+          umask 077
+          printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' > "$RUNNER_TEMP/deploy_key"
+          ssh-keygen -y -f "$RUNNER_TEMP/deploy_key" > /dev/null || { echo "DEPLOY_SSH_KEY is not a valid private key"; exit 1; }
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" | tr -d '\r' > "$RUNNER_TEMP/known_hosts"
+
+      # bin/manifest.php goes over stdin to php85, the PHP of the server, as
+      # in bin/deploy.sh. `current` points to the live release.
+      - name: Check the live release
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          ssh -i "$RUNNER_TEMP/deploy_key" -o UserKnownHostsFile="$RUNNER_TEMP/known_hosts" -o StrictHostKeyChecking=yes -o BatchMode=yes -o ConnectTimeout=30 \
+            "$DEPLOY_HOST" "php85 -- check '$DEPLOY_PATH/current'" < bin/manifest.php
+
+      - name: Remove the SSH key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/deploy_key" "$RUNNER_TEMP/known_hosts"

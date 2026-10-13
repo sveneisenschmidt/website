@@ -29,10 +29,12 @@
 #
 # Steps:
 # 1. Build the release in a temporary folder: www/ without the paths of
-#    shared/, src/, composer install --no-dev, and the symlinks.
+#    shared/, src/, composer install --no-dev, and the symlinks. Then
+#    bin/manifest.php writes manifest.json, the hash of every file.
 # 2. Make a snapshot of the state. The newest 30 snapshots stay.
 # 3. Upload the release. A file that is unchanged since the live release
-#    becomes a hard link to it and takes no new space.
+#    becomes a hard link to it and takes no new space. The uploaded release
+#    must match its manifest.
 # 4. Create env.php and, on a new site, .salt. bin/set-env.php sets `url` to
 #    SITE_URL, and `assistantKey` to ANTHROPIC_API_KEY when it is set.
 #    Deny web access to shared/ and backups/.
@@ -127,6 +129,7 @@ for f in env.php .salt .license; do ln -s "../../../../../shared/site/config/$f"
 # The Panel assistant stores its uploads in storage/ next to www/
 # (src/Assistant/Uploads.php).
 ln -s ../../shared/storage "$BUILD/storage"
+php bin/manifest.php write "$BUILD"
 
 # Switches the site to the release $1. A rename() replaces .htaccess and
 # `current` each in one step, so a request sees the old or the new file and
@@ -168,6 +171,9 @@ remote "mkdir -p '$DEPLOY_PATH/releases/$ID'"
 LINK=()
 [ -z "$previous" ] || LINK=(--link-dest="$DEPLOY_PATH/releases/$previous")
 rsync -rlptz --checksum ${LINK[@]+"${LINK[@]}"} ${RSYNC_SSH[@]+"${RSYNC_SSH[@]}"} "$BUILD/" "$DEST/releases/$ID/"
+# The check runs with the PHP of the server, as the workflow Integrity runs
+# it later. A failed check stops the deploy before the switch.
+remote "$RPHP -- check '$DEPLOY_PATH/releases/$ID'" < bin/manifest.php
 
 echo "== Host config"
 config="$SHARED/site/config"
