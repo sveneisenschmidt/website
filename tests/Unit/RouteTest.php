@@ -10,9 +10,9 @@ use Website\Tests\Support\GpxFixture;
 
 /**
  * `Route` and `Gpx`: the OSRM request, simplification, reading a GPX file,
- * and the random cut at both ends of a ride. The cut removes 700 to 1200 m
- * at each end, so a published route does not show where the rides start
- * and end.
+ * and the cut at both ends of a ride on a fixed grid, so a published route
+ * does not show where the rides start and end. Every kept point lies at
+ * least one cell from home, about 1.1 km.
  */
 final class RouteTest extends TestCase
 {
@@ -47,19 +47,21 @@ final class RouteTest extends TestCase
         $this->assertSame([[12.12346, 51.1], [12.2, 51.2]], Route::round([[12.123456, 51.1], [12.1234564, 51.1000001], [12.2, 51.2]]));
     }
 
-    public function testTheCutLiesAtLeastTheGivenDistanceFromBothEnds(): void
+    public function testTheCutFollowsTheGridAndNotTheDistanceFromHome(): void
     {
-        $ride = GpxFixture::ride();
-        [$first, $last] = Route::cut($ride, 700, 1200);
-        $this->assertGreaterThanOrEqual(700, Route::length(array_slice($ride, 0, $first + 1)));
-        $this->assertLessThan(750, Route::length(array_slice($ride, 0, $first + 1)));
-        $this->assertGreaterThanOrEqual(1200, Route::length(array_slice($ride, $last)));
-        // The cut points also lie that far from both ends in a straight line,
-        // because a ride ends where it began.
-        foreach ([$ride[0], end($ride)] as $end) {
-            $this->assertGreaterThanOrEqual(700, Route::distance($end, $ride[$first]));
-            $this->assertGreaterThanOrEqual(1200, Route::distance($end, $ride[$last]));
-        }
+        // Two homes 300 m apart in the same cell: the fixture home lies 100 m
+        // west of the east edge of its cell, the second home 300 m farther
+        // west. A cut by distance would move the cut end by 300 m too. The
+        // grid cuts both rides at the same edge of the cells, within one step
+        // of the track (20 m).
+        $ride = GpxFixture::oneWay(8000);
+        $shift = 300 / (111320 * cos(deg2rad(GpxFixture::CENTER[1])));
+        $moved = array_map(fn(array $point) => [$point[0] - $shift, $point[1]], $ride);
+        [$first] = Route::cut($ride, Gpx::CELL);
+        [$second] = Route::cut($moved, Gpx::CELL);
+        $this->assertLessThanOrEqual(20, Route::distance($ride[$first], $moved[$second]));
+        $this->assertGreaterThanOrEqual(1100, Route::distance($ride[0], $ride[$first]));
+        $this->assertGreaterThanOrEqual(1100, Route::distance($moved[0], $moved[$second]));
     }
 
     public function testAGpxFileIsReadWithItsTimesOnly(): void
@@ -96,25 +98,15 @@ final class RouteTest extends TestCase
         }
     }
 
-    public function testBothEndsOfARideAreCutByTheirOwnRandomLength(): void
+    public function testEveryKeptPointLiesAtLeastOneCellFromHome(): void
     {
         $ride = GpxFixture::ride();
         $home = GpxFixture::home();
-        $heads = [];
-        $tails = [];
-        for ($run = 0; $run < 20; $run++) {
-            $line = Gpx::line($ride, range(0, 3600, 10));
-            $heads[] = Route::distance($home, $line['line'][0]);
-            $tails[] = Route::distance($home, end($line['line']));
-            foreach ($line['line'] as $point) {
-                $this->assertGreaterThanOrEqual(Gpx::TRIM_MIN, Route::distance($home, $point));
-            }
-            $this->assertSame([array_map(fn($v) => round($v, 3), $ride[0]), array_map(fn($v) => round($v, 3), $ride[360])], $line['ends'], 'The ends stay on the server, to 3 decimals.');
+        $line = Gpx::line($ride, range(0, 3600, 10));
+        foreach ($line['line'] as $point) {
+            $this->assertGreaterThanOrEqual(1100, Route::distance($home, $point));
         }
-        $this->assertGreaterThanOrEqual(Gpx::TRIM_MIN, min([...$heads, ...$tails]));
-        $this->assertLessThan(1250, max([...$heads, ...$tails]));
-        $this->assertGreaterThan(1, count(array_unique(array_map('round', $heads))), 'The cut changes from ride to ride.');
-        $this->assertNotSame(array_map('round', $heads), array_map('round', $tails), 'Start and end are cut differently.');
+        $this->assertSame([array_map(fn($v) => round($v, 3), $ride[0]), array_map(fn($v) => round($v, 3), $ride[360])], $line['ends'], 'The ends stay on the server, to 3 decimals.');
     }
 
     public function testAStandstillAtHomeDoesNotShortenTheCut(): void
@@ -124,11 +116,9 @@ final class RouteTest extends TestCase
         $home = GpxFixture::home();
         $points = [...GpxFixture::standstill(300, 4), ...GpxFixture::ride(), ...GpxFixture::standstill(300, 4)];
         $this->assertGreaterThan(1200, Route::length(GpxFixture::standstill(300, 4)));
-        for ($run = 0; $run < 20; $run++) {
-            $line = Gpx::line($points, array_fill(0, count($points), null));
-            foreach ($line['line'] as $point) {
-                $this->assertGreaterThanOrEqual(Gpx::TRIM_MIN, Route::distance($home, $point));
-            }
+        $line = Gpx::line($points, array_fill(0, count($points), null));
+        foreach ($line['line'] as $point) {
+            $this->assertGreaterThanOrEqual(1100, Route::distance($home, $point));
         }
     }
 

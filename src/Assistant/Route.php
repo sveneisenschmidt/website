@@ -147,37 +147,52 @@ final class Route
 
     /**
      * The indexes of the first and the last point that stay when both ends of
-     * a ride are cut. The start is cut until the line has run $head meters
-     * and the point lies at least $head meters from both ends in a straight
-     * line. The end is cut the same way with $tail. Rides start and end at
-     * home. GPS drift during a stop at home adds length to the line without
-     * moving away, so the length alone is not enough (security review of
-     * 2026-10-12). The distances use the point as Claude gets it, rounded to
-     * 5 decimals.
+     * a ride are cut. A fixed grid of cells $cell degrees of latitude high
+     * covers the earth. The cut removes the points at the start and at the
+     * end that lie in the 3 × 3 cells around the cell of either end. Rides
+     * start and end at home. A cut by a distance from home put the cut ends
+     * of many rides on a ring, and the centre of that ring is home (security
+     * review of 2026-10-13). The edge of the cells shows only the cell of
+     * home. GPS drift during a stop at home stays inside the cells.
      *
      * @param list<array<int, float|int>> $points
      * @return array{int, int}
      */
-    public static function cut(array $points, float $head, float $tail): array
+    public static function cut(array $points, float $cell): array
     {
-        $ends = [$points[0], $points[count($points) - 1]];
-        $away = function (array $point, float $length) use ($ends): bool {
-            $point = [round((float) $point[0], 5), round((float) $point[1], 5)];
-            return self::distance($ends[0], $point) >= $length && self::distance($ends[1], $point) >= $length;
+        $blocks = [self::cell($points[0], $cell), self::cell($points[count($points) - 1], $cell)];
+        $inside = function (array $point) use ($blocks, $cell): bool {
+            foreach ($blocks as [$row, $column, $width]) {
+                if (abs(floor((float) $point[1] / $cell) - $row) <= 1 && abs(floor((float) $point[0] / $width) - $column) <= 1) {
+                    return true;
+                }
+            }
+            return false;
         };
         $first = 0;
-        $walked = 0.0;
-        while ($first < count($points) - 1 && ($walked < $head || !$away($points[$first], $head))) {
-            $walked += self::distance($points[$first], $points[$first + 1]);
+        while ($first < count($points) - 1 && $inside($points[$first])) {
             $first++;
         }
         $last = count($points) - 1;
-        $walked = 0.0;
-        while ($last > $first && ($walked < $tail || !$away($points[$last], $tail))) {
-            $walked += self::distance($points[$last], $points[$last - 1]);
+        while ($last > $first && $inside($points[$last])) {
             $last--;
         }
         return [$first, $last];
+    }
+
+    /**
+     * The cell of a point [lon, lat] on the grid of `cut()`: [row, column,
+     * width]. The width in degrees of longitude makes the cell about as wide
+     * as it is high in the middle of its row.
+     *
+     * @param array<int, float|int> $point
+     * @return array{float, float, float}
+     */
+    private static function cell(array $point, float $cell): array
+    {
+        $row = floor((float) $point[1] / $cell);
+        $width = $cell / cos(deg2rad(($row + 0.5) * $cell));
+        return [$row, floor((float) $point[0] / $width), $width];
     }
 
     /**
