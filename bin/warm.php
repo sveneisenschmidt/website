@@ -24,15 +24,9 @@ if (!preg_match('!^https?://[^/]+$!', $site)) {
 }
 $headers = ['User-Agent: website-warm (bot)'];
 
-/**
- * GETs the URLs, four at a time, and calls $done(url, status, body) for each.
- * A URL that fails with status 0 (timeout, dropped connection) or 5xx gets a
- * second try after 2 s: one dropped request must not turn a deploy red whose
- * code is already live. A page that fails twice reaches $done as it failed.
- */
-function warm_get(array $urls, array $headers, Closure $done, bool $retry = true): void
+/** GETs the URLs, four at a time, and calls $done(url, status, body) for each. */
+function warm_get(array $urls, array $headers, Closure $done): void
 {
-    $again = [];
     $multi = curl_multi_init();
     $start = function (string $url) use ($multi, $headers): void {
         $handle = curl_init($url);
@@ -55,22 +49,12 @@ function warm_get(array $urls, array $headers, Closure $done, bool $retry = true
         curl_multi_select($multi, 1.0);
         while ($info = curl_multi_info_read($multi)) {
             $handle = $info['handle'];
-            $url = (string) curl_getinfo($handle, CURLINFO_PRIVATE);
-            $status = (int) curl_getinfo($handle, CURLINFO_RESPONSE_CODE);
-            if ($retry && ($status === 0 || $status >= 500)) {
-                $again[] = $url;
-            } else {
-                $done($url, $status, (string) curl_multi_getcontent($handle));
-            }
+            $done((string) curl_getinfo($handle, CURLINFO_PRIVATE), (int) curl_getinfo($handle, CURLINFO_RESPONSE_CODE), (string) curl_multi_getcontent($handle));
             curl_multi_remove_handle($multi, $handle);
             $active--;
         }
     }
     curl_multi_close($multi);
-    if ($again !== []) {
-        sleep(2);
-        warm_get($again, $headers, $done, false);
-    }
 }
 
 /** The paths on this site that the HTML names: [pages, thumbnails]. */

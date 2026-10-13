@@ -13,7 +13,9 @@
 # 4. Host config: env.php and, for a fresh site, .salt. bin/set-env.php
 #    sets 'url' to SITE_URL and 'assistantKey' to ANTHROPIC_API_KEY, if set.
 # 5. Page cache cleared under the site's cache lock. The start page must
-#    answer 200, then bin/warm.php --pages fills the page cache again.
+#    answer 200, then bin/warm.php --pages fills the page cache again. It
+#    only speeds up the first visits: a page it cannot fetch does not stop
+#    the deploy.
 #
 # Environment:
 #   DEPLOY_PATH                       required, the site folder on the server
@@ -121,5 +123,5 @@ echo "HTTP $code"
 [ "$code" = 200 ] || { echo "Unexpected status" >&2; exit 1; }
 
 echo "== Page cache"
-php bin/warm.php --pages "$SITE_URL"
+php bin/warm.php --pages "$SITE_URL" || echo "Some pages did not warm, see above"
 echo "Deploy done"
