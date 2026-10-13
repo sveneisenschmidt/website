@@ -1,10 +1,10 @@
 name: CI
 
-# Every pull request and every push to main: lint and tests. A push to main
-# then deploys, but only when the tests pass. Both jobs run on the
-# self-hosted runner and only for runs that sveneisenschmidt starts: the
-# repository is public, and the code of someone else's pull request must
-# not run on that runner.
+# Every pull request and every push to main: lint, format, static analysis
+# and tests. A push to main then deploys, but only when they pass. Both
+# jobs run on the self-hosted runner. A pull request runs only from a
+# branch of this repository (Sven's, Dependabot's): the repository is
+# public, and the code of a fork must not run on that runner.
 on:
   push:
     branches:
@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   test:
-    if: github.actor == 'sveneisenschmidt'
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: self-hosted
     timeout-minutes: 15
     steps:
@@ -33,7 +33,7 @@ jobs:
         run: |
           if command -v php > /dev/null && command -v composer > /dev/null \
             && [ "$(php -r 'echo PHP_MAJOR_VERSION, ".", PHP_MINOR_VERSION;')" = "$(cat .php-version)" ] \
-            && php -r 'foreach (["gd", "exif", "intl", "mbstring"] as $e) { if (!extension_loaded($e)) { exit(1); } }'; then
+            && php -r 'foreach (["curl", "gd", "exif", "intl", "mbstring"] as $e) { if (!extension_loaded($e)) { exit(1); } }'; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
 
@@ -41,7 +41,7 @@ jobs:
         if: steps.php.outputs.ready != 'true'
         with:
           php-version-file: .php-version
-          extensions: gd, exif, intl, mbstring
+          extensions: curl, gd, exif, intl, mbstring
           tools: composer
         env:
           runner: self-hosted
@@ -51,6 +51,12 @@ jobs:
 
       - name: Lint
         run: find www/site www/index.php bin tests -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null
+
+      - name: Format
+        run: vendor/bin/php-cs-fixer check --show-progress=none
+
+      - name: Static analysis
+        run: vendor/bin/phpstan analyse --no-progress
 
       - name: Tests
         run: vendor/bin/phpunit

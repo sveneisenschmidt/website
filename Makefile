@@ -56,6 +56,16 @@ restore-test:
 lint:
 	@find $(WWW)/site $(WWW)/index.php bin tests -name '*.php' -print0 | xargs -0 -n1 $(PHP) -l >/dev/null && echo "lint ok"
 
+# Formatiert den Code nach PER-CS 2.0 (.php-cs-fixer.dist.php). CI prüft das.
+.PHONY: format
+format:
+	@$(PHP) vendor/bin/php-cs-fixer fix --show-progress=none
+
+# Statische Analyse (phpstan.neon). CI prüft das.
+.PHONY: analyse
+analyse:
+	@$(PHP) vendor/bin/phpstan analyse --no-progress
+
 # Pre-commit- und Pre-push-Hook gegen den Prompt des Assistenten in Git
 # (bin/prompt-guard.php). Die Hooks laufen auf jedem Branch, auch auf main.
 # Nach einer Änderung am Skript noch einmal aufrufen.

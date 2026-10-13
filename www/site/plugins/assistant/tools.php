@@ -156,7 +156,7 @@ function blog_assistant_find_posts(array $input): array
             }
             $found[] = [
                 'id' => $page->id(),
-                'uuid' => $page->uuid()?->toString(),
+                'uuid' => $page->uuid()->toString(),
                 'type' => $template,
                 'title' => blog_assistant_current($page, 'title'),
                 'date' => $date,
@@ -203,7 +203,7 @@ function blog_assistant_post_data(Page $page): array
     }
     return [
         'id' => $page->id(),
-        'uuid' => $page->uuid()?->toString(),
+        'uuid' => $page->uuid()->toString(),
         'type' => $page->intendedTemplate()->name(),
         'status' => $page->isDraft() ? 'draft' : 'published',
         'unsaved' => $page->version('changes')->exists(),

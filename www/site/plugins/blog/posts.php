@@ -52,7 +52,9 @@ function blog_is_post(Page $page): bool
 /** The picks with a cover, newest first: the front page shows them. */
 function blog_picks(): Pages
 {
-    return collection('posts')->filter(fn(Page $post) => $post->pick()->toBool() && $post->cover()->toFile() !== null);
+    /** @var Pages $posts */
+    $posts = collection('posts');
+    return $posts->filter(fn(Page $post) => $post->pick()->toBool() && $post->cover()->toFile() !== null);
 }
 
 /**
@@ -133,7 +135,9 @@ function blog_search(string $query): Pages
     if ($words === []) {
         return new Pages([]);
     }
-    return collection('posts')->filter(function (Page $post) use ($words) {
+    /** @var Pages $posts */
+    $posts = collection('posts');
+    return $posts->filter(function (Page $post) use ($words) {
         $text = $post->title()->value() . ' ' . $post->intro()->value() . ' ' . $post->text()->value();
         $text = preg_replace(['/\([a-z]+:[^)]*\)/', '/\]\([^)]*\)/'], [' ', ']'], $text);
         $text = mb_strtolower($text . ' ' . implode(' ', $post->images()->pluck('alt')));

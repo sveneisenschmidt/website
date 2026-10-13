@@ -28,6 +28,7 @@ final class BlueprintTest extends IntegrationTestCase
 
         $this->kirby->impersonate('kirby', function () use ($aika, $image) {
             $route = $this->trip->createFile(['source' => $this->root . '/route.json', 'filename' => 'route.json', 'template' => 'route']);
+            // @phpstan-ignore argument.type (Kirby's doc type says string values, update() takes lists and structures too)
             $this->trip->version()->update([
                 'intro' => 'We packed up and met (link: ' . $aika->uuid() . ' text: Aika) again.',
                 'text' => "(image: A6404180.jpeg)\n\n(map:)",

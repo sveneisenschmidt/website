@@ -46,14 +46,13 @@ function blog_assistant_file(string $id): ?File
 /** A file of a page by its UUID ("file://…") or file name. */
 function blog_assistant_file_ref(Page $page, string $ref): ?File
 {
-    return $page->files()->filter(fn(File $file) => $file->uuid()?->toString() === $ref || $file->filename() === $ref)->first();
+    return $page->files()->filter(fn(File $file) => $file->uuid()->toString() === $ref || $file->filename() === $ref)->first();
 }
 
 /** A YAML list as a field stores it (files, structure), or none. */
 function blog_assistant_list(string $yaml): array
 {
-    $list = trim($yaml) === '' ? [] : Yaml::decode($yaml);
-    return is_array($list) ? array_values($list) : [];
+    return trim($yaml) === '' ? [] : array_values(Yaml::decode($yaml));
 }
 
 /** The fields the assistant reads and writes: name => [label, type]. The title first. */

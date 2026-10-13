@@ -2,7 +2,7 @@
 
 namespace Website\Tests\Integration;
 
-use Kirby\Cms\Response;
+use Kirby\Http\Response;
 use Website\Tests\Support\TestSite;
 
 /**
@@ -72,7 +72,7 @@ final class RoutingTest extends IntegrationTestCase
     /** One request with its own Kirby: Kirby reads the request when it starts. */
     private function get(string $uri): Response
     {
-        return TestSite::app($this->root, $this->options, ['server' => ['REQUEST_URI' => $uri]])->render();
+        return TestSite::app($this->root, $this->options, ['server' => ['REQUEST_URI' => $uri]])->render() ?? $this->fail("No response for $uri");
     }
 
     private function assertRedirect(string $uri, string $location, string $message = ''): void

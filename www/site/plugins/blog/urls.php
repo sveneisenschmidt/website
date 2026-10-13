@@ -44,7 +44,7 @@ function blog_post(string $date, string $slug): ?Page
 {
     foreach (blog_sections() as $section) {
         $post = page($section)?->childrenAndDrafts()->find($slug);
-        if ($post === null || $post->date()->toDate('Y-m-d') !== $date) {
+        if (!$post instanceof Page || $post->date()->toDate('Y-m-d') !== $date) {
             continue;
         }
         if ($post->isDraft() && !(kirby()->user() && $post->isAccessible()) && $post->renderVersionFromRequest() === null) {

@@ -42,8 +42,8 @@ function blog_image_tag(KirbyTag $tag): string
     if ($file === null) {
         return '';
     }
-    if ($tag->imgclass) {
-        return '<img src="' . esc($file->url()) . '" alt="' . $file->alt()->esc() . '" class="' . esc($tag->imgclass) . '">';
+    if ($class = $tag->attr('imgclass')) {
+        return '<img src="' . esc($file->url()) . '" alt="' . $file->alt()->esc() . '" class="' . esc($class) . '">';
     }
     return snippet('figure', ['file' => $file, 'page' => $tag->parent()], true);
 }

@@ -210,7 +210,7 @@ function blog_guard_rules(string $text, array $allowed, ?Page $page, string $bef
         foreach ($m[1] as $tag) {
             if (in_array(blog_guard_tag_type($tag), ['image', 'map'], true)) {
                 foreach (blog_guard_body(blog_guard_render($tag, $page))->children as $element) {
-                    $tags[$element->ownerDocument->saveHtml($element)] = true;
+                    $tags[blog_guard_html($element)] = true;
                 }
             }
         }
@@ -251,7 +251,7 @@ function blog_guard_walk(Dom\Node $parent, array $rules, array &$problems): void
         if ($node instanceof Dom\Text) {
             continue;
         }
-        $markup = $node->ownerDocument->saveHtml($node);
+        $markup = blog_guard_html($node);
         if (!$node instanceof Dom\Element) {
             $problems[] = ['Raw HTML is not allowed. Use Markdown.', $markup];
             continue;
@@ -400,4 +400,12 @@ function blog_guard_plain(string $text, int $max = 0): ?string
         return "At most $max characters.";
     }
     return null;
+}
+
+/** The HTML of one node, as its document writes it. blog_guard_body makes every document an HTMLDocument. */
+function blog_guard_html(Dom\Node $node): string
+{
+    $document = $node->ownerDocument;
+    assert($document instanceof Dom\HTMLDocument);
+    return $document->saveHtml($node);
 }

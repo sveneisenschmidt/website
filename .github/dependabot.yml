@@ -1,0 +1,18 @@
+# Weekly updates as one pull request per ecosystem. The workflow CI tests
+# each of them; the pinned commits of the actions move with their version.
+version: 2
+updates:
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      composer:
+        patterns: ["*"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]

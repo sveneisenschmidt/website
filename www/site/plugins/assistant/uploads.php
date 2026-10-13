@@ -340,7 +340,8 @@ function blog_uploads_image(string $source, int $orientation = 1, ?array $crop =
 {
     // GD holds about 5 bytes per pixel: a 64-megapixel photo needs about 320 MB.
     @ini_set('memory_limit', '1024M');
-    $image = match (@getimagesize($source)[2] ?? null) {
+    $info = @getimagesize($source);
+    $image = match ($info === false ? null : $info[2]) {
         IMAGETYPE_JPEG => @imagecreatefromjpeg($source),
         IMAGETYPE_PNG => @imagecreatefrompng($source),
         IMAGETYPE_WEBP => @imagecreatefromwebp($source),
