@@ -11,9 +11,9 @@ final class BlueprintTest extends IntegrationTestCase
     private Page $trip;
 
     /**
-     * One page of every template, and a trip with every field, an image and
-     * a route. The trip's fields are written as the content files on the
-     * server hold them, not through the Panel.
+     * Creates one page of every template, and a trip with every field, an
+     * image and a route. The test writes the fields of the trip in the format
+     * of the content files on the server, without the Panel form.
      */
     protected function setUp(): void
     {
@@ -88,8 +88,8 @@ final class BlueprintTest extends IntegrationTestCase
     {
         $this->kirby->impersonate('kirby');
 
-        // A post late in the evening: if the date field rounds, an unchanged
-        // save moves it to the next day (and its folder number).
+        // A post at 23:59:40. If the date field rounded the time, an unchanged
+        // save would move the post to the next day and change its folder number.
         $photo = $this->kirby->page('photos')->createChild([
             'slug' => 'late-night',
             'template' => 'photo',
@@ -100,7 +100,8 @@ final class BlueprintTest extends IntegrationTestCase
         $trip = $this->kirby->page('trips/2026-summer-vacation-5');
         $stored = $this->panelSave($trip);
         foreach (['date', 'intro', 'text', 'cover', 'route', 'trip', 'mappoints', 'mapzoom'] as $field) {
-            // Files and structures come back decoded, the content file holds YAML.
+            // The form returns files and structures as arrays. The content file
+            // holds them as YAML.
             $value = $trip->content()->get($field)->value();
             $expected = is_array($stored[$field]) ? Data::decode($value, 'yaml') : $value;
             $this->assertSame($expected, $stored[$field], "trip: $field");
@@ -108,8 +109,8 @@ final class BlueprintTest extends IntegrationTestCase
     }
 
     /**
-     * What the Panel stores when the form is saved without a change: the form
-     * values go back through a fresh form of the same page.
+     * Returns what the Panel stores when the form is saved without a change:
+     * the form values go back through a new form of the same page.
      *
      * @return array<mixed>
      */

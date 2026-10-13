@@ -9,8 +9,10 @@ use Website\Assistant\Route;
 use Website\Tests\Support\GpxFixture;
 
 /**
- * Route and Gpx: OSRM, simplification, GPX reading and the random cut of
- * both ends.
+ * `Route` and `Gpx`: the OSRM request, simplification, reading a GPX file,
+ * and the random cut at both ends of a ride. The cut removes 700 to 1200 m
+ * at each end, so a published route does not show where the rides start
+ * and end.
  */
 final class RouteTest extends TestCase
 {
@@ -45,14 +47,15 @@ final class RouteTest extends TestCase
         $this->assertSame([[12.12346, 51.1], [12.2, 51.2]], Route::round([[12.123456, 51.1], [12.1234564, 51.1000001], [12.2, 51.2]]));
     }
 
-    public function testCutWalksAlongTheLineAndAwayFromBothEnds(): void
+    public function testTheCutLiesAtLeastTheGivenDistanceFromBothEnds(): void
     {
         $ride = GpxFixture::ride();
         [$first, $last] = Route::cut($ride, 700, 1200);
         $this->assertGreaterThanOrEqual(700, Route::length(array_slice($ride, 0, $first + 1)));
         $this->assertLessThan(750, Route::length(array_slice($ride, 0, $first + 1)));
         $this->assertGreaterThanOrEqual(1200, Route::length(array_slice($ride, $last)));
-        // In a straight line too, from both ends: a ride ends where it began.
+        // The cut points also lie that far from both ends in a straight line,
+        // because a ride ends where it began.
         foreach ([$ride[0], end($ride)] as $end) {
             $this->assertGreaterThanOrEqual(700, Route::distance($end, $ride[$first]));
             $this->assertGreaterThanOrEqual(1200, Route::distance($end, $ride[$last]));
@@ -67,7 +70,7 @@ final class RouteTest extends TestCase
         $this->assertSame(['points', 'times'], array_keys($gpx));
     }
 
-    public function testAGpxFileIsReadHardened(): void
+    public function testAnUnsafeOrOversizedGpxFileIsRefused(): void
     {
         $point = '<trkpt lat="51.1" lon="12.1"/>';
         $cases = [
@@ -80,7 +83,8 @@ final class RouteTest extends TestCase
             '5 MB' => str_repeat(' ', 5 * 1024 * 1024 + 1),
         ];
         foreach ($cases as $message => $xml) {
-            // PHPUnit's own failure is a RuntimeException too: it must not land in the catch.
+            // A failed PHPUnit assertion is a RuntimeException too, so the
+            // assertions stay outside the try block.
             $error = null;
             try {
                 Gpx::read($this->gpx($xml));
@@ -115,8 +119,8 @@ final class RouteTest extends TestCase
 
     public function testAStandstillAtHomeDoesNotShortenTheCut(): void
     {
-        // Five minutes of GPS noise at home before and after the ride walk
-        // more than a kilometre along the track without leaving home.
+        // Five minutes of GPS noise at home before and after the ride add up
+        // to more than a kilometre of track without leaving home.
         $home = GpxFixture::home();
         $points = [...GpxFixture::standstill(300, 4), ...GpxFixture::ride(), ...GpxFixture::standstill(300, 4)];
         $this->assertGreaterThan(1200, Route::length(GpxFixture::standstill(300, 4)));

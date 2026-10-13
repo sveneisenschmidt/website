@@ -6,10 +6,10 @@ use Kirby\Cms\App;
 use Kirby\Filesystem\Dir;
 
 /**
- * A Kirby instance on a temporary folder. Code (blueprints, plugins,
- * templates, snippets, config.php) comes from www/site. State (content,
- * accounts, cache, media) lives in the temporary folder, so a test never
- * touches the local site. Host config (env.php, .salt) is left out.
+ * A Kirby instance on a temporary folder. The code (blueprints, plugins,
+ * templates, snippets, config.php) comes from www/site. Content, accounts,
+ * cache and media are in the temporary folder, so a test never changes the
+ * local site. env.php and .salt are left out.
  */
 final class TestSite
 {
@@ -19,15 +19,16 @@ final class TestSite
     {
         $root = sys_get_temp_dir() . '/website-test-' . bin2hex(random_bytes(6));
         Dir::make($root . '/config');
-        // Every shared config file (config.php, later routes.php). env.php is
-        // host config and stays out; .salt and .license are not *.php.
+        // Every config file that all hosts share, such as config.php and
+        // routes.php. env.php is host config and stays out. .salt and
+        // .license do not match *.php.
         foreach (glob(self::SITE . '/config/*.php') as $file) {
             if (basename($file) !== 'env.php') {
                 copy($file, $root . '/config/' . basename($file));
             }
         }
         Dir::make($root . '/content');
-        file_put_contents($root . '/content/site.txt', "Title: Sven Eisenschmidt - Personal Blog\n");
+        file_put_contents($root . '/content/site.txt', "Title: Personal Blog\n");
         return $root;
     }
 

@@ -6,14 +6,14 @@ use Website\Changelog\Log;
 
 final class ChangelogTest extends IntegrationTestCase
 {
-    private const EMAIL = 'sven@website.test';
+    private const EMAIL = 'author@website.test';
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->kirby->impersonate('kirby', fn() => $this->kirby->users()->create([
             'email' => self::EMAIL,
-            'name' => 'Sven',
+            'name' => 'Author',
             'role' => 'admin',
             'password' => 'test-password-123',
         ]));
@@ -27,7 +27,7 @@ final class ChangelogTest extends IntegrationTestCase
         $entry = Log::entries()[0];
         $this->assertSame('page.update', $entry['action']);
         $this->assertSame(self::EMAIL, $entry['user']);
-        $this->assertSame('Sven', $entry['name']);
+        $this->assertSame('Author', $entry['name']);
         $this->assertSame('photos/test-photo', $entry['id']);
         $this->assertSame('Test Photo', $entry['title']);
         $this->assertSame('/pages/photos+test-photo', $entry['link']);
@@ -42,7 +42,8 @@ final class ChangelogTest extends IntegrationTestCase
 
     public function testPanelSaveOfChangesVersionIsLogged(): void
     {
-        // The Panel stores edits as the "changes" version; "Speichern" publishes it.
+        // The Panel stores an edit in the version "changes". The button
+        // "Speichern" publishes it.
         $photo = $this->kirby->page('photos/test-photo');
         $this->kirby->impersonate(self::EMAIL, function () use ($photo) {
             $changes = $photo->version('changes');
@@ -66,8 +67,9 @@ final class ChangelogTest extends IntegrationTestCase
 
         $entries = array_reverse(Log::entries());
         $actions = array_map(fn($e) => [$e['action'], $e['name']], $entries);
-        $this->assertContains(['file.create', 'Sven'], $actions);
-        // Our EXIF hook writes as the kirby user: shown as "Automatisch".
+        $this->assertContains(['file.create', 'Author'], $actions);
+        // The EXIF hook of the blog plugin writes as the user kirby. The Panel
+        // shows such an entry as "Automatisch".
         $this->assertContains(['file.update', null], $actions);
     }
 
@@ -203,8 +205,8 @@ final class ChangelogTest extends IntegrationTestCase
 
     public function testNumberThatFollowsTheDateIsNoEntryOfItsOwn(): void
     {
-        // Posts are numbered by date: a new date moves the folder number, and
-        // the date change is the one entry.
+        // The folder number of a post follows its date. A new date changes the
+        // folder number, and the log has one entry, the date change.
         $photo = $this->kirby->page('photos/test-photo');
         $before = count(Log::entries());
 
@@ -223,7 +225,8 @@ final class ChangelogTest extends IntegrationTestCase
 
         $this->kirby->impersonate(self::EMAIL, fn() => $second->changeSort(1));
 
-        // The sibling that moves down is logged too.
+        // The sibling that moves down gets an entry too, so the test picks the
+        // entry of "second".
         $new = array_slice(Log::entries(), 0, count(Log::entries()) - $before);
         $this->assertSame('page.changeNum', $new[0]['action']);
         $moved = array_values(array_filter($new, fn($e) => $e['action'] === 'page.changeNum' && $e['id'] === 'second'));

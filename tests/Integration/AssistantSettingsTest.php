@@ -3,8 +3,9 @@
 namespace Website\Tests\Integration;
 
 /**
- * Website › Assistent: the prompt has no default, no template and no help
- * text; it lives only in content/site.txt.
+ * The Panel tab Website › Assistent. The prompt field has no default, no
+ * template and no help text, so the prompt is stored only in
+ * content/site.txt, which is not in git.
  */
 final class AssistantSettingsTest extends IntegrationTestCase
 {

@@ -16,14 +16,16 @@ use Website\Blog\Exif;
 use Website\Blog\Types;
 
 /**
- * The card "Neuer Entwurf": fields, photos and route in one click, all or
- * nothing.
+ * The card "Neuer Entwurf" creates a draft with its fields, photos and route
+ * in one click. When one step fails, nothing changes.
  */
 final class AssistantPostTest extends AssistantTestCase
 {
     /**
-     * The fields of the post blueprints and what fills them in propose_post.
-     * A field missing here fails testTheToolCoversThePostBlueprints: the tool must learn it.
+     * Maps each field of the post blueprints to the input of propose_post
+     * that fills it. A new blueprint field fails
+     * testTheToolCoversThePostBlueprints until propose_post fills it and this
+     * list names it.
      */
     private const POST_FIELDS = [
         'intro' => 'intro', 'text' => 'text', 'date' => 'date', 'cover' => 'cover', 'pick' => 'pick',
@@ -35,7 +37,8 @@ final class AssistantPostTest extends AssistantTestCase
 
     protected function setUp(): void
     {
-        // Kirby binds hooks to the app: the test comes in as $test.
+        // Kirby binds a hook closure to the app, so $this in it is the app.
+        // The closure reaches the test through $test.
         $test = $this;
         $this->props['hooks'] = ['file.create:before' => function (File $file) use ($test) {
             if ($test->breakUploads && $file->filename() === 'broken.jpg') {
@@ -46,7 +49,8 @@ final class AssistantPostTest extends AssistantTestCase
     }
 
     /**
-     * A complete input of propose_post; $input overrides.
+     * Returns a complete input of propose_post. The keys of $input replace
+     * the defaults.
      *
      * @param array<mixed> $input
      * @return array<mixed>
@@ -173,7 +177,7 @@ final class AssistantPostTest extends AssistantTestCase
         Apply::decide($card['id'], 'apply');
 
         $this->assertSame('failed', Session::decisions()[$card['id']]['state']);
-        $this->assertNull(Content::slugTaken('aika'), 'The draft went again.');
+        $this->assertNull(Content::slugTaken('aika'), 'The draft is deleted again.');
         $this->assertNotNull(Uploads::meta($ok)['path'], 'The uploads stay.');
         $this->assertStringContainsString('failed, nothing changed', $this->kirby->session()->get('blog.assistant.notes')[0]);
 
@@ -184,7 +188,7 @@ final class AssistantPostTest extends AssistantTestCase
         $this->assertCount(2, $this->kirby->site()->find('photos')->draft('aika')->files());
     }
 
-    public function testToolsJudgeNoStyle(): void
+    public function testToolsDoNotCheckStyle(): void
     {
         $chat = $this->propose($this->input(['slug' => 'x', 'title' => 'WOW!!! 🚲', 'date' => '2001-01-01 03:17:42', 'intro' => '', 'text' => '', 'pick' => true]));
 

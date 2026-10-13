@@ -3,8 +3,8 @@
 namespace Website\Tests\Integration;
 
 /**
- * Assets under www/assets and thumbnails through the sRGB driver
- * (Website\Blog\SrgbGd), as on concertshotsbyluisa.de.
+ * The assets under www/assets, and thumbnails through the thumbnail driver
+ * `Website\Blog\SrgbGd`, which converts photos with a color profile to sRGB.
  */
 final class ThumbTest extends IntegrationTestCase
 {

@@ -1,7 +1,9 @@
 <?php
 
 /**
- * Page views of one browser in its own process, as parallel requests.
+ * Renders the page photos <views> times as one browser, in its own process.
+ * AnalyticsTest runs several of these processes at the same time, as
+ * parallel requests.
  * Usage: php visit-worker.php <test-root> <ip> <views>
  * Prints "ok" or the error. Every PHP warning counts as an error.
  */
@@ -19,7 +21,7 @@ set_error_handler(function (int $severity, string $message, string $file, int $l
 try {
     $_SERVER['REMOTE_ADDR'] = $ip;
     $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (X11; Linux x86_64) Firefox/131.0';
-    // The options of AnalyticsTest: the page cache is on, as it will be live.
+    // The options of AnalyticsTest: the page cache is on, as on the live site.
     $kirby = TestSite::app($root, ['cache' => ['pages' => ['active' => true]]]);
     for ($i = 0; $i < (int) $views; $i++) {
         $kirby->render('photos');

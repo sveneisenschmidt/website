@@ -5,8 +5,9 @@ namespace Website\Tests\Integration;
 use Website\Blog\FileCache;
 
 /**
- * The page cache (config.php, Website\Blog\FileCache): pages go in, and
- * clearing it under parallel Panel requests does not fail.
+ * The page cache holds the HTML of every rendered page (config.php,
+ * `Website\Blog\FileCache`). A rendered page goes into it, and flushes from
+ * parallel Panel requests do not fail.
  */
 final class CacheTest extends IntegrationTestCase
 {

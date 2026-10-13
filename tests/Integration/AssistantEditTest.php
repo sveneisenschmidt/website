@@ -10,14 +10,15 @@ use Website\Assistant\Log;
 use Website\Assistant\Session;
 
 /**
- * Cards for existing posts: a passage, a whole field, the texts of an
- * image. A published post gets the click as unsaved changes, a draft at
- * once.
+ * Cards that change an existing post: a passage, a whole field, or the texts
+ * of an image. Applying a card to a published post stores the change as
+ * unsaved changes (the version "changes"). A draft gets it at once.
  */
 final class AssistantEditTest extends AssistantTestCase
 {
     /**
-     * One round with one propose call, then the end; returns the card.
+     * Runs one round with one propose call and a final answer. Returns the
+     * card.
      *
      * @param array<mixed> $input
      * @return array<mixed>
@@ -30,7 +31,7 @@ final class AssistantEditTest extends AssistantTestCase
     }
 
     /**
-     * The error Claude got back for the last propose call.
+     * Returns the error that Claude got back for the last propose call.
      *
      * @param array<mixed> $input
      */
@@ -89,14 +90,14 @@ final class AssistantEditTest extends AssistantTestCase
     public function testAStaleCardChangesNothing(): void
     {
         $card = $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => 'New text.']);
-        $this->page()->update(['text' => 'Sven wrote this meanwhile.']);
+        $this->page()->update(['text' => 'The author wrote this meanwhile.']);
 
         Apply::decide($card['id'], 'apply');
 
         $decision = Session::decisions()[$card['id']];
         $this->assertSame('stale', $decision['state']);
         $this->assertStringContainsString('Nichts geändert', $decision['warn']);
-        $this->assertSame('Sven wrote this meanwhile.', $this->page()->text()->value());
+        $this->assertSame('The author wrote this meanwhile.', $this->page()->text()->value());
         $this->assertFalse($this->page()->version('changes')->exists());
         $this->assertStringContainsString('the field changed since the proposal', $this->kirby->session()->get('blog.assistant.notes')[0]);
     }
@@ -148,7 +149,7 @@ final class AssistantEditTest extends AssistantTestCase
         $this->assertSame('It rained and rained.', $this->page()->text()->value());
     }
 
-    public function testALinkFromSvensMessageOrTheFieldIsAllowed(): void
+    public function testALinkFromTheAuthorsMessageOrTheFieldIsAllowed(): void
     {
         $this->page()->update(['text' => 'See [old](https://old.test).']);
         $this->reply('tool_use', $this->tool('t1', 'propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => 'See [old](https://old.test) and [new](https://new.test/page).']));
@@ -161,14 +162,15 @@ final class AssistantEditTest extends AssistantTestCase
 
     public function testAVersionIsCheckedInItsField(): void
     {
-        // An old reference definition renders nothing until a version uses it.
+        // A Markdown reference definition in the field renders nothing until a
+        // version uses it.
         $this->page()->update(['text' => "It rained.\n\n[1]: //evil.example/"]);
         $this->assertStringContainsString('not allowed', $this->refusal('propose_edit', ['post' => 'photos/test-photo', 'field' => 'text', 'passage' => 'It rained.', 'versions' => ['It [rained][1].']]));
     }
 
     public function testOldMarkupOfAFieldStaysEditable(): void
     {
-        // Imported posts keep raw HTML.
+        // Some posts contain raw HTML, such as an embedded video.
         $this->page()->update(['text' => "<iframe src=\"https://video.test/embed/1\"></iframe>\n\nIt rained all day."]);
         $card = $this->propose('propose_edit', ['post' => 'photos/test-photo', 'field' => 'text', 'passage' => 'It rained all day.', 'versions' => ['It poured.']]);
         $this->assertSame('edit', $card['kind']);
@@ -267,7 +269,7 @@ final class AssistantEditTest extends AssistantTestCase
         $this->assertSame('field', $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => 'Alpha bravo charlie delta echo foxtrot golf, and hotel.'])['kind'], 'Seven words in a row are no run.');
     }
 
-    public function testToolsJudgeNoStyle(): void
+    public function testToolsDoNotCheckStyle(): void
     {
         $this->page()->update(['text' => 'A b c.']);
         $this->assertSame('field', $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'title', 'value' => 'WOW!!! 🚲 all caps TITLE?!'])['kind']);

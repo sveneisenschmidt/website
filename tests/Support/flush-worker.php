@@ -2,6 +2,7 @@
 
 /**
  * Fills and clears the page cache in a loop, as many Panel saves would.
+ * CacheTest runs 8 of these processes at the same time.
  * Usage: php flush-worker.php <test-root> <rounds>
  * Prints "ok" or the error. Every PHP warning counts as an error.
  */

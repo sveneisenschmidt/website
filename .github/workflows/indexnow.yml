@@ -1,8 +1,8 @@
 name: IndexNow
 
-# Once a day, sends the pages that changed since the day before to IndexNow
+# Once a day, sends the pages that changed in the last 50 hours to IndexNow
 # (bin/indexnow.php). Posts change in the Panel without a deploy, so this
-# runs on a schedule. A workflow of its own, so an IndexNow error never
+# runs on a schedule. It is a workflow of its own, so an IndexNow error never
 # stops a deploy.
 on:
   schedule:
@@ -24,6 +24,7 @@ jobs:
             bin
             www
 
-      # PHP is on the runner from the workflow CI.
+      # No setup-php: the job uses the PHP that the workflow CI installed on
+      # the self-hosted runner.
       - name: Submit to IndexNow
         run: php bin/indexnow.php https://sven.eisenschmidt.website

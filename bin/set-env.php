@@ -1,13 +1,16 @@
 <?php
 
 /**
- * Sets keys in a host config (env.php). Other keys stay as they are.
- * The deploy runs it on the server for:
- *   url           the canonical site URL, so every host name and scheme links to one address
- *   assistantKey  the key of the Panel assistant, from stdin, so it never stands on a
- *                 command line; nothing on stdin keeps the key there is
+ * Sets keys in an env.php, the host config, and keeps all other keys.
+ * bin/deploy.sh runs it on the server for two keys:
+ *   url           the canonical URL of the site. Kirby builds every link
+ *                 with it, whatever host name or scheme a request uses.
+ *   assistantKey  the API key of the Panel assistant. It comes from stdin,
+ *                 never from the command line. An empty stdin keeps the
+ *                 current key.
+ * The values "true" and "false" become booleans.
  *
- * Usage: php bin/set-env.php <env.php> key=value ... [< assistant key]   (value "true"/"false" is a boolean)
+ * Usage: php bin/set-env.php <env.php> key=value ... [< assistant key]
  */
 
 $file = $argv[1] ?? null;
@@ -37,7 +40,9 @@ foreach ($pairs as $pair) {
     };
     echo "$key: $value\n";
 }
-// The key is never printed. A terminal on stdin means no key.
+// The deploy log is public in GitHub Actions, so the script prints "set" in
+// place of the key. A terminal on stdin means a call by hand without a key:
+// reading it would wait for input.
 $assistantKey = stream_isatty(STDIN) ? '' : trim((string) stream_get_contents(STDIN));
 if ($assistantKey !== '') {
     $new['assistantKey'] = $assistantKey;
@@ -50,6 +55,7 @@ if ($new === $env) {
 // Write a temporary file and rename it, so no request reads half a file.
 $tmp = $file . '.tmp';
 file_put_contents($tmp, "<?php\n\nreturn " . var_export($new, true) . ";\n");
-// The file holds the assistant's key: only the account's user reads it.
+// The file holds the assistant's key. Only the user of the hosting account,
+// which PHP runs as, may read it.
 chmod($tmp, 0600);
 rename($tmp, $file);

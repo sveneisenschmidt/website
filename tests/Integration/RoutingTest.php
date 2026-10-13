@@ -70,7 +70,10 @@ final class RoutingTest extends IntegrationTestCase
         $this->assertSame('text/plain', $this->get('/robots.txt')->type());
     }
 
-    /** One request with its own Kirby: Kirby reads the request when it starts. */
+    /**
+     * Sends one request to a new Kirby, because Kirby reads the request only
+     * when it starts.
+     */
     private function get(string $uri): Response
     {
         return TestSite::app($this->root, $this->options, ['server' => ['REQUEST_URI' => $uri]])->render() ?? $this->fail("No response for $uri");

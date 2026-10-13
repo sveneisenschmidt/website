@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
-# Runs bin/deploy.sh against a site folder on this machine (DEPLOY_HOST=local),
-# with PHP's server in place of Apache:
-# 1. The first release of a site whose state is in shared/; env.php and
-#    .salt only for the account's user.
-# 2. A second release: the switch, the check, folders and files the web
-#    server may read (it runs as another user than the deploy).
-# 3. A release whose start page fails: the site goes back to the release before.
+# Tests bin/deploy.sh without a server. DEPLOY_HOST=local deploys into a
+# temporary folder, and PHP's built-in web server takes the place of Apache.
+# The workflow CI runs it. It needs port 8061 to be free.
+# 1. The first release of a site whose state is already in shared/.
+#    env.php and .salt must have mode 600.
+# 2. A second release. `current` must point to it. Every folder and file
+#    must be readable for others, because Apache runs as another user.
+# 3. A release whose start page answers 500. The health check must fail,
+#    and the site must be back on the second release.
 #
 # Usage: bin/deploy-test.sh
 set -euo pipefail
@@ -23,8 +25,9 @@ status() { curl -s -o /dev/null -w '%{http_code}' "$URL/"; }
 
 ! curl -s -o /dev/null "$URL/" || fail "port $PORT is busy"
 
-# The router does what the site's .htaccess does on Apache: every request
-# goes into the folder its last RewriteRule names.
+# router.php does for PHP's server what server/root.htaccess does on Apache.
+# It serves every request from the folder that the last RewriteRule of the
+# site's .htaccess names.
 cat > "$TMP/router.php" <<'PHP'
 <?php
 $site = $_SERVER['DOCUMENT_ROOT'];
@@ -41,9 +44,9 @@ chdir($www);
 require "$www/index.php";
 PHP
 
-# The state of a site, as shared/ holds it on the server.
+# A small state in shared/, in the layout of the server.
 mkdir -p "$SITE/shared/content/home" "$SITE/shared/content/error" "$SITE/shared/site/config"
-printf 'Title: Sven Eisenschmidt - Personal Blog\n' > "$SITE/shared/content/site.txt"
+printf 'Title: Personal Blog\n' > "$SITE/shared/content/site.txt"
 printf 'Title: Home\n' > "$SITE/shared/content/home/home.txt"
 printf 'Title: Error\n' > "$SITE/shared/content/error/error.txt"
 printf '0123456789abcdef0123456789abcdef0123456789abcdef\n' > "$SITE/shared/site/config/.salt"
@@ -65,7 +68,7 @@ sleep 1
 bin/deploy.sh >/dev/null
 second="$(current)"
 [ "$second" != "$first" ] || fail "current did not move"
-[ -f "$SITE/releases/$second/www/index.php" ] && [ -L "$SITE/releases/$second/www/content" ] || fail "the release has no code or no link to the content"
+[ -f "$SITE/releases/$second/www/index.php" ] && [ -L "$SITE/releases/$second/www/content" ] || fail "the release has no code or no symlink to the content"
 [ "$(status)" = 200 ] || fail "the second release does not answer 200"
 unreadable="$(find "$SITE/releases/$second" \( -type d ! -perm -o+rx \) -o \( -type f ! -perm -o+r \) | head -3)"
 [ -z "$unreadable" ] || fail "the web server cannot read: $unreadable"
@@ -81,5 +84,5 @@ printf '<?php http_response_code(500); exit;\n' > "$TMP/broken/www/site/template
 sleep 1
 ! (cd "$TMP/broken" && bin/deploy.sh >/dev/null 2>&1) || fail "the deploy did not fail"
 [ "$(current)" = "$second" ] || fail "current is not back on $second"
-[ "$(status)" = 200 ] || fail "the site does not answer 200 after the way back"
+[ "$(status)" = 200 ] || fail "the site does not answer 200 after the switch back"
 echo "OK: back on $second"

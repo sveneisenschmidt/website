@@ -6,8 +6,8 @@ use Website\Blog\Images;
 use Website\Tests\Support\TestSite;
 
 /**
- * The files for machines (Website\Blog\Feeds, config/routes.php):
- * feed, sitemap, robots.txt, llms.txt.
+ * The files that programs read: the feed, the sitemap, robots.txt and
+ * llms.txt (`Website\Blog\Feeds`, config/routes.php).
  */
 final class FeedTest extends IntegrationTestCase
 {
@@ -22,8 +22,11 @@ final class FeedTest extends IntegrationTestCase
         ]));
     }
 
-    /** HEAD answers 200, as for every page. Without 'method' a route answers HEAD with 404. */
-    public function testTheFilesForMachinesAnswerHead(): void
+    /**
+     * A HEAD request gets 200, as for every page. A Kirby route without the
+     * option 'method' answers HEAD with 404.
+     */
+    public function testFeedSitemapRobotsAndLlmsAnswerHead(): void
     {
         foreach (['index.xml', 'sitemap.xml', 'robots.txt', 'llms.txt'] as $path) {
             $this->assertSame(200, $this->kirby->render($path, 'HEAD')?->code(), $path);
@@ -38,12 +41,13 @@ final class FeedTest extends IntegrationTestCase
         $cover = $this->post->cover()->toFile();
 
         $this->assertSame('application/rss+xml', $response->type());
-        $this->assertStringContainsString("<title>Sven Eisenschmidt - Personal Blog</title>\n    <link>http://localhost/</link>", $xml);
+        $this->assertStringContainsString("<title>Personal Blog</title>\n    <link>http://localhost/</link>", $xml);
         $this->assertStringContainsString('<lastBuildDate>Wed, 07 Oct 2026 20:00:00 +0200</lastBuildDate>', $xml);
         $this->assertStringContainsString('<atom:link href="http://localhost/index.xml" rel="self" type="application/rss+xml" />', $xml);
         $this->assertStringContainsString("<link>$link</link>\n      <pubDate>Wed, 07 Oct 2026 20:00:00 +0200</pubDate>\n      <guid isPermaLink=\"true\">$link</guid>", $xml);
-        // The cover fits into 768 x 768: the fixture is smaller and keeps its size.
-        // The EXIF rows of the figure in the text are no words.
+        // The cover thumbnail fits into 768 x 768. The fixture is smaller and
+        // keeps its size. The count of 5 more words leaves out the EXIF rows
+        // of the figure in the text.
         $this->assertStringContainsString(
             '<description><![CDATA[<img src="' . $cover->thumb(['width' => 768, 'height' => 768, 'format' => 'webp', 'quality' => 80])->url()
             . '" width="60" height="40" alt="Test Photo cover image" /><p>It’s the intro.'
@@ -115,7 +119,7 @@ final class FeedTest extends IntegrationTestCase
 
         $text = $this->kirby->render('llms.txt')->body();
 
-        $this->assertStringStartsWith("# Sven Eisenschmidt - Personal Blog\n\n> A personal website.\n\nCrawl it.\n\n## Essays\n\n- [An Essay]({$essay->url()}): Test intro\n\n## Site\n", $text);
+        $this->assertStringStartsWith("# Personal Blog\n\n> A personal website.\n\nCrawl it.\n\n## Essays\n\n- [An Essay]({$essay->url()}): Test intro\n\n## Site\n", $text);
         $this->assertStringContainsString('- [Feed](http://localhost/index.xml)', $text);
         $this->assertSame($text, $this->kirby->cache('pages')->get('llms.txt'), 'in the page cache');
     }

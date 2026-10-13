@@ -13,8 +13,8 @@ use Website\Assistant\Tools;
 use Website\Assistant\Uploads;
 
 /**
- * The chat of the assistant: rounds, stop, errors, Protokoll, prompt and
- * access. Ported from concertshotsbyluisa.de where the case holds here.
+ * The chat of the Panel assistant: rounds, stop, errors, web search, the log
+ * view "Protokoll", the prompt and the images of a chat.
  */
 final class AssistantChatTest extends AssistantTestCase
 {
@@ -99,7 +99,7 @@ final class AssistantChatTest extends AssistantTestCase
         Chat::send('Hallo');
     }
 
-    public function testAChoiceWaitsForSven(): void
+    public function testAChoiceWaitsForTheAuthor(): void
     {
         $this->reply('tool_use', $this->tool('t1', 'ask_choice', ['question' => 'Welcher Tag?', 'options' => ['A', 'B']]));
 
@@ -110,11 +110,11 @@ final class AssistantChatTest extends AssistantTestCase
     }
 
     /**
-     * The probe choice.php of the security review: an option is Claude's
-     * text. Picked, it goes to Claude as Sven's answer, but a link in it
-     * is no link of his.
+     * Claude writes the options of ask_choice. A picked option goes to Claude
+     * as the author's answer, but a link in it does not count as a link
+     * from the author, so no card may use it.
      */
-    public function testAPickedOptionBringsNoLinkOfSvens(): void
+    public function testALinkInAPickedOptionIsNoLinkOfTheAuthor(): void
     {
         $this->reply('tool_use', $this->tool('t1', 'ask_choice', ['question' => 'Quelle verlinken?', 'options' => ['Ja, mit Quelle https://evil.example/promo', 'Nein']]));
         Chat::send('Schreib was über die Tour.');
@@ -132,7 +132,8 @@ final class AssistantChatTest extends AssistantTestCase
         $this->assertStringContainsString('not allowed', $this->results(2)[0]['content']);
         $this->assertSame([], Session::load()->proposals);
 
-        // A second pick finds no open choice: the Panel gets the text, not Kirby's "unexpected error".
+        // A second pick has no open choice. The Panel gets this message and not
+        // Kirby's "unexpected error".
         $state = $this->kirby->api()->call('blog-assistant/send', 'POST', ['body' => ['choice' => 1]]);
         $this->assertSame(['kind' => 'chat', 'text' => 'Keine offene Auswahl'], $state['error']);
         $this->assertCount(2, array_filter($state['items'], fn($i) => $i['type'] === 'me'));
@@ -166,17 +167,18 @@ final class AssistantChatTest extends AssistantTestCase
     }
 
     /**
-     * The probe sess1.php of the security review: request A runs a round,
-     * request B ("Abbrechen") stores the stopped chat meanwhile. A must see
-     * B's write before it stores; Claude's late answer is dropped.
+     * Request A runs a round. While Claude answers, request B (the button
+     * "Abbrechen") stores the stopped chat. A must read B's write before it
+     * stores the chat, and it drops Claude's late answer.
      */
-    public function testAStopDuringARoundWinsOverItsAnswer(): void
+    public function testAStopFromAnotherRequestDropsTheLateAnswer(): void
     {
         $this->reply('tool_use', $this->tool('t1', 'read_post', ['post' => 'photos/test-photo']));
         Chat::send('Lies das Foto.');
         $session = $this->kirby->session();
         $session->commit();
-        // Kirby may hold the lock from earlier in a request, after renewing the session.
+        // After Kirby renews a session, a request can hold its lock from
+        // earlier. Chat::next() must release it while Claude answers.
         $session->prepareForWriting();
         $locked = null;
         $this->replies[] = function () use (&$locked) {
@@ -205,12 +207,13 @@ final class AssistantChatTest extends AssistantTestCase
         }
     }
 
-    public function testWhatComesDuringARoundStays(): void
+    public function testWritesOfAnotherRequestDuringARoundAreKept(): void
     {
         $this->kirby->session()->set('blog.assistant.notes', ['(A note from before.)']);
         $this->kirby->session()->commit();
         $this->replies[] = function () {
-            // Request B: a click on a card and an upload while Claude answers.
+            // Request B, while Claude answers: a click on a card adds a note,
+            // and an upload arrives.
             $b = $this->otherRequest();
             $b->set('blog.assistant.notes', [...$b->get('blog.assistant.notes', []), '(A click meanwhile.)']);
             $state = $b->get('blog.assistant.uploads') ?? ['folder' => null, 'items' => [], 'pending' => []];
@@ -279,18 +282,20 @@ final class AssistantChatTest extends AssistantTestCase
         $search = ['type' => 'web_search_tool_result', 'content' => [$result('https://www.camping.test/a', 'Camping'), $result('https://river.test/b'), $result('ftp://files.test/c', 'Files')]];
         $cited = ['type' => 'text', 'text' => 'Offen.', 'citations' => [['url' => 'https://cited.test/x', 'title' => ' ']]];
 
-        // Every result and citation is a link a card may hold; the citations show.
+        // Every search result and every citation is a link that a card may
+        // contain. The list under the answer shows the citations.
         $this->assertSame([
             'urls' => ['https://www.camping.test/a', 'https://river.test/b', 'https://cited.test/x'],
             'list' => [['url' => 'https://cited.test/x', 'title' => 'https://cited.test/x']],
         ], Chat::sources([$search, $cited], 'Offen.'));
-        // Without citations: the results whose site the answer names, by host or by name.
+        // Without citations, the list shows the results whose host or name the
+        // answer mentions.
         $this->assertSame([['url' => 'https://www.camping.test/a', 'title' => 'Camping']], Chat::sources([$search], 'Laut camping.test ist es offen.')['list']);
         $this->assertSame([['url' => 'https://river.test/b', 'title' => 'https://river.test/b']], Chat::sources([$search], 'Der River-Platz.')['list']);
         $this->assertSame([], Chat::sources([$search], 'Ohne Quelle.')['list']);
         $many = ['type' => 'web_search_tool_result', 'content' => array_map(fn($n) => $result("https://site$n.test/"), range(1, 4))];
         $this->assertCount(3, Chat::sources([$many], 'site1.test, site2.test, site3.test, site4.test')['list']);
-        // A failed search brings nothing.
+        // A failed search gives no links.
         $this->assertSame(['urls' => [], 'list' => []], Chat::sources([['type' => 'web_search_tool_result', 'content' => ['error_code' => 'max_uses_exceeded']]], 'camping'));
     }
 
@@ -345,8 +350,9 @@ final class AssistantChatTest extends AssistantTestCase
     {
         foreach (Tools::definitions() as $tool) {
             $this->assertMatchesRegularExpression('/^(find|read|view|propose|ask)_/', $tool['name']);
-            // No strict mode: with all tools strict, the API refuses the request
-            // ("compiled grammar is too large"). The server checks every input itself.
+            // No tool uses strict mode: with all tools strict, the API refuses
+            // the request ("compiled grammar is too large"). The server checks
+            // every input itself.
             $this->assertArrayNotHasKey('strict', $tool);
         }
     }
@@ -375,7 +381,7 @@ final class AssistantChatTest extends AssistantTestCase
         $this->assertFalse(Chat::view(Session::load())['hasPrompt']);
     }
 
-    public function testTheSystemTextIsFrozenForTheChat(): void
+    public function testTheSystemTextStaysTheSameForTheWholeChat(): void
     {
         $this->reply('end_turn', $this->text('Eins.'));
         $this->reply('end_turn', $this->text('Zwei.'));
@@ -397,8 +403,8 @@ final class AssistantChatTest extends AssistantTestCase
     }
 
     /**
-     * The session stores the chat as a plain array in the shape it always
-     * had. A chat stored before a key came goes on, the key with its default.
+     * The session stores the chat as a plain array. A chat that was stored
+     * before a key existed goes on, and the missing key gets its default.
      */
     public function testAChatOfAnOlderSessionGoesOn(): void
     {
@@ -457,7 +463,7 @@ final class AssistantChatTest extends AssistantTestCase
     }
 
     /**
-     * A crop of an upload: view_photo makes a new image of it.
+     * The input of view_photo for a crop of the upload $id.
      *
      * @return array<mixed>
      */
@@ -491,9 +497,10 @@ final class AssistantChatTest extends AssistantTestCase
         $this->assertStringContainsString('40 images', $result[0]['text']);
     }
 
-    public function testARequestCarriesAt30MbOfImages(): void
+    public function testARequestHoldsAtMost30MbOfImages(): void
     {
-        // An image of the chat as large as a request can carry, as base64.
+        // An image of 23 MB in the chat. As base64 it takes about 30.7 MB,
+        // more than Chat::IMAGE_BYTES (30 MB).
         $big = 'v' . str_repeat('0', 16) . '.jpg';
         file_put_contents(Uploads::dir() . '/' . $big, str_repeat("\x00", 23 * 1024 * 1024));
         Session::change(function (ChatState $chat) use ($big): ChatState {
@@ -544,7 +551,7 @@ final class AssistantChatTest extends AssistantTestCase
         $this->assertSame([], Uploads::pending(), 'A file that did not come through PHP\'s upload is refused too.');
     }
 
-    public function testLogoutTakesTheUploadsAlong(): void
+    public function testLogoutDeletesTheUploads(): void
     {
         $id = Uploads::accept($this->jpeg(8, 8), 'a.jpg')['id'];
         $folder = dirname(Uploads::meta($id)['path']);

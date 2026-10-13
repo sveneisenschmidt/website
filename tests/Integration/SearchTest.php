@@ -6,8 +6,9 @@ use Website\Blog\Posts;
 use Website\Tests\Support\TestSite;
 
 /**
- * Search on the server: /search/?q= renders the results, search.js asks
- * /search.json while typing (Website\Blog\Posts, templates/search*).
+ * Search on the server: /search/?q= renders the results, and search.js
+ * requests /search.json while the visitor types (`Website\Blog\Posts`,
+ * templates/search*).
  */
 final class SearchTest extends IntegrationTestCase
 {
@@ -68,7 +69,10 @@ final class SearchTest extends IntegrationTestCase
         $this->assertSame(['html' => ''], json_decode($this->search('', 'json'), true));
     }
 
-    /** The search page for ?q=$query: Kirby reads the query when it starts. */
+    /**
+     * Renders the search page for ?q=$query with a new Kirby, because Kirby
+     * reads the query only when it starts.
+     */
     private function search(string $query, string $type = 'html'): string
     {
         $_GET = ['q' => $query];
