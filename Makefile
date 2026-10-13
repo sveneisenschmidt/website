@@ -1,16 +1,16 @@
 WWW := www
-# PHP für die kirby-Ziele. Die Seite läuft auf dem Server mit PHP 8.5
+# PHP für alle Ziele. Die Seite läuft auf dem Server mit PHP 8.5
 # (.php-version), lokal ist es dieselbe Version. Anderes PHP: make PHP=...
 PHP ?= php
-# Port von make kirby-dev. Luisas Seite nutzt lokal 8000.
-KIRBY_PORT := 8010
+# Port von make dev. Luisas Seite nutzt lokal 8000.
+PORT := 8010
 
-.PHONY: kirby-config
-kirby-config:
+.PHONY: config
+config:
 	@$(PHP) bin/init-config.php $(WWW)
 
-.PHONY: kirby-test
-kirby-test:
+.PHONY: test
+test:
 	@test -x vendor/bin/phpunit || { echo "PHPUnit fehlt. Erst: composer install"; exit 1; }
 	@$(PHP) vendor/bin/phpunit
 
@@ -20,38 +20,38 @@ kirby-test:
 # 64 Megapixeln braucht rund 320 MB Speicher (plugins/assistant/uploads.php).
 # bin/dev-router.php sperrt wie www/.htaccess content/, site/ und kirby/.
 # Der Seiten-Cache sieht keine Änderung am Code: der Start leert ihn.
-.PHONY: kirby-dev
-kirby-dev:
+.PHONY: dev
+dev:
 	@test -f vendor/autoload.php || { echo "Kirby fehlt. Erst: composer install"; exit 1; }
-	@test -f $(WWW)/site/config/env.php || { echo "Keine Konfiguration. Erst: make kirby-config"; exit 1; }
-	@test -d $(WWW)/content || { echo "Keine Inhalte. Erst: make kirby-pull"; exit 1; }
+	@test -f $(WWW)/site/config/env.php || { echo "Keine Konfiguration. Erst: make config"; exit 1; }
+	@test -d $(WWW)/content || { echo "Keine Inhalte. Erst: make pull"; exit 1; }
 	@$(PHP) -r 'if (PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION !== trim(file_get_contents(".php-version"))) fwrite(STDERR, "Hinweis: hier PHP ".PHP_VERSION.", .php-version sagt ".trim(file_get_contents(".php-version"))."\n");'
-	@rm -rf $(WWW)/site/cache/localhost_$(KIRBY_PORT)
-	@echo "Seite: http://localhost:$(KIRBY_PORT)  Panel: http://localhost:$(KIRBY_PORT)/panel  (Ende mit Ctrl+C)"
-	@set -o pipefail; PHP_CLI_SERVER_WORKERS=4 $(PHP) -d upload_max_filesize=64M -d post_max_size=64M -d memory_limit=1024M -S localhost:$(KIRBY_PORT) -t $(WWW) bin/dev-router.php 2>&1 | grep --line-buffered -v -E '(Accepted|Closing)$$'
+	@rm -rf $(WWW)/site/cache/localhost_$(PORT)
+	@echo "Seite: http://localhost:$(PORT)  Panel: http://localhost:$(PORT)/panel  (Ende mit Ctrl+C)"
+	@set -o pipefail; PHP_CLI_SERVER_WORKERS=4 $(PHP) -d upload_max_filesize=64M -d post_max_size=64M -d memory_limit=1024M -S localhost:$(PORT) -t $(WWW) bin/dev-router.php 2>&1 | grep --line-buffered -v -E '(Accepted|Closing)$$'
 
-.PHONY: kirby-backup
-kirby-backup:
+.PHONY: backup
+backup:
 	bin/backup.sh $(WWW) backups
 
-.PHONY: kirby-restore
-kirby-restore:
-	@test -n "$(BACKUP)" || { echo "Aufruf: make kirby-restore BACKUP=backups/website-....tar.gz"; exit 1; }
+.PHONY: restore
+restore:
+	@test -n "$(BACKUP)" || { echo "Aufruf: make restore BACKUP=backups/website-....tar.gz"; exit 1; }
 	bin/restore.sh $(BACKUP) $(WWW)
 
-.PHONY: kirby-restore-test
-kirby-restore-test:
+.PHONY: restore-test
+restore-test:
 	PHP=$(PHP) bin/restore-test.sh $(WWW)
 
-.PHONY: kirby-lint
-kirby-lint:
+.PHONY: lint
+lint:
 	@find $(WWW)/site $(WWW)/index.php bin tests -name '*.php' -print0 | xargs -0 -n1 $(PHP) -l >/dev/null && echo "lint ok"
 
 # Pre-commit- und Pre-push-Hook gegen den Prompt des Assistenten in Git
 # (bin/prompt-guard.php). Die Hooks laufen auf jedem Branch, auch auf main.
 # Nach einer Änderung am Skript noch einmal aufrufen.
-.PHONY: kirby-hooks
-kirby-hooks:
+.PHONY: hooks
+hooks:
 	@hooks="$$(git rev-parse --git-path hooks)"; \
 	for hook in pre-commit pre-push; do \
 	  if [ -f "$$hooks/$$hook" ] && ! grep -q prompt-guard.php "$$hooks/$$hook"; then echo "$$hooks/$$hook gibt es schon, nicht überschrieben"; exit 1; fi; \
@@ -59,18 +59,18 @@ kirby-hooks:
 	cp bin/prompt-guard.php "$$hooks/prompt-guard.php"; \
 	cp $(WWW)/site/plugins/assistant/words.php "$$hooks/prompt-words.php"; \
 	for hook in pre-commit pre-push; do \
-	  printf '#!/bin/sh\n# make kirby-hooks: no text from the assistant prompt in git.\nexec %s "$$(git rev-parse --git-path hooks)/prompt-guard.php" %s\n' "$(PHP)" "$$hook" > "$$hooks/$$hook"; \
+	  printf '#!/bin/sh\n# make hooks: no text from the assistant prompt in git.\nexec %s "$$(git rev-parse --git-path hooks)/prompt-guard.php" %s\n' "$(PHP)" "$$hook" > "$$hooks/$$hook"; \
 	  chmod +x "$$hooks/$$hook"; \
 	done; \
 	echo "Hooks eingerichtet: pre-commit, pre-push"
 
-# Phase 4: die URLs der Live-Seite gegen Kirby (bin/check-urls.php). Läuft
-# gegen make kirby-dev in einem zweiten Terminal. Gegen Staging:
-# make kirby-check-urls SITE=$(KIRBY_SITE_URL), das Passwort aus STAGING_USER
-# und STAGING_PASSWORD.
-SITE ?= http://localhost:$(KIRBY_PORT)
-.PHONY: kirby-check-urls
-kirby-check-urls:
+# Die URLs der Live-Seite gegen Kirby (bin/check-urls.php). Läuft gegen
+# make dev in einem zweiten Terminal. Gegen die Live-Seite:
+# make check-urls SITE=$(LIVE_URL). Ein Staging-Passwort kommt aus
+# STAGING_USER und STAGING_PASSWORD.
+SITE ?= http://localhost:$(PORT)
+.PHONY: check-urls
+check-urls:
 	@$(PHP) bin/check-urls.php $(SITE)
 
 # Deploy der Live-Seite. Host und Pfad sind nicht geheim, es gilt der
@@ -78,23 +78,23 @@ kirby-check-urls:
 # Den API-Schlüssel holt bin/deploy-env.sh aus der lokalen env.php. Ein
 # Staging-Passwort kommt nur, wenn STAGING_USER und STAGING_PASSWORD gesetzt
 # sind. Lint und Tests laufen vorher.
-KIRBY_DEPLOY_HOST ?= website
-KIRBY_DEPLOY_PATH ?= /www/htdocs/w00611ad/sven.eisenschmidt.website
-KIRBY_SITE_URL ?= https://sven.eisenschmidt.website
+LIVE_HOST ?= website
+LIVE_PATH ?= /www/htdocs/w00611ad/sven.eisenschmidt.website
+LIVE_URL ?= https://sven.eisenschmidt.website
 
-.PHONY: kirby-deploy
-kirby-deploy: kirby-lint kirby-test
-	. bin/deploy-env.sh && DEPLOY_HOST=$(KIRBY_DEPLOY_HOST) DEPLOY_PATH=$(KIRBY_DEPLOY_PATH) SITE_URL=$(KIRBY_SITE_URL) bin/deploy.sh
+.PHONY: deploy
+deploy: lint test
+	. bin/deploy-env.sh && DEPLOY_HOST=$(LIVE_HOST) DEPLOY_PATH=$(LIVE_PATH) SITE_URL=$(LIVE_URL) bin/deploy.sh
 
 # Ersetzt Inhalte und Konten in www/ durch den Stand des Servers.
-.PHONY: kirby-pull
-kirby-pull:
-	DEPLOY_HOST=$(KIRBY_DEPLOY_HOST) DEPLOY_PATH=$(KIRBY_DEPLOY_PATH) bin/pull.sh
+.PHONY: pull
+pull:
+	DEPLOY_HOST=$(LIVE_HOST) DEPLOY_PATH=$(LIVE_PATH) bin/pull.sh
 
 # Ruft jede Seite und jedes Bild unter /media/ einmal ab (bin/warm.php).
-.PHONY: kirby-warm
-kirby-warm:
-	@$(PHP) bin/warm.php $(KIRBY_SITE_URL)
+.PHONY: warm
+warm:
+	@$(PHP) bin/warm.php $(LIVE_URL)
 
 # Holt die Zugriffslogs vom Server und öffnet den Bericht von GoAccess.
 .PHONY: logs

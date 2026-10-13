@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Host-specific configuration. Copy to env.php: make kirby-config does
+ * Host-specific configuration. Copy to env.php: make config does
  * that for local development, the deploy does it for the server.
  * env.php is not in git and not in backups. Never put state here.
  */

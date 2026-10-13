@@ -5,7 +5,7 @@
  * 200 at exactly its address, slash at the end included; every redirect
  * of content/.redirects.json answers 301 to its target, and the target
  * answers 200.
- * Runs against the local server (make kirby-dev) or staging; the staging
+ * Runs against the local server (make dev) or staging; the staging
  * password comes from STAGING_USER and STAGING_PASSWORD in the environment.
  *
  * Usage: php bin/check-urls.php [site-url] [sitemap-url-or-file] [www-root]

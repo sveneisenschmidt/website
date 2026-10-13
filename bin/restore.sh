@@ -4,7 +4,7 @@
 # A snapshot is only read: its files are copied, never moved or changed,
 # because older snapshots share them as hard links.
 # Generated folders (media, cache, sessions) are cleared; Kirby rebuilds them.
-# Host config (env.php) is not touched: import it separately (make kirby-config locally).
+# Host config (env.php) is not touched: import it separately (make config locally).
 #
 # Usage: bin/restore.sh <archive.tar.gz | snapshot-folder> [www-root]
 set -euo pipefail
