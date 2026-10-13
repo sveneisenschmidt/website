@@ -128,3 +128,16 @@ kirby-hooks:
 	  chmod +x "$$hooks/$$hook"; \
 	done; \
 	echo "Hooks eingerichtet: pre-commit, pre-push"
+
+# Phase 4: die URLs der Live-Seite gegen Kirby (bin/check-urls.php). Läuft
+# gegen make kirby-dev in einem zweiten Terminal.
+.PHONY: kirby-check-urls
+kirby-check-urls:
+	@$(PHP) bin/check-urls.php http://localhost:$(KIRBY_PORT)
+
+# Jede Seite von Kirby gegen Hugos Build in public/ (bin/parity.php). Braucht
+# einen Hugo-Build: hugo, oder make build.
+.PHONY: kirby-parity
+kirby-parity:
+	@test -f public/index.html || { echo "Kein Hugo-Build in public/. Erst: hugo"; exit 1; }
+	@$(PHP) bin/parity.php $(WWW) public
