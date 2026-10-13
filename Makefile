@@ -136,7 +136,7 @@ kirby-hooks:
 SITE ?= http://localhost:$(KIRBY_PORT)
 .PHONY: kirby-check-urls
 kirby-check-urls:
-	@$(PHP) bin/check-urls.php $(SITE)
+	@$(if $(filter $(KIRBY_SITE_URL),$(SITE)),. bin/staging-env.sh && )$(PHP) bin/check-urls.php $(SITE)
 
 # Jede Seite von Kirby gegen Hugos Build in public/ (bin/parity.php). Braucht
 # einen Hugo-Build: hugo, oder make build.
@@ -147,15 +147,17 @@ kirby-parity:
 
 # Phase 5a: Staging (Plan: docs/superpowers/plans/2026-10-13-kirby-phase-5a-staging.md).
 # Host und Pfad sind nicht geheim, es gilt der SSH-Alias website.
-# Staging-Passwort und API-Schlüssel kommen aus der Umgebung:
-# STAGING_USER, STAGING_PASSWORD, ANTHROPIC_API_KEY. Lint und Tests laufen vorher.
+# Staging-Passwort und API-Schlüssel kommen aus der Umgebung (STAGING_USER,
+# STAGING_PASSWORD, ANTHROPIC_API_KEY). Fehlen sie, holt bin/staging-env.sh
+# das Passwort aus dem Schlüsselbund (einmal: make kirby-staging-login) und
+# den Schlüssel aus der lokalen env.php. Lint und Tests laufen vorher.
 KIRBY_DEPLOY_HOST ?= website
 KIRBY_DEPLOY_PATH ?= /www/htdocs/w00611ad/kirby.eisenschmidt.website
 KIRBY_SITE_URL ?= https://kirby.eisenschmidt.website
 
 .PHONY: kirby-deploy
 kirby-deploy: kirby-lint kirby-test
-	DEPLOY_HOST=$(KIRBY_DEPLOY_HOST) DEPLOY_PATH=$(KIRBY_DEPLOY_PATH) SITE_URL=$(KIRBY_SITE_URL) bin/deploy.sh
+	. bin/staging-env.sh && DEPLOY_HOST=$(KIRBY_DEPLOY_HOST) DEPLOY_PATH=$(KIRBY_DEPLOY_PATH) SITE_URL=$(KIRBY_SITE_URL) bin/deploy.sh
 
 # Ersetzt Inhalte und Konten in www/ durch den Stand des Servers.
 .PHONY: kirby-pull
@@ -171,4 +173,10 @@ kirby-upload-state:
 # Ruft jede Seite und jedes Bild unter /media/ einmal ab (bin/warm.php).
 .PHONY: kirby-warm
 kirby-warm:
-	@$(PHP) bin/warm.php $(KIRBY_SITE_URL)
+	@. bin/staging-env.sh && $(PHP) bin/warm.php $(KIRBY_SITE_URL)
+
+# Legt Staging-Benutzer und -Passwort im Schlüsselbund ab (Dienst kirby-staging).
+# security fragt das Passwort verdeckt ab.
+.PHONY: kirby-staging-login
+kirby-staging-login:
+	@printf 'Staging-Benutzer: '; read -r user; security add-generic-password -U -s kirby-staging -a "$$user" -w

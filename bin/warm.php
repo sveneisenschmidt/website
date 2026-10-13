@@ -127,9 +127,14 @@ foreach (array_slice($other, 0, 20) as $line) {
 }
 
 $started = microtime(true);
-warm_get(array_map(fn ($path) => $site . $path, array_keys($media)), $headers, function (string $url, int $status) use (&$failed): void {
+$count = 0;
+warm_get(array_map(fn ($path) => $site . $path, array_keys($media)), $headers, function (string $url, int $status) use (&$failed, &$count, $media, $started): void {
     if ($status !== 200) {
         $failed[] = "$status $url";
+    }
+    // The server computes each thumbnail on the first request: show progress.
+    if (++$count % 100 === 0) {
+        printf("  %d of %d thumbnails, %.0f s\n", $count, count($media), microtime(true) - $started);
     }
 });
 printf("%d thumbnails in %.0f s, %d failures\n", count($media), microtime(true) - $started, count($failed));

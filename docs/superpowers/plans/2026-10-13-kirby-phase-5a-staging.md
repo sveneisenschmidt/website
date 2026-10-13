@@ -22,6 +22,7 @@
     ```zsh
     read -r "STAGING_USER?Staging-Benutzer: "; read -rs "STAGING_PASSWORD?Staging-Passwort: "; echo; read -rs "ANTHROPIC_API_KEY?Anthropic-Schlüssel: "; echo; export STAGING_USER STAGING_PASSWORD ANTHROPIC_API_KEY
     ```
+    Seit Aufgabe 38 entfällt das: `make kirby-staging-login` legt Benutzer und Passwort einmal im Schlüsselbund ab (Dienst `kirby-staging`). `kirby-deploy`, `kirby-warm` und `kirby-check-urls SITE=…` holen sie über `bin/staging-env.sh`, den API-Schlüssel aus der lokalen `env.php`. Mit `PUBLIC=1` holt das Skript kein Staging-Passwort.
 - Claude liest Passwort, Schlüssel und die Werte in `env.php` nie. Prüfungen von `env.php` geben nur die Namen der Schlüssel aus.
 - Der Prompt des Assistenten steht nicht in diesem Plan, nicht in Git und auf keiner Kommandozeile.
 - Nach jeder Aufgabe mit Code: `make kirby-lint && make kirby-test && make kirby-restore-test` grün.
@@ -73,7 +74,8 @@
 | `server/root.htaccess` | `.htaccess` im Ordner der Seite: alles nach `www/`, `/.well-known/` frei (31) |
 | `bin/deploy.sh`, `bin/pull.sh` | Deploy und Zustand holen, nach Luisas Skripten (32) |
 | `bin/upload-state.sh` | lokalen Stand auf den Server legen (33) |
-| `bin/warm.php` | jede Seite und jedes Vorschaubild einmal abrufen (34) |
+| `bin/warm.php` | jede Seite und jedes Vorschaubild einmal abrufen, Fortschritt alle 100 Bilder (34) |
+| `bin/staging-env.sh` | Staging-Passwort aus dem Schlüsselbund, API-Schlüssel aus der lokalen `env.php`, wenn die Umgebung sie nicht setzt (nach 38, Entscheidung vom 2026-10-13) |
 | `bin/check-urls.php` | Staging-Passwort aus der Umgebung (34) |
 | `Makefile` | `kirby-deploy`, `kirby-pull` (32), `kirby-upload-state` (33), `kirby-warm` und `SITE` für `kirby-check-urls` (34) |
 
@@ -1304,12 +1306,12 @@ Der Controller trägt die Werte während der Abnahme ein.
 
 | Messung | Wert |
 |---|---|
-| Erster Deploy, Dauer (36) | |
-| Pop-Import: Besuche, Tage, URLs ohne Seite (37) | |
-| Upload des ersten Stands, Dauer und Größe (37) | |
-| Deploy mit 4 GB Zustand, Dauer; Größe des neuen Snapshots (37) | |
-| Vorwärmen: Seiten, Vorschaubilder, Dauer (38) | |
-| Platz: `www/content`, `www/media`, `backups`, `vendor` (38) | |
+| Erster Deploy, Dauer (36) | 22,3 s (Lint und Tests eingeschlossen) |
+| Pop-Import: Besuche, Tage, URLs ohne Seite (37) | 9.038 Besuche, 283 Tage, 381 URLs ohne Seite (alle von Testservern wie `localhost:1313`) |
+| Upload des ersten Stands, Dauer und Größe (37) | 2:50 min, 4,39 GB, 1.807 Dateien, 26,8 MB/s |
+| Deploy mit 4 GB Zustand, Dauer; Größe des neuen Snapshots (37) | 32,1 s; 1,5 MB |
+| Vorwärmen: Seiten, Vorschaubilder, Dauer (38) | 303 Seiten in 8 s, 3.517 Vorschaubilder in 404 s, 0 Fehler |
+| Platz: `www/content`, `www/media`, `backups`, `vendor` (38) | 4,1 GB, 260 MB, 4,1 GB, 3,8 MB |
 | Startseite kalt / Cache (39) | |
 | Foto-Beitrag kalt / Cache (39) | |
 | Reise mit Karte kalt / Cache (39) | |
