@@ -32,7 +32,7 @@ final class RenderTest extends TestCase
 
         $html = $page->render();
 
-        $this->assertStringContainsString('<title>About · Sven Eisenschmidt - Personal Blog</title>', $html);
+        $this->assertStringContainsString('<title>About · Personal Blog</title>', $html);
         $this->assertStringContainsString('<h1>About</h1>', $html);
     }
 
@@ -47,7 +47,7 @@ final class RenderTest extends TestCase
 
         $html = $page->render();
 
-        $this->assertStringContainsString('<title>Fox &amp; Wagtail · Sven Eisenschmidt - Personal Blog</title>', $html);
+        $this->assertStringContainsString('<title>Fox &amp; Wagtail · Personal Blog</title>', $html);
         $this->assertStringContainsString('<h1>Fox &amp; Wagtail</h1>', $html);
     }
 }

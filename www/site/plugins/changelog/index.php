@@ -5,12 +5,11 @@ use Kirby\Cms\Event;
 use Website\Changelog\Log;
 
 /**
- * Change log: who changed what, when and where. The code lives in
- * src/Changelog (Log, Diff); this file registers it with Kirby. The Panel
- * shows the log under "Verlauf".
+ * Registers the change log with Kirby: the hooks after every change and the
+ * Panel view "Verlauf". The classes are in src/Changelog.
  */
 
-App::plugin('sveneisenschmidt/changelog', [
+App::plugin('website/changelog', [
     'hooks' => [
         'page.*:after' => fn(Event $event) => Log::event($event),
         'file.*:after' => fn(Event $event) => Log::event($event),

@@ -25,6 +25,22 @@ columns:
           lastmod:
             label: Zuletzt geprüft
             type: date
+          author:
+            label: Name
+            type: text
+            help: Autor in den Meta-Tags und in den Angaben für Suchmaschinen.
+          email:
+            label: E-Mail
+            type: email
+            help: Ziel des Links „Leave me a message“ unter About und jedem Beitrag. Leer fehlt der Link.
+          profiles:
+            label: Profile
+            type: structure
+            help: Links zu deinen Profilen auf anderen Seiten. Sie stehen nur in den Angaben für Suchmaschinen.
+            fields:
+              url:
+                label: Adresse
+                type: url
           jobtitle:
             label: Jobtitel
             type: text

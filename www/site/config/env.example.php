@@ -1,16 +1,19 @@
 <?php
 
 /**
- * Host-specific configuration. Copy to env.php: make config does
- * that for local development, the deploy does it for the server.
- * env.php is not in git and not in backups. Never put state here.
+ * An example of env.php, the configuration of one host. `make config`
+ * creates env.php for local development. The deploy creates it on the
+ * server and sets url and assistantKey (bin/set-env.php). env.php is in
+ * neither git nor the backups, so it must not hold data that a restore needs.
  */
 
 return [
     'debug' => false,
-    // Key of the assistant (plugins/assistant) for the Anthropic API, its own
-    // with a spending limit. The deploy sets it; without it the assistant is off.
+    // The Anthropic API key of the assistant (plugins/assistant). Use a key
+    // only for the assistant, with a spending limit. The deploy sets it.
+    // Without a key the assistant is off.
     // 'assistantKey' => 'sk-ant-…',
-    // Canonical site URL on the server. The deploy sets it; leave it out locally.
-    // 'url' => 'https://sven.eisenschmidt.website',
+    // The canonical URL of the site on the server. The deploy sets it. Leave
+    // it out locally.
+    // 'url' => 'https://example.com',
 ];

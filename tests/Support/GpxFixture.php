@@ -3,9 +3,9 @@
 namespace Website\Tests\Support;
 
 /**
- * Bike rides as Sven records them: they start and end at home. A ride is
- * a circle around CENTER, one point per degree, 10 seconds apart; its first
- * and last point is home.
+ * Bike rides as the author records them: they start and end at home. A
+ * ride is a circle around CENTER with one point per degree, 10 seconds
+ * apart. Its first and last point is home.
  */
 final class GpxFixture
 {
@@ -39,7 +39,8 @@ final class GpxFixture
     }
 
     /**
-     * Meters as degrees of longitude and latitude at home.
+     * Converts meters to the east and north into degrees of longitude and
+     * latitude at home.
      *
      * @return array<mixed>
      */

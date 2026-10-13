@@ -13,8 +13,9 @@ use Website\Assistant\Uploads;
 use Website\Tests\Support\GpxFixture;
 
 /**
- * The route card: stations through OSRM or a GPX upload; replacing the
- * route keeps the old file as state.
+ * The route card. A route comes from stations, which OSRM (a routing
+ * service) connects, or from a GPX upload. Applying a new route to a
+ * published trip keeps the old route file in content/.assistant/routes/.
  */
 final class AssistantRouteTest extends AssistantTestCase
 {
@@ -30,7 +31,7 @@ final class AssistantRouteTest extends AssistantTestCase
         ];
     }
 
-    /** A trip with an old route: a file, two points, zoom on. */
+    /** Creates a trip with an old route: a route file with two points, one map marker, and zoom on. */
     private function trip(string $status): Page
     {
         $trip = $this->post('trips', 'trip', 'day-1', 'Day 1', $status);
@@ -67,7 +68,7 @@ final class AssistantRouteTest extends AssistantTestCase
 
         $trip = $this->kirby->site()->find('trips')->findPageOrDraft('day-1');
         $this->assertSame('done', Session::decisions()[$card['id']]['state']);
-        $this->assertSame('{"type":"LineString","coordinates":[[12.1,51.1],[12.2,51.2]]}', file_get_contents($trip->file('route.json')->root()), 'The live file stays until Sven saves.');
+        $this->assertSame('{"type":"LineString","coordinates":[[12.1,51.1],[12.2,51.2]]}', file_get_contents($trip->file('route.json')->root()), 'The live file stays until the author saves.');
         $changes = $trip->version('changes')->read();
         $new = Content::fileRef($trip, Content::list($changes['route'])[0]);
         $this->assertStringStartsWith('route-', $new->filename());
@@ -130,7 +131,12 @@ final class AssistantRouteTest extends AssistantTestCase
         $this->assertSame([], $this->osrmCalls);
     }
 
-    public function testTheZoneHoldsAroundTheEndsBeforeTheyWereRounded(): void
+    /**
+     * No marker may lie closer than `Gpx::ZONE` (1200 m) to an end of the
+     * ride. The server stores the ends rounded to 3 decimals, so the check
+     * must still hold for the ends before rounding.
+     */
+    public function testTheMarkerZoneCountsFromTheEndsBeforeRounding(): void
     {
         $this->trip('listed');
         $home = GpxFixture::home();
@@ -163,7 +169,8 @@ final class AssistantRouteTest extends AssistantTestCase
         $this->assertSame([], $refused->proposals);
         $this->assertStringContainsString('closer than 1200 m', $this->results(1)[0]['content']);
         $this->assertSame([], $this->osrmCalls);
-        // Every coordinate pair in every request to Claude lies outside the cut ends.
+        // Every coordinate pair in every request to Claude is at least
+        // Gpx::TRIM_MIN from home, so Claude never sees the cut ends.
         preg_match_all('/\[(-?\d+\.\d+),(-?\d+\.\d+)\]/', json_encode($this->requests), $pairs, PREG_SET_ORDER);
         $this->assertGreaterThan(30, count($pairs));
         foreach ($pairs as [, $lon, $lat]) {
@@ -174,6 +181,6 @@ final class AssistantRouteTest extends AssistantTestCase
         foreach (Route::line(file_get_contents($file->root())) as $point) {
             $this->assertGreaterThanOrEqual(Gpx::TRIM_MIN, Route::distance($home, $point));
         }
-        $this->assertNull(Uploads::meta($id), 'The GPX upload goes after the click.');
+        $this->assertNull(Uploads::meta($id), 'The click deletes the GPX upload.');
     }
 }

@@ -2,9 +2,9 @@
 
 /**
  * Prints the URL path of every page, one per line: first "/", then every
- * listed and unlisted page except home and error, then the routes of
- * config/routes.php. bin/restore-test.sh fetches each of them from both
- * sites.
+ * listed and unlisted page except home and error, then four routes of
+ * config/routes.php. bin/restore-test.sh fetches each path from the original
+ * site and from the restored copy.
  *
  * Usage: php bin/page-paths.php [www-root]
  */

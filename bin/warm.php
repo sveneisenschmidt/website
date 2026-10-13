@@ -1,17 +1,23 @@
 <?php
 
 /**
- * Requests every page of a site once, then every thumbnail under /media/
- * that the pages name (src, srcset, href, content), so Kirby renders each
- * thumbnail before the first visitor asks for it. Originals stay out: Kirby
- * only copies them on their first request, and together they are 4 GB.
- * Pages come from a crawl from the start page: links on the same host,
- * without query and without a file extension. Four requests at a time. The
- * user agent says "bot", so "Besucher" does not count the requests.
- * The crawl also starts at the feed and the sitemap: their links have a
- * file extension and the crawl would never reach them.
- * --pages stops after the pages. The deploy runs it that way: a deploy
- * clears the page cache, the thumbnails stay.
+ * Requests every page of a site once, so Kirby writes it into the page cache.
+ * Then it requests every thumbnail that the pages link, so Kirby renders it
+ * before the first visitor asks for it. make warm runs it against the live
+ * site.
+ *
+ * Pages: a crawl from the start page follows every link on the same host
+ * that has no query and no file extension. The crawl also starts at
+ * /index.xml and /sitemap.xml, because it skips links with an extension.
+ * Thumbnails: every path under /media/ in a src, srcset, href or content
+ * attribute whose file name ends in a size. Originals stay out: Kirby only
+ * copies an original to media/ on its first request, and content/ held
+ * 4.1 GB on 2026-10-13.
+ *
+ * The script sends 4 requests at a time. Its user agent contains "bot", so
+ * the visitor count `Website\Analytics\Counter` skips it. With --pages, the
+ * script stops after the pages. bin/deploy.sh runs it that way, because a
+ * deploy clears the page cache but keeps the thumbnails in media/.
  *
  * Usage: php bin/warm.php [--pages] <site-url>
  */
@@ -25,7 +31,8 @@ if (!preg_match('!^https?://[^/]+$!', $site)) {
 $headers = ['User-Agent: website-warm (bot)'];
 
 /**
- * GETs the URLs, four at a time, and calls $done(url, status, body) for each.
+ * Sends a GET request to each URL, 4 at a time, and calls
+ * $done(url, status, body) for each response.
  *
  * @param array<mixed> $headers
  * @param array<mixed> $urls
@@ -63,7 +70,7 @@ function warm_get(array $urls, array $headers, Closure $done): void
 }
 
 /**
- * The paths on this site that the HTML names: [pages, thumbnails].
+ * Returns the paths on this site that the HTML links: [pages, thumbnails].
  *
  * @return array<mixed>
  */
@@ -102,7 +109,8 @@ function warm_links(string $html, string $site): array
 $started = microtime(true);
 $seen = ['/' => true, '/index.xml' => true, '/sitemap.xml' => true];
 $media = [];
-// Links in old posts may lead to a redirect or to nothing (404): noted, no failure.
+// Links in old posts can lead to a redirect or a 404. The script lists them
+// but does not fail.
 $other = [];
 $failed = [];
 $level = array_keys($seen);
@@ -147,7 +155,8 @@ warm_get(array_map(fn($path) => $site . $path, array_keys($media)), $headers, fu
     if ($status !== 200) {
         $failed[] = "$status $url";
     }
-    // The server computes each thumbnail on the first request: show progress.
+    // Kirby renders each thumbnail on its first request. That takes long, so
+    // the script prints its progress.
     if (++$count % 100 === 0) {
         printf("  %d of %d thumbnails, %.0f s\n", $count, count($media), microtime(true) - $started);
     }

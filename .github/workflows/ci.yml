@@ -1,10 +1,13 @@
 name: CI
 
-# Every pull request and every push to main: lint, format, static analysis
-# and tests. A push to main then deploys, but only when they pass. Both
-# jobs run on the self-hosted runner. A pull request runs only from a
-# branch of this repository (Sven's, Dependabot's): the repository is
-# public, and the code of a fork must not run on that runner.
+# Runs on every pull request and every push to main. The job test checks
+# syntax, format, static analysis, the PHPUnit tests and the deploy. After a
+# push to main, the job deploy then deploys the site, but only when test
+# passed. All jobs run on a self-hosted runner: a machine of the repository
+# owner, not of GitHub, that keeps its files between jobs. A pull request
+# runs only from a branch of this repository, for example one of Dependabot.
+# The repository is public, and the code of a fork must not run on that
+# machine.
 on:
   push:
     branches:
@@ -15,9 +18,9 @@ on:
 permissions:
   contents: read
 
-# Composer downloads from GitHub with the token of this run. The runner keeps
-# the global Composer config of earlier runs, and the token setup-php wrote
-# there ran out with its run.
+# Composer downloads packages from GitHub with the token of this run. The
+# runner keeps the global Composer config of earlier runs, and a token that
+# setup-php wrote there expired at the end of its own run.
 env:
   COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ github.token }}"}}'
 
@@ -32,8 +35,8 @@ jobs:
           fetch-depth: 1
 
       # The runner keeps PHP between jobs. setup-php takes about a minute, so
-      # it runs only when the PHP of .php-version, an extension or Composer
-      # is missing. The job deploy uses the same PHP.
+      # it runs only when Composer, an extension or the PHP version of
+      # .php-version is missing. The job deploy uses the same PHP.
       - name: PHP check
         id: php
         run: |
@@ -67,13 +70,14 @@ jobs:
       - name: Tests
         run: vendor/bin/phpunit
 
-      # The move to releases, a deploy and a way back, into a folder on the runner.
+      # Three deploys into a temporary folder on the runner, a switch back
+      # after a failed health check included.
       - name: Deploy test
         run: bin/deploy-test.sh
 
-  # A pull request from Dependabot merges itself once the tests pass. A push
-  # with the token of a run starts no new run, so the job then starts this
-  # workflow on main by hand, and that run deploys.
+  # Merges a pull request of Dependabot when the job test passed. GitHub
+  # starts no workflow for a push made with the token of a run. So the job
+  # then starts this workflow on main through the API, and that run deploys.
   merge:
     needs: test
     if: github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]'
@@ -98,8 +102,9 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: self-hosted
     timeout-minutes: 20
-    # One deploy at a time; a second push waits for the first. On this job
-    # only, so a waiting deploy never cancels the tests of a pull request.
+    # One deploy at a time: the deploy of a second push waits for the first.
+    # The group applies to this job only, so a waiting deploy never cancels
+    # the tests of a pull request.
     concurrency:
       group: deploy
       cancel-in-progress: false
@@ -108,29 +113,29 @@ jobs:
         with:
           fetch-depth: 1
 
-      # The runner keeps its files between jobs: key and known_hosts go to
-      # $RUNNER_TEMP, which the runner empties after each job. The host key
-      # comes from a secret, so a changed host key stops the deploy.
+      # The runner keeps its files between jobs, so the key and known_hosts
+      # go to $RUNNER_TEMP, which the runner empties after each job. The host
+      # key comes from a secret, so a changed host key stops the deploy.
       - name: SSH key
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
         run: |
-          [ -n "$DEPLOY_KNOWN_HOSTS" ] || { echo "Secret DEPLOY_KNOWN_HOSTS is missing: the output of ssh-keyscan for the deploy host"; exit 1; }
+          [ -n "$DEPLOY_KNOWN_HOSTS" ] || { echo "The secret DEPLOY_KNOWN_HOSTS is missing. It must hold the output of ssh-keyscan for the deploy host."; exit 1; }
           printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' > "$RUNNER_TEMP/deploy_key"
           chmod 600 "$RUNNER_TEMP/deploy_key"
           ssh-keygen -y -f "$RUNNER_TEMP/deploy_key" > /dev/null || { echo "DEPLOY_SSH_KEY is not a valid private key"; exit 1; }
           printf '%s\n' "$DEPLOY_KNOWN_HOSTS" | tr -d '\r' > "$RUNNER_TEMP/known_hosts"
 
-      # Host, user and folder come from secrets, as they name the hosting
-      # account. bin/set-env.php writes the assistant's key into env.php on
-      # the server.
+      # Host, user and folder come from secrets, because they name the hosting
+      # account. bin/deploy.sh writes the assistant's key into env.php on the
+      # server.
       - name: Deploy
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          SITE_URL: https://sven.eisenschmidt.website
+          SITE_URL: ${{ vars.SITE_URL }}
         run: |
           export DEPLOY_SSH_KEY_FILE="$RUNNER_TEMP/deploy_key"
           export DEPLOY_KNOWN_HOSTS_FILE="$RUNNER_TEMP/known_hosts"

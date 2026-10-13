@@ -5,41 +5,46 @@ namespace Website\Assistant;
 use Closure;
 
 /**
- * The chat lives in the Kirby session, so it survives a reload and goes
- * with the logout. Generated data, never in a backup. Sven's decisions on
- * the cards and the notes for Claude have keys of their own: a round that
- * runs meanwhile stores the chat, never them. The uploads have theirs too
- * (Uploads::SESSION).
+ * Stores the chat in the Kirby session of the Panel user. The chat stays
+ * after a reload of the page and ends with the logout. bin/backup.sh does not
+ * include sessions, so no backup holds a chat.
+ *
+ * The decisions on the cards and the notes for Claude have their own session
+ * keys. A card is a change that Claude proposed; the chat shows it with
+ * buttons to apply or discard it. A round (one request to Claude) writes the
+ * whole chat back when it ends. The decisions and notes are outside the
+ * chat, so the round cannot overwrite a click made while it ran. The uploads
+ * have their own key too (`Uploads::SESSION`).
  */
 final class Session
 {
     public const CHAT = 'blog.assistant';
 
-    /** Sven's decisions on the cards: id => [state, result, warn]. */
+    /** The decision on each card: card id => [state, result, warn]. */
     public const DECISIONS = self::CHAT . '.decisions';
 
-    /** The lines that wait for Sven's next message. */
+    /** Lines for Claude that go with the next message of the Panel user. */
     public const NOTES = self::CHAT . '.notes';
 
     /**
-     * Locks the session and reads it anew. A parallel request of the same
-     * browser ("Abbrechen" while a round runs, a click on a card, an upload)
-     * may have written it since this request read it; without the lock, this
-     * request would write its old copy back. The lock holds until the session
-     * is written: at the end of the request, or before a request to Claude.
+     * Locks the session and reads it again. The same browser can send a
+     * second request while this one runs: "Abbrechen" during a round, a click
+     * on a card, an upload. Without the lock, this request would write back
+     * its old copy and undo the change of the other request. The lock lasts
+     * until the session is written: at the end of the request, or before a
+     * request to Claude.
      */
     public static function lock(): void
     {
         kirby()->session()->prepareForWriting();
     }
 
-    /** Writes the session and frees its lock. */
+    /** Writes the session and releases the lock; Kirby's `commit()` does both. */
     public static function unlock(): void
     {
         kirby()->session()->commit();
     }
 
-    /** The chat of this session, or a new one. */
     public static function load(): ChatState
     {
         $chat = kirby()->session()->get(self::CHAT);
@@ -47,10 +52,11 @@ final class Session
     }
 
     /**
-     * Changes one key of the session: locks it, reads the key anew with $read
-     * and stores what $change returns for it. Every write goes through here or
-     * through change(): a change of a value read before the lock would undo
-     * what a parallel request wrote meanwhile.
+     * Changes one session key under the lock: `$read` reads the current
+     * value, and the session stores what `$change` returns. Every write of the
+     * assistant goes through this method or `change()`. A value read before
+     * the lock can be out of date, and storing a change of it would undo a
+     * parallel request.
      */
     public static function update(string $key, Closure $read, Closure $change): mixed
     {
@@ -61,8 +67,8 @@ final class Session
     }
 
     /**
-     * Changes the chat as update() changes a key: $change gets the chat read
-     * anew under the lock and returns the chat to store.
+     * Changes the chat in the same way as `update()`: `$change` gets the chat
+     * as stored now and returns the chat to store.
      */
     public static function change(Closure $change): ChatState
     {
@@ -73,8 +79,6 @@ final class Session
     }
 
     /**
-     * Sven's decisions on the cards.
-     *
      * @return array<string, array<string, mixed>>
      */
     public static function decisions(): array
@@ -83,8 +87,6 @@ final class Session
     }
 
     /**
-     * The lines that wait for Sven's next message.
-     *
      * @return list<string>
      */
     public static function notes(): array
@@ -92,16 +94,18 @@ final class Session
         return kirby()->session()->get(self::NOTES) ?? [];
     }
 
-    /** A line Claude gets with Sven's next message, such as a decision on a card. */
+    /** Adds a line for Claude to the next message, such as a decision on a card. */
     public static function note(string $note): void
     {
         self::update(self::NOTES, self::notes(...), fn(array $notes) => [...$notes, $note]);
     }
 
     /**
-     * Logs the end of an answer, unless a stop or "Neuer Chat" came meanwhile:
-     * they log it themselves and count run up. The lock comes first, so a stop
-     * cannot come between the check and the log line and log the answer twice.
+     * Writes the log line for the end of an answer. A stop ("Abbrechen")
+     * during the round writes that line itself, and a new chat ("Neuer Chat")
+     * drops the measurement. Both raise `ChatState::$run`, and this method
+     * then writes nothing. The lock comes first: otherwise a stop between the
+     * check and the log line would log the answer twice.
      */
     public static function finish(ChatState $chat, string $outcome): ChatState
     {

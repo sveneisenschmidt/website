@@ -1,6 +1,7 @@
 <?php
 /**
- * The error page.
+ * The error page: "Page not found" with links to the front page and the
+ * archive.
  *
  * @var Kirby\Cms\Page $page
  */

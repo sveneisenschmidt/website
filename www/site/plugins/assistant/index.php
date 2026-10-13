@@ -12,14 +12,18 @@ use Website\Assistant\Panel;
 use Website\Assistant\Uploads;
 
 /**
- * Panel area "Assistent": Sven writes posts with Claude. Claude proposes, Sven's click applies.
- * Settings in Website › Assistent: the prompt and the model. The key is
- * host config: 'assistantKey' in env.php. Area and API routes need a
- * login, as all of the Panel. The code lives in src/Assistant
- * (Website\Assistant), loaded by Composer; this file registers it with Kirby.
+ * The Panel area "Assistent", where the Panel user writes posts with Claude.
+ * Claude proposes each change as a card with buttons to apply or discard
+ * it, and only a click of the Panel user applies it. The prompt and the
+ * model are set under Website › Assistent
+ * (www/site/blueprints/tabs/assistant.yml). The API key is host config:
+ * `assistantKey` in www/site/config/env.php. Kirby lets only a logged-in
+ * Panel user reach the area and the API routes. The code is in
+ * src/Assistant (namespace `Website\Assistant`, loaded by Composer); this
+ * file only registers it with Kirby.
  */
 
-App::plugin('sveneisenschmidt/assistant', [
+App::plugin('website/assistant', [
     'areas' => [
         'assistent' => function () {
             return [
@@ -35,7 +39,8 @@ App::plugin('sveneisenschmidt/assistant', [
                         'props' => Panel::props((string) get('page', '')),
                     ],
                 ], [
-                    // Protokoll: who asked when, how long, which tools; no content.
+                    // The usage log (`Log`): one row per answer, without the
+                    // text of any message.
                     'pattern' => 'assistent/protokoll',
                     'action' => fn() => [
                         'component' => 'k-blog-assistant-log-view',
@@ -55,7 +60,9 @@ App::plugin('sveneisenschmidt/assistant', [
                 'method' => 'POST',
                 'action' => function () {
                     $body = $this->requestBody();
-                    // A pick in a choice comes as its number, never as text.
+                    // A pick in a choice comes as its index. The server looks
+                    // up the option, so it knows that Claude wrote the text
+                    // and its links do not count as links of the Panel user.
                     return Panel::api(fn() => isset($body['choice'])
                         ? Chat::choose((int) $body['choice'], $body['page'] ?? null)
                         : Chat::send((string) ($body['text'] ?? ''), $body['page'] ?? null));
@@ -101,7 +108,8 @@ App::plugin('sveneisenschmidt/assistant', [
         ],
     ],
     'sections' => [
-        // Website › Assistent: is the key there, and does Claude answer?
+        // The section on Website › Assistent shows whether the key is set,
+        // and its button checks that Claude answers.
         'assistant-access' => [
             'computed' => [
                 'hasKey' => fn() => Claude::key() !== null,
@@ -109,7 +117,7 @@ App::plugin('sveneisenschmidt/assistant', [
         ],
     ],
     'hooks' => [
-        // The chat ends with the session: its uploads go at logout.
+        // The chat ends with the session, so the logout deletes its upload folder.
         'user.logout:before' => function (User $user, ?Session $session = null) {
             try {
                 Uploads::remove($session?->get(Uploads::SESSION)['folder'] ?? null);

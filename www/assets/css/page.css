@@ -1,5 +1,5 @@
-/* Der Link steht über der Seite und rutscht erst bei Tastaturfokus ins Bild.
-   Er ist das erste fokussierbare Element im Dokument. */
+/* The link is above the visible page and moves into view only on keyboard
+   focus. It is the first element in the document that can get focus. */
 .skip-link {
     position: absolute;
     top: 0;
@@ -55,8 +55,8 @@ main {
     font-weight: var(--weight-opening);
 }
 
-/* Die Überschrift steht in der Flex-Zeile neben der Navigation und übernimmt
-   deren Schriftbild; ohne die Regel griffe der h2-Reset mit Titelgewicht. */
+/* The heading is in the flex row beside the navigation and uses its type
+   style. Without this rule, the h2 reset would apply the weight of a title. */
 .stream-title h2 {
     font-size: inherit;
     font-weight: inherit;
@@ -149,8 +149,10 @@ main {
     padding-bottom: var(--space-figure);
 }
 
-/* Unterstreichung nur, wo die Seite eine Interaktion anbietet: Aktionen der
-   Label-Ebene und Textlinks. Metadaten wie das Datum bleiben ohne. */
+/* Underlines mark the links that the page offers as actions: the small
+   uppercase actions (such as Back, Archive, the filters, the footer and the
+   mail link) and links in the text. A link in the metadata, such as the
+   date, has no underline. */
 a.far,
 .far a,
 .site-footer a,
@@ -162,8 +164,8 @@ a.far,
     text-underline-offset: var(--space-underline);
 }
 
-/* Alle Filter sind unterstrichene Links; den aktiven markiert das Gewicht,
-   nicht die Unterstreichung, sonst kollidieren "Link" und "du bist hier". */
+/* All filters are underlined links. The weight marks the active filter,
+   because the underline means "link" and cannot also mean "you are here". */
 .stream-filter [aria-current] {
     font-weight: var(--weight-opening);
 }
@@ -227,9 +229,9 @@ a.far,
     border-bottom: 0;
 }
 
-/* fit.js schneidet die Timeline an der Unterkante der Galerie ab. Die Regel
-   steht am Ende, damit sie das display der Einträge mit Vorschaubild schlägt,
-   und der letzte sichtbare Eintrag verliert seine Linie. */
+/* fit.js hides the timeline entries below the bottom of the pictures. The
+   rule is at the end of the file, so it overrides the display of the
+   entries with a thumbnail. The last visible entry loses its bottom line. */
 .writing-list .is-trimmed {
     display: none;
 }
@@ -255,8 +257,8 @@ a.far,
         display: none;
     }
 
-    /* Sieben Einträge auf einer Telefonbreite brauchen einen engeren Abstand als
-       auf dem Bildschirm. */
+    /* The items of the filter row need a smaller gap at phone width than on
+       a large screen. */
     .stream-filter,
     .stream-search {
         gap: var(--space-filter-tight);

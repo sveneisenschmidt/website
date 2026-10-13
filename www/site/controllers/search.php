@@ -3,8 +3,9 @@
 use Website\Blog\Posts;
 
 /**
- * Search, for the page and for search.json: Kirby falls back to this
- * controller for a representation without its own.
+ * The search, for the search page and for search.json. Kirby uses this
+ * controller for search.json too, because that representation has no
+ * controller of its own.
  */
 return function () {
     $query = trim((string) get('q'));

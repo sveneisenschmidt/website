@@ -7,7 +7,9 @@ use Website\Blog\Images;
 use Website\Blog\Text;
 
 /**
- * (image:) draws a figure with its EXIF rows, (map:) the map of a trip.
+ * The Kirby tags of the site. A Kirby tag is a command in the text, such as
+ * (image: a.jpg). (image:) renders a figure with its EXIF rows, and (map:)
+ * renders the map of a trip.
  */
 final class TagTest extends IntegrationTestCase
 {
@@ -27,7 +29,8 @@ final class TagTest extends IntegrationTestCase
         $this->assertStringContainsString('src="' . Images::wide($file, 1600)->url() . '"', $html);
         $this->assertStringContainsString('srcset="' . Images::wide($file, 600)->url() . ' 600w, ' . Images::wide($file, 1000)->url() . ' 1000w, ' . Images::wide($file, 1600)->url() . ' 1600w"', $html);
         $this->assertStringContainsString('sizes="(max-width: 900px) calc(100vw - 2rem), (max-width: 90rem) 63vw, 907px"', $html);
-        // Kirby never enlarges: the fixture is 60 px wide.
+        // Kirby never enlarges an image, so the 60 px wide fixture keeps its
+        // width.
         $this->assertStringContainsString("width=\"60\"\nheight=\"40\"\nalt=\"Fox &amp; wagtail\"\nloading=\"lazy\"\ndecoding=\"async\"", $html);
         $this->assertStringContainsString("<dt>Camera</dt>\n<dd>TEST-CAM</dd>", $html);
         $this->assertStringContainsString("<dt>Exposure</dt>\n<dd>1/250s · ISO 3200</dd>", $html);
@@ -63,7 +66,10 @@ final class TagTest extends IntegrationTestCase
         $this->assertStringContainsString('style="view-transition-name: ' . $this->post->transitionName() . '"', $html);
     }
 
-    /** The first image of the post loads at once, also when the cover comes later. */
+    /**
+     * Only the first image of the post loads eagerly with a high fetch
+     * priority, also when the cover comes later in the text.
+     */
     public function testOnlyTheFirstImageLoadsAtOnce(): void
     {
         $cover = $this->upload($this->jpeg(8, 8), 'c.jpg');
@@ -79,11 +85,11 @@ final class TagTest extends IntegrationTestCase
     public function testImgclassIsAPlainMarkdownImage(): void
     {
         $file = $this->upload($this->jpeg(8, 8), 'd.jpg');
-        $this->kirby->impersonate('kirby', fn() => $file->update(['alt' => 'Sven']));
+        $this->kirby->impersonate('kirby', fn() => $file->update(['alt' => 'A portrait']));
 
         $html = Text::html("(image: d.jpg imgclass: inline)\n\nHello", $this->post);
 
-        $this->assertSame("<img src=\"{$file->url()}\" alt=\"Sven\" class=\"inline\">\n<p>Hello</p>", $html);
+        $this->assertSame("<img src=\"{$file->url()}\" alt=\"A portrait\" class=\"inline\">\n<p>Hello</p>", $html);
     }
 
     public function testMapWithPointsAndRoute(): void

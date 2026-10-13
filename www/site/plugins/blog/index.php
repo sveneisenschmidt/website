@@ -17,22 +17,27 @@ use Website\Models\SitePage;
 use Website\Models\TripPage;
 
 /**
- * The blog: posts in the sections photos, trips, notes and essays. The
- * code lives in src/ (Website\Blog, Website\Models), loaded by Composer;
- * this file registers it with Kirby.
+ * Registers the blog with Kirby: hooks, KirbyText tags, the post template
+ * and controller, the collection "posts", the cache type, the page models
+ * and the thumbs driver. The classes are in src/Blog and src/Models, and
+ * Composer loads them.
  */
 
-// The thumbs driver of config.php: GD, plus conversion to sRGB.
+// config.php selects this thumbs driver: Kirby's GD driver with a
+// conversion to sRGB before the resize (SrgbGd).
 Darkroom::$types['blog-gd'] = SrgbGd::class;
 
-Kirby::plugin('sveneisenschmidt/blog', [
+Kirby::plugin('website/blog', [
     'hooks' => [
-        // EXIF goes into the file's content once, so it is in every backup
-        // and can be corrected in the Panel. A replaced photo brings its own.
+        // The EXIF goes into the content file of the image once, on upload.
+        // So every backup has it, and a wrong value can be corrected in the
+        // Panel. A replaced photo gets the EXIF of the new file.
         'file.create:after' => fn(File $file) => Exif::store($file),
         'file.replace:after' => fn(File $newFile) => Exif::store($newFile, true),
-        // A new slug or date gives a published post a new URL: the old one leads there.
-        // The old page of changeSlug has no content any more: its date comes from the new one.
+        // A new slug or date gives a published post a new URL, and
+        // Redirects::moved() adds a redirect from the old one. After
+        // changeSlug, the old page object finds no content file, so the old
+        // path takes its date from the new page.
         'page.changeSlug:after' => function (Page $newPage, Page $oldPage) {
             if ($newPage instanceof PostPage) {
                 Redirects::moved($newPage, $newPage->postPath($oldPage->slug()));
@@ -56,13 +61,12 @@ Kirby::plugin('sveneisenschmidt/blog', [
     // One template and one controller for the four post types.
     'templates' => array_fill_keys(Types::templates(), __DIR__ . '/../../templates/post.php'),
     'controllers' => array_fill_keys(Types::templates(), require __DIR__ . '/../../controllers/post.php'),
-    // All published posts, newest first, posts of the same time by title.
     'collections' => [
         'posts' => Posts::collect(...),
     ],
     'cacheTypes' => ['blog-file' => FileCache::class],
-    // Every page: its URL ends with a slash (SitePage). A post's is
-    // /YYYY-MM-DD-slug/ (PostPage); trips and essays add their type line.
+    // SitePage for every page, PostPage for the posts. TripPage and
+    // EssayPage add the type line of a trip and of an essay.
     'pageModels' => [
         'default' => SitePage::class,
         ...array_fill_keys(Types::templates(), PostPage::class),

@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
-# Restore a backup made by bin/backup.sh (archive or snapshot folder) into a site root.
-# Checks every file against MANIFEST.sha256 before anything is replaced.
-# A snapshot is only read: its files are copied, never moved or changed,
-# because older snapshots share them as hard links.
-# Generated folders (media, cache, sessions) are cleared; Kirby rebuilds them.
-# Host config (env.php) is not touched: import it separately (make config locally).
+# Restores a backup of bin/backup.sh, an archive or a snapshot folder, into a
+# site root. make restore, bin/pull.sh and bin/restore-test.sh run it.
+# 1. Checks every file against MANIFEST.sha256. On a mismatch, nothing changes.
+# 2. Deletes the state and the generated folders media/, site/cache/ and
+#    site/sessions/. Kirby makes the generated files again.
+# 3. Copies the state from the backup.
+# The script copies the files of a snapshot and never moves or changes them,
+# because older snapshots share them as hard links. env.php stays as it is:
+# make config creates it locally.
 #
 # Usage: bin/restore.sh <archive.tar.gz | snapshot-folder> [www-root]
 set -euo pipefail
@@ -28,7 +31,8 @@ fi
 
 ( cd "$SRC/state" && sha256check "$SRC/MANIFEST.sha256" ) || { echo "Checksum mismatch, nothing restored" >&2; exit 1; }
 
-# Extra files in the archive that the manifest does not list are an error too.
+# The check above reads only the files the manifest lists. A file that the
+# manifest does not list must fail the restore too.
 listed=$(wc -l < "$SRC/MANIFEST.sha256" | tr -d ' ')
 actual=$( cd "$SRC/state" && find . -type f ! -name '.DS_Store' ! -name '._*' | wc -l | tr -d ' ')
 [ "$listed" = "$actual" ] || { echo "Archive has $actual files, manifest lists $listed" >&2; exit 1; }

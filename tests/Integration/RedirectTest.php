@@ -7,8 +7,8 @@ use Website\Blog\Redirects;
 use Website\Tests\Support\TestSite;
 
 /**
- * The redirects in content/.redirects.json answer before any page, as
- * RedirectMatch did on Apache (Website\Blog\Router).
+ * The redirects in content/.redirects.json answer before any page
+ * (`Website\Blog\Router`).
  */
 final class RedirectTest extends IntegrationTestCase
 {
@@ -23,7 +23,7 @@ final class RedirectTest extends IntegrationTestCase
         ]);
     }
 
-    public function testTheStoreIsContent(): void
+    public function testTheRedirectsAreStoredInContent(): void
     {
         $this->assertFileExists($this->root . '/content/.redirects.json');
         $this->assertSame('/2026-10-07-test-photo/', Redirects::target('posts/daily-photo-test'));
@@ -39,7 +39,10 @@ final class RedirectTest extends IntegrationTestCase
         $this->assertRedirect('/projects/', 'http://localhost/about/#things-i-built');
     }
 
-    /** HEAD answers like GET: a link checker sees the post and the redirect, no 404. */
+    /**
+     * HEAD answers like GET, so a link checker sees the redirect and the
+     * post, and no 404.
+     */
     public function testHeadAnswersLikeGet(): void
     {
         $this->assertRedirect('/posts/daily-photo-test/', 'http://localhost/2026-10-07-test-photo/', 'HEAD', 'HEAD');

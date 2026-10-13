@@ -11,7 +11,8 @@ final class AnalyticsTest extends IntegrationTestCase
     private const SAFARI = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15';
 
     /**
-     * The page cache, as config.php turns it on: the count must work with it.
+     * The page cache is on, as config.php turns it on for the live site. The
+     * count must work for a page from the cache too.
      *
      * @var array<mixed>
      */
@@ -24,8 +25,8 @@ final class AnalyticsTest extends IntegrationTestCase
     {
         parent::setUp();
         $this->server = $_SERVER;
-        // The pages render with the default template: they need a home page.
-        // The site title comes from TestSite, the section "photos" from post().
+        // The pages render with the template default, which needs a home page.
+        // TestSite gives the site title, and post() the section "photos".
         $this->kirby->impersonate('kirby', function () {
             $this->kirby->site()->createChild(['slug' => 'home', 'template' => 'home', 'content' => ['title' => 'Home']])->changeStatus('unlisted');
         });
@@ -108,8 +109,8 @@ final class AnalyticsTest extends IntegrationTestCase
         $file = $this->root . '/content/.analytics/' . date('Y-m') . '.json';
         @mkdir(dirname($file), 0777, true);
         file_put_contents($file, '{"broken');
-        // Both the count and the Panel log the broken file. The strict
-        // phpunit.xml fails on output, so the log goes to a file here.
+        // Both the count and the Panel log the broken file. phpunit.xml fails
+        // a test on any output, so the log goes to a file here.
         $log = $this->root . '/php-errors.log';
         $previous = ini_set('error_log', $log);
 
@@ -140,7 +141,7 @@ final class AnalyticsTest extends IntegrationTestCase
 
     public function testExternalReferrerCountsHostOnceAVisit(): void
     {
-        $this->visit('photos', referer: 'https://www.instagram.com/sveneisenschmidt/?igsh=abc');
+        $this->visit('photos', referer: 'https://www.instagram.com/example/?igsh=abc');
         $this->visit('2026-10-07-test-photo', referer: 'http://localhost/photos');
         $this->visit('photos', ip: '203.0.113.2', referer: 'http://localhost/');
 
@@ -169,7 +170,9 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->assertStringNotContainsString('Safari', $text);
         $this->assertNotContains('.analytics', $this->kirby->site()->childrenAndDrafts()->pluck('slug'));
 
-        // The daily hashes are generated files, never in a backup.
+        // cache/analytics/ holds the daily hashes that count a browser once a
+        // day. They are generated files and never in a backup, but they must
+        // not hold the IP address either.
         foreach (glob($this->root . '/cache/analytics/*') as $file) {
             $this->assertStringNotContainsString('198.51.100.77', file_get_contents($file));
         }

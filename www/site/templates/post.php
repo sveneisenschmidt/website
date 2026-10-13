@@ -2,8 +2,9 @@
 use Website\Blog\Site;
 
 /**
- * A post of any type: head with type and date, the text, the mail link,
- * the neighbours in the timeline (controllers/post.php).
+ * A post of any type: label, title, date and type line, the text, a mail
+ * link, and the timeline with the newer and the older post. Variables from
+ * controllers/post.php.
  *
  * @var Website\Models\PostPage $page
  * @var string $section
@@ -26,8 +27,10 @@ use Website\Blog\Site;
 <div class="body">
 <?= $page->bodyHtml() ?>
 </div>
-<p class="post-footer"><a href="mailto:<?= Site::EMAIL ?>?subject=<?= rawurlencode('Re: ' . $page->title()->value()) ?>">Leave me a message</a>
+<?php if (Site::email() !== ''): ?>
+<p class="post-footer"><a href="mailto:<?= Site::email() ?>?subject=<?= rawurlencode('Re: ' . $page->title()->value()) ?>">Leave me a message</a>
 </p>
+<?php endif ?>
 </article>
 <?php snippet('stream', ['current' => $page]) ?>
 <?php endsnippet() ?>

@@ -3,9 +3,9 @@ use Website\Blog\Layout;
 use Website\Blog\Site;
 
 /**
- * Everything in <head>: title, icons, feed, font, meta tags, JSON-LD, the
- * CSS inline, the scripts a page needs inline, Leaflet only with a map
- * (Website\Blog\Layout).
+ * The content of <head>: title, icons, feed link, font preload, meta tags,
+ * JSON-LD, the inline CSS and scripts, and on a page with a map Leaflet
+ * (the map library) and map.js. The values come from Website\Blog\Layout.
  *
  * @var Website\Models\SitePage $page
  * @var Kirby\Cms\Site $site
@@ -24,8 +24,12 @@ $jsonld = Layout::jsonLd($page, $meta);
 <link rel="alternate" type="application/rss+xml" title="<?= $site->title()->esc() ?>" href="/index.xml">
 <link rel="preload" href="/fonts/hanken-grotesk-v12-latin.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="description" content="<?= esc($meta['description']) ?>">
-<meta name="author" content="<?= esc(Site::AUTHOR) ?>">
-<meta name="keywords" content="<?= esc(Site::KEYWORDS) ?>">
+<?php if (Site::author() !== ''): ?>
+<meta name="author" content="<?= esc(Site::author()) ?>">
+<?php endif ?>
+<?php if (Site::keywords() !== ''): ?>
+<meta name="keywords" content="<?= esc(Site::keywords()) ?>">
+<?php endif ?>
 <meta name="google-site-verification" content="cNQT6i25KOyhszNP9zuFOD80fbWfvoemf65Z83uQ984">
 <meta property="og:title" content="<?= esc($meta['title']) ?>">
 <meta property="og:description" content="<?= esc($meta['description']) ?>">
@@ -37,7 +41,9 @@ $jsonld = Layout::jsonLd($page, $meta);
 <meta property="article:published_time" content="<?= $page->date()->toDate('c') ?>">
 <?php endif ?>
 <meta property="article:modified_time" content="<?= date('c', $page->lastModified()) ?>">
-<meta property="article:author" content="<?= esc(Site::AUTHOR) ?>">
+<?php if (Site::author() !== ''): ?>
+<meta property="article:author" content="<?= esc(Site::author()) ?>">
+<?php endif ?>
 <?php endif ?>
 <?php if ($meta['image']): ?>
 <meta property="og:image" content="<?= $meta['image'] ?>">

@@ -4,8 +4,9 @@ use Kirby\Cms\Page;
 use Website\Blog\Posts;
 
 /**
- * The archive and its four streams. Photos are the photo posts and the
- * trips with a cover.
+ * The archive page and its sub-pages. The field `stream` names the posts a
+ * page lists: all, photos, trips, notes or essays. The photos page lists
+ * the photo posts and the trip posts with a cover.
  */
 return function (Page $page) {
     $stream = $page->stream()->or('all')->value();

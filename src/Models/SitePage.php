@@ -11,9 +11,10 @@ use Website\Blog\Site;
 use Website\Blog\Text;
 
 /**
- * Every page of the site, the default page model. Its URL ends with a
- * slash, the home page is at /. Links and feed readers know these URLs:
- * they stay as they are. A post has its own model (PostPage).
+ * The default page model, for every page that is not a post (posts use
+ * PostPage). Its URL ends with a slash, and the home page is at /. These
+ * URLs must not change, because links on other sites and feed readers use
+ * them.
  *
  * @method Field intro()
  * @method Field text()
@@ -22,7 +23,7 @@ use Website\Blog\Text;
  */
 class SitePage extends Page
 {
-    /** @param array<string, mixed>|string|null $options Kirby's own URL, for a language or a parameter */
+    /** @param array<string, mixed>|string|null $options With options, Kirby's own URL (for a language or URL parameters) */
     public function url($options = null): string
     {
         if ($options !== null) {
@@ -35,7 +36,10 @@ class SitePage extends Page
         return $base . '/' . $this->uri() . '/';
     }
 
-    /** True for a post or About: the head calls it an article. */
+    /**
+     * True for About; PostPage returns true for every post. An article gets
+     * og:type "article" and the article meta tags in snippets/head.php.
+     */
     public function isArticle(): bool
     {
         return $this->intendedTemplate()->name() === 'about';
@@ -47,21 +51,25 @@ class SitePage extends Page
         return Text::html(trim($this->intro()->value() . "\n\n" . $this->text()->value()), $this);
     }
 
-    /** The summary as plain text: the intro, without one the text. */
+    /** The summary as plain text: the intro, or the text when the intro is empty. */
     public function summary(): string
     {
         $field = $this->intro()->or($this->text());
         return Text::plain($field->value(Text::withoutMedia($field->value()))->kirbytext()->value());
     }
 
-    /** Intro and text as plain text, for counting words. Heading anchors are no words. */
+    /**
+     * Intro and text as plain text, for counting words. It renders with
+     * kirbytext() and not with Text::html(), so the "#" anchors of headings
+     * do not count as words.
+     */
     public function plainText(): string
     {
         $text = trim($this->intro()->value() . "\n\n" . $this->text()->value());
         return Text::plain(kirby()->kirbytext(Text::withoutMedia($text), ['parent' => $this]));
     }
 
-    /** The words of intro and text. */
+    /** The number of words in intro and text. */
     public function wordCount(): int
     {
         return Text::words($this->plainText());
@@ -73,38 +81,44 @@ class SitePage extends Page
         return preg_match('!\(image:\s*([^\s)]+)!i', $this->intro()->value() . "\n" . $this->text()->value(), $m) ? $m[1] : null;
     }
 
-    /** True when the text holds a map: the head then loads Leaflet. */
+    /** True when intro or text contain a (map:) tag. snippets/head.php then loads Leaflet, the map library, and map.js. */
     public function hasMap(): bool
     {
         return str_contains($this->intro()->value() . $this->text()->value(), '(map:');
     }
 
-    /** When the page last changed: About's date by hand, else the time of the page's content file. */
+    /**
+     * The time of the last change as a Unix timestamp. The field `lastmod`
+     * (only About has it, Panel: "Zuletzt geprüft") wins over the
+     * modification time of the content file.
+     */
     public function lastModified(): int
     {
         return $this->lastmod()->isNotEmpty() ? $this->lastmod()->toDate() : $this->modified();
     }
 
-    /** The meta description: the summary of a post or of About, cut after a word at 160 characters, else the site's. */
+    /**
+     * The meta description: for a post or About, its summary, shortened at
+     * a word to about 160 characters; for every other page, Site::description().
+     */
     public function metaDescription(): string
     {
         $summary = $this->isArticle() ? $this->summary() : '';
-        return $summary === '' ? Site::DESCRIPTION : Str::excerpt($summary, 160, false);
+        return $summary === '' ? Site::description() : Str::excerpt($summary, 160, false);
     }
 
-    /** The cover image, or null. */
     public function coverImage(): ?File
     {
         return $this->cover()->toFile();
     }
 
-    /** The picture for link previews: the cover, on the home page that of the featured photo. */
+    /** The image for link previews: the page's cover; on the home page, the cover of the newest featured post. */
     public function shareCover(): ?File
     {
         return $this->isHomePage() ? Posts::picks()->first()?->coverImage() : $this->coverImage();
     }
 
-    /** The link preview picture, 1200 x 630 px, or null. */
+    /** The URL of the link preview image, cropped to 1200 x 630 px, the size that Facebook recommends for og:image; or null. */
     public function shareImage(): ?string
     {
         return $this->shareCover()?->thumb(['width' => 1200, 'height' => 630, 'crop' => true, 'format' => 'webp', 'quality' => 80])->url();

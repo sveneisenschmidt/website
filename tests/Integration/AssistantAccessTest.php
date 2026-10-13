@@ -6,14 +6,14 @@ use Kirby\Exception\AuthException;
 use Website\Assistant\Panel;
 
 /**
- * The assistant is there for whoever is logged in to the Panel. Kirby asks
- * for the login on its area and its API routes.
+ * Every user who is logged in to the Panel can use the assistant. Without a
+ * login, its Panel area leads to the login page and its API routes fail.
  */
 final class AssistantAccessTest extends AssistantTestCase
 {
-    public function testTheSiteHasTheTabsPostsAndAssistant(): void
+    public function testTheSiteHasTheTabsPostsDetailsAndAssistant(): void
     {
-        $this->assertSame(['beitraege', 'assistent'], array_column($this->kirby->site()->blueprint()->tabs(), 'name'));
+        $this->assertSame(['beitraege', 'angaben', 'assistent'], array_column($this->kirby->site()->blueprint()->tabs(), 'name'));
     }
 
     public function testTheLoggedInUserHasAreaAndButton(): void
@@ -36,8 +36,9 @@ final class AssistantAccessTest extends AssistantTestCase
 
     public function testWithoutALoginTheAreaLeadsToTheLogin(): void
     {
-        // With an account, the Panel asks for the login, not for the installation.
-        $this->kirby->users()->create(['email' => 'sven@website.test', 'role' => 'admin', 'password' => 'test-password-123']);
+        // Kirby shows its installation page while no account exists. With one
+        // account, the Panel leads to the login page.
+        $this->kirby->users()->create(['email' => 'author@website.test', 'role' => 'admin', 'password' => 'test-password-123']);
         $this->kirby->impersonate();
 
         $response = $this->kirby->render('panel/assistent');

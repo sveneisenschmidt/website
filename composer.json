@@ -1,6 +1,6 @@
 {
-    "name": "sveneisenschmidt/website",
-    "description": "sven.eisenschmidt.website on Kirby. Composer installs Kirby into www/kirby and its dependencies into vendor/, outside the document root.",
+    "name": "website/website",
+    "description": "A personal website, built with Kirby. Composer installs Kirby into www/kirby and the other packages into vendor/, outside www/, where the web server cannot reach them.",
     "type": "project",
     "license": "proprietary",
     "require": {

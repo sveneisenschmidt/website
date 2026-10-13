@@ -13,12 +13,13 @@ use Website\Blog\Jsonl;
 use Website\Blog\Types;
 
 /**
- * Change log: who changed what, when and where.
- * Every change to a page, file, the site or a user adds one JSON line to
- * content/.changelog/<year>-<month>.jsonl. Kirby ignores dot folders in
- * content, the backup includes all of content and the deploy excludes it,
- * so the log is state: it comes back with every restore.
- * The Panel shows it under "Verlauf".
+ * The change log: who changed what, when and where. Every
+ * change to a page, a file, the site or a user adds one JSON line to
+ * content/.changelog/<year>-<month>.jsonl. Kirby ignores folders in
+ * content/ whose name starts with a dot, so the log never shows as a page.
+ * The backup includes all of content/, and the deploy never overwrites it,
+ * so a restore brings the log back. The Panel view "Verlauf"
+ * (plugins/changelog) shows it.
  */
 final class Log
 {
@@ -35,7 +36,7 @@ final class Log
         return kirby()->root('content') . '/.changelog';
     }
 
-    /** Hook handler for page.*:after, file.*:after, site.*:after, user.*:after. */
+    /** Handler for the hooks page.*:after, file.*:after, site.*:after and user.*:after (plugins/changelog). */
     public static function event(Event $event): void
     {
         $type = $event->type();
@@ -50,13 +51,16 @@ final class Log
             if (!$new instanceof ModelWithContent) {
                 return;
             }
-            // Posts are numbered by their date: a new date moves the number, and
-            // the date change is the entry. The number alone says nothing.
+            // The post blueprints set `num: date`, so the sort number follows
+            // the date. The update event logs the date change; the number
+            // change would only repeat it.
             if ($action === 'changeNum' && $new instanceof Page && $new->blueprint()->num() === 'date') {
                 return;
             }
             $changes = $old instanceof ModelWithContent && $type !== 'user' ? Diff::changes($old, $new) : [];
-            // A save without a real change is no entry, nor a sort step of publishing.
+            // Kirby fires update for a save without a change, and changeNum
+            // while it publishes a draft (see Diff::changes()). Neither makes
+            // an entry when Diff finds no change.
             if (in_array($action, ['update', 'changeNum'], true) && $changes === []) {
                 return;
             }
@@ -65,20 +69,20 @@ final class Log
                 'type' => $type,
                 'id' => self::id($new),
                 'title' => self::title($new),
-                // "Foto", "Reise", "Notiz", "Essay": the Panel view says "Foto angelegt", not "Seite angelegt".
+                // The German name of the post type ("Foto", "Reise", "Notiz",
+                // "Essay"). The Panel view then shows "Foto angelegt" (photo
+                // created) in place of "Seite angelegt" (page created).
                 'kind' => $new instanceof Page ? self::kind($new) : null,
                 'link' => $action === 'delete' ? null : $new->panel()->url(true),
                 'changes' => $changes,
             ]);
         } catch (Throwable $e) {
-            // A log entry must never break a save.
+            // An error in the log must not fail the save.
             error_log('blog changelog: ' . $e->getMessage());
         }
     }
 
     /**
-     * Appends one entry (Website\Blog\Jsonl).
-     *
      * @param array<string, mixed> $entry
      */
     public static function write(array $entry): void
@@ -96,7 +100,7 @@ final class Log
         return Jsonl::read(self::dir(), $limit);
     }
 
-    /** What the entry names in "Wo": a page title, a file under its page, a person. */
+    /** The text in the column "Wo" (where) of the Panel view: the site, a page title, a file with its page, or a person. */
     public static function title(ModelWithContent $model): string
     {
         return match (true) {
@@ -116,7 +120,7 @@ final class Log
         };
     }
 
-    /** The post types Sven writes. Other pages stay "Seite". */
+    /** The German name of a post type, or null for every other page, which the Panel view calls "Seite" (page). */
     private static function kind(Page $page): ?string
     {
         return Types::ALL[$page->intendedTemplate()->name()]['label'] ?? null;

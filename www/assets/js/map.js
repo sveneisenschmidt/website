@@ -5,8 +5,9 @@ document.addEventListener("DOMContentLoaded", function () {
             return [p.lat, p.lon];
         });
 
-        // Dense maps opt into panning and zooming, the scroll wheel stays
-        // with the page so the map never hijacks scrolling.
+        // A map allows panning and zooming only when the post's toggle
+        // "Karte zoombar" (field `mapzoom`) is on. The scroll wheel always
+        // scrolls the page and never zooms the map.
         var zoomable = el.dataset.zoomable === "true";
         var map = L.map(el, {
             zoomControl: zoomable,
@@ -18,9 +19,10 @@ document.addEventListener("DOMContentLoaded", function () {
             keyboard: zoomable,
             zoomSnap: 0.25,
         });
-        // Standard OpenStreetMap tiles in both color schemes, the map keeps
-        // its own light look. The container background matches the tiles so
-        // the hairline seams between tiles at fractional zoom stay invisible.
+        // The map uses the standard OpenStreetMap tiles in light and dark
+        // mode. At a fractional zoom level, thin gaps can show between the
+        // tiles. The container background has the color of the tiles, so the
+        // gaps are not visible.
         L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
             maxZoom: 19,
             attribution:
@@ -41,17 +43,18 @@ document.addEventListener("DOMContentLoaded", function () {
             return { point: p, marker: marker };
         });
 
-        // Labels near the left/right edge open towards the map center so
-        // they do not get clipped by the container. When a label would
-        // overlap an earlier one (or stick out of the map), it tries the
-        // remaining directions until it finds a free spot.
+        // A label near the left or right edge opens towards the center of the
+        // map, so the container does not cut it off. When a label would
+        // overlap an earlier label or a marker, or reach outside the map, the
+        // other directions are tried. The direction with the lowest
+        // badness() score wins, and a score of 0 ends the search.
         function bindLabels() {
             var size = map.getSize();
             var mapRect = el.getBoundingClientRect();
             var placed = [];
 
-            // Marker dots are obstacles too, so a label never covers a
-            // neighbouring marker.
+            // The dots of the other markers count as obstacles too, so a label
+            // covers a marker only when every direction overlaps something.
             markers.forEach(function (m) {
                 var c = map.latLngToContainerPoint([m.point.lat, m.point.lon]);
                 m.rect = {

@@ -7,8 +7,9 @@ use Kirby\Content\Field;
 use Website\Blog\Posts;
 
 /**
- * A trip: one day of a journey. The field trip names the journey; its
- * posts are the days.
+ * The page model of a trip post. A trip post describes one day of a
+ * journey. The field `trip` names the journey, and the trip posts with the
+ * same name are its days.
  *
  * @method Field trip()
  */
@@ -25,7 +26,11 @@ class TripPage extends PostPage
         return Posts::all()->filter(fn(PostPage $post) => $post instanceof self && $post->trip()->value() === $trip)->sortBy('date', 'asc');
     }
 
-    /** "Summer 2026, day 5 of 22"; without a journey no type line. */
+    /**
+     * "Summer 2026, day 5 of 22". The journey name is the field `trip` with
+     * "-" as a space and every word capitalised. Without a journey the type
+     * line is empty.
+     */
     public function typeLine(bool $withType = true): string
     {
         if ($this->trip()->isEmpty()) {

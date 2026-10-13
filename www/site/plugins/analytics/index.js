@@ -1,6 +1,7 @@
-// Panel view "Besucher": visits of the last 30 days. No build step:
-// Kirby ships the Vue template compiler (panel.vue.compiler, on by default).
-panel.plugin("sveneisenschmidt/analytics", {
+// The Panel view "Besucher": the visits of the last 30 days. The file needs
+// no build step: the Panel includes the Vue template compiler (option
+// panel.vue.compiler, on by default) and compiles the template in the browser.
+panel.plugin("website/analytics", {
   components: {
     "k-blog-analytics-view": {
       props: { summary: Object },
@@ -24,7 +25,9 @@ panel.plugin("sveneisenschmidt/analytics", {
       },
       methods: {
         day(date) {
-          // "11.10.": dates as in the Panel lists, without the year.
+          // "11.10.": the date format of the Panel lists, without the year.
+          // Noon local time keeps the date the same in every time zone; a
+          // date without a time would be parsed as midnight UTC.
           return new Date(date + "T12:00:00").toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
         },
         height(visits) {
@@ -83,7 +86,7 @@ panel.plugin("sveneisenschmidt/analytics", {
           </section>
 
           <k-text class="blog-stats-note">
-            Ein Besuch ist ein Browser an einem Tag. Wechselt ein Handy das Netz, zählt das als neuer Besuch. Gezählt wird ohne Cookies und ohne IP-Adressen.
+            Ein Besuch ist ein Browser an einem Tag. Wechselt ein Handy das Netz, zählt das als neuer Besuch. Die Zählung setzt keine Cookies und speichert keine IP-Adressen.
             Suchmaschinen, andere Programme und eingeloggte Accounts zählen nicht mit.
           </k-text>
         </k-panel-inside>

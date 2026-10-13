@@ -1,21 +1,25 @@
-# .htaccess in the site folder on the server. bin/deploy.sh writes the live
-# release in place of RELEASE_ID and uploads it; the new file replaces the
-# old one in one rename, and that is the switch to a release.
-# The document root in KAS is the site folder: every request goes into the
-# www/ of the live release, so releases/, shared/ and backups/ are not
-# reachable from outside. www/.htaccess has Kirby's rules.
-# The path names the release itself, not the link current: PHP keeps a
-# resolved link for up to 2 minutes (realpath cache), and a switch through
-# the link would reach running PHP processes only that late.
+# The .htaccess of the site folder on the server. In KAS, the admin panel of
+# the hosting provider All-Inkl, the site folder is the document root.
+# bin/deploy.sh puts the id of the new release in place of RELEASE_ID and
+# uploads the file. One rename then replaces the old .htaccess, and that
+# rename switches the site to the new release.
+# Every request goes to the www/ folder of the live release, so releases/,
+# shared/ and backups/ cannot be reached from outside. www/.htaccess holds
+# Kirby's rules.
+# The rule names the release folder, not the symlink `current`. PHP caches
+# a resolved symlink for up to 2 minutes (realpath_cache_ttl), so running
+# PHP processes would see a switch of the symlink that late.
 
 RewriteEngine On
 
-# Let's Encrypt (HTTP-01) reads /.well-known/ from this folder.
+# Let's Encrypt checks the domain through a file under /.well-known/ in this
+# folder (HTTP-01 challenge), so that path is not rewritten.
 RewriteRule ^\.well-known/ - [L]
 
-# The folder also answers as kirby.eisenschmidt.website: every other host
-# name leads to the one address.
-RewriteCond %{HTTP_HOST} !^sven\.eisenschmidt\.website$ [NC]
-RewriteRule ^(.*)$ https://sven.eisenschmidt.website/$1 [R=301,L]
+# The site folder also answers under other host names. A request for any of
+# them gets a 301 to the same path on the host of SITE_URL. bin/deploy.sh
+# writes SITE_HOST_PATTERN (the host as a regular expression) and SITE_URL.
+RewriteCond %{HTTP_HOST} !^SITE_HOST_PATTERN$ [NC]
+RewriteRule ^(.*)$ SITE_URL/$1 [R=301,L]
 
 RewriteRule ^(.*)$ releases/RELEASE_ID/www/$1 [L]

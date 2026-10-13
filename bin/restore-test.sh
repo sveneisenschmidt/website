@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
-# Proves that backup + restore gives exactly the previous site:
-# 1. Back up www.
-# 2. Copy only the code of www (no state, nothing generated) to .restore-test/www.
-# 3. Import the host config (env.php) and restore the backup there.
-# 4. Compare the state checksums and file times of both trees.
-# 5. Serve both, fetch every page from bin/page-paths.php, compare the HTML.
+# Tests that a backup and a restore give the same site again. make
+# restore-test runs it on the local www/. It needs ports 8093 and 8094 free.
+# 1. Backs up www/ with bin/backup.sh.
+# 2. Copies the code of www/ to .restore-test/www, without state, env.php
+#    and generated files.
+# 3. Copies env.php and restores the backup into the copy.
+# 4. Compares the checksums and file times of the state in both folders.
+# 5. Serves both folders with PHP's built-in web server, fetches every path
+#    of bin/page-paths.php from both, and compares the HTML.
 #
 # Usage: bin/restore-test.sh [www-root]
 set -euo pipefail
@@ -18,9 +21,10 @@ PHP="${PHP:-php}"
 
 sha256() { if command -v sha256sum >/dev/null; then sha256sum "$@"; else shasum -a 256 "$@"; fi; }
 state_sums() { ( cd "$1" && find content site/accounts site/config/.salt site/config/.license -type f ! -name '.DS_Store' 2>/dev/null | LC_ALL=C sort | while read -r f; do sha256 "$f"; done ); }
-# One PHP process for all files: phase 2 brings about a thousand.
+# One PHP process for all files, not one per file: the local content held
+# 1808 files on 2026-10-13.
 mtimes() { ( cd "$1" && find content -type f ! -name '.DS_Store' | LC_ALL=C sort | "$PHP" -r 'while (($f = fgets(STDIN)) !== false) { $f = rtrim($f, "\n"); echo filemtime($f), " ", $f, "\n"; }' ); }
-# Prints the first differences, so a failure says where.
+# Prints the first 20 differences, so a failure shows where the trees differ.
 same() { local d; d=$(diff "$1" "$2") || { echo "FAIL: $3 differ"; echo "$d" | head -20; exit 1; }; }
 
 rm -rf "$TEST"
@@ -32,7 +36,7 @@ echo "Backup: $ARCHIVE"
 rsync -a --exclude '/content' --exclude '/media' --exclude '/site/accounts' --exclude '/site/cache' \
   --exclude '/site/sessions' --exclude '/site/config/env.php' --exclude '/site/config/.salt' \
   --exclude '/site/config/.license' "$WWW/" "$TEST/www/"
-cp -p "$WWW/site/config/env.php" "$TEST/www/site/config/env.php"   # config import
+cp -p "$WWW/site/config/env.php" "$TEST/www/site/config/env.php"
 ln -s ../vendor "$TEST/vendor"   # www/index.php loads ../vendor/autoload.php
 
 bin/restore.sh "$ARCHIVE" "$TEST/www" >/dev/null
@@ -41,12 +45,12 @@ same <(state_sums "$WWW") <(state_sums "$TEST/www") "state checksums"
 same <(mtimes "$WWW") <(mtimes "$TEST/www") "file times"
 echo "OK: state files identical (checksums and file times)"
 
-# Another server on these ports would answer in place of ours.
+# Another server on these ports would answer in place of the test servers.
 for port in "$PORT_A" "$PORT_B"; do
   ! curl -s -o /dev/null "http://localhost:$port/" || { echo "FAIL: port $port is busy"; exit 1; }
 done
-# The page cache is per host name: a cache left from an earlier run would
-# serve old HTML for site A.
+# Kirby keeps one page cache per host name. A cache from an earlier run would
+# give old HTML for the original site.
 rm -rf "$WWW/site/cache/localhost_$PORT_A"
 PHP_CLI_SERVER_WORKERS=4 "$PHP" -S "localhost:$PORT_A" -t "$WWW" bin/dev-router.php >/dev/null 2>&1 & A=$!
 PHP_CLI_SERVER_WORKERS=4 "$PHP" -S "localhost:$PORT_B" -t "$TEST/www" bin/dev-router.php >/dev/null 2>&1 & B=$!
@@ -67,5 +71,6 @@ for p in "${paths[@]}"; do
 done
 [ "$fail" = 0 ] || exit 1
 echo "OK: ${#paths[@]} pages identical"
-# The copy holds the whole state (4 GB from phase 2 on). A failed run keeps it for debugging.
+# The copy holds the whole state, 4.1 GB on 2026-10-13. A failed run exits
+# above and keeps the copy for debugging.
 rm -rf "$TEST"

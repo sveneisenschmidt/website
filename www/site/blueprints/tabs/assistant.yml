@@ -1,6 +1,7 @@
-# Website › Assistent (plugins/assistant). The prompt lives
-# only in this field, in content/site.txt: state, never in git. It has no
-# default and no template on purpose.
+# The tab "Assistent" of the site view (plugins/assistant). The prompt is
+# stored only in this field, so content/site.txt has it and the repository
+# never does. The field has no default value and the repository has no
+# prompt template, so no copy of the prompt reaches this public repository.
 label: Assistent
 icon: robot
 columns:

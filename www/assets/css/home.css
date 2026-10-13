@@ -2,10 +2,10 @@
     grid-column: span var(--span-main);
 }
 
-/* Die Fläche liegt über dem ganzen Block, damit auch das Bild zum Beitrag
-   führt. Das Bild trägt einen view-transition-name und stapelt sich damit
-   selbst, ohne z-index läge es über der Fläche und würde die Klicks
-   abfangen. */
+/* The ::after area of the link covers the whole block, so a click on the
+   picture also opens the post. The picture has a view-transition-name,
+   which gives it its own stacking context. Without z-index, the picture
+   would be above the area and get the clicks. */
 .picture h3 a::after {
     content: "";
     position: absolute;
@@ -39,9 +39,9 @@
         grid-column: auto;
     }
 
-    /* Unter dem großen Bild bleibt auf dem Telefon eine Zeile Kacheln stehen.
-       Die Zahl folgt --tiles-columns, bei einer anderen Spaltenzahl muss sie
-       hier mitwandern. */
+    /* On a phone, one row of tiles stays below the large picture. The 5 is
+       --tiles-columns (4) plus 1. When the number of columns changes, this
+       number must change too. */
     .tiles li:nth-child(n + 5) {
         display: none;
     }

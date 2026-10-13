@@ -1,12 +1,14 @@
 <?php
 
 /**
- * Clears the page cache of every host name: site/cache/<host>/pages.
- * It takes the lock Website\Blog\FileCache takes for a flush, exclusive on
- * site/cache/<host>/.flush.lock, so a page that writes its cache entry at
- * that moment waits instead of failing. Plain PHP without the site's
- * classes: the deploy runs it from stdin on the server for any release,
- * also one with older code.
+ * Deletes the page cache, the HTML of every page that Kirby rendered. Kirby
+ * keeps one page cache per host name, in site/cache/<host>/pages.
+ *
+ * The script takes the exclusive lock on site/cache/<host>/.flush.lock, as
+ * `Website\Blog\FileCache::flush()` does. A request that writes a cache entry
+ * at that moment waits and does not fail. The script uses no class of the
+ * site: bin/deploy.sh sends it over stdin to the server, and it must work
+ * with the code of every release, an older one too.
  *
  * Usage: php bin/clear-cache.php <www-root>
  */

@@ -7,13 +7,14 @@ use Kirby\Cache\FileCache as KirbyFileCache;
 use Kirby\Filesystem\Dir;
 
 /**
- * File cache that does not fail under parallel requests. Kirby flushes the
- * page cache after every content change, and the Panel uploads up to 20
- * files at once. Without a lock, Dir::remove() fails when two flushes run
- * at the same time (scandir() on a folder the other one removed), and a
- * page that writes its cache entry during a flush fails too (the folder
- * vanishes between mkdir and the write). A flush takes the lock alone,
- * writes share it. The plugin registers it as the cache type blog-file;
+ * Kirby's file cache with a lock, so that parallel requests do not fail.
+ * Kirby empties the page cache (a flush) after every content change, and
+ * the Panel uploads up to 20 files at once. Without the lock, Dir::remove()
+ * fails when two flushes run at the same time: one calls scandir() on a
+ * folder that the other has removed. A page that writes its cache entry
+ * during a flush fails too, because the folder disappears between mkdir and
+ * the write. A flush takes the lock exclusively, a write takes it shared.
+ * plugins/blog registers the class as the cache type `blog-file`, and
  * bin/clear-cache.php takes the same lock on the server.
  */
 class FileCache extends KirbyFileCache

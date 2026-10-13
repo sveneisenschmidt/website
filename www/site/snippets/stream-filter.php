@@ -1,8 +1,9 @@
 <?php
 /**
- * The row of filters above archive and search.
+ * The row of links above archive and search: one link for each archive
+ * page, Search, and Back.
  *
- * @var string $current all, photos, trips, notes, essays or search
+ * @var string $current The link to mark as current: all, photos, trips, notes, essays or search
  */
 $items = ['all' => ['', 'All'], 'photos' => ['photos/', 'Photos'], 'trips' => ['trips/', 'Trips'], 'notes' => ['notes/', 'Notes'], 'essays' => ['essays/', 'Essays']];
 ?>

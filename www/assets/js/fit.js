@@ -1,8 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Die Timeline steht neben der Galerie und soll mit ihr zusammen enden. Das
-    // Markup liefert mehr Einträge als in die meisten Fenster passen, hier
-    // fallen die weg, die unter die Galerie reichen würden. Ohne JavaScript
-    // bleiben alle stehen, die Zahl in der Überschrift stimmt dann auch.
+    // The timeline is beside the pictures and must end where they end. The
+    // HTML contains more entries than most windows can show. This script
+    // hides the entries that would reach below the pictures and updates the
+    // count in the heading. Without JavaScript all entries stay, and the
+    // count in the HTML matches them.
     var stream = document.querySelector(".writing[data-fit]");
     if (!stream) return;
 
@@ -11,16 +12,16 @@ document.addEventListener("DOMContentLoaded", function () {
     var count = stream.querySelector(".stream-count");
     if (!reference || !list) return;
 
-    // Galerie und Timeline liegen in derselben Grid-Zeile, die Galerie wird
-    // also auf die Höhe der längeren Spalte gedehnt. Ihre eigene Unterkante
-    // taugt damit nicht als Maß, gemessen wird das letzte Element darin.
+    // Pictures and timeline are in the same grid row, so the grid stretches
+    // the pictures to the height of the longer column. Their bottom edge
+    // therefore cannot be the measure; the script measures their last child.
     var edge = reference.lastElementChild || reference;
 
     var items = Array.prototype.slice.call(list.children);
     if (!items.length) return;
 
-    // Unter dieser Breite stehen Galerie und Timeline untereinander, dann gibt
-    // es keine gemeinsame Unterkante zum Messen.
+    // At this width and below, the timeline is below the pictures, and there
+    // is no shared bottom edge to measure.
     var STACKED = 900;
 
     function fit() {
@@ -60,9 +61,11 @@ document.addEventListener("DOMContentLoaded", function () {
     fit();
     window.addEventListener("resize", schedule);
 
-    // Die Bildhöhen stehen über width/height schon vor dem Laden fest; nur
-    // der Font-Swap kann die Zeilenhöhen noch verschieben. Ein Nachmessen
-    // pro geladenem Bild würde Einträge sichtbar verschwinden lassen.
+    // The width and height attributes fix the image heights before the
+    // images load. Only the change to the web font can still move line
+    // heights, so the script measures again when the fonts are ready. A new
+    // measurement after each loaded image would make entries disappear
+    // while the visitor watches.
     if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(schedule);
     }

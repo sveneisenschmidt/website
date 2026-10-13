@@ -1,9 +1,10 @@
 <?php
 /**
- * The archive and its four streams (controllers/archive.php).
+ * The archive and its sub-pages: the filter row and the posts by month, on
+ * the photos page as a grid of covers. Variables from controllers/archive.php.
  *
  * @var string $stream all, photos, trips, notes or essays
- * @var Kirby\Cms\Pages $posts The posts of the stream
+ * @var Kirby\Cms\Pages $posts The posts that this page lists
  */
 ?>
 <?php snippet('layout', slots: true) ?>

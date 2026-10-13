@@ -6,12 +6,14 @@ use RuntimeException;
 use XMLReader;
 
 /**
- * GPX files of bike rides: read hardened, both ends cut, simplified. Rides
- * start and end at home; Claude never sees the cut ends.
+ * Reads the GPX file of a bike ride and turns it into a line that Claude may
+ * see. Rides start and end at home, so both ends are cut off before Claude
+ * gets the line. The reader refuses what an XML attack needs: a DOCTYPE,
+ * network access and entities.
  */
 final class Gpx
 {
-    /** Douglas-Peucker tolerance in degrees for tracks. */
+    /** Tolerance of `Route::simplify()` for tracks in degrees, about 22 m. */
     public const EPSILON = 0.0002;
 
     /** GPX files: at most 5 MB and 100,000 points. */
@@ -22,13 +24,14 @@ final class Gpx
     public const TRIM_MIN = 700;
     public const TRIM_MAX = 1200;
 
-    /** No marker closer than this to an end of the ride before trimming, in meters. */
+    /** No marker may lie closer than this to an uncut end of the ride, in meters. */
     public const ZONE = 1200;
 
     /**
-     * The uncut ends stay on the server for the marker check, to 3 decimals
-     * only. Rounding moves a point by at most 0.0005° in each direction, 56 m
-     * at most, 79 m together: the check adds that.
+     * The uncut ends stay on the server for the marker check, rounded to 3
+     * decimals. Rounding moves a point by at most 0.0005° on each axis: up to
+     * 56 m on one axis and 79 m on the diagonal. `ZONE_SLACK` adds that
+     * distance to `ZONE`.
      */
     public const ENDS_DECIMALS = 3;
     public const ZONE_SLACK = 80;
@@ -40,9 +43,10 @@ final class Gpx
     public const MIN_LENGTH = 3000;
 
     /**
-     * Track points and times of a GPX file, read without DOCTYPE, network or
-     * entities. Throws RuntimeException with the message the Panel shows.
-     * Names, devices and extensions are never read.
+     * Reads the track points of a GPX file and their times. A DOCTYPE is
+     * refused, so the file cannot define entities, and LIBXML_NONET blocks
+     * network access. Names, devices and extensions are never read. Throws
+     * RuntimeException with the German message that the Panel shows.
      *
      * @return array{points: list<array{float, float}>, times: list<?int>}
      */
@@ -81,7 +85,8 @@ final class Gpx
                 } elseif ($reader->nodeType === XMLReader::END_ELEMENT && $reader->localName === 'trkpt') {
                     $inPoint = false;
                 } elseif ($reader->nodeType === XMLReader::ELEMENT && isset($parts[$reader->localName]) && ++$parts[$reader->localName] > 1) {
-                    // Each track and segment would need its own cut: one ride per file.
+                    // Each track and each segment would need its own cut ends,
+                    // so a file may contain one ride only.
                     throw new RuntimeException('Die GPX-Datei hat mehr als einen Track oder mehr als ein Segment. Eine Fahrt pro Datei.');
                 }
             }
@@ -97,13 +102,14 @@ final class Gpx
     }
 
     /**
-     * The line Claude may see of a ride: both ends cut by their own random
-     * length, simplified. Rides start and end at home: a fixed length would
-     * put all ends on a circle around it. The lengths are not kept. "ends"
-     * holds the uncut ends, rounded, for the marker check; it stays on the
-     * server. A track without points, one that never gets farther than 1.5 km
-     * from its ends, or one shorter than 3 km after the cut gives "error",
-     * the message Claude gets.
+     * The line of a ride that Claude may see: both ends cut by their own
+     * random length, then simplified. Rides start and end at home. A fixed
+     * length would put all cut ends on a circle, and its center would show
+     * where home is. The cut lengths are not stored. "ends" holds the uncut ends, rounded, for the
+     * marker check; it stays on the server. A track without points, one that
+     * never gets farther than `NEAR` from its ends, or one shorter than
+     * `MIN_LENGTH` after the cut gives "error" instead, the message that
+     * Claude gets.
      *
      * @param list<array<int, float|int>> $points
      * @param array<int, ?int> $times
@@ -115,7 +121,8 @@ final class Gpx
             return ['error' => 'The GPX file has no track points.'];
         }
         $ends = [$points[0], $points[count($points) - 1]];
-        // Laps around the block show the block, cut or not.
+        // A ride that stays near home, such as laps around the block, would
+        // show the home area even after the cut.
         $far = false;
         foreach ($points as $point) {
             if (Route::distance($ends[0], $point) > self::NEAR && Route::distance($ends[1], $point) > self::NEAR) {

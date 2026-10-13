@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // While typing, /search.json brings the result list as HTML, from the
-    // same snippets as the search page with ?q= in the address.
+    // While the visitor types, the script loads the result list as HTML from
+    // /search.json. The server renders it with the same snippets as the
+    // search page with ?q= in the URL.
     var input = document.querySelector("[data-search-input]");
     var output = document.querySelector("[data-search-results]");
     if (!input || !output) return;
@@ -12,8 +13,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // search.json is not in the page cache: a request waits for a pause in
-    // typing, and the next keystroke aborts it.
+    // Kirby does not cache a request with a query string, so every request to
+    // search.json runs the search on the server. A request starts only after
+    // a pause of 200 ms in typing, and the next keystroke aborts it.
     var timer = 0;
     var request = null;
 
@@ -36,9 +38,9 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    // Der Suchbegriff steht in der Adresse, damit ein Neuladen ihn behält und
-    // ein Treffer sich verlinken lässt. replaceState statt pushState, sonst
-    // füllt jede getippte Zeichenfolge den Verlauf.
+    // The query goes into the URL, so a reload keeps it and a search can be
+    // linked. replaceState() changes the current history entry; pushState()
+    // would add an entry for every typed character.
     function remember(term) {
         var next = term ? location.pathname + "?q=" + encodeURIComponent(term) : location.pathname;
         if (location.pathname + location.search !== next) {

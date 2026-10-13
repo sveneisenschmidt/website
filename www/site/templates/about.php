@@ -2,8 +2,8 @@
 use Website\Blog\Site;
 
 /**
- * About: its label, the date it was last checked, the text, the visitor
- * numbers. It stays out of the page cache (config.php).
+ * The About page: its label, the date of the last check, the text, the
+ * visitor statistics, a mail link and the timeline.
  *
  * @var Website\Models\SitePage $page
  */
@@ -23,8 +23,10 @@ Last updated: <time datetime="<?= date('Y-m-d', $page->lastModified()) ?>"><?= d
 <?= $page->bodyHtml() ?>
 <?php snippet('stats') ?>
 </div>
-<p class="post-footer"><a href="mailto:<?= Site::EMAIL ?>?subject=<?= rawurlencode('Re: ' . $page->title()->value()) ?>">Leave me a message</a>
+<?php if (Site::email() !== ''): ?>
+<p class="post-footer"><a href="mailto:<?= Site::email() ?>?subject=<?= rawurlencode('Re: ' . $page->title()->value()) ?>">Leave me a message</a>
 </p>
+<?php endif ?>
 </article>
 <?php snippet('stream', ['current' => $page]) ?>
 <?php endsnippet() ?>

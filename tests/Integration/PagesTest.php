@@ -10,7 +10,7 @@ use Website\Tests\Support\TestSite;
 final class PagesTest extends IntegrationTestCase
 {
     /**
-     * About must stay out of the page cache, so it is on here.
+     * The page cache is on, so the test can check that About stays out of it.
      *
      * @var array<mixed>
      */
@@ -21,7 +21,8 @@ final class PagesTest extends IntegrationTestCase
         parent::setUp();
         $this->kirby->impersonate('kirby', function () {
             $site = $this->kirby->site();
-            // Kirby does not change the status of these pages: they are created unlisted.
+            // The Panel allows no status change of these pages, so the test
+            // creates them unlisted.
             $site->createChild(['slug' => 'home', 'template' => 'home', 'draft' => false, 'content' => ['title' => 'Home']]);
             $site->createChild(['slug' => 'about', 'template' => 'about', 'draft' => false, 'content' => ['title' => 'About', 'label' => 'Personal blog', 'lastmod' => '2026-09-12', 'text' => 'Hello.']]);
             $archive = $site->createChild(['slug' => 'archive', 'template' => 'archive', 'draft' => false, 'content' => ['title' => 'Archive', 'stream' => 'all']]);
@@ -31,7 +32,10 @@ final class PagesTest extends IntegrationTestCase
         $this->post = $this->kirby->impersonate('kirby', fn() => $this->post->update(['cover' => [$cover->uuid()->toString()], 'pick' => 'true']));
     }
 
-    /** Job title and employer come from About; an empty field leaves its key out. */
+    /**
+     * The person in the JSON-LD of the home page takes job title and employer
+     * from About. An empty field leaves its key out.
+     */
     public function testThePersonOnTheHomePageTakesTheJobFromAbout(): void
     {
         $person = fn() => json_decode(preg_match('!<script type="application/ld\+json">(.*?)</script>!s', $this->kirby->site()->homePage()->render(), $m) ? $m[1] : 'null', true);
@@ -50,7 +54,7 @@ final class PagesTest extends IntegrationTestCase
     {
         $html = $this->kirby->site()->homePage()->render();
 
-        $this->assertStringContainsString('<title>Sven Eisenschmidt - Personal Blog</title>', $html);
+        $this->assertStringContainsString('<title>Personal Blog</title>', $html);
         $this->assertStringContainsString('<body class="home">', $html);
         $this->assertStringContainsString('<h1 class="masthead">', $html);
         $this->assertStringContainsString('<h3><a href="' . $this->post->url() . '">Test Photo</a></h3>', $html);
@@ -107,14 +111,15 @@ final class PagesTest extends IntegrationTestCase
 
     public function testErrorPage(): void
     {
-        // Kirby changes the status of no error page: a folder, as the import writes it.
+        // The Panel allows no status change of the error page, so the test
+        // writes its folder directly.
         mkdir($this->root . '/content/error');
         file_put_contents($this->root . '/content/error/error.txt', "Title: 404 Page not found\n");
 
         $response = TestSite::app($this->root, $this->options)->render('does-not-exist');
 
         $this->assertSame(404, $response->code());
-        $this->assertStringContainsString('<title>404 Page not found · Sven Eisenschmidt - Personal Blog</title>', $response->body());
+        $this->assertStringContainsString('<title>404 Page not found · Personal Blog</title>', $response->body());
         $this->assertStringContainsString('<p class="stream-title stream-opening">Error 404</p>', $response->body());
     }
 }

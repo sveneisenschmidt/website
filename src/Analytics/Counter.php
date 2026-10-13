@@ -10,28 +10,34 @@ use Throwable;
 use Website\Blog\JsonFile;
 
 /**
- * Counts every public page view in PHP, without cookies, scripts or
- * external services. The route:after hook runs before Page::render() reads
- * the page cache, so cached pages count too.
+ * Counts the public page views on the server, without cookies, scripts or
+ * external services. plugins/analytics calls route() from Kirby's hook
+ * route:after. That hook runs before Page::render() reads the page cache,
+ * so views of cached pages count too.
  *
- * A visit is one browser on one day: an HMAC of IP address and user agent
- * with a random key for that day. Key and hashes live only in
- * site/cache/analytics/<date>.json (generated, never in a backup) and are
- * deleted with the first counted view on a later day. The daily totals
- * live in content/.analytics (Months).
+ * A visit is one browser on one day. The browser is identified by an HMAC
+ * (a hash with a secret key) of IP address and user agent, with a random
+ * key for that day. Key and hashes are stored only in
+ * site/cache/analytics/<date>.json, which no backup includes. The first
+ * counted view on a later day deletes them. The daily totals are in
+ * content/.analytics (see Months).
  */
 final class Counter
 {
-    /** No browser: crawlers, link previews, uptime checks, command line tools. */
+    /** User agents that are not a person in a browser: crawlers, link preview services, uptime checks, command line tools. */
     public const BOTS = '/bot|crawl|spider|slurp|archiver|facebookexternalhit|embedly|preview|lighthouse|headless|pingdom|uptime|monitor|curl|wget|python|java\/|okhttp|go-http/i';
 
-    /** Key and hashes of the day. */
+    /** The folder for the key and the hashes of the current day. */
     private static function cacheDir(): string
     {
         return kirby()->root('cache') . '/analytics';
     }
 
-    /** Hook handler for route:after. Returns nothing, so the result stays as it is. */
+    /**
+     * Handler for the hook route:after. Kirby replaces the route result with
+     * every return value of this hook other than null, so the method returns
+     * nothing.
+     */
     public static function route(string $method, mixed $result, bool $final): void
     {
         if (!$final || $method !== 'GET') {
@@ -41,19 +47,21 @@ final class Counter
         if ($id === null || !self::isVisitor()) {
             return;
         }
-        // Feed readers rarely send a referrer: the links of the feed name their source.
+        // Feed readers rarely send a Referer header. The links in the feed
+        // add ?source=rss, so the visit counts as coming from the feed.
         $source = ($_GET['source'] ?? null) === 'rss' ? 'RSS' : null;
         try {
             self::count($id, $_SERVER['REMOTE_ADDR'] ?? '', $_SERVER['HTTP_USER_AGENT'] ?? '', $_SERVER['HTTP_REFERER'] ?? '', $source);
         } catch (Throwable $e) {
-            // A count must never break a page.
+            // An error while counting must not fail the page request.
             error_log('blog analytics: ' . $e->getMessage());
         }
     }
 
     /**
-     * The id of a page that counts, or null. Drafts open only with a preview
-     * link and the error page is no page anyone asked for.
+     * The id of the page to count, or null. A draft does not count, because
+     * only a preview link opens it. The error page does not count, because
+     * the requested page does not exist.
      */
     public static function pageId(Page $page): ?string
     {
@@ -64,9 +72,11 @@ final class Counter
     }
 
     /**
-     * A person in a browser, not logged in to the Panel.
-     * Reads the cookie directly: Kirby's user() or Cookie::get() would mark the
-     * response as private and skip the page cache.
+     * True for a person in a browser who is not logged in to the Panel. A
+     * prefetch request (header Sec-Purpose or Purpose) does not count,
+     * because the visitor has not opened the page yet. The method reads
+     * $_COOKIE directly: Kirby's user() or Cookie::get() would mark the
+     * response as private, and Kirby would not cache the page.
      */
     public static function isVisitor(): bool
     {
@@ -79,9 +89,10 @@ final class Counter
     }
 
     /**
-     * Adds one view of page $id. A new visit counts where it came from: the
-     * $source a link names, else the host of the referrer. Parallel requests
-     * wait for one lock.
+     * Adds one view of page $id to the totals of today. The first view of a
+     * visit also counts where the visitor came from: $source when the link
+     * names one, else the host of the referrer. Parallel requests wait for
+     * the lock on site/cache/analytics/.lock.
      */
     public static function count(string $id, string $ip, string $ua, string $referer, ?string $source = null): void
     {
@@ -90,8 +101,9 @@ final class Counter
         $lock = fopen($cache . '/.lock', 'c');
         flock($lock, LOCK_EX);
         try {
-            // After the lock: a request that waited over midnight must not
-            // rotate the key of the new day back to the old one.
+            // The date is read after the lock is taken. A request that waited
+            // past midnight would otherwise use the old date and delete the
+            // key and the hashes of the new day.
             $date = date('Y-m-d');
             $seenFile = "$cache/$date.json";
             try {
@@ -101,7 +113,9 @@ final class Counter
             }
             if (!isset($seen['key'])) {
                 $seen = ['key' => bin2hex(random_bytes(32)), 'visitors' => []];
-                // Also temp files a killed request left behind; .lock is hidden from glob.
+                // A new day deletes all files of earlier days, also temporary
+                // files that a killed request left. glob("*") skips dot
+                // files, so .lock stays.
                 foreach (glob("$cache/*") ?: [] as $old) {
                     F::remove($old);
                 }
@@ -114,7 +128,8 @@ final class Counter
                 $seen['visitors'][$visitor][] = $id;
             }
 
-            // An unreadable month throws here: the count must not overwrite it.
+            // For an unreadable month file, the strict read throws. Without
+            // the exception, this count would overwrite the file with one day.
             $month = Months::read(substr($date, 0, 7), true);
             $day = $month[$date] ?? ['visits' => 0, 'views' => 0, 'pages' => [], 'referrers' => []];
             $day['views']++;
@@ -138,7 +153,7 @@ final class Counter
         }
     }
 
-    /** The host of an external referrer without "www.", or null. */
+    /** The host of the referrer without "www.", or null when there is none or when it is this site. */
     public static function referrer(string $referer): ?string
     {
         $host = strtolower((string) parse_url($referer, PHP_URL_HOST));

@@ -1,5 +1,24 @@
-# Website: the posts and the settings of the assistant (plugins/assistant).
+# The site view "Website" of the Panel: the posts (tab "Beiträge"), the
+# texts about the site for the page header, meta tags and feed (tab
+# "Angaben"), and the settings of the assistant (tab "Assistent").
 title: Website
 tabs:
   beitraege: tabs/posts
+  angaben:
+    label: Angaben
+    icon: info
+    fields:
+      heading:
+        label: Überschrift
+        type: text
+        help: Steht oben auf jeder Seite. Leer steht dort der Titel der Website.
+      description:
+        label: Beschreibung
+        type: textarea
+        buttons: false
+        help: Für Suchmaschinen und den Feed, wenn eine Seite keine eigene Zusammenfassung hat.
+      keywords:
+        label: Schlüsselwörter
+        type: text
+        help: Für Suchmaschinen, durch Kommas getrennt.
   assistent: tabs/assistant

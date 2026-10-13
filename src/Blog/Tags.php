@@ -6,13 +6,15 @@ use Kirby\Cms\Page;
 use Kirby\Text\KirbyTag;
 
 /**
- * The KirbyText tags of a post: (image:) draws a figure (snippets/figure.php),
- * (map:) the map of a trip. Both stay one HTML block without blank lines,
- * so Markdown leaves them as they are.
+ * The KirbyText tags that plugins/blog registers. KirbyText is Kirby's
+ * Markdown with tags in parentheses, such as (image: photo.jpg). (image:)
+ * renders a figure (snippets/figure.php), (map:) the map of a photo or trip
+ * post. The HTML of each tag contains no blank line: Markdown ends an HTML
+ * block at a blank line and would treat the rest as Markdown text.
  */
 final class Tags
 {
-    /** The (image:) tag. With imgclass it is a plain image with that class, without figure and EXIF. */
+    /** With the attribute imgclass, the tag renders a plain <img> with that class, without a figure and without EXIF lines. */
     public static function image(KirbyTag $tag): string
     {
         $file = $tag->file($tag->value);
@@ -25,7 +27,11 @@ final class Tags
         return snippet('figure', ['file' => $file, 'page' => $tag->parent()], true);
     }
 
-    /** The (map:) tag: the points as numbers in data-points, the route inline as JSON, both for map.js. */
+    /**
+     * The container that assets/js/map.js turns into a map. The points of the
+     * field `mappoints` go into data-points as JSON. The route file (GeoJSON,
+     * a JSON format for geographic data) goes inline into a JSON script element.
+     */
     public static function map(KirbyTag $tag): string
     {
         $page = $tag->parent();

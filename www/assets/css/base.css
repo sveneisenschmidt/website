@@ -79,10 +79,10 @@ img {
     animation-duration: var(--duration-page);
 }
 
-/* Ein Titelbild wandert von der Startseite in den Beitrag. Die Kachel ist
-   quadratisch, das Bild im Beitrag hat sein eigenes Seitenverhältnis, ohne
-   object-fit würde der Übergang das Motiv verzerren. Die Regel gilt für die
-   benannten Bilder, die Seite selbst behält ihre Überblendung. */
+/* A cover image moves from the front page into the post (view transition).
+   The tile is square, and the image in the post has its own aspect ratio.
+   Without object-fit, the transition would distort the image. The rule is
+   for the named images; the page itself (root) keeps its cross-fade. */
 ::view-transition-old(*),
 ::view-transition-new(*) {
     height: 100%;

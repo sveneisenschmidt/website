@@ -1,12 +1,12 @@
-/* Das Archiv hat keine Seitenspalte und nutzt die volle Rasterbreite; die
-   auto-fit-Listen füllen den Platz mit zusätzlichen Spalten. */
+/* The archive has no side column and spans the full grid width. The
+   auto-fit lists fill the space with more columns. */
 .archive {
     grid-column: 1 / -1;
 }
 
-/* Die Überschrift trägt den Namen der Seite: im Archiv das Wort Archive, auf
-   der Suchseite den getippten Begriff. Die Jahreszahl steht in der Monatszeile.
-   Beide tragen denselben Schnitt, deshalb steht er hier einmal. */
+/* The heading names the page: "Archive" in the archive, the typed query
+   in the search field on the search page. Both use the same type style, so
+   it is set here once. The year is in the heading of each month. */
 .archive-heading,
 .search-input {
     font-size: var(--text-title);
@@ -96,17 +96,17 @@
     fill: currentColor;
 }
 
-/* Die Suchseite hat keine eigene Liste: Jahr, Monat und Zeilen sind die des
-   Archivs. Neu ist allein das Feld, und es trägt den Schnitt der Jahreszahl,
-   weil es an deren Stelle die Überschrift der Seite ist. */
+/* The search page has no list of its own: month headings and rows are
+   those of the archive. Only the search field is new. It uses the type
+   style of the archive heading, because it is the page heading in its place. */
 .search-form {
     position: relative;
     display: flex;
 }
 
-/* Der gezeichnete Cursor steht am Anfang der Zeile und blinkt im Takt eines
-   echten. Er weicht, sobald jemand tippt oder das Feld den Fokus bekommt, dann
-   zeichnet der Browser seinen eigenen. */
+/* A drawn text cursor at the start of the empty field. It blinks like the
+   cursor of the browser. When the field has text, it disappears, and the
+   browser draws its own cursor. */
 .search-caret {
     position: absolute;
     top: 50%;
@@ -118,11 +118,11 @@
     animation: search-caret 1.06s step-end infinite;
 }
 
-/* Sichtbar ist der Vorgabezustand: ein leeres Feld ist das, was ein Besucher
-   zuerst sieht. Solange es leer ist, zeichnet die Seite den Balken und der
-   Browser keinen: iOS setzt den Fokus beim Laden, zeigt seinen eigenen Cursor
-   aber erst nach der ersten Berührung, dann stünde dort vorher nichts. Sobald
-   jemand tippt, kehrt sich beides um. */
+/* An empty field is what a visitor sees first. While the field is empty,
+   the page draws the cursor and the browser draws none. iOS focuses the
+   field on load (autofocus) but shows its own cursor only after the first
+   touch, so without the drawn cursor the field would look empty. When the
+   visitor types, the drawn cursor disappears and the browser's cursor shows. */
 .search-form:not(.has-term) .search-input {
     caret-color: transparent;
 }
@@ -148,7 +148,7 @@
     }
 }
 
-/* Ein Bedienelement erbt weder Schrift noch Rahmen, beides steht deshalb hier. */
+/* Browsers give a form field its own font and border, so both are reset here. */
 .search-input {
     flex: 1;
     min-width: 0;
@@ -163,17 +163,17 @@
     outline: none;
 }
 
-/* Optische Korrektur: der Browser zentriert den Text eines Eingabefelds in
-   dessen Kasten, eine Überschrift setzt ihn auf die Zeile. Bei gleicher Größe
-   sitzt das Feld dadurch einen Punkt tiefer. Verschoben wird nur die Zeichnung,
-   der Kasten bleibt wo er ist. */
+/* Optical correction: the browser centers the text of an input field in its
+   box, while a heading puts its text on the baseline. At the same size, the
+   text of the field is 1 px lower. position: relative moves only the
+   rendering; the box keeps its place in the layout. */
 .search-input {
     position: relative;
     top: -1px;
 }
 
-/* Der Browser hängt an ein Suchfeld eine eigene Löschtaste, die nichts mit der
-   Seite zu tun hat. */
+/* Browsers add their own clear button and decoration to a search field.
+   The page does not use them. */
 .search-input::-webkit-search-cancel-button,
 .search-input::-webkit-search-decoration {
     appearance: none;

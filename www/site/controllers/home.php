@@ -3,7 +3,8 @@
 use Website\Blog\Posts;
 
 /**
- * The front page: the newest pick large, the twelve before it as tiles.
+ * The front page: the newest featured post (field `pick`) as a large
+ * picture, the next twelve as tiles.
  */
 return function () {
     $picks = Posts::picks();

@@ -10,17 +10,21 @@ use Website\Assistant\ChatState;
 use Website\Tests\Support\TestSite;
 
 /**
- * Base of the assistant tests. Claude is a scripted transport and OSRM a
- * scripted HTTP closure, so no test calls the network. Uploads go to the
- * test site's own storage folder. The prompt is a marker, never real text.
+ * Base class of the assistant tests. A closure with scripted replies takes
+ * the place of the Claude API, and another one the place of OSRM, the
+ * routing service. So no test calls the network. Uploads go to the storage
+ * folder of the test site. The prompt is the marker PROMPT-CANARY-7f3a,
+ * never the real prompt, so a test can search any output for it.
+ * A round is one request to Claude and the tool calls of its answer.
  */
 abstract class AssistantTestCase extends IntegrationTestCase
 {
     protected const PROMPT = 'PROMPT-CANARY-7f3a';
 
     /**
-     * Scripted answers of Claude, one per request, and the request bodies
-     * sent. An answer may be a closure: it runs while Claude "answers".
+     * Scripted replies of Claude, one per request. A reply can be a closure,
+     * which runs at the moment Claude would answer. The bodies of the
+     * requests go to $requests.
      *
      * @var array<mixed>
      */
@@ -29,7 +33,8 @@ abstract class AssistantTestCase extends IntegrationTestCase
     protected array $requests = [];
 
     /**
-     * Scripted OSRM answers, one per request, and the URLs asked.
+     * Scripted replies of OSRM, one per request. The requested URLs go to
+     * $osrmCalls.
      *
      * @var array<mixed>
      */
@@ -61,13 +66,16 @@ abstract class AssistantTestCase extends IntegrationTestCase
 
     protected function tearDown(): void
     {
-        // The session is written on shutdown; its folder must still exist then.
+        // Kirby writes the session at PHP shutdown, after parent::tearDown()
+        // has deleted its folder. So the test destroys the session first.
         $this->kirby->session()->destroy();
         parent::tearDown();
     }
 
     /**
-     * A scripted answer; without blocks it says "Ok.": an answer without content is an error.
+     * Adds a scripted reply with the stop reason $stop. Without content
+     * blocks, the reply is the text "Ok.", because a reply without content
+     * is an error.
      *
      * @param array<mixed> $content
      */
@@ -91,7 +99,7 @@ abstract class AssistantTestCase extends IntegrationTestCase
         return ['type' => 'text', 'text' => $text];
     }
 
-    /** Runs a message and every following round, as the Panel does. */
+    /** Sends a message and runs every following round, as the Panel does. */
     protected function chat(string $message, ?string $page = null): ChatState
     {
         $chat = Chat::send($message, $page);
@@ -102,8 +110,8 @@ abstract class AssistantTestCase extends IntegrationTestCase
     }
 
     /**
-     * The session of this test as a parallel request of the same browser
-     * sees it: its own Session object on the same token and files.
+     * Returns the session of this test as a parallel request of the same
+     * browser sees it: a new Session object on the same token and files.
      */
     protected function otherRequest(): Session
     {
@@ -124,7 +132,8 @@ abstract class AssistantTestCase extends IntegrationTestCase
     }
 
     /**
-     * The newest card of a chat.
+     * Returns the proposal of the newest card in a chat. A card shows one
+     * proposed change in the Panel, with the buttons to apply or discard it.
      *
      * @return array<mixed>
      */
@@ -135,7 +144,7 @@ abstract class AssistantTestCase extends IntegrationTestCase
     }
 
     /**
-     * The tool results Claude got with request $n.
+     * Returns the tool results that Claude got with request $n.
      *
      * @return array<mixed>
      */
@@ -146,7 +155,7 @@ abstract class AssistantTestCase extends IntegrationTestCase
     }
 
     /**
-     * The text of the last block of the last message of a request.
+     * Returns the text of the last block of the last message of a request.
      *
      * @param array<mixed> $request
      */
