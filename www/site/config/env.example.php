@@ -1,9 +1,9 @@
 <?php
 
 /**
- * An example of env.php, the configuration of one host. `make config`
- * creates env.php for local development. The deploy creates it on the
- * server and sets url and assistantKey (bin/set-env.php). env.php is in
+ * An example of env.php, the configuration of the server. The deploy creates
+ * it and sets url and assistantKey (bin/set-env.php). Locally the same values
+ * come from .env (see .env.example), and there is no env.php. env.php is in
  * neither git nor the backups, so it must not hold data that a restore needs.
  */
 

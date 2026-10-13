@@ -2,8 +2,9 @@
 
 /**
  * The Kirby configuration for every host. A value that differs per host,
- * such as debug or url, goes into env.php, and env.php overrides the values
- * here. env.php is in neither git nor the backups; see env.example.php.
+ * such as debug, url or the assistant's key, comes from env.php on the
+ * server (bin/deploy.sh writes it, see env.example.php) and from .env
+ * locally. Neither is in git or in the backups.
  */
 
 // Dates in the Panel (also the default "now" of a post's date) and in the
@@ -17,6 +18,15 @@ date_default_timezone_set('Europe/Berlin');
 ini_set('serialize_precision', '-1');
 
 $env = is_file(__DIR__ . '/env.php') ? require __DIR__ . '/env.php' : [];
+
+// Locally there is no env.php: make exports DEBUG and ANTHROPIC_API_KEY from
+// .env, and make dev starts PHP with them. A value in env.php wins, so on
+// the server the environment of the web server changes nothing.
+$fromEnvironment = array_filter([
+    'debug' => getenv('DEBUG') === false ? null : filter_var(getenv('DEBUG'), FILTER_VALIDATE_BOOL),
+    'assistantKey' => getenv('ANTHROPIC_API_KEY') ?: null,
+], fn($value) => $value !== null);
+$env = [...$fromEnvironment, ...$env];
 
 // Kirby puts a hash with this salt into every media URL (the thumbnails
 // under /media/). The salt is in .salt, which every backup includes and git

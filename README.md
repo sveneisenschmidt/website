@@ -16,7 +16,7 @@ make pull
 make dev
 ```
 
-`make setup` runs `composer install`, creates the local `env.php` and `.salt`, and installs git hooks. The hooks stop a commit or push that contains text from the prompt of the Panel assistant. `make pull` replaces the content and accounts in `www/` with the state of the server. `make dev` serves the site at http://localhost:8010; `make` alone does the same.
+`make setup` runs `composer install`, creates `.env` from `.env.example` and the local `.salt`, and installs git hooks. `.env` holds every local value and key under the same names as the secrets and variables of the workflows: `SITE_URL`, `DEPLOY_HOST`, `DEPLOY_PATH`, `DEBUG`, `ANTHROPIC_API_KEY` and `PAGESPEED_API_KEY`. make passes them to every target, and Kirby reads `DEBUG` and `ANTHROPIC_API_KEY` from there. `make speed` measures the live site with PageSpeed Insights. The hooks stop a commit or push that contains text from the prompt of the Panel assistant. `make pull` replaces the content and accounts in `www/` with the state of the server. `make dev` serves the site at http://localhost:8010; `make` alone does the same.
 
 ## Tests
 
@@ -53,12 +53,7 @@ After every deploy the workflow `Speed` measures the live site with PageSpeed In
 
 The workflow reads the host key of the server from the secret `DEPLOY_KNOWN_HOSTS` (the output of `ssh-keyscan` for the deploy host) and the key of the Panel assistant from the secret `ANTHROPIC_API_KEY`. The URL of the site comes from the repository variable `SITE_URL`.
 
-`make pull` reads the server folder from a local `.env`, which is not in git:
-
-```
-LIVE_URL=https://<domain>
-LIVE_PATH=/www/htdocs/<account>/<domain>
-```
+`make pull` reads `SITE_URL`, `DEPLOY_HOST` and `DEPLOY_PATH` from `.env`. The folder on the server must have the name of the host of `SITE_URL`.
 
 ## Backups
 

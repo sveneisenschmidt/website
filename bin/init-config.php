@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Creates www/site/config/env.php and www/site/config/.salt when they do not
- * exist. make setup and make config run it. An existing file stays as it is.
+ * Creates the local configuration when it does not exist: .env from
+ * .env.example, and www/site/config/.salt. make setup and make config run
+ * it. An existing file stays as it is.
  *
- * env.php is the host config: each host has its own, and it is neither in
- * git nor in a backup. The local env.php turns on Kirby's debug mode.
- * .salt is state: Kirby builds the media URLs with it. A new site gets it
- * once. A site with content must restore its .salt from a backup.
+ * .env holds the local values and keys (see .env.example). .salt is state:
+ * Kirby builds the media URLs with it. A new site gets it once; a site with
+ * content restores its .salt from a backup (make pull does that).
  *
  * Usage: php bin/init-config.php [www-root]
  */
@@ -15,17 +15,16 @@
 $www = $argv[1] ?? 'www';
 $dir = "$www/site/config";
 
-if (!is_dir($dir)) {
-    fwrite(STDERR, "Not a site root: $www\n");
+if (!is_dir($dir) || !is_file('.env.example')) {
+    fwrite(STDERR, "Run from the repository root: php bin/init-config.php [www-root]\n");
     exit(1);
 }
 
-$env = "$dir/env.php";
-if (is_file($env)) {
-    echo "env.php exists, left unchanged\n";
+if (is_file('.env')) {
+    echo ".env exists, left unchanged\n";
 } else {
-    file_put_contents($env, "<?php\n\nreturn [\n    'debug' => true,\n];\n");
-    echo "Created $env\n";
+    copy('.env.example', '.env');
+    echo "Created .env from .env.example: fill in the values\n";
 }
 
 $salt = "$dir/.salt";

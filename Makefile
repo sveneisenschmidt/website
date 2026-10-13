@@ -7,8 +7,13 @@ PHP ?= php
 # Port von make dev. Den Port 8000 nutzt lokal ein anderes Projekt.
 PORT := 8010
 
-# Einmal nach dem Klonen: Abhängigkeiten, lokale Konfiguration, Git-Hooks.
-# Danach holt make pull die Inhalte vom Server.
+# Lokale Werte und Schlüssel aus .env (Vorlage: .env.example). make gibt sie
+# als Umgebungsvariablen an jedes Ziel weiter.
+-include .env
+export SITE_URL DEPLOY_HOST DEPLOY_PATH DEBUG ANTHROPIC_API_KEY PAGESPEED_API_KEY
+
+# Einmal nach dem Klonen: Abhängigkeiten, .env und .salt, Git-Hooks. Danach
+# die Werte in .env eintragen, dann holt make pull die Inhalte vom Server.
 .PHONY: setup
 setup:
 	composer install
@@ -35,7 +40,7 @@ test:
 .PHONY: dev
 dev:
 	@test -f vendor/autoload.php || { echo "Kirby fehlt. Zuerst composer install ausführen."; exit 1; }
-	@test -f $(WWW)/site/config/env.php || { echo "env.php fehlt. Zuerst make config ausführen."; exit 1; }
+	@test -f .env || { echo ".env fehlt. Zuerst make config ausführen."; exit 1; }
 	@test -d $(WWW)/content || { echo "Die Inhalte fehlen. Zuerst make pull ausführen."; exit 1; }
 	@$(PHP) -r 'if (PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION !== trim(file_get_contents(".php-version"))) fwrite(STDERR, "Hier läuft PHP ".PHP_VERSION.", .php-version verlangt ".trim(file_get_contents(".php-version")).".\n");'
 	@rm -rf $(WWW)/site/cache/localhost_$(PORT)
@@ -93,35 +98,30 @@ hooks:
 # Prüft jede URL der Sitemap der Live-Seite und jede Weiterleitung
 # (bin/check-urls.php). Ohne SITE prüft es make dev, das dafür in einem
 # zweiten Terminal laufen muss. Gegen die Live-Seite:
-# make check-urls SITE=$(LIVE_URL). Die URLs kommen aus der Sitemap der
-# Live-Seite.
+# make check-urls SITE=$(SITE_URL).
 SITE ?= http://localhost:$(PORT)
 .PHONY: check-urls
-check-urls: live-path
-	@$(PHP) bin/check-urls.php $(SITE) $(LIVE_URL)/sitemap.xml
+check-urls: site-url
+	@$(PHP) bin/check-urls.php $(SITE) $(SITE_URL)/sitemap.xml
 
-# make pull erreicht den Server über den SSH-Alias website. Den Ordner auf
-# dem Server nennt die lokale Datei .env. Sie ist nicht in Git, weil der Pfad
-# das Hosting-Konto nennt:
-#   LIVE_URL=https://<domain>
-#   LIVE_PATH=/www/htdocs/<konto>/<domain>
-# Ein Deploy läuft nur über den Workflow CI.
-LIVE_HOST ?= website
--include .env
+.PHONY: site-url
+site-url:
+	@test -n "$(SITE_URL)" || { echo "SITE_URL fehlt in .env (Vorlage: .env.example)." >&2; exit 1; }
 
-.PHONY: live-path
-live-path:
-	@test -n "$(LIVE_PATH)" || { echo "LIVE_PATH fehlt. Der Kommentar über LIVE_HOST im Makefile zeigt, was in .env steht." >&2; exit 1; }
-	@test -n "$(LIVE_URL)" || { echo "LIVE_URL fehlt. Der Kommentar über LIVE_HOST im Makefile zeigt, was in .env steht." >&2; exit 1; }
-	@test "$(notdir $(LIVE_PATH))" = "$(patsubst https://%,%,$(LIVE_URL))" || { echo "LIVE_PATH endet nicht im Ordner, der wie die Domain aus LIVE_URL heißt." >&2; exit 1; }
-
-# Ersetzt Inhalte und Konten in www/ durch den Stand des Servers.
+# Ersetzt Inhalte und Konten in www/ durch den Stand des Servers
+# (bin/pull.sh). Ein Deploy läuft nur über den Workflow CI.
 .PHONY: pull
-pull: live-path
-	DEPLOY_HOST=$(LIVE_HOST) DEPLOY_PATH=$(LIVE_PATH) bin/pull.sh
+pull:
+	bin/pull.sh
 
 # Ruft jede Seite der Live-Seite und jedes Vorschaubild unter /media/ einmal
 # ab, damit Kirby sie vor dem ersten Besuch erzeugt (bin/warm.php).
 .PHONY: warm
-warm: live-path
-	@$(PHP) bin/warm.php $(LIVE_URL)
+warm: site-url
+	@$(PHP) bin/warm.php $(SITE_URL)
+
+# Misst die Live-Seite mit PageSpeed Insights (bin/pagespeed.php). Braucht
+# PAGESPEED_API_KEY in .env.
+.PHONY: speed
+speed: site-url
+	@$(PHP) bin/pagespeed.php $(SITE_URL)
