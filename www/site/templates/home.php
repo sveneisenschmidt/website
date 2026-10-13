@@ -1,7 +1,7 @@
 <?php
 /**
- * The front page, as Hugo's front.html: the newest pick large, the twelve
- * before it as tiles, the timeline next to them.
+ * The front page: the newest pick large, the twelve before it as tiles,
+ * the timeline next to them.
  *
  * @var Kirby\Cms\Page $page
  */
@@ -14,7 +14,7 @@ $lead = $picks->first();
 <h2>Featured photo</h2>
 <a class="far" href="/archive/photos/">All photos</a>
 </div>
-<?php if ($lead): $cover = $lead->cover()->toFile(); [$width, $height] = blog_wide_size($cover, 1600); ?>
+<?php if ($lead): $cover = $lead->cover()->toFile(); $size = (clone $cover->dimensions())->fitWidth(1600); ?>
 <article class="picture">
 <h3><a href="<?= $lead->url() ?>"><?= $lead->title()->esc() ?></a></h3>
 <p class="metadata">
@@ -26,8 +26,8 @@ style="view-transition-name: <?= blog_vt_name($lead) ?>"
 src="<?= blog_wide($cover, 1600)->url() ?>"
 srcset="<?= blog_wide($cover, 600)->url() ?> 600w, <?= blog_wide($cover, 1000)->url() ?> 1000w, <?= blog_wide($cover, 1600)->url() ?> 1600w"
 sizes="(max-width: 900px) calc(100vw - 2rem), (max-width: 90rem) 55vw, 764px"
-width="<?= $width ?>"
-height="<?= $height ?>"
+width="<?= $size->width() ?>"
+height="<?= $size->height() ?>"
 alt="<?= esc($cover->alt()->or($lead->title())->value()) ?>"
 fetchpriority="high"
 decoding="async"

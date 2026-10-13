@@ -1,7 +1,7 @@
 <?php
 /**
- * Search, as Hugo's search.html. With ?q= the results come from the
- * server; search.js asks search.json while typing.
+ * Search. With ?q= the results come from the server; search.js asks
+ * search.json while typing.
  *
  * @var Kirby\Cms\Page $page
  */

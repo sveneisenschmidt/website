@@ -1,7 +1,7 @@
 <?php
 /**
- * About, as Hugo's page.html for a page that is no post: its label, the
- * date it was last checked, the text, the visitor numbers.
+ * About: its label, the date it was last checked, the text, the visitor
+ * numbers.
  *
  * @var Kirby\Cms\Page $page
  */

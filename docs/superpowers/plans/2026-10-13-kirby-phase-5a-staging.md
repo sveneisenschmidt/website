@@ -13,7 +13,7 @@
 **Regeln für die Ausführung:**
 - Branch `kirby`. Claude committet und pusht nie. Jeder Checkpoint nennt die Pfade, Sven committet (nie `git add -A`).
 - Hugo bleibt, wie es ist: die Live-Seite, ihr Ordner `sven.eisenschmidt.website`, `.github/workflows/deploy.yml` und `indexnow.yml`.
-- Auf dem Server nur der Ordner `/www/htdocs/w00611ad/kirby.eisenschmidt.website/`. Luisas Ordner und der gemeinsame Ordner `/www/htdocs/w00611ad/backups/` nie. Pops `var/data.db` nur lesen.
+- Auf dem Server nur der Ordner `/www/htdocs/<konto>/kirby.eisenschmidt.website/`. Luisas Ordner und der gemeinsame Ordner `/www/htdocs/<konto>/backups/` nie. Pops `var/data.db` nur lesen.
 - `../concertshotsbyluisa` nur lesen.
 - Markierungen an den Schritten:
   - **(Sven)** macht Sven selbst: KAS, Passwörter, Browser, Prompt.
@@ -82,7 +82,7 @@
 
 ## Auf dem Server
 
-| Unter `/www/htdocs/w00611ad/kirby.eisenschmidt.website/` | Herkunft |
+| Unter `/www/htdocs/<konto>/kirby.eisenschmidt.website/` | Herkunft |
 |---|---|
 | `.htaccess` | Deploy, aus `server/root.htaccess` |
 | `.htpasswd` | Deploy, aus `STAGING_USER` und `STAGING_PASSWORD` |
@@ -485,7 +485,7 @@ Am Ende anhängen:
 # Staging-Passwort und API-Schlüssel kommen aus der Umgebung:
 # STAGING_USER, STAGING_PASSWORD, ANTHROPIC_API_KEY. Lint und Tests laufen vorher.
 KIRBY_DEPLOY_HOST ?= website
-KIRBY_DEPLOY_PATH ?= /www/htdocs/w00611ad/kirby.eisenschmidt.website
+KIRBY_DEPLOY_PATH ?= /www/htdocs/<konto>/kirby.eisenschmidt.website
 KIRBY_SITE_URL ?= https://kirby.eisenschmidt.website
 
 .PHONY: kirby-deploy
@@ -950,7 +950,7 @@ Sven deployt in 5a vom Mac mit `make kirby-deploy` (Entscheidung vom 2026-10-13)
 
 - [ ] **Schritt 2 (SSH): Server ansehen**
 
-Run: `ssh website 'php85 -v | head -1; command -v rsync; ls -A /www/htdocs/w00611ad/kirby.eisenschmidt.website/'`
+Run: `ssh website 'php85 -v | head -1; command -v rsync; ls -A /www/htdocs/<konto>/kirby.eisenschmidt.website/'`
 Expected: `PHP 8.5.… (cli) …`, ein Pfad zu `rsync`, dann `index.htm` und `www` (leer). Liegt dort mehr, hält der Controller an und fragt Sven.
 
 - [ ] **Schritt 3 (Svens Terminal): Deploy**
@@ -988,7 +988,7 @@ Expected:
 
 - [ ] **Schritt 5 (SSH): Ordner und Host-Config**
 
-Run: `ssh website 'cd /www/htdocs/w00611ad/kirby.eisenschmidt.website && ls -A && ls www/site/plugins && php85 -r "echo implode(\" \", array_keys(require \$argv[1])), \"\n\";" www/site/config/env.php'`
+Run: `ssh website 'cd /www/htdocs/<konto>/kirby.eisenschmidt.website && ls -A && ls www/site/plugins && php85 -r "echo implode(\" \", array_keys(require \$argv[1])), \"\n\";" www/site/config/env.php'`
 Expected: `.htaccess`, `.htpasswd`, `vendor`, `www` (dazu `storage` erst nach dem ersten Upload im Assistenten), dann `analytics assistant blog changelog markdown-field`, dann `debug public url assistantKey`.
 
 ---
@@ -1015,7 +1015,7 @@ Steht dort `Kept from the old site.txt: assistantPrompt, …`, liegt der Prompt 
 
 ```bash
 POP=$(mktemp -d)
-ssh website 'cd /www/htdocs/w00611ad/pop.eisenschmidt.website/var && tar -cf - data.db*' | tar -x -C "$POP"
+ssh website 'cd /www/htdocs/<konto>/pop.eisenschmidt.website/var && tar -cf - data.db*' | tar -x -C "$POP"
 ls "$POP"
 ```
 Expected: `data.db`, dazu eventuell `data.db-wal` und `data.db-shm`. Auf dem Server ändert sich nichts.
@@ -1046,7 +1046,7 @@ Expected:
 == Upload backups/website-<Zeit>
 … Total file size: rund 4,4 GB …
 == Restore website-<Zeit>
-Restored <n> files from /www/htdocs/w00611ad/kirby.eisenschmidt.website/backups/website-<Zeit>
+Restored <n> files from /www/htdocs/<konto>/kirby.eisenschmidt.website/backups/website-<Zeit>
 ```
 Die Dauer hängt an Svens Upload, sie kommt in die Messwerte. Reißt die Verbindung ab, denselben Befehl noch einmal: rsync macht mit den fertigen Dateien weiter.
 
@@ -1059,12 +1059,12 @@ Expected: `200`
 
 `panel.install` ist aus, und das Dev-Konto unter `.test` kam nie hoch. Die Installation im Panel legt das erste Konto an, nur solange der Schalter an ist.
 
-a. **(SSH)** Run: `ssh website 'php85 -- /www/htdocs/w00611ad/kirby.eisenschmidt.website/www/site/config/env.php panel.install=true' < bin/set-env.php`
+a. **(SSH)** Run: `ssh website 'php85 -- /www/htdocs/<konto>/kirby.eisenschmidt.website/www/site/config/env.php panel.install=true' < bin/set-env.php`
 Expected: `panel.install: true`
 
 b. **(Sven)** https://kirby.eisenschmidt.website/panel öffnen, Staging-Passwort eingeben. Kirby zeigt „Panel installieren". E-Mail (keine Adresse unter `.test`), Name, Passwort aus dem Passwort-Manager, Sprache Deutsch. Das Panel öffnet sich angemeldet.
 
-c. **(SSH)** Run: `ssh website 'php85 -- /www/htdocs/w00611ad/kirby.eisenschmidt.website/www/site/config/env.php panel.install=false' < bin/set-env.php`
+c. **(SSH)** Run: `ssh website 'php85 -- /www/htdocs/<konto>/kirby.eisenschmidt.website/www/site/config/env.php panel.install=false' < bin/set-env.php`
 Expected: `panel.install: false`
 
 d. **(Sven)** Abmelden und wieder anmelden.
@@ -1077,7 +1077,7 @@ Website › Assistent: Der Schlüssel ist vorhanden, der Knopf zur Prüfung meld
 
 Sven startet `time make kirby-deploy` wie in Aufgabe 36. In der Ausgabe steht unter `== Snapshot of the live state` ein neuer Pfad `…/backups/website-<Zeit>`, denn das Konto ist neu.
 
-Run: `ssh website 'cd /www/htdocs/w00611ad/kirby.eisenschmidt.website/backups && du -sh website-*'`
+Run: `ssh website 'cd /www/htdocs/<konto>/kirby.eisenschmidt.website/backups && du -sh website-*'`
 Expected: der hochgeladene Snapshot rund 4,1 GB, der neue ein paar hundert KB. `du` zählt harte Links nur einmal. Die Dauer des Deploys mit 4 GB Zustand kommt in die Messwerte.
 
 ---
@@ -1091,7 +1091,7 @@ Expected: `<rund 300> pages in <n> s, 7 links to a redirect or 404` mit den 7 Ze
 
 - [ ] **Schritt 2 (SSH): Platz auf dem Server**
 
-Run: `ssh website 'cd /www/htdocs/w00611ad/kirby.eisenschmidt.website && du -sh www/content www/media backups vendor'`
+Run: `ssh website 'cd /www/htdocs/<konto>/kirby.eisenschmidt.website && du -sh www/content www/media backups vendor'`
 Expected: `www/content` rund 4,1 GB, `www/media` rund 250 MB, `backups` rund 4,1 GB, `vendor` ein paar MB. Werte in die Messwerte.
 
 ---
@@ -1155,7 +1155,7 @@ Im Panel einen Beitrag öffnen, „Öffnen" führt zu `https://kirby.eisenschmid
 - [ ] **Schritt 4 (SSH und Svens Terminal): Geschwindigkeit**
 
 Erst den Cache leeren (SSH):
-Run: `ssh website 'php85 -- /www/htdocs/w00611ad/kirby.eisenschmidt.website/www' < bin/clear-cache.php`
+Run: `ssh website 'php85 -- /www/htdocs/<konto>/kirby.eisenschmidt.website/www' < bin/clear-cache.php`
 Expected: `Page cache cleared (1 host)`
 
 Dann sofort (Svens Terminal):
@@ -1198,7 +1198,7 @@ foreach (['gd', 'exif', 'fileinfo', 'xmlreader', 'curl', 'mbstring', 'intl'] as 
 }
 ```
 
-a. **(SSH)** Run: `ssh website 'cat > /www/htdocs/w00611ad/kirby.eisenschmidt.website/www/limits.php' < "$L/limits.php"`
+a. **(SSH)** Run: `ssh website 'cat > /www/htdocs/<konto>/kirby.eisenschmidt.website/www/limits.php' < "$L/limits.php"`
 
 b. **(Svens Terminal)** Run: `curl -s -o /dev/null -u "$STAGING_USER:$STAGING_PASSWORD" -w '%{http_code}\n' "$S/limits.php"`
 Expected: `404` (ohne Anmeldung im Panel).
@@ -1218,7 +1218,7 @@ gd: yes
 …
 ```
 
-d. **(SSH)** Run: `ssh website 'rm /www/htdocs/w00611ad/kirby.eisenschmidt.website/www/limits.php'`, danach Schritt b noch einmal: `404`.
+d. **(SSH)** Run: `ssh website 'rm /www/htdocs/<konto>/kirby.eisenschmidt.website/www/limits.php'`, danach Schritt b noch einmal: `404`.
 
 Der Assistent braucht: `upload_max_filesize` und `post_max_size` über 60 MB (eine Datei pro Anfrage), 320 MB Speicher für die Vorschau eines Fotos mit 64 Megapixeln (`uploads.php` setzt 1024M per `ini_set`), `set_time_limit` für 60 s (Upload) und 180 s (Claude), alle Erweiterungen `yes`. Liegt ein Wert darunter, kommt er in die Messwerte, die Lösung entscheidet Sven vor 5b.
 
@@ -1231,7 +1231,7 @@ Im Panel unter Assistent, jeweils mit Stoppuhr:
 4. **GPX:** die GPX-Datei einer Fahrt hochladen und als Route vorschlagen lassen. Messen: Zeit bis zur Karte. Verwerfen.
 5. „Neuer Chat": die Uploads des Chats gehen.
 
-**(SSH)** Danach Run: `ssh website 'ls -A /www/htdocs/w00611ad/kirby.eisenschmidt.website/storage/assistant'`
+**(SSH)** Danach Run: `ssh website 'ls -A /www/htdocs/<konto>/kirby.eisenschmidt.website/storage/assistant'`
 Expected: `.htaccess` und keine oder wenige Ordner mit 32 Hex-Zeichen (nach „Neuer Chat" ist der Ordner des Chats weg). Schritt 1 hat `/storage/assistant/.htaccess` schon als nicht erreichbar geprüft.
 
 - [ ] **Schritt 7 (Svens Terminal): URLs gegen Staging**
@@ -1281,7 +1281,7 @@ Expected: höchstens dieser Plan. Keine Pfade unter `www/content`, `www/media`, 
 - **Hugos Deploy zuerst abschalten:** `.github/workflows/deploy.yml` läuft bei jedem Push auf `main` und alle 2 Stunden. Es lädt `public/` mit `--delete` in den Ordner aus dem Secret `DEPLOY_PATH`, ohne Ausschlüsse. Liegt Kirby in diesem Ordner, löscht der nächste Lauf `www/`, `vendor/`, `storage/` und `backups/`. Der Workflow geht also weg, bevor Kirby den Ordner von Hugo bekommt, spätestens im selben Merge.
 - **Umschalten, zwei Wege:** (a) Die Domain sven.eisenschmidt.website zeigt in KAS auf den Ordner `kirby.eisenschmidt.website/`, Document Root wieder der Ordner selbst. Hugos Ordner bleibt unberührt, der Rückweg ist dieselbe Einstellung zurück. (b) Kirby zieht in den Ordner `sven.eisenschmidt.website/` mit derselben Anordnung (`www/`, `vendor/`, `server/root.htaccess` als `.htaccess`). Hugos `.htaccess` vorher als `.htaccess.hugo` sichern, Hugos übrige Dateien sind dann nicht mehr erreichbar. Rückweg: `.htaccess.hugo` zurück. In beiden Fällen bleibt das Document Root der Ordner selbst, KAS bleibt einheitlich.
 - **Deploy für live:** `PUBLIC=1` (löscht `.htpasswd`, lädt `www/.htaccess` ohne Staging-Block), `KIRBY_SITE_URL=https://sven.eisenschmidt.website`, bei Weg (b) auch `KIRBY_DEPLOY_PATH`. Eine eigene Umgebung `production` mit eigenem Workflow oder Eingabe.
-- **Workflow auf GitHub:** kommt mit dem Merge in `main`. `workflow_dispatch` startet nur, wenn die Datei auf dem Standard-Branch liegt. Dazu eine Umgebung mit `STAGING_USER`, `STAGING_PASSWORD`, `ANTHROPIC_API_KEY`, kein `pull_request`-Trigger (öffentliches Repo, Runner im Homelab), `setup-php` mit PHP 8.5 auf dem Runner. Das Repository-Secret `DEPLOY_PATH` zeigt auf Hugos Ordner.
+- **Workflow auf GitHub:** kommt mit dem Merge in `main`. `workflow_dispatch` startet nur, wenn die Datei auf dem Standard-Branch liegt. Dazu eine Umgebung mit `STAGING_USER`, `STAGING_PASSWORD`, `ANTHROPIC_API_KEY`, kein `pull_request`-Trigger (öffentliches Repo, eigener Runner), `setup-php` mit PHP 8.5 auf dem Runner. Das Repository-Secret `DEPLOY_PATH` zeigt auf Hugos Ordner.
 - **Kirby-Lizenz:** Basic, 99 EUR, vor dem Umschalten kaufen, binnen einer Woche aktivieren. `.license` ist Zustand und geht in die Snapshots.
 - **Letzter Import:** `git merge main`, `make kirby-seed FORCE=1`, frische Kopie von Pops `data.db` und `bin/pop-import.php` (danach Kopie löschen), `bin/backup.sh --snapshot --no-accounts`, `make kirby-upload-state` gegen den Ordner von live. Der Restore leert `site/accounts`: Svens Konto danach neu wie in Aufgabe 37, Schritt 9. Den Prompt prüfen wie in Schritt 10. Was auf Staging im Panel entstand, geht dabei verloren.
 - **Objektiv bei 5 Fotos:** nach dem letzten Import im Panel eintragen (`2026-02-19-dawn`, `IMG_0957`, `IMG_0972`, `IMG_0996`, `IMG_1009`, `IMG_1024`: `EF-S55-250mm f/4-5.6 IS STM`).

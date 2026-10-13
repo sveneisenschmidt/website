@@ -2,52 +2,46 @@
 
 namespace Website\Tests\Integration;
 
-use Kirby\Exception\PermissionException;
-use Website\Tests\Support\TestSite;
+use Kirby\Exception\AuthException;
 
 /**
- * Only accounts with the role admin use the assistant (spec, "Aufbau").
+ * The assistant is there for whoever is logged in to the Panel. Kirby asks
+ * for the login on its area and its API routes.
  */
-final class AssistantAccessTest extends IntegrationTestCase
+final class AssistantAccessTest extends AssistantTestCase
 {
-    protected array $props = ['roles' => [['name' => 'editor', 'title' => 'Editor']]];
-
-    protected function setUp(): void
+    public function testTheSiteHasTheTabsPostsAndAssistant(): void
     {
-        parent::setUp();
-        $this->kirby->impersonate('kirby', fn () => $this->kirby->users()->create([
-            'id' => 'editor',
-            'email' => 'editor@website.test',
-            'role' => 'editor',
-            'password' => 'editor-password-1',
-        ]));
-    }
-
-    public function testOnlyAdminsMayUseTheAssistant(): void
-    {
-        $this->assertFalse(blog_assistant_allowed(), 'Nobody is logged in.');
-        $this->kirby->impersonate('kirby');
-        $this->assertTrue(blog_assistant_allowed());
-        $this->kirby->impersonate('nobody');
-        $this->assertFalse(blog_assistant_allowed());
-        $this->kirby->impersonate('editor');
-        $this->assertFalse(blog_assistant_allowed());
-    }
-
-    public function testTheGuardStopsOtherRoles(): void
-    {
-        $this->kirby->impersonate('editor');
-        $this->expectException(PermissionException::class);
-        blog_assistant_guard();
-    }
-
-    public function testTheTabAssistentIsForAdminsOnly(): void
-    {
-        $this->kirby->impersonate('kirby');
         $this->assertSame(['beitraege', 'assistent'], array_column($this->kirby->site()->blueprint()->tabs(), 'name'));
+    }
 
-        $this->kirby = TestSite::app($this->root, $this->options, $this->props);
-        $this->kirby->impersonate('editor');
-        $this->assertSame(['beitraege'], array_column($this->kirby->site()->blueprint()->tabs(), 'name'));
+    public function testTheLoggedInUserHasAreaAndButton(): void
+    {
+        $this->assertArrayHasKey('views', $this->kirby->load()->areas()['assistent']);
+        $this->assertSame('assistent?page=photos%2Ftest-photo', blog_assistant_button($this->post)->link);
+    }
+
+    public function testWithoutALoginTheApiRefuses(): void
+    {
+        $this->kirby->impersonate();
+
+        try {
+            $this->kirby->api()->call('blog-assistant/send', 'POST', ['body' => ['text' => 'Hallo']]);
+            $this->fail('No error');
+        } catch (AuthException) {
+        }
+        $this->assertSame([], $this->requests);
+    }
+
+    public function testWithoutALoginTheAreaLeadsToTheLogin(): void
+    {
+        // With an account, the Panel asks for the login, not for the installation.
+        $this->kirby->users()->create(['email' => 'sven@website.test', 'role' => 'admin', 'password' => 'test-password-123']);
+        $this->kirby->impersonate();
+
+        $response = $this->kirby->render('panel/assistent');
+
+        $this->assertSame(302, $response->code());
+        $this->assertSame('0; url=http://localhost/panel/login', $response->header('Refresh'));
     }
 }

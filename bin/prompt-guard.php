@@ -7,7 +7,7 @@
  * commit or push whose added lines hold a run of 8 words of the prompt.
  * It holds no part of the prompt itself.
  *
- * make kirby-hooks copies this file into the hooks folder of git, so it
+ * make hooks copies this file into the hooks folder of git, so it
  * runs on every branch, main included. Standalone: no Kirby, no Composer.
  *
  * Usage: php prompt-guard.php pre-commit

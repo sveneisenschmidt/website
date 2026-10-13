@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Router for PHP's built-in server (make kirby-dev, bin/restore-test.sh)
+ * Router for PHP's built-in server (make dev, bin/restore-test.sh)
  * with the blocks of www/.htaccess: dot files and the folders content,
  * site and kirby go to Kirby, which answers 404, as on Apache. Everything
  * else goes through Kirby's router.php.

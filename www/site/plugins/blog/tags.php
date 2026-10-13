@@ -5,15 +5,12 @@ use Kirby\Cms\Page;
 use Kirby\Text\KirbyTag;
 
 /**
- * The KirbyText tags of a post. (image:) draws what Hugo's img shortcode
- * drew, (map:) what the map shortcode drew. Both stay one HTML block
- * without blank lines, so Markdown leaves them as they are.
+ * The KirbyText tags of a post: (image:) draws a figure (snippets/figure.php),
+ * (map:) the map of a trip. Both stay one HTML block without blank lines,
+ * so Markdown leaves them as they are.
  */
 
-/**
- * The EXIF rows of an image as layouts/_partials/exif.html wrote them:
- * label => value, only the values the file has.
- */
+/** The EXIF rows of an image: label => value, only the values the file has. */
 function blog_exif_rows(File $file): array
 {
     $value = fn (string $key) => trim((string)$file->content()->get($key)->value());
@@ -38,7 +35,7 @@ function blog_exif_rows(File $file): array
     ], fn ($v) => $v !== '');
 }
 
-/** The (image:) tag. With imgclass it is a Markdown image, as ![alt](file){class="..."} was in Hugo. */
+/** The (image:) tag. With imgclass it is a plain image with that class, without figure and EXIF. */
 function blog_image_tag(KirbyTag $tag): string
 {
     $file = $tag->file($tag->value);
@@ -51,7 +48,7 @@ function blog_image_tag(KirbyTag $tag): string
     return snippet('figure', ['file' => $file, 'page' => $tag->parent()], true);
 }
 
-/** The (map:) tag: points as numbers, the route inlined, as the Hugo shortcode. */
+/** The (map:) tag: the points as numbers in data-points, the route inline as JSON, both for map.js. */
 function blog_map_tag(KirbyTag $tag): string
 {
     $page = $tag->parent();

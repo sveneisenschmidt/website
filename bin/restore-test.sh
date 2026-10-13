@@ -13,7 +13,7 @@ WWW="${1:-www}"
 TEST=".restore-test"
 PORT_A=8093
 PORT_B=8094
-# kirby-restore-test passes the PHP of the Makefile.
+# make restore-test passes the PHP of the Makefile.
 PHP="${PHP:-php}"
 
 sha256() { if command -v sha256sum >/dev/null; then sha256sum "$@"; else shasum -a 256 "$@"; fi; }

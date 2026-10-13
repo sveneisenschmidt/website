@@ -25,6 +25,7 @@ final class AnalyticsTest extends IntegrationTestCase
     protected function tearDown(): void
     {
         $_SERVER = $this->server;
+        $_GET = [];
         unset($_COOKIE['kirby_session']);
         parent::tearDown();
     }
@@ -137,6 +138,17 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->assertSame(['instagram.com' => 1], $this->today()['referrers']);
     }
 
+    public function testFeedLinkCountsAsSourceRssOnceAVisit(): void
+    {
+        $this->visit('2026-10-07-test-photo', query: ['source' => 'rss']);
+        $this->visit('photos', query: ['source' => 'rss']);
+        $this->visit('photos', ip: '203.0.113.2', referer: 'https://feedly.com/', query: ['source' => 'rss']);
+        $this->visit('photos', ip: '203.0.113.3', query: ['source' => 'other']);
+
+        $this->assertSame(['RSS' => 2], $this->today()['referrers']);
+        $this->assertSame([['host' => 'RSS', 'visits' => 2]], blog_analytics_summary(30)['referrers']);
+    }
+
     public function testStatsAreStateAndHoldNoIpAddress(): void
     {
         $this->visit('photos', ip: '198.51.100.77');
@@ -233,7 +245,9 @@ final class AnalyticsTest extends IntegrationTestCase
         ?string $referer = null,
         string $method = 'GET',
         bool $session = false,
+        array $query = [],
     ): void {
+        $_GET = $query;
         $_SERVER['REMOTE_ADDR'] = $ip;
         $_SERVER['HTTP_USER_AGENT'] = $ua;
         $_SERVER['HTTP_HOST'] = 'localhost';

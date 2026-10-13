@@ -1,0 +1,5 @@
+# Website: the posts and the settings of the assistant (plugins/assistant).
+title: Website
+tabs:
+  beitraege: tabs/posts
+  assistent: tabs/assistant

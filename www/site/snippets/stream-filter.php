@@ -1,6 +1,6 @@
 <?php
 /**
- * The row of filters above archive and search, as Hugo's stream-filter.html.
+ * The row of filters above archive and search.
  *
  * @var string $current all, photos, trips, notes, essays or search
  */

@@ -1,7 +1,7 @@
 <?php
 /**
- * A post of any type, as Hugo's page.html: head with type and date, the
- * text, the mail link, the neighbours in the timeline.
+ * A post of any type: head with type and date, the text, the mail link,
+ * the neighbours in the timeline.
  *
  * @var Kirby\Cms\Page $page
  * @var Kirby\Cms\Site $site

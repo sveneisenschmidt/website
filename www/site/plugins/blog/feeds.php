@@ -4,8 +4,8 @@ use Kirby\Cms\Page;
 use Kirby\Toolkit\Xml;
 
 /**
- * The files for machines, from the content: the feed as Hugo's
- * home.rss.xml, the sitemap as sitemap.xml, robots.txt and llms.txt.
+ * The files for machines, from the content: the feed (index.xml), the
+ * sitemap, robots.txt and llms.txt.
  */
 
 /** The date format of RSS. */
@@ -15,7 +15,7 @@ const BLOG_RSS_DATE = 'D, d M Y H:i:s O';
 function blog_rss(): string
 {
     $site = site();
-    $posts = blog_posts();
+    $posts = collection('posts');
     $home = $site->url() . '/';
     $xml = '<?xml version="1.0" encoding="utf-8" standalone="yes"?>' . "\n"
         . '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">' . "\n"
@@ -41,37 +41,39 @@ function blog_rss(): string
     return $xml . "  </channel>\n</rss>\n";
 }
 
-/** Cover, summary and the number of words after it, as home.rss.xml wrote them. */
+/** A feed item: cover, summary and the number of words after it. */
 function blog_rss_description(Page $post, string $link): string
 {
     $html = '';
     if ($cover = $post->cover()->toFile()) {
-        $w = (int)$cover->width();
-        $h = (int)$cover->height();
-        $scale = min(1, 768 / max($w, $h, 1));
+        // fit() changes its object: a copy, so the file keeps its own size.
+        $size = (clone $cover->dimensions())->fit(768);
         $html .= '<img src="' . $cover->thumb(['width' => 768, 'height' => 768, 'format' => 'webp', 'quality' => 80])->url()
-            . '" width="' . (int)round($w * $scale) . '" height="' . (int)round($h * $scale)
+            . '" width="' . $size->width() . '" height="' . $size->height()
             . '" alt="' . esc($post->title()->value() . ' cover image') . '" />';
     }
     $summary = blog_summary($post);
-    $more = blog_words(blog_content($post)) - blog_words($summary);
-    $html .= '<p>' . esc(html_entity_decode(blog_plain($summary), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+    $more = blog_words(blog_plain(blog_content($post))) - blog_words($summary);
+    $html .= '<p>' . esc($summary);
     if ($more > 0) {
         $html .= ' (<a href="' . $link . '" title="Continue reading ' . esc($post->title()->value()) . '">' . $more . ' more words</a>)';
     }
     return $html . '</p>';
 }
 
-/** The home page and every post, each with its time and its cover. */
+/** The home page, About and every post, each with its time, a post with its cover. */
 function blog_sitemap(): string
 {
-    $posts = blog_posts();
+    $posts = collection('posts');
     $xml = '<?xml version="1.0" encoding="utf-8" standalone="yes"?>' . "\n"
         . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"' . "\n"
         . '  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">' . "\n";
     $newest = $posts->first() ? blog_modified($posts->first()) : null;
     $xml .= '  <url>' . "\n" . '    <loc>' . site()->url() . "/</loc>\n"
         . ($newest ? '    <lastmod>' . date('c', $newest) . "</lastmod>\n" : '') . "  </url>\n";
+    if ($about = page('about')) {
+        $xml .= "  <url>\n    <loc>" . $about->url() . "</loc>\n    <lastmod>" . date('c', blog_modified($about)) . "</lastmod>\n  </url>\n";
+    }
     foreach ($posts as $post) {
         $xml .= "  <url>\n    <loc>" . $post->url() . "</loc>\n"
             . '    <lastmod>' . date('c', blog_modified($post)) . "</lastmod>\n";
@@ -100,13 +102,12 @@ function blog_llms(): string
     $site = site();
     $lines = ['# ' . $site->title()->value(), '', trim((string)$site->llms()->value())];
     foreach (['essays' => 'Essays', 'notes' => 'Notes'] as $section => $heading) {
-        $posts = blog_posts()->filter(fn (Page $p) => $p->parent()->id() === $section);
+        $posts = collection('posts')->filter(fn (Page $p) => $p->parent()->id() === $section);
         if ($posts->isNotEmpty()) {
             array_push($lines, '', "## $heading", '');
         }
         foreach ($posts as $post) {
-            $summary = html_entity_decode(trim(preg_replace('/\s+/u', ' ', blog_description($post))), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $lines[] = '- [' . $post->title()->value() . '](' . $post->url() . '): ' . $summary;
+            $lines[] = '- [' . $post->title()->value() . '](' . $post->url() . '): ' . blog_description($post);
         }
     }
     $url = $site->url();
@@ -121,8 +122,9 @@ function blog_llms(): string
 }
 
 /**
- * The GUIDs that stay as they were (home.rss.xml): path of a post => the
- * old URL of each redirect with rss: keep. A later redirect wins.
+ * The GUIDs that never change, so a feed reader shows no post twice: path
+ * of a post => the old URL of each redirect with rss: keep. A later
+ * redirect wins.
  */
 function blog_rss_guids(): array
 {

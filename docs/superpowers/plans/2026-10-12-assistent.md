@@ -6455,7 +6455,7 @@ Test für Test umgesetzt, erst rot, dann grün. Ersetzt sind die Blöcke von Auf
 - **Phase 5, Abnahme auf Staging mit gemessenen Zeiten:** ein Upload von 20 Fotos, eine Opus-Runde mit Fotos, OSRM aus dem Web-PHP, ein GPX-Import. Dabei messen und festhalten: `upload_max_filesize`, `post_max_size`, `memory_limit` (die Vorschau eines Fotos mit 64 Megapixeln braucht rund 320 MB, `uploads.php` setzt 1024M per `ini_set`), `max_execution_time` und ob `set_time_limit(180)` greift. Die Grenzen von Web-PHP und Apache auf All-Inkl sind bisher nur aus der Kommandozeile bekannt.
 - **Phase 5, Server:** `storage/` liegt neben `www/` und `vendor/`, ist für PHP schreibbar und wird vom Deploy nicht gelöscht. Der Deploy schreibt `assistantKey` in `env.php`.
 - **Phase 5, Schlüssel:** eigener Anthropic-Schlüssel mit Ausgabegrenze, getrennt von Luisas.
-- **Phase 5, CI:** In diesem öffentlichen Repo läuft kein Pull-Request auf dem Runner im Homelab. Schlüssel liegen in einer geschützten Umgebung. `PromptGuardTest` braucht `git` auf dem Runner.
+- **Phase 5, CI:** In diesem öffentlichen Repo läuft kein Pull-Request auf dem eigenen Runner. Schlüssel liegen in einer geschützten Umgebung. `PromptGuardTest` braucht `git` auf dem Runner.
 - **Bekanntes Risiko:** Andere Seiten im selben All-Inkl-Konto können mit ihrem PHP Prompt, Schlüssel und Uploads lesen.
 - **Nach dem Umschalten:** Die Skills `write-post` und `journey-post` werden gelöscht, wenn Sven das entscheidet. Release-Posts zu Hypo und Essays mit Diffs bleiben bei Claude Code.
 

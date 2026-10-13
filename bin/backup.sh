@@ -5,7 +5,7 @@
 # Everything else is code (git), host config (env.php, imported per host)
 # or generated (media, cache, sessions).
 #
-# Usage: bin/backup.sh [--snapshot] [--no-accounts] [www-root] [output-dir]
+# Usage: bin/backup.sh [--snapshot] [www-root] [output-dir]
 # Output: <output-dir>/website-<UTC timestamp>.tar.gz containing state/, MANIFEST.sha256 and META.
 #
 # --snapshot writes the folder <output-dir>/website-<UTC timestamp>/ with the same
@@ -15,18 +15,13 @@
 # as in the newest snapshot, no new snapshot is made and the script prints the
 # newest one.
 #
-# --no-accounts leaves out site/accounts: the first state for a server, made
-# locally, never carries the local dev login (bin/upload-state.sh).
-#
 # PHP: on the server the php of the ssh shell is 8.4, the deploy passes PHP=php85.
 set -euo pipefail
 
 SNAPSHOT=0
-ACCOUNTS=1
 while [ $# -gt 0 ]; do
   case "$1" in
     --snapshot) SNAPSHOT=1 ;;
-    --no-accounts) ACCOUNTS=0 ;;
     *) break ;;
   esac
   shift
@@ -35,7 +30,6 @@ WWW="${1:-www}"
 OUT="${2:-backups}"
 PHP="${PHP:-php}"
 PATHS=(content site/accounts site/config/.salt site/config/.license)
-[ "$ACCOUNTS" = 1 ] || PATHS=(content site/config/.salt site/config/.license)
 
 [ -d "$WWW/kirby" ] || { echo "Not a site root: $WWW" >&2; exit 1; }
 mkdir -p "$OUT"

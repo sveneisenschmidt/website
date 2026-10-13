@@ -11,8 +11,7 @@ on:
 
 jobs:
   submit:
-    # Läuft auf dem Pi im Homelab (Repo sveneisenschmidt/homelab, Rolle github-runner).
-    runs-on: [self-hosted, Linux, ARM64]
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v7
         with:

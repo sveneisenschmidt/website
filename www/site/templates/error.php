@@ -1,6 +1,6 @@
 <?php
 /**
- * The error page, as Hugo's 404.html.
+ * The error page.
  *
  * @var Kirby\Cms\Page $page
  */

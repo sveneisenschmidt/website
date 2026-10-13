@@ -3,7 +3,6 @@
 use Kirby\Cms\App;
 use Kirby\Cms\Page;
 use Kirby\Cms\User;
-use Kirby\Exception\PermissionException;
 use Kirby\Panel\Ui\Buttons\ViewButton;
 use Kirby\Session\Session;
 
@@ -11,8 +10,8 @@ use Kirby\Session\Session;
  * Panel area "Assistent" (docs/superpowers/specs/2026-10-12-assistent-design.md):
  * Sven writes posts with Claude. Claude proposes, Sven's click applies.
  * Settings in Website › Assistent: the prompt and the model. The key is
- * host config: 'assistantKey' in env.php. Only accounts with the role
- * admin see the area, its API routes and the tab.
+ * host config: 'assistantKey' in env.php. Area and API routes need a
+ * login, as all of the Panel.
  */
 
 require_once __DIR__ . '/claude.php';
@@ -24,42 +23,12 @@ require_once __DIR__ . '/chat.php';
 require_once __DIR__ . '/apply.php';
 require_once __DIR__ . '/log.php';
 
-/** Only accounts with the role admin use the assistant. */
-function blog_assistant_allowed(): bool
-{
-    return kirby()->user()?->role()->id() === 'admin';
-}
-
-function blog_assistant_guard(): void
-{
-    if (!blog_assistant_allowed()) {
-        throw new PermissionException(message: 'Der Assistent ist nur für Konten mit der Rolle admin.');
-    }
-}
-
 /**
- * The site blueprint: tab "Beiträge" for everyone, tab "Assistent" for
- * admins only. Kirby blueprints know no roles, so it is PHP; a file
- * site/blueprints/site.yml would win over it.
- */
-function blog_assistant_site_blueprint(): array
-{
-    return [
-        'title' => 'Website',
-        'tabs' => [
-            'beitraege' => 'tabs/posts',
-            'assistent' => blog_assistant_allowed() ? 'tabs/assistant' : false,
-        ],
-    ];
-}
-
-/**
- * Runs an API action for admins, after the uploads are cleaned up. A failed
- * request comes back as {error} for the view.
+ * Runs an API action after the uploads are cleaned up. A failed request
+ * comes back as {error} for the view.
  */
 function blog_assistant_api(Closure $action): array
 {
-    blog_assistant_guard();
     blog_uploads_cleanup();
     try {
         return blog_assistant_view($action());
@@ -83,23 +52,15 @@ function blog_assistant_upload(array $files): array
 function blog_assistant_button(Page $page): ?ViewButton
 {
     $template = $page->intendedTemplate()->name();
-    if (!blog_assistant_allowed() || ($template !== 'about' && !isset(BLOG_ASSISTANT_TYPES[$template]))) {
+    if ($template !== 'about' && !isset(BLOG_ASSISTANT_TYPES[$template])) {
         return null;
     }
     return new ViewButton(icon: 'robot', text: 'Assistent', link: 'assistent?page=' . rawurlencode($page->id()));
 }
 
 App::plugin('sveneisenschmidt/assistant', [
-    'blueprints' => [
-        'site' => fn () => blog_assistant_site_blueprint(),
-    ],
     'areas' => [
         'assistent' => function () {
-            $buttons = ['page.assistant' => fn (Page $page) => blog_assistant_button($page)];
-            // Other roles get neither menu entry nor views; the button stays away too.
-            if (!blog_assistant_allowed()) {
-                return ['buttons' => $buttons];
-            }
             return [
                 'label' => 'Assistent',
                 'icon' => 'robot',
@@ -128,7 +89,7 @@ App::plugin('sveneisenschmidt/assistant', [
                         'props' => blog_assistant_log_view(),
                     ],
                 ]],
-                'buttons' => $buttons,
+                'buttons' => ['page.assistant' => fn (Page $page) => blog_assistant_button($page)],
             ];
         },
     ],
@@ -180,10 +141,7 @@ App::plugin('sveneisenschmidt/assistant', [
             [
                 'pattern' => 'blog-assistant/check',
                 'method' => 'POST',
-                'action' => function () {
-                    blog_assistant_guard();
-                    return blog_assistant_check();
-                },
+                'action' => fn () => blog_assistant_check(),
             ],
         ],
     ],

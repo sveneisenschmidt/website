@@ -3,7 +3,7 @@
 /**
  * Runs of words of the prompt, shared by the git hook bin/prompt-guard.php
  * (no prompt in git) and guard.php (no prompt in a proposal). Standalone:
- * no Kirby, no Composer; make kirby-hooks copies it next to the hook as
+ * no Kirby, no Composer; make hooks copies it next to the hook as
  * prompt-words.php.
  */
 

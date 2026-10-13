@@ -1,7 +1,6 @@
 <?php
 /**
- * The visitor numbers on About, from "Besucher" (plugins/analytics). It
- * takes the place of the block that fetched them from Pop.
+ * The visitor numbers on About, from "Besucher" (plugins/analytics).
  */
 $totals = blog_analytics_totals();
 if ($totals['visits'] === 0) {

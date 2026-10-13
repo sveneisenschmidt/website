@@ -43,8 +43,10 @@ function blog_analytics_route(Route $route, string $path, string $method, mixed 
     if ($id === null || !blog_analytics_is_visitor()) {
         return;
     }
+    // Feed readers rarely send a referrer: the links of the feed name their source.
+    $source = ($_GET['source'] ?? null) === 'rss' ? 'RSS' : null;
     try {
-        blog_analytics_count($id, $_SERVER['REMOTE_ADDR'] ?? '', $_SERVER['HTTP_USER_AGENT'] ?? '', $_SERVER['HTTP_REFERER'] ?? '');
+        blog_analytics_count($id, $_SERVER['REMOTE_ADDR'] ?? '', $_SERVER['HTTP_USER_AGENT'] ?? '', $_SERVER['HTTP_REFERER'] ?? '', $source);
     } catch (Throwable $e) {
         // A count must never break a page.
         error_log('blog analytics: ' . $e->getMessage());
@@ -78,8 +80,12 @@ function blog_analytics_is_visitor(): bool
         && !isset($_COOKIE['kirby_session']);
 }
 
-/** Adds one view of page $id. Parallel requests wait for one lock. */
-function blog_analytics_count(string $id, string $ip, string $ua, string $referer): void
+/**
+ * Adds one view of page $id. A new visit counts where it came from: the
+ * $source a link names, else the host of the referrer. Parallel requests
+ * wait for one lock.
+ */
+function blog_analytics_count(string $id, string $ip, string $ua, string $referer, ?string $source = null): void
 {
     $cache = blog_analytics_cache_dir();
     Dir::make($cache);
@@ -116,7 +122,7 @@ function blog_analytics_count(string $id, string $ip, string $ua, string $refere
         $day['views']++;
         if ($newVisit) {
             $day['visits']++;
-            $host = blog_analytics_referrer($referer);
+            $host = $source ?? blog_analytics_referrer($referer);
             if ($host !== null) {
                 $day['referrers'][$host] = ($day['referrers'][$host] ?? 0) + 1;
             }

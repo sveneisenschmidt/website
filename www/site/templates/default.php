@@ -2,7 +2,7 @@
 /**
  * Any other page: its title in the frame of the site. The section pages
  * photos, trips, notes and essays only order the posts; their URLs lead
- * to the archive (data/redirects.yaml).
+ * to the archive (content/.redirects.json).
  *
  * @var Kirby\Cms\Page $page
  */

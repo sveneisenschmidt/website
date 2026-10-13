@@ -23,23 +23,13 @@ if (is_file(__DIR__ . '/env.php') && ($salt === null || $salt === '')) {
 }
 
 return array_replace_recursive([
-    'debug' => false,
     'locale' => 'en_US.utf-8',
     'content' => array_filter(['salt' => $salt]),
-    // Markdown as Hugo rendered it: a line break in the source is no <br>.
+    // A single line break in a text is no <br>: the posts are written that way.
     'markdown' => ['breaks' => false],
-    // Quotes, dashes and ellipses as Hugo's typographer (Goldmark) wrote
-    // them: named entities, -- an en dash, --- an em dash, no extra spaces.
-    'smartypants' => [
-        'attr' => 'qDe',
-        'doublequote.open' => '&ldquo;',
-        'doublequote.close' => '&rdquo;',
-        'singlequote.open' => '&lsquo;',
-        'singlequote.close' => '&rsquo;',
-        'emdash' => '&mdash;',
-        'endash' => '&ndash;',
-        'ellipsis' => '&hellip;',
-    ],
+    // Curly quotes and ellipses; "--" is an en dash and "---" an em dash
+    // (Kirby's default makes "--" an em dash).
+    'smartypants' => ['attr' => 'qDe'],
     // GD, plus conversion to sRGB for photos with another color profile
     // (plugins/blog/srgb.php).
     'thumbs' => ['driver' => 'blog-gd'],
@@ -50,7 +40,6 @@ return array_replace_recursive([
     ],
     'routes' => require __DIR__ . '/routes.php',
     'panel' => [
-        'install' => false,
         'language' => 'de',
         // Each post type gets its own entry in the menu, linked to its page in
         // the tree under Site. Site is current only outside these four pages.
@@ -65,19 +54,9 @@ return array_replace_recursive([
             return [...$menu, '-', 'besucher', 'verlauf', 'assistent', '-', 'users', 'system'];
         },
         // Kirby's page buttons plus "Assistent" (plugins/assistant). It shows
-        // on posts and About, for admins only.
+        // on posts and About.
         'viewButtons' => [
             'page' => ['open', 'preview', '-', 'assistant', 'settings', 'languages', 'status'],
         ],
-    ],
-    'hooks' => [
-        // The local dev login from bin/seed.php (an address under .test) works
-        // only with debug on. Should a local backup with accounts ever reach
-        // the server (debug off there), nobody can log in with it.
-        'user.login:before' => function (Kirby\Cms\User $user) {
-            if (str_ends_with($user->email(), '.test') && option('debug') !== true) {
-                throw new Kirby\Exception\PermissionException('The dev login works only locally.');
-            }
-        },
     ],
 ], $env);

@@ -4,7 +4,7 @@ use Kirby\Cms\Response;
 
 /**
  * Routes before Kirby's own: the files for machines (plugins/blog/feeds.php),
- * then every other path through the URLs of Hugo (plugins/blog/urls.php).
+ * then every other path through the URL scheme of the site (plugins/blog/urls.php).
  */
 return [
     // Feed and sitemap take a second to build: they go into the page cache,

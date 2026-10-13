@@ -290,6 +290,5 @@ final class UploadTest extends AssistantTestCase
         blog_uploads_cleanup();
 
         $this->assertSame([], glob("$dir/$id.*"));
-        $this->assertFileExists($this->root . '/storage/assistant/.htaccess');
     }
 }

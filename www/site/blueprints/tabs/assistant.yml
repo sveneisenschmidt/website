@@ -1,4 +1,4 @@
-# Website › Assistent, for admins only (plugins/assistant). The prompt lives
+# Website › Assistent (plugins/assistant). The prompt lives
 # only in this field, in content/site.txt: state, never in git. It has no
 # default and no template on purpose.
 label: Assistent

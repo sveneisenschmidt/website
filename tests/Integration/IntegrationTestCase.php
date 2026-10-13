@@ -16,7 +16,7 @@ abstract class IntegrationTestCase extends TestCase
     protected Page $post;
     /** Options for the test site, on top of config.php. */
     protected array $options = [];
-    /** Further App props for the test site, such as roles. */
+    /** Further App props for the test site, such as hooks. */
     protected array $props = [];
 
     protected function setUp(): void
@@ -58,10 +58,13 @@ abstract class IntegrationTestCase extends TestCase
         });
     }
 
-    /** Upload to the post as the Panel does: through the image blueprint and our hooks. */
-    protected function upload(string $source, string $filename): File
+    /**
+     * Upload to the post (or to $page) as the Panel does: through the image
+     * blueprint and our hooks.
+     */
+    protected function upload(string $source, string $filename, ?Page $page = null): File
     {
-        return $this->kirby->impersonate('kirby', fn () => $this->post->createFile([
+        return $this->kirby->impersonate('kirby', fn () => ($page ?? $this->post)->createFile([
             'source' => $source,
             'filename' => $filename,
             'template' => 'image',

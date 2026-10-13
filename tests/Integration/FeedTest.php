@@ -6,7 +6,7 @@ use Website\Tests\Support\TestSite;
 
 /**
  * The files for machines (plugins/blog/feeds.php, config/routes.php):
- * feed and sitemap as Hugo wrote them, robots.txt, llms.txt.
+ * feed, sitemap, robots.txt, llms.txt.
  */
 final class FeedTest extends IntegrationTestCase
 {
@@ -17,11 +17,11 @@ final class FeedTest extends IntegrationTestCase
         $this->post = $this->kirby->impersonate('kirby', fn () => $this->post->update([
             'cover' => [$cover->uuid()->toString()],
             'intro' => "It's the intro.",
-            'text' => 'Five more words come here.',
+            'text' => "(image: cover.jpg)\n\nFive more words come here.",
         ]));
     }
 
-    public function testFeedAsHugoWroteIt(): void
+    public function testFeedWithChannelAndItems(): void
     {
         $response = $this->kirby->render('index.xml');
         $xml = $response->body();
@@ -33,10 +33,11 @@ final class FeedTest extends IntegrationTestCase
         $this->assertStringContainsString('<lastBuildDate>Wed, 07 Oct 2026 20:00:00 +0200</lastBuildDate>', $xml);
         $this->assertStringContainsString('<atom:link href="http://localhost/index.xml" rel="self" type="application/rss+xml" />', $xml);
         $this->assertStringContainsString("<link>$link</link>\n      <pubDate>Wed, 07 Oct 2026 20:00:00 +0200</pubDate>\n      <guid isPermaLink=\"true\">$link</guid>", $xml);
-        // Hugo's Fit "768x768": the fixture is smaller and keeps its size. 9 words: the EXIF rows count too.
+        // The cover fits into 768 x 768: the fixture is smaller and keeps its size.
+        // The EXIF rows of the figure in the text are no words.
         $this->assertStringContainsString(
             '<description><![CDATA[<img src="' . $cover->thumb(['width' => 768, 'height' => 768, 'format' => 'webp', 'quality' => 80])->url()
-            . '" width="60" height="40" alt="Test Photo cover image" /><p>It’s the intro.' . "\n"
+            . '" width="60" height="40" alt="Test Photo cover image" /><p>It’s the intro.'
             . " (<a href=\"$link\" title=\"Continue reading Test Photo\">5 more words</a>)</p>]]></description>",
             $xml
         );
@@ -56,6 +57,20 @@ final class FeedTest extends IntegrationTestCase
             . blog_wide($post->cover()->toFile(), 1600)->url() . '</image:loc>',
             $xml
         );
+    }
+
+    public function testSitemapHasAboutWithItsDate(): void
+    {
+        $this->kirby->impersonate('kirby', fn () => $this->kirby->site()->createChild([
+            'slug' => 'about',
+            'template' => 'about',
+            'draft' => false,
+            'content' => ['title' => 'About', 'lastmod' => '2026-09-12'],
+        ]));
+
+        $xml = $this->kirby->render('sitemap.xml')->body();
+
+        $this->assertStringContainsString("<url>\n    <loc>http://localhost/about/</loc>\n    <lastmod>2026-09-12T00:00:00+02:00</lastmod>\n  </url>", $xml);
     }
 
     public function testRobotsAllowEverythingAndNameTheSitemap(): void

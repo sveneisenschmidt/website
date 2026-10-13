@@ -1,7 +1,7 @@
 <?php
 /**
- * The square cover of a post in a list, as Hugo's thumb.html: 48 px, 96 px
- * for 2x screens. Nothing without a cover.
+ * The square cover of a post in a list: 48 px, 96 px for 2x screens.
+ * Nothing without a cover.
  *
  * @var Kirby\Cms\Page $post
  */

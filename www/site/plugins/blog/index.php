@@ -39,8 +39,12 @@ Kirby::plugin('sveneisenschmidt/blog', [
             'html' => fn (KirbyTag $tag) => blog_map_tag($tag),
         ],
     ],
-    // One template for the four post types, as Hugo's page.html.
+    // One template for the four post types.
     'templates' => array_fill_keys(['photo', 'trip', 'note', 'essay'], __DIR__ . '/../../templates/post.php'),
+    // All published posts, newest first, posts of the same time by title.
+    'collections' => [
+        'posts' => fn () => pages(BLOG_SECTIONS)->children()->listed()->sortBy('date', 'desc', 'title', 'asc'),
+    ],
     'cacheTypes' => ['blog-file' => BlogFileCache::class],
     // Every page: its URL ends with a slash, a post's is /YYYY-MM-DD-slug/ (urls.php).
     'pageModels' => ['default' => BlogPage::class],

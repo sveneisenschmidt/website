@@ -154,7 +154,7 @@ final class AssistantEditTest extends AssistantTestCase
 
     public function testOldMarkupOfAFieldStaysEditable(): void
     {
-        // Imported posts keep raw HTML from Hugo's rawhtml shortcode.
+        // Imported posts keep raw HTML.
         $this->page()->update(['text' => "<iframe src=\"https://video.test/embed/1\"></iframe>\n\nIt rained all day."]);
         $card = $this->propose('propose_edit', ['post' => 'photos/test-photo', 'field' => 'text', 'passage' => 'It rained all day.', 'versions' => ['It poured.']]);
         $this->assertSame('edit', $card['kind']);

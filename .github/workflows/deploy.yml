@@ -1,0 +1,60 @@
+name: Deploy
+
+# Every push to main deploys the site: lint and tests first, then make deploy.
+# The repository is public and the runner is self-hosted, so no pull
+# request starts this workflow.
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# One deploy at a time; a second push waits for the first.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.actor == 'sveneisenschmidt'
+    runs-on: self-hosted
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          extensions: gd, exif, intl, mbstring
+          tools: composer
+        env:
+          runner: self-hosted
+
+      - name: Install
+        run: composer install --no-interaction --no-progress
+
+      # The runner keeps its files between jobs: the key goes to $RUNNER_TEMP,
+      # which the runner empties after each job, and known_hosts is overwritten.
+      - name: SSH key
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' > "$RUNNER_TEMP/deploy_key"
+          chmod 600 "$RUNNER_TEMP/deploy_key"
+          ssh-keygen -y -f "$RUNNER_TEMP/deploy_key" > /dev/null || { echo "DEPLOY_SSH_KEY is not a valid private key"; exit 1; }
+          ssh-keyscan -T 30 "$DEPLOY_HOST" > ~/.ssh/known_hosts
+
+      # Host, user and folder come from secrets, as they name the hosting
+      # account. Without an API key the deploy keeps the assistant's key.
+      - name: Deploy
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          export DEPLOY_SSH_KEY_FILE="$RUNNER_TEMP/deploy_key"
+          make deploy LIVE_HOST="$DEPLOY_USER@$DEPLOY_HOST" LIVE_PATH="${DEPLOY_PATH%/}"
