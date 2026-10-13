@@ -60,8 +60,8 @@ function markdown(text, sources) {
   return html.join("");
 }
 // Shows a text on a card as plain text and highlights its links. The server
-// renders each text as the site does and returns its links (`Guard::marks()`
-// in src/Assistant/Guard.php). Exactly these strings are highlighted,
+// renders each text as the site does and returns its links (`Marks::of()`
+// in src/Assistant/Marks.php). Exactly these strings are highlighted,
 // wherever they occur in the text.
 function marked(text, links) {
   const found = [...new Set(links || [])].filter((link) => link !== "").sort((a, b) => b.length - a.length);

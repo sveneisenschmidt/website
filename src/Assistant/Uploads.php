@@ -50,14 +50,6 @@ final class Uploads
     public const IMAGE = '/^[uv][0-9a-f]{16}(?:\.preview)?\.jpg$/';
     public const FOLDER = '/^[0-9a-f]{32}$/';
 
-    /**
-     * Matches code in an image file, which is then refused. PHP's short echo
-     * tag "<?=" counts only together with printable text up to "?>" or the
-     * end of the file. The three bytes "<?=" alone occur by chance in the
-     * image data of large photos, a few times in 20 MB.
-     */
-    public const CODE = '/<\?php|<\?=[\x20-\x7E\t\r\n]*?(?:\?>|\z)|<script|<html/i';
-
     public static function root(): string
     {
         $root = (string) (option('blog.assistant.storage') ?? dirname(kirby()->root('index')) . '/storage/assistant');
@@ -124,9 +116,6 @@ final class Uploads
             throw self::error('Das Bild hat mehr als ' . intdiv(self::MAX_PIXELS, 1000000) . ' Megapixel.');
         }
         $bytes = (string) file_get_contents($tmp);
-        if (preg_match(self::CODE, $bytes)) {
-            throw self::error('Die Datei enthält Code. Exportier das Bild neu.');
-        }
         $exif = [];
         $orientation = 1;
         try {

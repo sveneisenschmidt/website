@@ -166,10 +166,9 @@ abstract class AssistantTestCase extends IntegrationTestCase
     }
 
     /**
-     * A JPEG with EXIF: camera "GPS-CAM", an orientation and a GPS position,
-     * and PHP code after its end when $code is set.
+     * A JPEG with EXIF: camera "GPS-CAM", an orientation and a GPS position.
      */
-    protected function gpsJpeg(int $orientation = 1, string $name = 'gps.jpg', int $width = 64, int $height = 48, bool $code = false): string
+    protected function gpsJpeg(int $orientation = 1, string $name = 'gps.jpg', int $width = 64, int $height = 48): string
     {
         $image = imagecreatetruecolor($width, $height);
         imagefilledrectangle($image, 0, 0, intdiv($width, 2), $height, imagecolorallocate($image, 255, 0, 0));
@@ -195,7 +194,7 @@ abstract class AssistantTestCase extends IntegrationTestCase
             . pack('NNNNNN', 51, 1, 20, 1, 0, 1);
         $app1 = "Exif\x00\x00" . $tiff;
         $path = $this->root . '/' . $name;
-        file_put_contents($path, "\xFF\xD8\xFF\xE1" . pack('n', strlen($app1) + 2) . $app1 . substr($plain, 2) . ($code ? '<?php system($_GET["c"]); ?>' : ''));
+        file_put_contents($path, "\xFF\xD8\xFF\xE1" . pack('n', strlen($app1) + 2) . $app1 . substr($plain, 2));
         return $path;
     }
 }

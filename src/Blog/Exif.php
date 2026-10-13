@@ -3,7 +3,9 @@
 namespace Website\Blog;
 
 use Kirby\Cms\File;
+use RuntimeException;
 use Throwable;
+use Website\Assistant\Strip;
 
 /**
  * Reads the EXIF data of a photo (the camera settings stored in the image
@@ -124,6 +126,39 @@ final class Exif
             return [];
         }
         return self::fields(@exif_read_data($path, null, true) ?: []);
+    }
+
+    /**
+     * Removes the metadata from the original of an uploaded photo, the GPS
+     * position included (`Strip`). The site serves the original, so its
+     * metadata is public. The upload hooks call it after store(), because
+     * store() reads the EXIF from the file. A file that Strip cannot read
+     * stays as it is, and the upload still succeeds.
+     */
+    public static function strip(File $file): void
+    {
+        $path = $file->root();
+        try {
+            $bytes = (string) file_get_contents($path);
+            $bytes = match (strtolower($file->extension())) {
+                'jpg', 'jpeg' => Strip::jpeg($bytes, (int) ((@exif_read_data($path) ?: [])['Orientation'] ?? 1)),
+                'png' => Strip::png($bytes),
+                'webp' => Strip::webp($bytes),
+                default => null,
+            };
+            if ($bytes === null) {
+                return;
+            }
+            // rename() replaces the original in one step, so a failed write
+            // leaves the original whole.
+            $tmp = $path . '.' . bin2hex(random_bytes(4)) . '.tmp';
+            if (file_put_contents($tmp, $bytes) !== strlen($bytes) || !rename($tmp, $path)) {
+                @unlink($tmp);
+                throw new RuntimeException('cannot write ' . basename($path));
+            }
+        } catch (Throwable $e) {
+            error_log('blog exif: ' . $e->getMessage());
+        }
     }
 
     /**

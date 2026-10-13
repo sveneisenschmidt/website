@@ -21,6 +21,9 @@ use Website\Blog\Types;
  */
 final class Proposals
 {
+    /** The start of raw HTML: a tag, a closing tag, a comment, a doctype or a processing instruction. */
+    public const HTML = '/<[a-z!\/?]/i';
+
     /**
      * Turns a propose tool call into a card. Returns the proposal, or the
      * error Claude gets back instead.
@@ -30,21 +33,21 @@ final class Proposals
      */
     public static function propose(ChatState $chat, string $name, array $input): array|string
     {
-        // Check every string of the input on its own for runs of the prompt:
-        // texts, captions, labels, slug, file names.
-        $runs = Words::runs(Chat::frozenPrompt($chat));
-        $error = null;
-        array_walk_recursive($input, function ($value) use ($runs, &$error) {
-            $error ??= is_string($value) ? Guard::prompt($value, $runs) : null;
+        // Kirby renders raw HTML in a text as it is, and the site allows
+        // scripts. An instruction in a photo, a web page or an old post can
+        // make Claude propose a <script>, and a card highlights links only.
+        $html = false;
+        array_walk_recursive($input, function ($value) use (&$html) {
+            $html = $html || (is_string($value) && preg_match(self::HTML, $value) === 1);
         });
-        if ($error !== null) {
-            return $error;
+        if ($html) {
+            return 'Raw HTML is not allowed. Use Markdown.';
         }
         return match ($name) {
             'propose_post' => self::post($chat, $input),
-            'propose_edit' => self::edit($chat, $input),
-            'propose_field' => self::field($chat, $input),
-            'propose_file_fields' => self::fileFields($chat, $input),
+            'propose_edit' => self::edit($input),
+            'propose_field' => self::field($input),
+            'propose_file_fields' => self::fileFields($input),
             'propose_route' => self::route($chat, $input),
             default => 'Unknown tool: ' . $name,
         };
@@ -80,18 +83,6 @@ final class Proposals
     }
 
     /**
-     * The URLs a proposed text may link to besides the links already in its
-     * field: those from the messages of the Panel user and from the web
-     * search of the chat.
-     *
-     * @return list<string>
-     */
-    private static function links(ChatState $chat): array
-    {
-        return [...array_keys($chat->mine), ...array_keys($chat->sources)];
-    }
-
-    /**
      * Upload ids that the open cards of the chat still use. An upload can be
      * in one open card only, because `Apply` deletes it after the click.
      *
@@ -121,20 +112,6 @@ final class Proposals
         return isset($fields[$name]) ? $name : null;
     }
 
-    /**
-     * Checks a text for a field of a page by the field type; null when it
-     * passes. $before is the current value of the field. $new is the part
-     * that Claude wrote when $text is the field with a passage replaced.
-     *
-     * @param list<string> $allowed
-     */
-    private static function checkText(Page $page, string $type, string $text, array $allowed, string $before = '', ?string $new = null): ?string
-    {
-        return self::isMarkdown($type)
-            ? Guard::markdown($text, $allowed, $page, $before, $new)
-            : Guard::plain($new ?? $text);
-    }
-
     /** True for the field types the site renders as KirbyText. */
     private static function isMarkdown(string $type): bool
     {
@@ -148,7 +125,7 @@ final class Proposals
      */
     private static function marks(Page $page, string $type, string $text): array
     {
-        return self::isMarkdown($type) ? Guard::marks($text, $page) : [];
+        return self::isMarkdown($type) ? Marks::of($text, $page) : [];
     }
 
     /**
@@ -183,7 +160,7 @@ final class Proposals
      * @param array<string, mixed> $input
      * @return array<string, mixed>|string
      */
-    private static function field(ChatState $chat, array $input): array|string
+    private static function field(array $input): array|string
     {
         $page = Content::find((string) $input['post']);
         if ($page === null) {
@@ -214,7 +191,7 @@ final class Proposals
             case 'tags':
             case 'textarea':
             case 'markdown':
-                $error = self::checkText($page, $type, $value, self::links($chat), $before);
+                $error = null;
                 break;
             default:
                 $error = "The field $name ($type) cannot be written by the assistant.";
@@ -244,7 +221,7 @@ final class Proposals
      * @param array<string, mixed> $input
      * @return array<string, mixed>|string
      */
-    private static function edit(ChatState $chat, array $input): array|string
+    private static function edit(array $input): array|string
     {
         $page = Content::find((string) $input['post']);
         if ($page === null) {
@@ -269,14 +246,8 @@ final class Proposals
         }
         $type = $fields[$name]['type'];
         $marks = [];
-        foreach ($versions as $i => $version) {
-            // Each version is checked inside the whole field, because Markdown
-            // can make a link from a passage together with the text around it.
+        foreach ($versions as $version) {
             $after = str_replace($passage, $version, $current);
-            $error = self::checkText($page, $type, $after, self::links($chat), $current, $version);
-            if ($error !== null) {
-                return 'Version ' . ($i + 1) . ": $error";
-            }
             $marks[] = array_values(array_filter(self::marks($page, $type, $after), fn($mark) => str_contains($version, $mark)));
         }
         return self::card('edit', 'Passage · ' . self::name($page), [
@@ -298,7 +269,7 @@ final class Proposals
      * @param array<string, mixed> $input
      * @return array<string, mixed>|string
      */
-    private static function fileFields(ChatState $chat, array $input): array|string
+    private static function fileFields(array $input): array|string
     {
         $file = Content::file((string) $input['file']);
         if ($file === null || $file->template() !== 'image') {
@@ -313,12 +284,8 @@ final class Proposals
                 return "Each of alt, caption and photographer at most once; $name is not possible here.";
             }
             $before = Content::current($file, $name);
-            $error = $name === 'caption' ? Guard::caption($value, self::links($chat), $before) : Guard::plain($value);
-            if ($error !== null) {
-                return "$name: $error";
-            }
             $changes[$name] = ['before' => $before, 'after' => $value];
-            $marks = fn(string $text) => $name === 'caption' ? Guard::marks($text, null, true) : [];
+            $marks = fn(string $text) => $name === 'caption' ? Marks::of($text, null, true) : [];
             $diff[] = ['label' => (string) ($file->blueprint()->field($name)['label'] ?? $name), 'before' => $before, 'after' => $value, 'marksBefore' => $marks($before), 'marksAfter' => $marks($value)];
         }
         if ($changes === []) {
@@ -366,10 +333,6 @@ final class Proposals
             $point = self::point($marker);
             if ($point === null) {
                 return 'A marker lies outside the map: lat -90 to 90, lon -180 to 180.';
-            }
-            $error = Guard::plain((string) $marker['label'], 60);
-            if ($error !== null) {
-                return 'Marker "' . $marker['label'] . '": ' . $error;
             }
             $markers[] = ['label' => (string) $marker['label'], 'lon' => $point[0], 'lat' => $point[1]];
         }
@@ -498,15 +461,14 @@ final class Proposals
             return $error;
         }
         $title = trim((string) $input['title']);
-        if ($title === '' || ($error = Guard::plain($title)) !== null) {
-            return 'title: ' . ($error ?? 'A post needs a title.');
+        if ($title === '') {
+            return 'title: A post needs a title.';
         }
         $trip = trim((string) $input['trip']);
-        if ($trip !== '' && ($type !== 'trip' || ($error = Guard::plain($trip)) !== null)) {
-            return 'trip: ' . ($error ?? 'only trip posts have this field.');
+        if ($trip !== '' && $type !== 'trip') {
+            return 'trip: only trip posts have this field.';
         }
         $needed = self::needed($chat);
-        $allowed = self::links($chat);
         $photos = [];
         foreach ($input['photos'] as $photo) {
             $id = (string) $photo['upload'];
@@ -524,15 +486,7 @@ final class Proposals
             if (in_array($filename, array_column($photos, 'filename'), true)) {
                 return "The file name $filename comes twice.";
             }
-            foreach (['alt', 'photographer'] as $key) {
-                if (($error = Guard::plain((string) $photo[$key])) !== null) {
-                    return "$filename, $key: $error";
-                }
-            }
-            if (($error = Guard::caption((string) $photo['caption'], $allowed)) !== null) {
-                return "$filename, caption: $error";
-            }
-            $photos[] = ['upload' => $id, 'filename' => $filename, 'alt' => (string) $photo['alt'], 'caption' => (string) $photo['caption'], 'photographer' => (string) $photo['photographer'], 'exif' => $meta['exif'], 'marks' => Guard::marks((string) $photo['caption'], null, true)];
+            $photos[] = ['upload' => $id, 'filename' => $filename, 'alt' => (string) $photo['alt'], 'caption' => (string) $photo['caption'], 'photographer' => (string) $photo['photographer'], 'exif' => $meta['exif'], 'marks' => Marks::of((string) $photo['caption'], null, true)];
         }
         $names = array_column($photos, 'filename');
         $cover = (string) $input['cover'];
@@ -541,11 +495,6 @@ final class Proposals
         }
         $map = Types::hasMap($type);
         $draft = self::draft(site()->find(Types::ALL[$type]['section']), $type, $slug, $photos);
-        foreach (['intro', 'text'] as $key) {
-            if (($error = Guard::markdown((string) $input[$key], $allowed, $draft)) !== null) {
-                return "$key: $error";
-            }
-        }
         $route = null;
         if ($input['route']['stations'] !== [] || trim((string) $input['route']['gpx']) !== '') {
             if (!$map) {
@@ -564,8 +513,8 @@ final class Proposals
             ['label' => 'Titel', 'value' => $title],
             ['label' => 'URL-Anhang', 'value' => $slug],
             ['label' => 'Datum', 'value' => $date],
-            ['label' => 'Anriss', 'value' => $content['intro'], 'marks' => Guard::marks($content['intro'], $draft)],
-            ['label' => 'Text', 'value' => $content['text'], 'marks' => Guard::marks($content['text'], $draft)],
+            ['label' => 'Anriss', 'value' => $content['intro'], 'marks' => Marks::of($content['intro'], $draft)],
+            ['label' => 'Text', 'value' => $content['text'], 'marks' => Marks::of($content['text'], $draft)],
             ['label' => 'Titelbild', 'value' => $cover],
             ['label' => 'Hervorgehoben', 'value' => $input['pick'] ? 'ja' : 'nein'],
             ...($type === 'trip' ? [['label' => 'Reise', 'value' => $trip]] : []),

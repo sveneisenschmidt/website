@@ -160,6 +160,40 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->assertSame([['host' => 'RSS', 'visits' => 2]], Totals::summary(30)['referrers']);
     }
 
+    public function testAViewBeyondTheVisitorCapCountsAsViewOnly(): void
+    {
+        $file = $this->root . '/cache/analytics/' . date('Y-m-d') . '.json';
+        @mkdir(dirname($file), 0777, true);
+        $visitors = array_fill_keys(array_map(fn($i) => sprintf('%016x', $i), range(1, Counter::MAX_VISITORS)), ['photos']);
+        file_put_contents($file, json_encode(['key' => str_repeat('a', 64), 'visitors' => $visitors]));
+
+        $this->visit('photos', referer: 'https://example.org/');
+
+        $this->assertSame(['visits' => 0, 'views' => 1, 'pages' => [], 'referrers' => []], $this->today());
+        $this->assertCount(Counter::MAX_VISITORS, json_decode((string) file_get_contents($file), true)['visitors']);
+    }
+
+    public function testAHostBeyondTheReferrerCapCountsAsOther(): void
+    {
+        $referrers = array_fill_keys(array_map(fn($i) => "host$i.example", range(1, Counter::MAX_REFERRERS)), 1);
+        Months::write(date('Y-m'), [date('Y-m-d') => ['visits' => Counter::MAX_REFERRERS, 'views' => Counter::MAX_REFERRERS, 'pages' => [], 'referrers' => $referrers]]);
+
+        $this->visit('photos', referer: 'https://new.example/');
+        $this->visit('photos', ip: '203.0.113.2', referer: 'https://host1.example/');
+
+        $today = $this->today()['referrers'];
+        $this->assertSame(1, $today['Andere']);
+        $this->assertSame(2, $today['host1.example']);
+        $this->assertArrayNotHasKey('new.example', $today);
+    }
+
+    public function testALongHostCountsAsOther(): void
+    {
+        $this->visit('photos', referer: 'https://' . str_repeat('a', 100) . '.example/');
+
+        $this->assertSame(['Andere' => 1], $this->today()['referrers']);
+    }
+
     public function testStatsAreStateAndHoldNoIpAddress(): void
     {
         $this->visit('photos', ip: '198.51.100.77');

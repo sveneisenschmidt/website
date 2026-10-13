@@ -16,7 +16,7 @@ make pull
 make dev
 ```
 
-`make setup` runs `composer install`, creates `.env` from `.env.example` and the local `.salt`, and installs git hooks. `.env` holds every local value and key under the same names as the secrets and variables of the workflows: `SITE_URL`, `DEPLOY_HOST`, `DEPLOY_PATH`, `DEBUG`, `ANTHROPIC_API_KEY` and `PAGESPEED_API_KEY`. make passes them to every target, and Kirby reads `DEBUG` and `ANTHROPIC_API_KEY` from there. `make speed` measures the live site with PageSpeed Insights. The hooks stop a commit or push that contains text from the prompt of the Panel assistant. `make pull` replaces the content and accounts in `www/` with the state of the server. `make dev` serves the site at http://localhost:8010; `make` alone does the same.
+`make setup` runs `composer install`, creates `.env` from `.env.example` and the local `.salt`. `.env` holds every local value and key under the same names as the secrets and variables of the workflows: `SITE_URL`, `DEPLOY_HOST`, `DEPLOY_PATH`, `DEBUG`, `ANTHROPIC_API_KEY` and `PAGESPEED_API_KEY`. make passes them to every target, and Kirby reads `DEBUG` and `ANTHROPIC_API_KEY` from there. `make speed` measures the live site with PageSpeed Insights. `make pull` replaces the content and accounts in `www/` with the state of the server. `make dev` serves the site at http://localhost:8010; `make` alone does the same.
 
 ## Tests
 

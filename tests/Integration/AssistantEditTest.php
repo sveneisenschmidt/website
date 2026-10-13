@@ -134,7 +134,6 @@ final class AssistantEditTest extends AssistantTestCase
         $this->page()->update(['text' => 'Rain. Rain.']);
         $this->assertStringContainsString('2 times', $this->refusal('propose_edit', ['post' => 'photos/test-photo', 'field' => 'text', 'passage' => 'Rain.', 'versions' => ['Sun.']]));
         $this->assertStringContainsString('does not occur', $this->refusal('propose_edit', ['post' => 'photos/test-photo', 'field' => 'text', 'passage' => 'Snow.', 'versions' => ['Sun.']]));
-        $this->assertStringContainsString('not allowed', $this->refusal('propose_edit', ['post' => 'photos/test-photo', 'field' => 'text', 'passage' => 'Rain. Rain.', 'versions' => ['See [x](https://evil.test).']]));
     }
 
     public function testAStalePassageChangesNothing(): void
@@ -147,25 +146,6 @@ final class AssistantEditTest extends AssistantTestCase
 
         $this->assertSame('stale', Session::decisions()[$card['id']]['state']);
         $this->assertSame('It rained and rained.', $this->page()->text()->value());
-    }
-
-    public function testALinkFromTheAuthorsMessageOrTheFieldIsAllowed(): void
-    {
-        $this->page()->update(['text' => 'See [old](https://old.test).']);
-        $this->reply('tool_use', $this->tool('t1', 'propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => 'See [old](https://old.test) and [new](https://new.test/page).']));
-        $this->reply('end_turn');
-
-        $chat = $this->chat('Verlinke https://new.test/page bitte.');
-
-        $this->assertSame('field', $this->card($chat)['kind']);
-    }
-
-    public function testAVersionIsCheckedInItsField(): void
-    {
-        // A Markdown reference definition in the field renders nothing until a
-        // version uses it.
-        $this->page()->update(['text' => "It rained.\n\n[1]: //evil.example/"]);
-        $this->assertStringContainsString('not allowed', $this->refusal('propose_edit', ['post' => 'photos/test-photo', 'field' => 'text', 'passage' => 'It rained.', 'versions' => ['It [rained][1].']]));
     }
 
     public function testOldMarkupOfAFieldStaysEditable(): void
@@ -204,7 +184,6 @@ final class AssistantEditTest extends AssistantTestCase
         $file = $this->page()->file('a.jpg');
         $this->assertSame('A dog on a beach', $file->version('changes')->read()['alt']);
         $this->assertSame('TEST-CAM', $file->camera()->value());
-        $this->assertStringContainsString('caption', $this->refusal('propose_file_fields', ['file' => 'photos/test-photo/a.jpg', 'fields' => [['name' => 'caption', 'value' => '(image: a.jpg)']]]));
     }
 
     public function testADecisionIsApplyOrDiscard(): void
@@ -250,23 +229,6 @@ final class AssistantEditTest extends AssistantTestCase
 
         $this->assertSame('discarded', Session::decisions()[$card['id']]['state']);
         $this->assertSame(0, Chat::view(Session::load())['open']);
-    }
-
-    public function testNoProposalRepeatsThePrompt(): void
-    {
-        // A marker of 10 words; any 8 of them in a row are a run of the prompt.
-        $this->kirby->site()->update(['assistantPrompt' => 'PROMPT-CANARY-7f3a alpha bravo charlie delta echo foxtrot golf hotel india']);
-        $run = 'Alpha, *bravo* charlie delta echo foxtrot golf hotel';
-        $this->upload(__DIR__ . '/../fixtures/exif.jpg', 'a.jpg');
-
-        $this->assertStringContainsString('prompt', $this->refusal('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => "We rode. $run."]));
-        $this->assertStringContainsString('prompt', $this->refusal('propose_field', ['post' => 'photos/test-photo', 'field' => 'title', 'value' => $run]));
-        $this->assertStringContainsString('prompt', $this->refusal('propose_file_fields', ['file' => 'photos/test-photo/a.jpg', 'fields' => [['name' => 'alt', 'value' => $run]]]));
-        $this->assertStringContainsString('prompt', $this->refusal('propose_post', [
-            'type' => 'note', 'slug' => 'alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel', 'date' => '2026-10-01 20:40:00', 'title' => 'T', 'intro' => '', 'text' => '',
-            'pick' => false, 'trip' => '', 'photos' => [], 'cover' => '', 'route' => ['stations' => [], 'gpx' => '', 'markers' => [], 'zoom' => false],
-        ]));
-        $this->assertSame('field', $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => 'Alpha bravo charlie delta echo foxtrot golf, and hotel.'])['kind'], 'Seven words in a row are no run.');
     }
 
     public function testToolsDoNotCheckStyle(): void

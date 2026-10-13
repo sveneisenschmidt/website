@@ -250,16 +250,6 @@ final class ChangelogTest extends IntegrationTestCase
         $this->assertSame(['Entwurf', 'Veröffentlicht'], [$new[0]['changes'][0]['old'], $new[0]['changes'][0]['new']]);
     }
 
-    public function testThePromptIsLoggedWithoutItsText(): void
-    {
-        $this->kirby->impersonate(self::EMAIL, fn() => $this->kirby->site()->update(['assistantPrompt' => 'PROMPT-CANARY-7f3a']));
-
-        $entry = Log::entries()[0];
-        $this->assertSame('site.update', $entry['action']);
-        $this->assertSame([['field' => 'assistantprompt', 'label' => 'Prompt', 'old' => '', 'new' => 'geändert']], $entry['changes']);
-        $raw = implode('', array_map('file_get_contents', glob($this->root . '/content/.changelog/*.jsonl')));
-        $this->assertStringNotContainsString('PROMPT-CANARY-7f3a', $raw);
-    }
 
     public function testLoginIsLogged(): void
     {

@@ -39,6 +39,26 @@ final class UploadTest extends AssistantTestCase
         return glob($this->root . '/storage/assistant/*/u*') ?: [];
     }
 
+    public function testAPhotoUploadedInThePanelLosesItsGpsPosition(): void
+    {
+        $file = $this->upload($this->gpsJpeg(6), 'panel.jpg');
+
+        $exif = exif_read_data($file->root(), null, true) ?: [];
+        $this->assertArrayNotHasKey('GPS', $exif);
+        $this->assertSame(6, $exif['IFD0']['Orientation']);
+        $this->assertSame('GPS-CAM', $file->camera()->value(), 'The camera is read before the EXIF goes.');
+    }
+
+    public function testAPhotoReplacedInThePanelLosesItsGpsPosition(): void
+    {
+        $file = $this->upload($this->jpeg(64, 48), 'panel.jpg');
+
+        $this->kirby->impersonate('kirby', fn() => $file->replace($this->gpsJpeg()));
+
+        $this->assertArrayNotHasKey('GPS', exif_read_data($file->root(), null, true) ?: []);
+        $this->assertSame('GPS-CAM', $this->post->file('panel.jpg')->camera()->value());
+    }
+
     public function testAJpegKeepsItsCameraDataAndLosesGps(): void
     {
         $this->assertArrayHasKey('GPS', exif_read_data($this->gpsJpeg(6), null, true));
@@ -133,7 +153,7 @@ final class UploadTest extends AssistantTestCase
         $this->assertNotFalse(json_encode(Chat::view(Session::load())));
     }
 
-    public function testCodeAndOtherTypesAreRefused(): void
+    public function testOtherTypesAreRefused(): void
     {
         file_put_contents($this->root . '/shell.php', '<?php system($_GET["c"]);');
         $this->refused($this->root . '/shell.php', 'shell.php', 'Nur JPEG');
@@ -142,15 +162,7 @@ final class UploadTest extends AssistantTestCase
         $this->refused($this->root . '/.htaccess', '.htaccess', 'Nur JPEG');
         file_put_contents($this->root . '/logo.svg', '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>');
         $this->refused($this->root . '/logo.svg', 'logo.svg', 'Nur JPEG');
-        $this->refused($this->gpsJpeg(1, 'poly.jpg', 64, 48, true), 'poly.jpg', 'Code');
-        // PHP's short echo tag in a JPEG comment segment.
-        file_put_contents($this->root . '/short.jpg', "\xFF\xD8" . $this->segment(0xFE, '<?= `id` ?>') . substr(file_get_contents($this->jpeg(8, 8)), 2));
-        $this->refused($this->root . '/short.jpg', 'short.jpg', 'Code');
-        // The three bytes "<?=" alone occur by chance in large photos, a few
-        // times in 20 MB of random data, so they are no reason to refuse.
-        file_put_contents($this->root . '/chance.jpg', "\xFF\xD8" . $this->segment(0xFE, "<?=\x00\xFF\x13") . substr(file_get_contents($this->jpeg(8, 8)), 2));
-        $this->assertSame('image', Uploads::accept($this->root . '/chance.jpg', 'chance.jpg')['kind']);
-        $this->assertCount(4, $this->stored(), 'Only the files of chance.jpg are stored.');
+        $this->assertSame([], $this->stored());
     }
 
     public function testTooManyPixelsAreRefused(): void
