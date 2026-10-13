@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Moves a site from before releases to the layout of bin/deploy.sh, once.
-# Before: www/ and vendor/ hold the code, the state lies inside www/.
+# Before: www/, vendor/ and, if there, src/ hold the code, the state lies
+# inside www/.
 # After: the code that runs now is the first release, the state is in
 # shared/, current points to the release. Nothing is built or uploaded but
 # the root .htaccess. A snapshot comes first. If the start page does not
@@ -54,6 +55,7 @@ remote "set -e; cd '$DEPLOY_PATH'
   mkdir -p '$R' shared/site/config
   mv www '$R/www'
   mv vendor '$R/vendor'
+  if [ -d src ]; then mv src '$R/src'; fi
   mv '$R/www/content' shared/content
   if [ -d '$R/www/media' ]; then mv '$R/www/media' shared/media; else mkdir shared/media; fi
   for d in accounts cache sessions; do
@@ -86,6 +88,7 @@ if [ "$code" != 200 ]; then
     mv shared/storage storage
     mv '$R/www' www
     mv '$R/vendor' vendor
+    if [ -d '$R/src' ]; then mv '$R/src' src; fi
     mv .htaccess.before .htaccess
     rmdir shared/site/config shared/site shared '$R' releases"
   exit 1

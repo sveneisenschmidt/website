@@ -35,12 +35,13 @@ chdir($www);
 require "$www/index.php";
 PHP
 
-# A site from before releases: code and state in www/, vendor/ next to it.
+# A site from before releases: code and state in www/, src/ and vendor/ next to it.
 mkdir -p "$SITE"
 rsync -a --exclude '/content/' --exclude '/media/' --exclude '/site/accounts/' --exclude '/site/cache/' \
   --exclude '/site/sessions/' --exclude '/site/config/env.php' --exclude '/site/config/.salt' \
   --exclude '/site/config/.license' www/ "$SITE/www/"
 cp -R vendor "$SITE/vendor"
+cp -R src "$SITE/src"
 mkdir -p "$SITE/www/content/error"
 printf 'Title: Sven Eisenschmidt - Personal Blog\n' > "$SITE/www/content/site.txt"
 printf 'Title: Error\n' > "$SITE/www/content/error/error.txt"
@@ -65,7 +66,7 @@ mkdir -p "$SITE/www/content/home"
 printf 'Title: Home\n' > "$SITE/www/content/home/home.txt"
 bin/migrate-to-releases.sh >/dev/null
 [ -L "$SITE/current" ] && [ -f "$SITE/shared/content/home/home.txt" ] && [ -f "$SITE/shared/site/config/.salt" ] || fail "no release or no state in shared/"
-[ ! -e "$SITE/www" ] && [ ! -e "$SITE/vendor" ] || fail "the old www/ or vendor/ stayed"
+[ ! -e "$SITE/www" ] && [ ! -e "$SITE/vendor" ] && [ ! -e "$SITE/src" ] || fail "the old www/, vendor/ or src/ stayed"
 [ "$(curl -s -o /dev/null -w '%{http_code}' "$URL/")" = 200 ] || fail "the moved site does not answer 200"
 first="$(current)"
 echo "OK: $first"
