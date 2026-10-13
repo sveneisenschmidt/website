@@ -5,6 +5,8 @@ namespace Website\Tests\Integration;
 use Closure;
 use Kirby\Session\Session;
 use Kirby\Session\Sessions;
+use Website\Assistant\Chat;
+use Website\Assistant\ChatState;
 use Website\Tests\Support\TestSite;
 
 /**
@@ -73,11 +75,11 @@ abstract class AssistantTestCase extends IntegrationTestCase
     }
 
     /** Runs a message and every following round, as the Panel does. */
-    protected function chat(string $message, ?string $page = null): array
+    protected function chat(string $message, ?string $page = null): ChatState
     {
-        $chat = blog_assistant_send($message, $page);
-        while ($chat['next']) {
-            $chat = blog_assistant_next();
+        $chat = Chat::send($message, $page);
+        while ($chat->next) {
+            $chat = Chat::next();
         }
         return $chat;
     }
@@ -105,10 +107,10 @@ abstract class AssistantTestCase extends IntegrationTestCase
     }
 
     /** The newest card of a chat. */
-    protected function card(array $chat): array
+    protected function card(ChatState $chat): array
     {
-        $cards = array_values(array_filter($chat['items'], fn($i) => $i['type'] === 'card'));
-        return $chat['proposals'][end($cards)['id']];
+        $cards = array_values(array_filter($chat->items, fn($i) => $i['type'] === 'card'));
+        return $chat->proposals[end($cards)['id']];
     }
 
     /** The tool results Claude got with request $n. */

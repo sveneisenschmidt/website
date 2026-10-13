@@ -3,8 +3,13 @@
 namespace Website\Tests\Integration;
 
 use Kirby\Cms\Page;
+use Website\Assistant\Apply;
+use Website\Assistant\ChatState;
+use Website\Assistant\Content;
 use Website\Assistant\Gpx;
 use Website\Assistant\Route;
+use Website\Assistant\Session;
+use Website\Assistant\Uploads;
 use Website\Tests\Support\GpxFixture;
 
 /**
@@ -36,7 +41,7 @@ final class AssistantRouteTest extends AssistantTestCase
         return $this->kirby->site()->find('trips')->findPageOrDraft('day-1');
     }
 
-    private function propose(array $route, string $post = 'trips/day-1'): array
+    private function propose(array $route, string $post = 'trips/day-1'): ChatState
     {
         $this->reply('tool_use', $this->tool('t1', 'propose_route', ['post' => $post, 'route' => $route + ['stations' => [], 'gpx' => '', 'markers' => [], 'zoom' => false]]));
         $this->reply('end_turn');
@@ -56,17 +61,17 @@ final class AssistantRouteTest extends AssistantTestCase
         $this->assertSame(['label' => 'Fahrzeit', 'before' => '', 'after' => '6 h 0 min'], $card['diff'][1]);
         $this->assertSame(['label' => 'Marker', 'before' => 'Old', 'after' => 'Groitzsch, Venlo'], $card['diff'][3]);
 
-        blog_assistant_decide($card['id'], 'apply');
+        Apply::decide($card['id'], 'apply');
 
         $trip = $this->kirby->site()->find('trips')->findPageOrDraft('day-1');
-        $this->assertSame('done', blog_assistant_decisions()[$card['id']]['state']);
+        $this->assertSame('done', Session::decisions()[$card['id']]['state']);
         $this->assertSame('{"type":"LineString","coordinates":[[12.1,51.1],[12.2,51.2]]}', file_get_contents($trip->file('route.json')->root()), 'The live file stays until Sven saves.');
         $changes = $trip->version('changes')->read();
-        $new = blog_assistant_file_ref($trip, blog_assistant_list($changes['route'])[0]);
+        $new = Content::fileRef($trip, Content::list($changes['route'])[0]);
         $this->assertStringStartsWith('route-', $new->filename());
         $this->assertSame('route', $new->template());
         $this->assertSame([[12.2823, 51.1547], [9.4797, 51.3127], [6.1724, 51.3704]], Route::line(file_get_contents($new->root())));
-        $this->assertSame([['label' => 'Groitzsch', 'lat' => '51.1547', 'lon' => '12.2823'], ['label' => 'Venlo', 'lat' => '51.3704', 'lon' => '6.1724']], blog_assistant_list($changes['mappoints']));
+        $this->assertSame([['label' => 'Groitzsch', 'lat' => '51.1547', 'lon' => '12.2823'], ['label' => 'Venlo', 'lat' => '51.3704', 'lon' => '6.1724']], Content::list($changes['mappoints']));
         $this->assertSame('false', $changes['mapzoom']);
         $kept = glob($this->root . '/content/.assistant/routes/trips+day-1-*-route.json');
         $this->assertCount(1, $kept);
@@ -79,7 +84,7 @@ final class AssistantRouteTest extends AssistantTestCase
         $this->osrm[] = [200, json_encode(self::OSRM)];
         $card = $this->card($this->propose(['stations' => $this->stations(), 'zoom' => true]));
 
-        blog_assistant_decide($card['id'], 'apply');
+        Apply::decide($card['id'], 'apply');
 
         $trip = $this->kirby->site()->find('trips')->findPageOrDraft('day-1');
         $this->assertSame($uuid, $trip->file('route.json')->uuid()->toString());
@@ -96,9 +101,9 @@ final class AssistantRouteTest extends AssistantTestCase
         $card = $this->card($this->propose(['stations' => $this->stations()]));
         $trip->update(['mapzoom' => 'false']);
 
-        blog_assistant_decide($card['id'], 'apply');
+        Apply::decide($card['id'], 'apply');
 
-        $this->assertSame('stale', blog_assistant_decisions()[$card['id']]['state']);
+        $this->assertSame('stale', Session::decisions()[$card['id']]['state']);
         $this->assertFalse($this->kirby->site()->find('trips')->findPageOrDraft('day-1')->version('changes')->exists());
         $this->assertSame([], glob($this->root . '/content/.assistant/routes/*') ?: []);
     }
@@ -110,7 +115,7 @@ final class AssistantRouteTest extends AssistantTestCase
 
         $chat = $this->propose(['stations' => $this->stations()]);
 
-        $this->assertSame([], $chat['proposals']);
+        $this->assertSame([], $chat->proposals);
         $this->assertSame('OSRM found no route: Impossible route between points.', $this->results(1)[0]['content']);
         $this->assertCount(1, $this->osrmCalls);
     }
@@ -127,7 +132,7 @@ final class AssistantRouteTest extends AssistantTestCase
     {
         $this->trip('listed');
         $home = GpxFixture::home();
-        $id = blog_uploads_accept(GpxFixture::write($this->root, GpxFixture::xml(GpxFixture::ride())), 'ride.gpx')['id'];
+        $id = Uploads::accept(GpxFixture::write($this->root, GpxFixture::xml(GpxFixture::ride())), 'ride.gpx')['id'];
         // 1199 m from home, on the side away from the stored, rounded end.
         $rounded = array_map(fn($v) => round($v, 3), $home);
         $east = ($home[0] - $rounded[0]) * 111320 * cos(deg2rad($home[1]));
@@ -138,7 +143,7 @@ final class AssistantRouteTest extends AssistantTestCase
 
         $chat = $this->propose(['gpx' => $id, 'markers' => [$marker]]);
 
-        $this->assertSame([], $chat['proposals']);
+        $this->assertSame([], $chat->proposals);
         $this->assertStringContainsString('closer than 1200 m', $this->results(1)[0]['content']);
     }
 
@@ -146,14 +151,14 @@ final class AssistantRouteTest extends AssistantTestCase
     {
         $this->trip('listed');
         $home = GpxFixture::home();
-        $id = blog_uploads_accept(GpxFixture::write($this->root, GpxFixture::xml(GpxFixture::ride())), 'ride.gpx')['id'];
+        $id = Uploads::accept(GpxFixture::write($this->root, GpxFixture::xml(GpxFixture::ride())), 'ride.gpx')['id'];
         $far = ['lat' => GpxFixture::CENTER[1], 'lon' => 2 * GpxFixture::CENTER[0] - $home[0], 'label' => 'Café'];
 
         $refused = $this->propose(['gpx' => $id, 'markers' => [['lat' => $home[1] + 0.005, 'lon' => $home[0], 'label' => 'Home']]]);
         $card = $this->card($this->propose(['gpx' => $id, 'markers' => [$far]]));
-        blog_assistant_decide($card['id'], 'apply');
+        Apply::decide($card['id'], 'apply');
 
-        $this->assertSame([], $refused['proposals']);
+        $this->assertSame([], $refused->proposals);
         $this->assertStringContainsString('closer than 1200 m', $this->results(1)[0]['content']);
         $this->assertSame([], $this->osrmCalls);
         // Every coordinate pair in every request to Claude lies outside the cut ends.
@@ -163,10 +168,10 @@ final class AssistantRouteTest extends AssistantTestCase
             $this->assertGreaterThanOrEqual(Gpx::TRIM_MIN, Route::distance($home, [(float) $lon, (float) $lat]));
         }
         $trip = $this->kirby->site()->find('trips')->findPageOrDraft('day-1');
-        $file = blog_assistant_file_ref($trip, blog_assistant_list($trip->version('changes')->read()['route'])[0]);
+        $file = Content::fileRef($trip, Content::list($trip->version('changes')->read()['route'])[0]);
         foreach (Route::line(file_get_contents($file->root())) as $point) {
             $this->assertGreaterThanOrEqual(Gpx::TRIM_MIN, Route::distance($home, $point));
         }
-        $this->assertNull(blog_uploads_meta($id), 'The GPX upload goes after the click.');
+        $this->assertNull(Uploads::meta($id), 'The GPX upload goes after the click.');
     }
 }

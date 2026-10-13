@@ -100,7 +100,7 @@ ln -s ../../../shared/content "$BUILD/www/content"
 ln -s ../../../shared/media "$BUILD/www/media"
 for d in accounts cache sessions; do ln -s "../../../../shared/site/$d" "$BUILD/www/site/$d"; done
 for f in env.php .salt .license; do ln -s "../../../../../shared/site/config/$f" "$BUILD/www/site/config/$f"; done
-# The assistant keeps its uploads next to www/ (plugins/assistant/uploads.php).
+# The assistant keeps its uploads next to www/ (src/Assistant/Uploads.php).
 ln -s ../../shared/storage "$BUILD/storage"
 
 # Switches the site to a release: .htaccess and current each replaced in one

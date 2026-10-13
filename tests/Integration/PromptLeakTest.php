@@ -2,7 +2,11 @@
 
 namespace Website\Tests\Integration;
 
-use Website\Changelog\Log;
+use Website\Assistant\Apply;
+use Website\Assistant\Chat;
+use Website\Assistant\Log;
+use Website\Assistant\Session;
+use Website\Changelog\Log as Changelog;
 
 /**
  * The prompt is set to a marker. It goes to Claude and nowhere else: no
@@ -21,7 +25,7 @@ final class PromptLeakTest extends AssistantTestCase
         $this->reply('tool_use', $this->tool('t1', 'propose_field', ['post' => 'photos/test-photo', 'field' => 'intro', 'value' => 'New.']));
         $this->reply('end_turn', $this->text('Steht oben.'));
         $chat = $this->chat('Mach den Anriss neu.');
-        blog_assistant_decide($this->card($chat)['id'], 'apply');
+        Apply::decide($this->card($chat)['id'], 'apply');
         $this->kirby->site()->update(['assistantPrompt' => self::PROMPT . ' changed']);
         $this->assertStringContainsString(self::PROMPT, json_encode($this->requests[0]), 'The marker goes to Claude.');
 
@@ -38,9 +42,9 @@ final class PromptLeakTest extends AssistantTestCase
                 $outputs[$route['pattern']] = $this->kirby->render('/' . $route['pattern'])?->body();
             }
         }
-        $outputs['assistant view'] = json_encode(blog_assistant_view(blog_assistant_load()));
-        $outputs['protokoll'] = json_encode(blog_assistant_log_view());
-        $outputs['verlauf'] = json_encode(Log::entries());
+        $outputs['assistant view'] = json_encode(Chat::view(Session::load()));
+        $outputs['protokoll'] = json_encode(Log::view());
+        $outputs['verlauf'] = json_encode(Changelog::entries());
         foreach (glob($this->root . '/content/{.assistant,.changelog}/*.jsonl', GLOB_BRACE) as $file) {
             $outputs[$file] = file_get_contents($file);
         }

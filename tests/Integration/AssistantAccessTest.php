@@ -3,6 +3,7 @@
 namespace Website\Tests\Integration;
 
 use Kirby\Exception\AuthException;
+use Website\Assistant\Panel;
 
 /**
  * The assistant is there for whoever is logged in to the Panel. Kirby asks
@@ -18,7 +19,7 @@ final class AssistantAccessTest extends AssistantTestCase
     public function testTheLoggedInUserHasAreaAndButton(): void
     {
         $this->assertArrayHasKey('views', $this->kirby->load()->areas()['assistent']);
-        $this->assertSame('assistent?page=photos%2Ftest-photo', blog_assistant_button($this->post)->link);
+        $this->assertSame('assistent?page=photos%2Ftest-photo', Panel::button($this->post)->link);
     }
 
     public function testWithoutALoginTheApiRefuses(): void

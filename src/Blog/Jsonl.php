@@ -7,7 +7,7 @@ use Kirby\Filesystem\F;
 /**
  * Logs as JSON Lines, one file per month: <dir>/<year>-<month>.jsonl.
  * Verlauf (Website\Changelog\Log) and the Protokoll of the assistant
- * (plugins/assistant/log.php) keep their entries this way.
+ * (Website\Assistant\Log) keep their entries this way.
  */
 final class Jsonl
 {

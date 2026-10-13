@@ -26,7 +26,7 @@ test:
 # Nur localhost: der PHP-Server liefert jede Datei unter www/ aus, auch
 # content/ und site/. Nie an 0.0.0.0 binden.
 # Uploads im Assistenten: bis 60 MB pro Datei, die Vorschau eines Fotos mit
-# 64 Megapixeln braucht rund 320 MB Speicher (plugins/assistant/uploads.php).
+# 64 Megapixeln braucht rund 320 MB Speicher (src/Assistant/Uploads.php).
 # bin/dev-router.php sperrt wie www/.htaccess content/, site/ und kirby/.
 # Der Seiten-Cache sieht keine Änderung am Code: der Start leert ihn.
 .PHONY: dev

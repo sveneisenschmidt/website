@@ -2,8 +2,12 @@
 
 namespace Website\Tests\Integration;
 
-use BlogAssistantError;
 use Kirby\Cms\Page;
+use Website\Assistant\Apply;
+use Website\Assistant\Chat;
+use Website\Assistant\Error;
+use Website\Assistant\Log;
+use Website\Assistant\Session;
 
 /**
  * Cards for existing posts: a passage, a whole field, the texts of an
@@ -43,9 +47,9 @@ final class AssistantEditTest extends AssistantTestCase
         $this->assertStringContainsString('Änderungen', $card['where']);
         $this->assertSame('Test intro', $this->page()->intro()->value(), 'Nothing changes before the click.');
 
-        blog_assistant_decide($card['id'], 'apply');
+        Apply::decide($card['id'], 'apply');
 
-        $this->assertSame('done', blog_assistant_decisions()[$card['id']]['state']);
+        $this->assertSame('done', Session::decisions()[$card['id']]['state']);
         $this->assertSame('Test intro', $this->page()->version('latest')->read()['intro'], 'Live stays as it was.');
         $this->assertSame('A new intro.', $this->page()->version('changes')->read()['intro']);
         $this->assertSame(['(Card "' . $card['title'] . '": applied by the user. It waits in the unsaved changes until the user saves in the Panel.)'], $this->kirby->session()->get('blog.assistant.notes'));
@@ -56,7 +60,7 @@ final class AssistantEditTest extends AssistantTestCase
         $this->post('photos', 'photo', 'draft-photo', 'Draft', 'draft');
         $card = $this->propose('propose_field', ['post' => 'photos/draft-photo', 'field' => 'title', 'value' => 'Better title']);
 
-        blog_assistant_decide($card['id'], 'apply');
+        Apply::decide($card['id'], 'apply');
 
         $this->assertSame('Better title', $this->page('photos/draft-photo')->title()->value());
         $this->assertFalse($this->page('photos/draft-photo')->version('changes')->exists());
@@ -78,9 +82,9 @@ final class AssistantEditTest extends AssistantTestCase
         $card = $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => 'New text.']);
         $this->page()->update(['text' => 'Sven wrote this meanwhile.']);
 
-        blog_assistant_decide($card['id'], 'apply');
+        Apply::decide($card['id'], 'apply');
 
-        $decision = blog_assistant_decisions()[$card['id']];
+        $decision = Session::decisions()[$card['id']];
         $this->assertSame('stale', $decision['state']);
         $this->assertStringContainsString('Nichts geändert', $decision['warn']);
         $this->assertSame('Sven wrote this meanwhile.', $this->page()->text()->value());
@@ -96,7 +100,7 @@ final class AssistantEditTest extends AssistantTestCase
         $this->assertSame('Not saved yet.', $card['diff'][0]['before']);
         $this->assertTrue($card['unsaved']);
 
-        blog_assistant_decide($card['id'], 'apply');
+        Apply::decide($card['id'], 'apply');
 
         $this->assertSame('Better.', $this->page()->version('changes')->read()['text']);
         $this->assertSame('Test intro', $this->page()->version('changes')->read()['intro']);
@@ -109,7 +113,7 @@ final class AssistantEditTest extends AssistantTestCase
         $this->assertSame(['Rain, all day.', 'It rained.', 'All day: rain.'], $card['versions']);
         $this->assertSame('Text', $card['field']);
 
-        blog_assistant_decide($card['id'], 'apply', 1);
+        Apply::decide($card['id'], 'apply', 1);
 
         $this->assertSame("We drove north.\n\nIt rained.", $this->page()->version('changes')->read()['text']);
         $this->assertStringContainsString('took version 2', $this->kirby->session()->get('blog.assistant.notes')[0]);
@@ -129,9 +133,9 @@ final class AssistantEditTest extends AssistantTestCase
         $card = $this->propose('propose_edit', ['post' => 'photos/test-photo', 'field' => 'text', 'passage' => 'rained', 'versions' => ['poured']]);
         $this->page()->update(['text' => 'It rained and rained.']);
 
-        blog_assistant_decide($card['id'], 'apply');
+        Apply::decide($card['id'], 'apply');
 
-        $this->assertSame('stale', blog_assistant_decisions()[$card['id']]['state']);
+        $this->assertSame('stale', Session::decisions()[$card['id']]['state']);
         $this->assertSame('It rained and rained.', $this->page()->text()->value());
     }
 
@@ -184,7 +188,7 @@ final class AssistantEditTest extends AssistantTestCase
             ['label' => 'Fotografiert von', 'before' => '', 'after' => 'Nadine', 'marksBefore' => [], 'marksAfter' => []],
         ], $card['diff']);
 
-        blog_assistant_decide($card['id'], 'apply');
+        Apply::decide($card['id'], 'apply');
 
         $file = $this->page()->file('a.jpg');
         $this->assertSame('A dog on a beach', $file->version('changes')->read()['alt']);
@@ -198,14 +202,14 @@ final class AssistantEditTest extends AssistantTestCase
 
         foreach (['', 'yes', 'Apply'] as $action) {
             try {
-                blog_assistant_decide($card['id'], $action);
+                Apply::decide($card['id'], $action);
                 $this->fail("Took the action \"$action\"");
-            } catch (BlogAssistantError $e) {
+            } catch (Error $e) {
                 $this->assertSame(['chat', 'Unbekannte Entscheidung'], [$e->kind, $e->getMessage()]);
             }
         }
 
-        $this->assertArrayNotHasKey($card['id'], blog_assistant_decisions());
+        $this->assertArrayNotHasKey($card['id'], Session::decisions());
         $this->assertFalse($this->page()->version('changes')->exists());
     }
 
@@ -213,28 +217,28 @@ final class AssistantEditTest extends AssistantTestCase
     {
         $card = $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'intro', 'value' => 'X']);
 
-        blog_assistant_decide($card['id'], 'discard');
+        Apply::decide($card['id'], 'discard');
         $this->reply('end_turn', $this->text('Gut.'));
         $this->chat('Danke.');
 
         $this->assertFalse($this->page()->version('changes')->exists());
         $this->assertStringStartsWith('(Card "' . $card['title'] . '": discarded by the user.)', $this->lastText(end($this->requests)));
-        $this->assertSame(['decision', 'answer'], array_column(array_slice(blog_assistant_log_read(), 1, 2), 'type'));
-        $this->assertSame('discarded', blog_assistant_log_read()[1]['decision']);
+        $this->assertSame(['decision', 'answer'], array_column(array_slice(Log::read(), 1, 2), 'type'));
+        $this->assertSame('discarded', Log::read()[1]['decision']);
     }
 
     public function testADecisionDuringARoundIsKept(): void
     {
         $this->reply('tool_use', $this->tool('t1', 'propose_field', ['post' => 'photos/test-photo', 'field' => 'intro', 'value' => 'X']), $this->tool('t2', 'read_post', ['post' => 'photos/test-photo']));
-        $card = $this->card(blog_assistant_send('Mach was und lies.'));
-        $running = blog_assistant_load();
+        $card = $this->card(Chat::send('Mach was und lies.'));
+        $running = Session::load();
 
-        blog_assistant_decide($card['id'], 'discard');
+        Apply::decide($card['id'], 'discard');
         // The round that ran meanwhile stores its copy of the chat.
-        blog_assistant_keep($running);
+        Chat::keep($running);
 
-        $this->assertSame('discarded', blog_assistant_decisions()[$card['id']]['state']);
-        $this->assertSame(0, blog_assistant_view(blog_assistant_load())['open']);
+        $this->assertSame('discarded', Session::decisions()[$card['id']]['state']);
+        $this->assertSame(0, Chat::view(Session::load())['open']);
     }
 
     public function testNoProposalRepeatsThePrompt(): void
