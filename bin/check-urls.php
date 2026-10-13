@@ -4,7 +4,7 @@
  * Checks today's URLs against Kirby: every URL of the live sitemap answers
  * 200 at exactly its address, slash at the end included; every redirect
  * of content/.redirects.json answers 301 to its target, and the target
- * answers 200. Takes the place of scripts/check-urls.sh, without Pop.
+ * answers 200.
  * Runs against the local server (make kirby-dev) or staging; the staging
  * password comes from STAGING_USER and STAGING_PASSWORD in the environment.
  *

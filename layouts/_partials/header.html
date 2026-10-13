@@ -1,7 +1,0 @@
-<header class="site-header">
-    {{ if .IsHome }}
-    <h1 class="masthead"><a href="{{ "/" | relURL }}">{{ site.Params.siteHeading | default site.Title }}</a></h1>
-    {{ else }}
-    <p class="masthead"><a href="{{ "/" | relURL }}">{{ site.Params.siteHeading | default site.Title }}</a></p>
-    {{ end }}
-</header>

@@ -4,8 +4,6 @@ PRODUCT.md
 .impeccable/
 .design/
 node_modules/
-public/
-.hugo_build.lock
 .DS_Store
 logs/
 .srgb-originals/
