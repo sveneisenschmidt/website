@@ -36,6 +36,12 @@ make deploy
 
 Lint and tests run first. The deploy takes a snapshot of the live state, then uploads the code. It never touches the content.
 
+`make deploy` and `make pull` read the server folder from a local `deploy.mk`, which is not in git:
+
+```make
+LIVE_PATH = /www/htdocs/<account>/sven.eisenschmidt.website
+```
+
 ## Backups
 
 Every deploy and every `make pull` takes a snapshot of the live state on the server. The deploy keeps the newest 30. `make backup` writes the local state to `backups/`. `make restore BACKUP=backups/website-....tar.gz` puts it back. `make restore-test` proves that a backup restores the same site.

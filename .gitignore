@@ -50,3 +50,6 @@ data.db*
 
 # Assistent: Uploads der Chats, neben www/ und vendor/, nie in Git
 /storage/
+
+# Server folder of the live site (names the hosting account)
+/deploy.mk
