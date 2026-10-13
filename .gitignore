@@ -4,48 +4,50 @@
 # Editor
 /.zed/
 
-# Lokale Dateien für Claude
+# Local files of Claude Code
 /.claude/
 
-# Lokale Design-Notizen
+# Local design notes
 /.design/
 /DESIGN.md
 
-# Datenbanken: Besucherdaten gehören nie in dieses öffentliche Repository.
+# Databases: visitor data must never reach this public repository.
 *.db
 *.sqlite*
 
-# Lokale Einstellungen für das Makefile, etwa der Ordner auf dem Server. Er nennt das Hosting-Konto.
+# Local values and keys (template: .env.example). The server folder in it
+# names the hosting account.
 /.env
 
-# Kirby: der Zustand der Seite (Inhalte, Konten, .salt, .license) und env.php.
-# Den Zustand sichert bin/backup.sh, env.php hat jeder Host für sich.
+# Kirby: the state of the site (content, accounts, .salt, .license) and
+# env.php. bin/backup.sh saves the state; each host has its own env.php.
 /www/content/
 /www/site/accounts/
 /www/site/config/env.php
 /www/site/config/.salt
 /www/site/config/.license
 
-# Kirby: erzeugte Dateien. Kirby erzeugt sie aus den Inhalten neu.
+# Kirby: generated files. Kirby creates them again from the content.
 /www/media/
 /www/site/cache/
 /www/site/sessions/
 /www/site/logs/
 
-# Kirby: von Composer installiert
+# Installed by Composer
 /www/kirby/
 /vendor/
-# Plugins aus Composer; nur die eigenen Plugins (blog, changelog, analytics, assistant) liegen in Git.
+# Plugins from Composer. Only the plugins of this site (blog, changelog,
+# analytics, assistant) are in git.
 /www/site/plugins/*
 !/www/site/plugins/blog/
 !/www/site/plugins/changelog/
 !/www/site/plugins/analytics/
 !/www/site/plugins/assistant/
 
-# Assistent: Uploads der Chats neben www/ (src/Assistant/Uploads.php)
+# The assistant's uploads, next to www/ (src/Assistant/Uploads.php)
 /storage/
 
-# Lokale Ausgabe: Backups, Restore-Test, PHPUnit, Formatierer
+# Local output: backups, the restore test, PHPUnit, the formatter
 /backups/
 /.restore-test/
 /.phpunit.cache/
