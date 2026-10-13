@@ -25,8 +25,8 @@
 #    release before and the deploy fails.
 # 7. bin/warm.php --pages fills the page cache; the newest 5 releases stay.
 #
-# A site from before releases (state inside www/) moves once with
-# bin/migrate-to-releases.sh; this script refuses it.
+# A folder with state inside www/ is from before releases; this script
+# refuses it.
 #
 # Environment:
 #   DEPLOY_PATH                       required, the site folder on the server
@@ -70,6 +70,9 @@ fi
 
 BUILD="$(mktemp -d)"
 trap 'rm -rf "$BUILD"' EXIT
+# mktemp creates the folder as 0700, and rsync gives the release folder the
+# same mode: the web server could not enter it and would answer 403.
+chmod 755 "$BUILD"
 
 echo "== Build $ID"
 # State, host config and generated files never go into a release. Kirby and
@@ -112,7 +115,7 @@ switch_to() {
 echo "== Snapshot of the state"
 # releases: state in shared/. www: a site from before releases. none: a fresh site.
 layout=$(remote "if [ -d '$SHARED/content' ]; then echo releases; elif [ -d '$DEPLOY_PATH/www/content' ]; then echo www; else echo none; fi")
-[ "$layout" != www ] || { echo "The site is from before releases: run bin/migrate-to-releases.sh once" >&2; exit 1; }
+[ "$layout" != www ] || { echo "State inside www/: the folder is from before releases" >&2; exit 1; }
 previous=$(remote "if [ -L '$DEPLOY_PATH/current' ]; then basename \"\$(readlink '$DEPLOY_PATH/current')\"; fi")
 if [ "$layout" = releases ]; then
   # A file the newest snapshot already holds is a hard link to it, and an
@@ -143,6 +146,9 @@ remote "mkdir -p '$config' && cd '$config' && { test -f env.php || printf '<?php
 # the script goes up as a file first. Without a key an existing key stays.
 rsync -tpz ${RSYNC_SSH[@]+"${RSYNC_SSH[@]}"} bin/set-env.php "$DEST/set-env.php"
 printf '%s' "${ANTHROPIC_API_KEY:-}" | remote "$RPHP '$DEPLOY_PATH/set-env.php' '$config/env.php' 'url=$SITE_URL'; status=\$?; rm -f '$DEPLOY_PATH/set-env.php'; exit \$status"
+# Only PHP reads these files, and PHP runs as the account's user: nobody
+# else needs them, env.php holds the assistant's key.
+remote "cd '$config' && chmod 600 env.php .salt && { test ! -e .license || chmod 600 .license; }"
 
 echo "== Switch to $ID"
 switch_to "$ID"

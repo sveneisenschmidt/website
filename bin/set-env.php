@@ -50,4 +50,6 @@ if ($new === $env) {
 // Write a temporary file and rename it, so no request reads half a file.
 $tmp = $file . '.tmp';
 file_put_contents($tmp, "<?php\n\nreturn " . var_export($new, true) . ";\n");
+// The file holds the assistant's key: only the account's user reads it.
+chmod($tmp, 0600);
 rename($tmp, $file);
