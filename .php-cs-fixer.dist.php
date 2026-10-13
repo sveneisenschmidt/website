@@ -1,7 +1,7 @@
 <?php
 
 $finder = (new PhpCsFixer\Finder())
-    ->in([__DIR__ . '/www/site', __DIR__ . '/bin', __DIR__ . '/tests'])
+    ->in([__DIR__ . '/src', __DIR__ . '/www/site', __DIR__ . '/bin', __DIR__ . '/tests'])
     ->exclude(['cache', 'sessions', 'accounts', 'plugins/markdown-field'])
     ->notPath('config/env.php');
 

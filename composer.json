@@ -25,6 +25,11 @@
         "kirby-cms-path": "www/kirby",
         "kirby-plugin-path": "www/site/plugins"
     },
+    "autoload": {
+        "psr-4": {
+            "Website\\": "src/"
+        }
+    },
     "autoload-dev": {
         "psr-4": {
             "Website\\Tests\\": "tests/"

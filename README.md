@@ -4,7 +4,7 @@ My personal website, built with [Kirby](https://getkirby.com/).
 
 ## Content
 
-Posts, pages, images and accounts are state on the server. They are never in git. I write in the Panel at `/panel`. Git holds the code: blueprints, templates, plugins and the scripts in `bin/`.
+Posts, pages, images and accounts are state on the server. They are never in git. I write in the Panel at `/panel`. Git holds the code: blueprints, templates, plugins, the classes in `src/` (namespace `Website\`: the page models and the blog) and the scripts in `bin/`.
 
 ## Local setup
 

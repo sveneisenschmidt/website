@@ -54,7 +54,7 @@ restore-test:
 
 .PHONY: lint
 lint:
-	@find $(WWW)/site $(WWW)/index.php bin tests -name '*.php' -print0 | xargs -0 -n1 $(PHP) -l >/dev/null && echo "lint ok"
+	@find src $(WWW)/site $(WWW)/index.php bin tests -name '*.php' -print0 | xargs -0 -n1 $(PHP) -l >/dev/null && echo "lint ok"
 
 # Formatiert den Code nach PER-CS 2.0 (.php-cs-fixer.dist.php). CI prüft das.
 .PHONY: format
