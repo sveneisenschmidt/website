@@ -3,7 +3,7 @@
 namespace Website\Tests\Integration;
 
 /**
- * The URL scheme of the site, from the page model (plugins/blog/urls.php),
+ * The URL scheme of the site, from the page models (SitePage, PostPage),
  * so links in the text and the Panel's preview use it too.
  */
 final class UrlTest extends IntegrationTestCase

@@ -4,6 +4,8 @@ namespace Website\Tests\Integration;
 
 use Kirby\Cms\File;
 use RuntimeException;
+use Website\Blog\Exif;
+use Website\Blog\Types;
 
 /**
  * The card "Neuer Entwurf": fields, photos and route in one click, all or
@@ -177,11 +179,11 @@ final class AssistantPostTest extends AssistantTestCase
 
     public function testTheToolCoversThePostBlueprints(): void
     {
-        foreach (array_keys(BLOG_TYPES) as $type) {
-            $page = $this->post(BLOG_TYPES[$type]['section'], $type, 'model-' . $type, 'Model');
+        foreach (Types::templates() as $type) {
+            $page = $this->post(Types::ALL[$type]['section'], $type, 'model-' . $type, 'Model');
             $this->assertSame([], array_diff(array_keys($page->blueprint()->fields()), array_keys(self::POST_FIELDS)), $type);
         }
         $file = $this->upload(__DIR__ . '/../fixtures/exif.jpg', 'a.jpg');
-        $this->assertEqualsCanonicalizing([...BLOG_ASSISTANT_IMAGE_TEXTS, ...BLOG_EXIF_FIELDS], array_keys($file->blueprint()->fields()));
+        $this->assertEqualsCanonicalizing([...BLOG_ASSISTANT_IMAGE_TEXTS, ...Exif::FIELDS], array_keys($file->blueprint()->fields()));
     }
 }

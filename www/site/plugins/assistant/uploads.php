@@ -2,6 +2,7 @@
 
 use Kirby\Filesystem\Dir;
 use Kirby\Filesystem\F;
+use Website\Blog\Exif;
 
 /**
  * Uploads of the chat: photos and GPX files Sven drags
@@ -111,7 +112,7 @@ function blog_uploads_accept(string $tmp, string $name): array
     try {
         if ($ext === 'jpg') {
             // Camera data becomes file fields; GPS and the rest go with the segments.
-            $exif = blog_read_exif($tmp);
+            $exif = Exif::read($tmp);
             $orientation = (int) ((@exif_read_data($tmp) ?: [])['Orientation'] ?? 1);
             $bytes = blog_jpeg_strip($bytes, $orientation);
         } else {

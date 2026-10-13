@@ -54,7 +54,7 @@ FileETag None
 </IfModule>
 
 # Caching: fonts, images (also every thumbnail under media/, whose URL
-# changes with the file) and CSS/JS (with ?v= from blog_asset()) for a
+# changes with the file) and CSS/JS (with ?v= from Layout::asset()) for a
 # year, HTML never.
 <IfModule mod_expires.c>
     ExpiresActive On

@@ -5,6 +5,7 @@ use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
 use Kirby\Data\Yaml;
 use Kirby\Filesystem\F;
+use Website\Blog\Types;
 
 /**
  * The propose tools: each turns a tool call into a card, or into the error
@@ -27,8 +28,8 @@ function blog_assistant_name(ModelWithContent $model): string
         return $model->filename() . ' in ' . blog_assistant_name($model->page());
     }
     $template = $model instanceof Page ? $model->intendedTemplate()->name() : '';
-    return isset(BLOG_TYPES[$template])
-        ? BLOG_TYPES[$template]['label'] . ' „' . $model->title()->value() . '“'
+    return isset(Types::ALL[$template])
+        ? Types::ALL[$template]['label'] . ' „' . $model->title()->value() . '“'
         : $model->title()->value();
 }
 
@@ -344,7 +345,7 @@ function blog_assistant_route_rows(?array $route): array
 function blog_assistant_propose_route(array $chat, array $input): array|string
 {
     $page = blog_assistant_find((string) $input['post']);
-    if ($page === null || !blog_type_has_map($page->intendedTemplate()->name())) {
+    if ($page === null || !Types::hasMap($page->intendedTemplate()->name())) {
         return 'A route is possible for photo and trip posts only. find_posts lists the ids.';
     }
     $route = blog_assistant_route($input['route']);
@@ -384,7 +385,7 @@ function blog_assistant_draft(Page $section, string $type, string $slug, array $
 function blog_assistant_propose_post(array $chat, array $input): array|string
 {
     $type = (string) $input['type'];
-    if (!isset(BLOG_TYPES[$type]) || site()->find(BLOG_TYPES[$type]['section']) === null) {
+    if (!isset(Types::ALL[$type]) || site()->find(Types::ALL[$type]['section']) === null) {
         return 'No section for the type ' . $type . '.';
     }
     $slug = (string) $input['slug'];
@@ -440,9 +441,9 @@ function blog_assistant_propose_post(array $chat, array $input): array|string
     if ($cover !== '' && !in_array($cover, $names, true)) {
         return 'cover is one of the file names: ' . implode(', ', $names) . '.';
     }
-    $map = blog_type_has_map($type);
+    $map = Types::hasMap($type);
     // The texts render in the draft as it will be: its images, its map.
-    $draft = blog_assistant_draft(site()->find(BLOG_TYPES[$type]['section']), $type, $slug, $photos);
+    $draft = blog_assistant_draft(site()->find(Types::ALL[$type]['section']), $type, $slug, $photos);
     foreach (['intro', 'text'] as $key) {
         if (($error = blog_guard_markdown((string) $input[$key], $allowed, $draft)) !== null) {
             return "$key: $error";
@@ -475,7 +476,7 @@ function blog_assistant_propose_post(array $chat, array $input): array|string
     foreach ($route === null ? [] : blog_assistant_route_rows($route) as $label => $value) {
         $rows[] = ['label' => $label, 'value' => $value];
     }
-    return blog_assistant_card('post', 'Neuer Entwurf · ' . BLOG_TYPES[$type]['label'], [
+    return blog_assistant_card('post', 'Neuer Entwurf · ' . Types::ALL[$type]['label'], [
         'where' => 'Anlegen legt einen Entwurf an. Veröffentlichen bleibt bei dir.',
         'uploads' => [...array_column($photos, 'upload'), ...array_filter([$route['upload'] ?? null])],
         'rows' => $rows,

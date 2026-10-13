@@ -10,6 +10,8 @@ use Kirby\Cms\User;
 use Kirby\Data\Yaml;
 use Kirby\Toolkit\Str;
 use Kirby\Uuid\Uuid;
+use Website\Blog\Jsonl;
+use Website\Blog\Types;
 
 /**
  * Change log: who changed what, when and where.
@@ -81,10 +83,10 @@ function blog_changelog_event(Event $event): void
     }
 }
 
-/** Appends one entry (plugins/blog/jsonl.php). */
+/** Appends one entry (Website\Blog\Jsonl). */
 function blog_changelog_write(array $entry): void
 {
-    blog_jsonl_append(blog_changelog_dir(), $entry);
+    Jsonl::append(blog_changelog_dir(), $entry);
 }
 
 function blog_changelog_id(ModelWithContent $model): string
@@ -109,7 +111,7 @@ function blog_changelog_title(ModelWithContent $model): string
 /** The post types Sven writes. Other pages stay "Seite". */
 function blog_changelog_kind(Page $page): ?string
 {
-    return BLOG_TYPES[$page->intendedTemplate()->name()]['label'] ?? null;
+    return Types::ALL[$page->intendedTemplate()->name()]['label'] ?? null;
 }
 
 /** A page status as the Panel names it for this page: "Entwurf", "Veröffentlicht". */
@@ -231,7 +233,7 @@ function blog_changelog_label(ModelWithContent $model, string $key): string
 /** The newest entries first, at most $limit. */
 function blog_changelog_entries(int $limit = 500): array
 {
-    return blog_jsonl_read(blog_changelog_dir(), $limit);
+    return Jsonl::read(blog_changelog_dir(), $limit);
 }
 
 App::plugin('sveneisenschmidt/changelog', [

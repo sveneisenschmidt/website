@@ -4,7 +4,7 @@ namespace Website\Tests\Integration;
 
 /**
  * Assets under www/assets and thumbnails through the sRGB driver
- * (plugins/blog/srgb.php), as on concertshotsbyluisa.de.
+ * (Website\Blog\SrgbGd), as on concertshotsbyluisa.de.
  */
 final class ThumbTest extends IntegrationTestCase
 {

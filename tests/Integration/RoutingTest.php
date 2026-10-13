@@ -7,7 +7,7 @@ use Website\Tests\Support\TestSite;
 
 /**
  * Requests as a browser sends them, the slash at the end included
- * (config/routes.php, plugins/blog/urls.php).
+ * (config/routes.php, Website\Blog\Router).
  */
 final class RoutingTest extends IntegrationTestCase
 {

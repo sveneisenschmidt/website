@@ -6,6 +6,8 @@ use Kirby\Data\Json;
 use Kirby\Filesystem\Dir;
 use Kirby\Filesystem\F;
 use Kirby\Http\Route;
+use Website\Blog\JsonFile;
+use Website\Models\PostPage;
 
 /**
  * Visitor statistics without cookies, scripts or external services.
@@ -132,8 +134,8 @@ function blog_analytics_count(string $id, string $ip, string $ua, string $refere
         }
         $month[$date] = $day;
 
-        blog_write_json("$cache/$date.json", $seen);
-        blog_write_json(blog_analytics_dir() . '/' . substr($date, 0, 7) . '.json', $month);
+        JsonFile::write("$cache/$date.json", $seen);
+        JsonFile::write(blog_analytics_dir() . '/' . substr($date, 0, 7) . '.json', $month);
     } finally {
         flock($lock, LOCK_UN);
         fclose($lock);
@@ -227,7 +229,7 @@ function blog_analytics_totals(): array
             }
         }
     }
-    $posts = array_filter($totals['pages'], fn($id) => ($page = page($id)) !== null && blog_is_post($page), ARRAY_FILTER_USE_KEY);
+    $posts = array_filter($totals['pages'], fn($id) => page($id) instanceof PostPage, ARRAY_FILTER_USE_KEY);
     arsort($posts);
     $totals['top'] = array_slice($posts, 0, 5, true);
     $totals['pages'] = count($totals['pages']);

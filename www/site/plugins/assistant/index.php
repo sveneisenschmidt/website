@@ -5,6 +5,7 @@ use Kirby\Cms\Page;
 use Kirby\Cms\User;
 use Kirby\Panel\Ui\Buttons\ViewButton;
 use Kirby\Session\Session;
+use Website\Blog\Types;
 
 /**
  * Panel area "Assistent": Sven writes posts with Claude. Claude proposes, Sven's click applies.
@@ -53,7 +54,7 @@ function blog_assistant_upload(array $files): array
 function blog_assistant_button(Page $page): ?ViewButton
 {
     $template = $page->intendedTemplate()->name();
-    if ($template !== 'about' && !isset(BLOG_TYPES[$template])) {
+    if ($template !== 'about' && !isset(Types::ALL[$template])) {
         return null;
     }
     return new ViewButton(icon: 'robot', text: 'Assistent', link: 'assistent?page=' . rawurlencode($page->id()));

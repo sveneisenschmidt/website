@@ -2,15 +2,17 @@
 
 namespace Website\Tests\Integration;
 
+use Website\Blog\FileCache;
+
 /**
- * The page cache (config.php, plugins/blog/cache.php): pages go in, and
+ * The page cache (config.php, Website\Blog\FileCache): pages go in, and
  * clearing it under parallel Panel requests does not fail.
  */
 final class CacheTest extends IntegrationTestCase
 {
     public function testPagesGoIntoTheCache(): void
     {
-        $this->assertInstanceOf(\BlogFileCache::class, $this->kirby->cache('pages'));
+        $this->assertInstanceOf(FileCache::class, $this->kirby->cache('pages'));
 
         $this->post->render();
 

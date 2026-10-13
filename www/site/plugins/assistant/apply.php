@@ -5,6 +5,8 @@ use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
 use Kirby\Data\Yaml;
 use Kirby\Filesystem\F;
+use Website\Blog\Text;
+use Website\Blog\Types;
 
 /**
  * Sven's click on a card. Only here does anything change, and always as
@@ -190,7 +192,7 @@ function blog_assistant_route_fields(File $file, array $route): array
 {
     return [
         'route' => Yaml::encode([$file->uuid()->toString()]),
-        'mappoints' => Yaml::encode(array_map(fn($m) => ['label' => $m['label'], 'lat' => blog_num($m['lat'], 6), 'lon' => blog_num($m['lon'], 6)], $route['markers'])),
+        'mappoints' => Yaml::encode(array_map(fn($m) => ['label' => $m['label'], 'lat' => Text::number($m['lat'], 6), 'lon' => Text::number($m['lon'], 6)], $route['markers'])),
         'mapzoom' => $route['zoom'] ? 'true' : 'false',
     ];
 }
@@ -224,7 +226,7 @@ function blog_assistant_apply_route(array $in): array
  */
 function blog_assistant_apply_post(array $in): array
 {
-    $section = site()->find(BLOG_TYPES[$in['type']]['section']) ?? throw new BlogAssistantError('chat', 'Bereich nicht gefunden');
+    $section = site()->find(Types::ALL[$in['type']]['section']) ?? throw new BlogAssistantError('chat', 'Bereich nicht gefunden');
     if (($taken = blog_assistant_slug_taken($in['slug'])) !== null) {
         throw new BlogAssistantStale('Diesen URL-Anhang gibt es inzwischen. Nichts geändert.', "the slug is taken by $taken now");
     }

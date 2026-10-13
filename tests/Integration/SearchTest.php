@@ -2,11 +2,12 @@
 
 namespace Website\Tests\Integration;
 
+use Website\Blog\Posts;
 use Website\Tests\Support\TestSite;
 
 /**
  * Search on the server: /search/?q= renders the results, search.js asks
- * /search.json while typing (plugins/blog/posts.php, templates/search*).
+ * /search.json while typing (Website\Blog\Posts, templates/search*).
  */
 final class SearchTest extends IntegrationTestCase
 {
@@ -33,11 +34,11 @@ final class SearchTest extends IntegrationTestCase
 
     public function testFindsEveryWordInTitleTextAndAltText(): void
     {
-        $this->assertSame(['photos/test-photo'], blog_search('Heron REEDS')->keys());
-        $this->assertSame(['notes/pond-note', 'photos/test-photo'], blog_search('pond')->keys());
-        $this->assertSame([], blog_search('heron kingfisher')->keys(), 'link targets do not count');
-        $this->assertSame([], blog_search('jpg')->keys(), 'file names do not count');
-        $this->assertSame([], blog_search('  ')->keys());
+        $this->assertSame(['photos/test-photo'], Posts::search('Heron REEDS')->keys());
+        $this->assertSame(['notes/pond-note', 'photos/test-photo'], Posts::search('pond')->keys());
+        $this->assertSame([], Posts::search('heron kingfisher')->keys(), 'link targets do not count');
+        $this->assertSame([], Posts::search('jpg')->keys(), 'file names do not count');
+        $this->assertSame([], Posts::search('  ')->keys());
     }
 
     public function testResultsComeFromTheServer(): void

@@ -1,5 +1,7 @@
 <?php
 
+use Website\Blog\Jsonl;
+
 /**
  * Protokoll of the assistant: one line per answer and per decision on a
  * card, without any content. It records who asked, when, how long the
@@ -13,11 +15,11 @@ function blog_assistant_log_dir(): string
     return kirby()->root('content') . '/.assistant';
 }
 
-/** Appends one entry (plugins/blog/jsonl.php). */
+/** Appends one entry (Website\Blog\Jsonl). */
 function blog_assistant_log_write(array $entry): void
 {
     try {
-        blog_jsonl_append(blog_assistant_log_dir(), $entry);
+        Jsonl::append(blog_assistant_log_dir(), $entry);
     } catch (Throwable $e) {
         // A log line must never break the chat.
         error_log('blog assistant log: ' . $e->getMessage());
@@ -27,7 +29,7 @@ function blog_assistant_log_write(array $entry): void
 /** The newest entries, newest first. */
 function blog_assistant_log_read(int $limit = 300): array
 {
-    return blog_jsonl_read(blog_assistant_log_dir(), $limit);
+    return Jsonl::read(blog_assistant_log_dir(), $limit);
 }
 
 /** Starts the measurement of one answer. */

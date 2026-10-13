@@ -3,18 +3,19 @@
 namespace Website\Tests\Integration;
 
 use Kirby\Cms\Response;
+use Website\Blog\Redirects;
 use Website\Tests\Support\TestSite;
 
 /**
  * The redirects in content/.redirects.json answer before any page, as
- * RedirectMatch did on Apache (plugins/blog/urls.php).
+ * RedirectMatch did on Apache (Website\Blog\Router).
  */
 final class RedirectTest extends IntegrationTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
-        blog_redirects_write([
+        Redirects::write([
             ['from' => '/posts/daily-photo-test/', 'to' => '/2026-10-07-test-photo/', 'pop' => 'keep', 'rss' => 'keep'],
             ['from' => '/photos/', 'to' => '/archive/photos/'],
             ['from' => '/page/2/', 'to' => '/'],
@@ -25,8 +26,8 @@ final class RedirectTest extends IntegrationTestCase
     public function testTheStoreIsContent(): void
     {
         $this->assertFileExists($this->root . '/content/.redirects.json');
-        $this->assertSame('/2026-10-07-test-photo/', blog_redirect_to('posts/daily-photo-test'));
-        $this->assertNull(blog_redirect_to('posts/other'));
+        $this->assertSame('/2026-10-07-test-photo/', Redirects::target('posts/daily-photo-test'));
+        $this->assertNull(Redirects::target('posts/other'));
     }
 
     public function testRedirectsComeFirst(): void

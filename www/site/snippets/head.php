@@ -1,14 +1,17 @@
 <?php
+use Website\Blog\Layout;
+use Website\Blog\Site;
+
 /**
  * Everything in <head>: title, icons, feed, font, meta tags, JSON-LD, the
  * CSS inline, the scripts a page needs inline, Leaflet only with a map
- * (plugins/blog/layout.php).
+ * (Website\Blog\Layout).
  *
- * @var Kirby\Cms\Page $page
+ * @var Website\Models\SitePage $page
  * @var Kirby\Cms\Site $site
  */
-$meta = blog_meta($page);
-$jsonld = blog_jsonld($page, $meta);
+$meta = Layout::meta($page);
+$jsonld = Layout::jsonLd($page, $meta);
 ?>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -21,8 +24,8 @@ $jsonld = blog_jsonld($page, $meta);
 <link rel="alternate" type="application/rss+xml" title="<?= $site->title()->esc() ?>" href="/index.xml">
 <link rel="preload" href="/fonts/hanken-grotesk-v12-latin.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="description" content="<?= esc($meta['description']) ?>">
-<meta name="author" content="<?= esc(BLOG_SITE['author']) ?>">
-<meta name="keywords" content="<?= esc(BLOG_SITE['keywords']) ?>">
+<meta name="author" content="<?= esc(Site::AUTHOR) ?>">
+<meta name="keywords" content="<?= esc(Site::KEYWORDS) ?>">
 <meta name="google-site-verification" content="cNQT6i25KOyhszNP9zuFOD80fbWfvoemf65Z83uQ984">
 <meta property="og:title" content="<?= esc($meta['title']) ?>">
 <meta property="og:description" content="<?= esc($meta['description']) ?>">
@@ -33,8 +36,8 @@ $jsonld = blog_jsonld($page, $meta);
 <?php if ($page->date()->isNotEmpty()): ?>
 <meta property="article:published_time" content="<?= $page->date()->toDate('c') ?>">
 <?php endif ?>
-<meta property="article:modified_time" content="<?= date('c', blog_modified($page)) ?>">
-<meta property="article:author" content="<?= esc(BLOG_SITE['author']) ?>">
+<meta property="article:modified_time" content="<?= date('c', $page->lastModified()) ?>">
+<meta property="article:author" content="<?= esc(Site::AUTHOR) ?>">
 <?php endif ?>
 <?php if ($meta['image']): ?>
 <meta property="og:image" content="<?= $meta['image'] ?>">
@@ -47,14 +50,14 @@ $jsonld = blog_jsonld($page, $meta);
 <?php endif ?>
 <link rel="canonical" href="<?= $meta['url'] ?>">
 <?php if ($jsonld !== null): ?>
-<script type="application/ld+json"><?= blog_json($jsonld) ?></script>
+<script type="application/ld+json"><?= Layout::json($jsonld) ?></script>
 <?php endif ?>
-<style><?= blog_css() ?></style>
-<?php foreach (blog_scripts($page) as $script): ?>
-<script<?= $script === 'search' ? ' type="module"' : '' ?>><?= blog_js($script) ?></script>
+<style><?= Layout::css() ?></style>
+<?php foreach (Layout::scripts($page) as $script): ?>
+<script<?= $script === 'search' ? ' type="module"' : '' ?>><?= Layout::js($script) ?></script>
 <?php endforeach ?>
-<?php if (blog_has_map($page)): ?>
-<link rel="stylesheet" href="<?= blog_asset('leaflet/leaflet.css') ?>">
-<script src="<?= blog_asset('leaflet/leaflet.js') ?>" defer></script>
-<script src="<?= blog_asset('js/map.js') ?>" defer></script>
+<?php if ($page->hasMap()): ?>
+<link rel="stylesheet" href="<?= Layout::asset('leaflet/leaflet.css') ?>">
+<script src="<?= Layout::asset('leaflet/leaflet.js') ?>" defer></script>
+<script src="<?= Layout::asset('js/map.js') ?>" defer></script>
 <?php endif ?>

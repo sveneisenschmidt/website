@@ -2,10 +2,11 @@
 
 namespace Website\Tests\Integration;
 
+use Website\Blog\Images;
 use Website\Tests\Support\TestSite;
 
 /**
- * The files for machines (plugins/blog/feeds.php, config/routes.php):
+ * The files for machines (Website\Blog\Feeds, config/routes.php):
  * feed, sitemap, robots.txt, llms.txt.
  */
 final class FeedTest extends IntegrationTestCase
@@ -83,7 +84,7 @@ final class FeedTest extends IntegrationTestCase
         $this->assertStringContainsString("<url>\n    <loc>http://localhost/</loc>\n    <lastmod>2026-10-08T09:30:00+02:00</lastmod>\n  </url>", $xml);
         $this->assertStringContainsString(
             "<loc>{$post->url()}</loc>\n    <lastmod>2026-10-08T09:30:00+02:00</lastmod>\n    <image:image>\n      <image:loc>"
-            . blog_wide($post->cover()->toFile(), 1600)->url() . '</image:loc>',
+            . Images::wide($post->cover()->toFile(), 1600)->url() . '</image:loc>',
             $xml,
         );
     }

@@ -4,6 +4,7 @@ use Kirby\Cms\File;
 use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
 use Kirby\Data\Yaml;
+use Website\Blog\Types;
 
 /**
  * The content as the assistant reads it: posts, About and their files, each
@@ -33,7 +34,7 @@ function blog_assistant_find(string $ref): ?Page
 {
     $page = blog_assistant_page($ref);
     $template = $page?->intendedTemplate()->name() ?? '';
-    return $template === 'about' || isset(BLOG_TYPES[$template]) ? $page : null;
+    return $template === 'about' || isset(Types::ALL[$template]) ? $page : null;
 }
 
 /** A file of a post or of About by its id ("photos/aika/IMG_1.jpg"). */
@@ -94,7 +95,7 @@ function blog_assistant_filenames(Page $page): array
  */
 function blog_assistant_route_summary(Page $page): ?array
 {
-    if (!blog_type_has_map($page->intendedTemplate()->name())) {
+    if (!Types::hasMap($page->intendedTemplate()->name())) {
         return null;
     }
     $refs = blog_assistant_list(blog_assistant_current($page, 'route'));
@@ -117,7 +118,7 @@ function blog_assistant_route_summary(Page $page): ?array
 /** The page that uses a slug in one of the four sections or at the top, drafts included, or null. */
 function blog_assistant_slug_taken(string $slug): ?string
 {
-    foreach (BLOG_TYPES as $info) {
+    foreach (Types::ALL as $info) {
         $page = site()->find($info['section'])?->childrenAndDrafts()->findBy('slug', $slug);
         if ($page !== null) {
             return $page->id();

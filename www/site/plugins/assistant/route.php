@@ -1,6 +1,7 @@
 <?php
 
 use Kirby\Http\Remote;
+use Website\Blog\Text;
 
 /**
  * Routes for the map of a post:
@@ -165,7 +166,7 @@ function blog_route_cut(array $points, float $head, float $tail): array
  */
 function blog_route_osrm(array $stations, ?Closure $http = null): array
 {
-    $url = BLOG_ROUTE_OSRM . implode(';', array_map(fn(array $p) => blog_num((float) $p[0], 6) . ',' . blog_num((float) $p[1], 6), $stations)) . '?overview=full&geometries=geojson';
+    $url = BLOG_ROUTE_OSRM . implode(';', array_map(fn(array $p) => Text::number((float) $p[0], 6) . ',' . Text::number((float) $p[1], 6), $stations)) . '?overview=full&geometries=geojson';
     try {
         if ($http !== null) {
             [$status, $body] = $http($url, BLOG_ROUTE_AGENT);

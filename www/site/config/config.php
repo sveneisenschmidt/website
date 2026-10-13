@@ -31,10 +31,10 @@ return array_replace_recursive([
     // (Kirby's default makes "--" an em dash).
     'smartypants' => ['attr' => 'qDe'],
     // GD, plus conversion to sRGB for photos with another color profile
-    // (plugins/blog/srgb.php).
+    // (Website\Blog\SrgbGd).
     'thumbs' => ['driver' => 'blog-gd'],
     // HTML cache. Kirby clears it on every change in the Panel. The type
-    // clears it under a lock, for parallel uploads (plugins/blog/cache.php).
+    // clears it under a lock, for parallel uploads (Website\Blog\FileCache).
     // About shows the visitor numbers, which change all day: never cached.
     'cache' => [
         'pages' => ['active' => true, 'type' => 'blog-file', 'ignore' => ['about']],
@@ -47,7 +47,7 @@ return array_replace_recursive([
         // Areas and tabs have German ids, as they show in the Panel's
         // addresses (/panel/besucher); the code around them is English.
         'menu' => function (Kirby\Cms\App $kirby) {
-            $types = array_column(BLOG_TYPES, null, 'section');
+            $types = array_column(Website\Blog\Types::ALL, null, 'section');
             $path = $kirby->path();
             $inType = fn(string $slug) => preg_match('!^panel/pages/' . $slug . '(\+|/|$)!', $path) === 1;
             $menu = ['site' => ['current' => fn(?string $current) => $current === 'site' && !array_filter(array_keys($types), $inType)]];

@@ -2,6 +2,8 @@
 
 use Kirby\Cms\Page;
 use Kirby\Filesystem\F;
+use Website\Blog\Exif;
+use Website\Blog\Types;
 
 /**
  * The tools Claude may call, and the read tools, which run at once. Propose
@@ -11,10 +13,10 @@ use Kirby\Filesystem\F;
  * the prompt.
  */
 
-/** The fields of a map (post types with blog_type_has_map): only propose_route writes them. */
+/** The fields of a map (post types with Types::hasMap): only propose_route writes them. */
 const BLOG_ASSISTANT_ROUTE_FIELDS = ['route', 'mappoints', 'mapzoom'];
 
-/** The texts of an image; the camera data (BLOG_EXIF_FIELDS) is not writable. */
+/** The texts of an image; the camera data (Exif::FIELDS) is not writable. */
 const BLOG_ASSISTANT_IMAGE_TEXTS = ['alt', 'caption', 'photographer'];
 
 /** The answer of a proposal whose GPX upload another open card holds. */
@@ -59,7 +61,7 @@ function blog_assistant_tools(): array
     ]) + ['description' => 'Map points: the stations with marker true, then markers. Labels plain text, at most 60 characters.'];
     return [
         $tool('find_posts', 'Lists posts of the four sections, drafts included: newest first, at most ' . BLOG_ASSISTANT_FIND_LIMIT . ', each with id, uuid, type, title, date and status, plus the total.', [
-            'type' => ['type' => 'string', 'enum' => ['', ...array_keys(BLOG_TYPES)], 'description' => 'Empty for all types'],
+            'type' => ['type' => 'string', 'enum' => ['', ...array_keys(Types::ALL)], 'description' => 'Empty for all types'],
             'query' => $str + ['description' => 'Text in slug, title, intro or text; empty for all'],
             'from' => $str + ['description' => 'YYYY-MM-DD or empty'],
             'to' => $str + ['description' => 'YYYY-MM-DD or empty'],
@@ -72,7 +74,7 @@ function blog_assistant_tools(): array
             'crop' => $object(['x' => $num, 'y' => $num, 'w' => $num, 'h' => $num]) + ['description' => 'Fractions of width and height'],
         ]),
         $tool('propose_post', 'Proposes a new draft in one step: its fields, photos from uploads of this chat and a route. Nothing changes until the user clicks. The slug must be free in all four sections, drafts included. (image: file name) refers to the file names in photos. A route is possible for photo and trip; no stations and no gpx means no route. ' . BLOG_ASSISTANT_TEXT_RULES, [
-            'type' => ['type' => 'string', 'enum' => array_keys(BLOG_TYPES)],
+            'type' => ['type' => 'string', 'enum' => array_keys(Types::ALL)],
             'slug' => $str + ['description' => 'a-z, 0-9 and single hyphens'],
             'date' => $str + ['description' => 'YYYY-MM-DD HH:MM:SS, Europe/Berlin, not in the future'],
             'title' => $str,
@@ -137,7 +139,7 @@ function blog_assistant_find_posts(array $input): array
     $from = trim((string) $input['from']);
     $to = trim((string) $input['to']);
     $found = [];
-    foreach (BLOG_TYPES as $template => $info) {
+    foreach (Types::ALL as $template => $info) {
         if ($type !== '' && $type !== $template) {
             continue;
         }
@@ -189,7 +191,7 @@ function blog_assistant_post_data(Page $page): array
             $texts[$key] = blog_assistant_current($file, $key);
         }
         $camera = [];
-        foreach (BLOG_EXIF_FIELDS as $key) {
+        foreach (Exif::FIELDS as $key) {
             $value = (string) $file->content()->get($key)->value();
             if ($value !== '') {
                 $camera[$key] = $value;

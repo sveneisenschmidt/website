@@ -1,9 +1,11 @@
 <?php
+use Website\Blog\Site;
+
 /**
  * A post of any type: head with type and date, the text, the mail link,
  * the neighbours in the timeline (controllers/post.php).
  *
- * @var Kirby\Cms\Page $page
+ * @var Website\Models\PostPage $page
  * @var string $section
  * @var string $label
  * @var string $type
@@ -17,14 +19,14 @@
 </p>
 <h1><?= $page->title()->esc() ?></h1>
 <p class="metadata">
-<a href="/archive/"><time datetime="<?= $page->date()->toDate('Y-m-d') ?>"><?= blog_date($page) ?></time></a>
+<a href="/archive/"><time datetime="<?= $page->date()->toDate('Y-m-d') ?>"><?= $page->dateText() ?></time></a>
 <?php if ($type !== ''): ?>&middot; <a href="/archive/<?= $section ?>/"><?= esc($type) ?></a><?php endif ?>
 </p>
 </div>
 <div class="body">
-<?= blog_content($page) ?>
+<?= $page->bodyHtml() ?>
 </div>
-<p class="post-footer"><a href="mailto:<?= BLOG_SITE['email'] ?>?subject=<?= rawurlencode('Re: ' . $page->title()->value()) ?>">Leave me a message</a>
+<p class="post-footer"><a href="mailto:<?= Site::EMAIL ?>?subject=<?= rawurlencode('Re: ' . $page->title()->value()) ?>">Leave me a message</a>
 </p>
 </article>
 <?php snippet('stream', ['current' => $page]) ?>

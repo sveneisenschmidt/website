@@ -2,6 +2,10 @@
 
 namespace Website\Tests\Integration;
 
+use Website\Blog\Exif;
+use Website\Blog\Images;
+use Website\Blog\Text;
+
 /**
  * (image:) draws a figure with its EXIF rows, (map:) the map of a trip.
  */
@@ -16,12 +20,12 @@ final class TagTest extends IntegrationTestCase
             'photographer' => 'Nadine',
         ]));
 
-        $html = blog_html('(image: a.jpg)', $this->post);
+        $html = Text::html('(image: a.jpg)', $this->post);
 
         $this->assertStringStartsWith("<figure>\n<a class=\"frame\" href=\"{$file->url()}\">", $html);
         $this->assertStringContainsString('class="frame-picture"', $html);
-        $this->assertStringContainsString('src="' . blog_wide($file, 1600)->url() . '"', $html);
-        $this->assertStringContainsString('srcset="' . blog_wide($file, 600)->url() . ' 600w, ' . blog_wide($file, 1000)->url() . ' 1000w, ' . blog_wide($file, 1600)->url() . ' 1600w"', $html);
+        $this->assertStringContainsString('src="' . Images::wide($file, 1600)->url() . '"', $html);
+        $this->assertStringContainsString('srcset="' . Images::wide($file, 600)->url() . ' 600w, ' . Images::wide($file, 1000)->url() . ' 1000w, ' . Images::wide($file, 1600)->url() . ' 1600w"', $html);
         $this->assertStringContainsString('sizes="(max-width: 900px) calc(100vw - 2rem), (max-width: 90rem) 63vw, 907px"', $html);
         // Kirby never enlarges: the fixture is 60 px wide.
         $this->assertStringContainsString("width=\"60\"\nheight=\"40\"\nalt=\"Fox &amp; wagtail\"\nloading=\"lazy\"\ndecoding=\"async\"", $html);
@@ -37,7 +41,7 @@ final class TagTest extends IntegrationTestCase
         $file = $this->upload($this->jpeg(8, 8), 'b.jpg');
         $exif = function (array $values) use (&$file) {
             $file = $this->kirby->impersonate('kirby', fn() => $file->update($values));
-            return blog_exif_rows($file);
+            return Exif::rows($file);
         };
 
         $this->assertSame(
@@ -54,9 +58,9 @@ final class TagTest extends IntegrationTestCase
         $file = $this->upload($this->jpeg(8, 8), 'c.jpg');
         $this->kirby->impersonate('kirby', fn() => $this->post->update(['cover' => [$file->uuid()->toString()]]));
 
-        $html = blog_html('(image: c.jpg)', $this->kirby->page('photos/test-photo'));
+        $html = Text::html('(image: c.jpg)', $this->kirby->page('photos/test-photo'));
 
-        $this->assertStringContainsString('style="view-transition-name: ' . blog_vt_name($this->post) . '"', $html);
+        $this->assertStringContainsString('style="view-transition-name: ' . $this->post->transitionName() . '"', $html);
     }
 
     /** The first image of the post loads at once, also when the cover comes later. */
@@ -65,7 +69,7 @@ final class TagTest extends IntegrationTestCase
         $cover = $this->upload($this->jpeg(8, 8), 'c.jpg');
         $this->upload($this->jpeg(8, 8), 'e.jpg');
         $this->kirby->impersonate('kirby', fn() => $this->post->update(['cover' => [$cover->uuid()->toString()], 'text' => "(image: e.jpg)\n\n(image: c.jpg)"]));
-        $html = blog_content($this->kirby->page('photos/test-photo'));
+        $html = $this->kirby->page('photos/test-photo')->bodyHtml();
 
         $this->assertSame(1, substr_count($html, 'loading="eager"'));
         $this->assertMatchesRegularExpression('!e-1600x-q80\\.webp"[^>]*loading="eager"\nfetchpriority="high"!s', $html);
@@ -77,7 +81,7 @@ final class TagTest extends IntegrationTestCase
         $file = $this->upload($this->jpeg(8, 8), 'd.jpg');
         $this->kirby->impersonate('kirby', fn() => $file->update(['alt' => 'Sven']));
 
-        $html = blog_html("(image: d.jpg imgclass: inline)\n\nHello", $this->post);
+        $html = Text::html("(image: d.jpg imgclass: inline)\n\nHello", $this->post);
 
         $this->assertSame("<img src=\"{$file->url()}\" alt=\"Sven\" class=\"inline\">\n<p>Hello</p>", $html);
     }
@@ -96,7 +100,7 @@ final class TagTest extends IntegrationTestCase
             'mapzoom' => 'true',
         ]));
 
-        $html = blog_html("Before\n\n(map:)", $trip);
+        $html = Text::html("Before\n\n(map:)", $trip);
 
         // Points as numbers, the JSON escaped for the attribute.
         $this->assertStringContainsString('<div class="map" data-zoomable="true" data-points="[{&quot;label&quot;:&quot;Pegau&quot;,&quot;lat&quot;:51.166,&quot;lon&quot;:12.248},{&quot;label&quot;:&quot;St Michael&#039;s ', $html);

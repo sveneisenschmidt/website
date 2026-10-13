@@ -6,6 +6,6 @@ require __DIR__ . '/../www/kirby/bootstrap.php';
 Kirby\Cms\App::$enableWhoops = false;
 
 // Plugin functions for unit tests. Kirby loads the plugin with include_once
-// when it starts, so nothing is defined twice.
-require_once __DIR__ . '/../www/site/plugins/blog/index.php';
+// when it starts, so nothing is defined twice. The blog's classes in src/
+// come from Composer's autoloader.
 require_once __DIR__ . '/../www/site/plugins/assistant/route.php';

@@ -3,6 +3,7 @@
 use Kirby\Cms\Page;
 use Kirby\Text\KirbyTag;
 use Kirby\Uuid\Uuid;
+use Website\Blog\Types;
 
 require_once __DIR__ . '/words.php';
 
@@ -324,7 +325,7 @@ function blog_guard_markdown(string $text, array $allowed, Page $page, string $b
         return 'Raw HTML is not allowed. Use Markdown.';
     }
     $files = blog_assistant_filenames($page);
-    $map = blog_type_has_map($page->intendedTemplate()->name());
+    $map = Types::hasMap($page->intendedTemplate()->name());
     preg_match_all(BLOG_GUARD_TAG, $new, $m);
     foreach ($m[1] as $tag) {
         if (($error = blog_guard_tag($tag, $files, $map)) !== null) {

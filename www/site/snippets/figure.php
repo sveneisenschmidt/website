@@ -1,26 +1,29 @@
 <?php
+use Website\Blog\Exif;
+use Website\Blog\Images;
+
 /**
  * An image of a post: linked to the original, 600, 1000 and 1600 px WebP,
  * the EXIF rows below. No blank lines: Markdown would end the HTML block
  * there.
  *
  * @var Kirby\Cms\File $file
- * @var Kirby\Cms\Page $page
+ * @var Website\Models\SitePage $page
  */
-$picture = blog_picture($file);
-$rows = blog_exif_rows($file);
+$picture = Images::picture($file);
+$rows = Exif::rows($file);
 $caption = (string) $file->caption()->value();
 $photographer = (string) $file->photographer()->value();
 // The first image of the post is the one under the title: the browser
 // loads it first. The cover keeps the transition from its tile.
-$first = blog_first_image($page) === $file->filename();
-$cover = $page->cover()->toFile()?->is($file) === true;
+$first = $page->firstImageName() === $file->filename();
+$cover = $page->coverImage()?->is($file) === true;
 ?>
 <figure>
 <a class="frame" href="<?= $file->url() ?>">
 <img
 class="frame-picture"
-<?php if ($cover): ?>style="view-transition-name: <?= blog_vt_name($page) ?>"
+<?php if ($cover): ?>style="view-transition-name: <?= $page->transitionName() ?>"
 <?php endif ?>src="<?= $picture['src'] ?>"
 srcset="<?= $picture['srcset'] ?>"
 sizes="(max-width: 900px) calc(100vw - 2rem), (max-width: 90rem) 63vw, 907px"
