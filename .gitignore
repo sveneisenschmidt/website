@@ -51,5 +51,5 @@ data.db*
 # Assistent: Uploads der Chats, neben www/ und vendor/, nie in Git
 /storage/
 
-# Server folder of the live site (names the hosting account)
-/deploy.mk
+# Local settings for the Makefile, e.g. the server folder (names the hosting account)
+/.env

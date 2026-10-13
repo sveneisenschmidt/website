@@ -74,13 +74,13 @@ check-urls:
 	@$(PHP) bin/check-urls.php $(SITE)
 
 # Deploy der Live-Seite über den SSH-Alias website. Den Ordner auf dem Server
-# nennt die lokale deploy.mk (nie in Git, sie nennt das Hosting-Konto):
-#   LIVE_PATH = /www/htdocs/<konto>/sven.eisenschmidt.website
+# nennt die lokale .env (nie in Git, sie nennt das Hosting-Konto):
+#   LIVE_PATH=/www/htdocs/<konto>/sven.eisenschmidt.website
 # Den API-Schlüssel holt bin/deploy-env.sh aus der lokalen env.php. Ein
 # Staging-Passwort kommt nur, wenn STAGING_USER und STAGING_PASSWORD gesetzt
 # sind. Lint und Tests laufen vorher.
 LIVE_HOST ?= website
--include deploy.mk
+-include .env
 LIVE_URL ?= https://sven.eisenschmidt.website
 
 .PHONY: deploy
@@ -89,7 +89,7 @@ deploy: lint test live-path
 
 .PHONY: live-path
 live-path:
-	@test -n "$(LIVE_PATH)" || { echo "LIVE_PATH fehlt: deploy.mk anlegen, siehe Kommentar im Makefile" >&2; exit 1; }
+	@test -n "$(LIVE_PATH)" || { echo "LIVE_PATH fehlt: .env anlegen, siehe Kommentar im Makefile" >&2; exit 1; }
 
 # Ersetzt Inhalte und Konten in www/ durch den Stand des Servers.
 .PHONY: pull
