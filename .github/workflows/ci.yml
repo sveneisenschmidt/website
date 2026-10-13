@@ -1,27 +1,25 @@
-name: Deploy
+name: CI
 
-# Every push to main deploys the site: lint and tests first, then make deploy.
-# The repository is public and the runner is self-hosted, so no pull
-# request starts this workflow (the workflow Test checks pull requests).
+# Every pull request and every push to main: lint and tests. A push to main
+# then deploys, but only when the tests pass. Both jobs run on the
+# self-hosted runner and only for runs that sveneisenschmidt starts: the
+# repository is public, and the code of someone else's pull request must
+# not run on that runner.
 on:
   push:
     branches:
       - main
+  pull_request:
   workflow_dispatch:
 
 permissions:
   contents: read
 
-# One deploy at a time; a second push waits for the first.
-concurrency:
-  group: deploy
-  cancel-in-progress: false
-
 jobs:
-  deploy:
+  test:
     if: github.actor == 'sveneisenschmidt'
     runs-on: self-hosted
-    timeout-minutes: 20
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -29,7 +27,7 @@ jobs:
 
       # The runner keeps PHP between jobs. setup-php takes about a minute, so
       # it runs only when the PHP of .php-version, an extension or Composer
-      # is missing.
+      # is missing. The job deploy uses the same PHP.
       - name: PHP check
         id: php
         run: |
@@ -51,9 +49,26 @@ jobs:
       - name: Install
         run: composer install --no-interaction --no-progress
 
-      # make deploy runs neither: a failure here stops the run before the deploy.
-      - name: Lint and tests
-        run: make lint test
+      - name: Lint
+        run: find www/site www/index.php bin tests -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null
+
+      - name: Tests
+        run: vendor/bin/phpunit
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: self-hosted
+    timeout-minutes: 20
+    # One deploy at a time; a second push waits for the first. On this job
+    # only, so a waiting deploy never cancels the tests of a pull request.
+    concurrency:
+      group: deploy
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
 
       # The runner keeps its files between jobs: key and known_hosts go to
       # $RUNNER_TEMP, which the runner empties after each job. The host key
@@ -73,10 +88,10 @@ jobs:
       # account. Without an API key the deploy keeps the assistant's key.
       - name: Deploy
         env:
-          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
-          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          SITE_URL: https://sven.eisenschmidt.website
         run: |
           export DEPLOY_SSH_KEY_FILE="$RUNNER_TEMP/deploy_key"
           export DEPLOY_KNOWN_HOSTS_FILE="$RUNNER_TEMP/known_hosts"
-          make deploy LIVE_HOST="$DEPLOY_USER@$DEPLOY_HOST" LIVE_PATH="${DEPLOY_PATH%/}"
+          bin/deploy.sh

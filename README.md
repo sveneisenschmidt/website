@@ -25,17 +25,17 @@ make lint
 make test
 ```
 
-The workflow `Test` runs both for every pull request.
+The workflow `CI` runs both for every pull request and every push to `main`.
 
 ## Deploy
 
-Every push to `main` deploys: the workflow `Deploy` runs on a self-hosted runner. By hand:
+Every push to `main` deploys: the workflow `CI` runs the tests, then the deploy, on a self-hosted runner. By hand:
 
 ```bash
 make deploy
 ```
 
-The workflow runs lint and tests first; `make deploy` by hand runs neither. The deploy takes a snapshot of the live state, then uploads the code. It never touches the content. At the end the start page must answer 200, and every page is requested once to fill the page cache.
+`make deploy` runs no tests. The deploy takes a snapshot of the live state, then uploads the code. It never touches the content. At the end the start page must answer 200, and every page is requested once to fill the page cache.
 
 The workflow reads the host key of the server from the secret `DEPLOY_KNOWN_HOSTS` (the output of `ssh-keyscan` for the deploy host).
 

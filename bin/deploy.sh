@@ -20,7 +20,7 @@
 #   SITE_URL                          required, the canonical URL ('url' in env.php)
 #   DEPLOY_HOST                       required, ssh target (alias or user@host)
 #   DEPLOY_SSH_KEY_FILE               optional, private key file for ssh
-#   DEPLOY_KNOWN_HOSTS_FILE           optional, known_hosts file for ssh (the workflow Deploy)
+#   DEPLOY_KNOWN_HOSTS_FILE           optional, known_hosts file for ssh (the workflow CI)
 #   ANTHROPIC_API_KEY                 optional, key of the Panel assistant
 #   REMOTE_PHP                        PHP on the server, default php85 (php in the ssh shell is 8.4)
 set -euo pipefail
@@ -30,6 +30,10 @@ set -euo pipefail
 : "${SITE_URL:?SITE_URL missing}"
 DEPLOY_PATH="${DEPLOY_PATH%/}"
 SITE_URL="${SITE_URL%/}"
+# The folder on the server has the name of the site's host: a wrong
+# DEPLOY_PATH must not overwrite another site of the same account.
+SITE_HOST="${SITE_URL#*://}"
+[ "$(basename "$DEPLOY_PATH")" = "$SITE_HOST" ] || { echo "DEPLOY_PATH must end in the folder $SITE_HOST" >&2; exit 1; }
 BACKUP_DIR="$DEPLOY_PATH/backups"
 RPHP="${REMOTE_PHP:-php85}"
 

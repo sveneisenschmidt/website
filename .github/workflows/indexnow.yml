@@ -24,6 +24,6 @@ jobs:
             bin
             www
 
-      # PHP is on the runner from the workflow Deploy.
+      # PHP is on the runner from the workflow CI.
       - name: Submit to IndexNow
         run: php bin/indexnow.php https://sven.eisenschmidt.website
