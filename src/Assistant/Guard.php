@@ -13,57 +13,70 @@ use Kirby\Uuid\Uuid;
 use Website\Blog\Types;
 
 /**
- * Checks every text Claude proposes, before a card exists. Text from photos,
- * GPX files, web pages or old posts can carry
- * instructions, so the code checks, not only the prompt. Each check returns
- * null when the text passes, else the error Claude gets back. No check
- * judges style.
+ * Checks every value that Claude proposes, before a card exists. A card is a
+ * change that Claude proposed; the chat shows it with buttons to apply or
+ * discard it. Text from photos, GPX files, web pages or older posts can
+ * contain instructions for Claude (prompt injection), so the code checks
+ * each proposal and does not rely on the prompt alone. Each check returns
+ * null when the text passes, else the error message that Claude gets back.
+ * No check judges style.
  *
- * A text is judged by what the site makes of it: KirbyTags, then Kirby's
- * Markdown with the site's options, in the context of its page, read as a
- * browser reads HTML. Regexes on the source miss the links Markdown makes of
- * nested brackets, of reference definitions in lists and quotes, and of
- * link texts (security review, 2026-10-12). The source is checked as well:
- * a link target that renders as text here can render as a link next to
- * other text of the field.
+ * A text is checked by the HTML the site renders from it: KirbyTags first,
+ * then Kirby's Markdown with the site's options, in the context of its page,
+ * parsed as a browser parses HTML. Regular expressions on the source miss
+ * the links that Markdown makes from nested brackets, from reference
+ * definitions in lists and quotes, and from link texts (security review of
+ * 2026-10-12). The source is checked as well: a link target that renders as
+ * text in the new value can render as a link next to other text of the field.
  */
 final class Guard
 {
-    /** The KirbyText tags a proposed text may hold. */
+    /** The KirbyText tags a proposed text may contain. */
     public const TAGS = ['image', 'map', 'link'];
 
-    /** Raw HTML: a tag, a closing tag, a comment, a doctype or a processing instruction. */
+    /** The start of raw HTML: a tag, a closing tag, a comment, a doctype or a processing instruction. */
     public const HTML = '/<[a-z!\/?]/i';
 
-    /** A KirbyText tag, found as Kirby\Text\KirbyTags::parse() finds it. */
+    /**
+     * A KirbyText tag, with the pattern of `Kirby\Text\KirbyTags::parse()`,
+     * so the check sees the tags that Kirby renders.
+     */
     public const TAG = '!(?=[^\]])(?=\([a-z0-9_-]+:)(\((?:[^()]+|(?1))*+\))!is';
 
     /**
-     * The elements a rendered text may hold, with the attributes Markdown gives
-     * them: name => pattern of the value, null for any value. Links (href) are
-     * checked on their own. figure, figcaption and img come only from (image:),
-     * the map only from (map:).
+     * The elements a rendered text may contain, with the attributes Markdown
+     * gives them: name => pattern for the value, or null for any value.
+     * `walk()` checks the href of a link separately. figure, figcaption and
+     * img pass only as (image:) renders them, the map only as (map:) renders
+     * it.
      */
     public const ELEMENTS = [
         'p' => [], 'br' => [], 'em' => [], 'strong' => [], 'pre' => [], 'blockquote' => [], 'hr' => [],
         'ul' => [], 'li' => [], 'h2' => [], 'h3' => [], 'h4' => [], 'h5' => [], 'h6' => [],
-        // Markdown's own attributes: a list that starts at 3, the language of a code block.
+        // Attributes that Markdown itself writes: the start number of an
+        // ordered list, the language of a code block.
         'ol' => ['start' => '/^\d{1,9}$/'],
         'code' => ['class' => '/^language-[\w#+.-]+$/'],
         'a' => ['href' => null, 'title' => null],
     ];
 
-    /** The elements of a caption: Markdown inline, as (image:) renders it. */
+    /** The elements a caption may contain: (image:) renders a caption as inline Markdown. */
     public const INLINE = ['br', 'em', 'strong', 'code', 'a'];
 
-    /** The link targets a text may hold at all: http and https, mailto, and paths of this site. */
+    /**
+     * The link targets a text may contain at all: http and https, mailto, and
+     * paths of this site. A path that starts with // or /\ leads to another
+     * host in a browser, so it does not count as a path.
+     */
     public const SCHEMES = '#^(?:https?://[^/\\\\]|mailto:|/(?![/\\\\]))#i';
 
     /**
      * Every link target a text names: Markdown links and images, reference
-     * definitions, bare URLs, whatever follows "](" or "]:" (in a list, a
-     * quote or a code span it is text, next to other text a link), and what
-     * Markdown makes a link. The URLs a message of the user allows.
+     * definitions, bare URLs, anything after "](" or "]:", and every href and
+     * src of the rendered Markdown. A target after "](" or "]:" counts even
+     * where it renders as text (in a list, a quote, a code span), because
+     * next to other text it can render as a link. `Chat::send()` takes the
+     * URLs of a message of the Panel user from this list.
      *
      * @return list<string>
      */
@@ -98,7 +111,8 @@ final class Guard
     /** A page by its UUID ("page://…"), or null. */
     public static function page(string $uuid): ?Page
     {
-        // Uuid::for() warns on a bare "page://"; the format comes first.
+        // Uuid::for() raises a warning for a bare "page://", so the format
+        // check comes first.
         if (!preg_match('#^page://[a-z0-9]+$#i', $uuid)) {
             return null;
         }
@@ -107,10 +121,13 @@ final class Guard
     }
 
     /**
-     * A Markdown field of a post or of About ($page: its images and its map),
-     * no HTML, three KirbyText tags, known links. $text is the field's new
-     * value, $before its value now. $new is what Claude wrote, when that is a
-     * passage of $text only: the rest of the field is not Claude's.
+     * Checks a Markdown field of a post or of About: no raw HTML, only the
+     * tags of `TAGS`, only known links. $page gives the images and the map
+     * that the tags may use. $text is the new value of the field and $before
+     * its current value. $new is the part that Claude wrote when it replaces
+     * only a passage of $text. The checks of raw HTML, tags and link targets
+     * then look at $new only, because the rest of the field is not Claude's
+     * text. The check of the rendered HTML covers the whole field.
      *
      * @param list<string> $allowed
      */
@@ -133,7 +150,9 @@ final class Guard
     }
 
     /**
-     * A caption: Markdown links by the same rule, otherwise plain text, as (image:) renders it.
+     * Checks a caption. Markdown links follow the same rule as in
+     * `markdown()`; everything else must be plain text, as (image:) renders
+     * a caption.
      *
      * @param list<string> $allowed
      */
@@ -156,10 +175,11 @@ final class Guard
     }
 
     /**
-     * The links of a text as a card marks them: each link target as the text
-     * writes it, and each (link:) tag. The checks above make sure that every
-     * link of a new text is one of them. $caption: rendered inline, as
-     * (image:) renders a caption.
+     * The parts of a text that a card highlights as links: each link target
+     * as the text writes it, and each (link:) tag. The checks of this class
+     * reject a new text with any other link, so the Panel user sees every
+     * link before the click. $caption renders the text inline, as (image:)
+     * renders a caption.
      *
      * @return list<string>
      */
@@ -179,9 +199,9 @@ final class Guard
     }
 
     /**
-     * Any proposed value: no run of 8 words of the chat's prompt, by the same
-     * words as the git hook counts them (Words). A card can end up on the
-     * site, and the prompt never does.
+     * Rejects a proposed value that contains a run of 8 words from the prompt
+     * of the chat. It counts words as the git hook does (`Words`). A card can
+     * end up on the public site, and the prompt must not.
      *
      * @param array<string, true> $runs
      */
@@ -192,7 +212,10 @@ final class Guard
             : null;
     }
 
-    /** Plain text: title, alt text, photographer, trip, map labels. $max: characters, 0 for any. */
+    /**
+     * Checks plain text such as a title, an alt text, a photographer, a trip
+     * or a map label. $max is the most characters allowed, 0 for no limit.
+     */
     public static function plain(string $text, int $max = 0): ?string
     {
         if (preg_match(self::HTML, $text)) {
@@ -207,28 +230,29 @@ final class Guard
         return null;
     }
 
-    /** The error for a link that is not allowed. */
     private static function linkError(string $target): string
     {
         return "The link $target is not allowed. Links go only to URLs from the user's messages, from web search results of this chat, or already in the field.";
     }
 
-    /** HTML of a text as the site renders it: KirbyTags, then Markdown, in the context of $parent. */
+    /**
+     * The HTML of a text as the site renders it: KirbyTags, then Markdown.
+     * (image:) and (map:) need $parent to find the files and the map of the
+     * page.
+     */
     private static function render(string $text, ?Page $parent, bool $inline = false): string
     {
         $options = $inline ? ['markdown' => ['inline' => true]] : [];
         return kirby()->kirbytext($text, $parent === null ? $options : ['parent' => $parent] + $options);
     }
 
-    /** The body of rendered HTML as a browser builds it (HTML5). */
+    /** Parses rendered HTML with PHP's HTML5 parser, which builds the same tree as a browser. */
     private static function body(string $html): HTMLElement
     {
         return HTMLDocument::createFromString('<!DOCTYPE html><html><body>' . $html, LIBXML_NOERROR, 'UTF-8')->body;
     }
 
     /**
-     * Every href and src of rendered HTML.
-     *
      * @return list<?string>
      */
     private static function hrefs(string $html): array
@@ -241,7 +265,9 @@ final class Guard
     }
 
     /**
-     * Every target must be one of $allowed: from the user's messages, the web search of the chat or the field.
+     * The error for the first link target of $text that is not in $allowed.
+     * $allowed holds the URLs from the messages of the Panel user, from the
+     * web search of the chat and from the current field.
      *
      * @param list<string> $allowed
      */
@@ -255,7 +281,11 @@ final class Guard
         return null;
     }
 
-    /** The type of a KirbyText tag when Kirby knows it, else null: "(https://…)" or "(Update: …)" stay text. */
+    /**
+     * The type of a KirbyText tag when Kirby knows it, else null. Text in
+     * parentheses such as "(https://…)" or "(Update: …)" matches `TAG` too,
+     * but Kirby renders it as text.
+     */
     private static function tagType(string $tag): ?string
     {
         $type = strtolower(trim(substr($tag, 1, (int) strpos($tag, ':') - 1)));
@@ -263,7 +293,8 @@ final class Guard
     }
 
     /**
-     * One KirbyText tag of a Markdown field. $files: the image file names of the post.
+     * Checks one KirbyText tag of a Markdown field. $files holds the image
+     * file names of the post; $map is true when the post type has a map.
      *
      * @param list<string> $files
      */
@@ -318,12 +349,13 @@ final class Guard
     }
 
     /**
-     * The rules for the rendered HTML of a field of $page. $text and $before
-     * are the field's new value and its value now. A link may go to a URL of
-     * $allowed or of the field now, if it is http, https, mailto or a path of
-     * this site, and to a page of a (link:) tag. An (image:) or (map:) tag of
-     * the text renders as the site renders it: figure, EXIF rows and caption,
-     * or the map. tag() has checked the tag itself.
+     * The rules that `walk()` applies to the rendered HTML of a field of
+     * $page. $text and $before are the new and the current value of the
+     * field. A link may go to a URL from $allowed or from the current field
+     * when the URL is http, https, mailto or a path of this site. A link may
+     * also go to the page of a (link:) tag. The HTML of an (image:) or (map:)
+     * tag passes as a whole (figure, EXIF rows and caption, or the map),
+     * because `tag()` has checked the tag itself.
      *
      * @param list<string> $allowed
      * @return array<string, mixed>
@@ -374,9 +406,10 @@ final class Guard
     }
 
     /**
-     * Walks rendered HTML. Adds each problem as [error, markup] to $problems.
-     * A link outside an image must stand in the text as written, so the card
-     * can mark it; a (link:) tag stands for the page it renders.
+     * Checks rendered HTML node by node and adds each problem as [error,
+     * markup] to $problems. A link outside an image must appear in the source
+     * text as written, so the card can highlight it. A (link:) tag counts for
+     * the URL of its page.
      *
      * @param array<string, mixed> $rules
      * @param list<array{string, string}> $problems
@@ -422,8 +455,9 @@ final class Guard
     }
 
     /**
-     * Checks the HTML a text renders to. What $before renders already, the
-     * markup of imported posts included, may stay as it is, once each.
+     * Checks the HTML that a text renders to. A problem that the current
+     * value ($before) has already may stay, as often as it occurs there.
+     * Imported posts contain such markup, and an edit must not fail on it.
      *
      * @param list<string> $allowed
      */
@@ -449,7 +483,10 @@ final class Guard
         return null;
     }
 
-    /** The HTML of one node, as its document writes it. body() makes every document an HTMLDocument. */
+    /**
+     * The HTML of one node. `body()` creates every document as an
+     * `HTMLDocument`; the assert states this for PHPStan.
+     */
     private static function html(Node $node): string
     {
         $document = $node->ownerDocument;

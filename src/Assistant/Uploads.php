@@ -11,13 +11,16 @@ use Throwable;
 use Website\Blog\Exif;
 
 /**
- * Uploads of the chat: photos and GPX files Sven drags
- * into the chat. They live in storage/assistant/ next to www/ and vendor/,
- * outside the document root, one folder per chat. Its random name stands
- * only in the session. The server names every file itself. A JPEG loses its
- * metadata on arrival, PNG and WebP too (Strip); a GPX file is read and
- * deleted at once, only the cut line stays (Gpx). Previews are files in the
- * folder; the session and the chat hold only their names.
+ * Stores the photos and GPX files that the Panel user adds to the chat. They
+ * live in storage/assistant/ next to www/ and vendor/, outside the document
+ * root, so no URL reaches them. Each chat has one folder with a random name,
+ * which only the session knows. The server names every file itself, so a
+ * file name from the browser never becomes a path. An image loses its
+ * metadata on arrival (`Strip`). A GPX file is read and deleted at once, and
+ * only the cut line stays (`Gpx`). Previews are files in the folder; the
+ * session and the chat hold only their names. A card (a change that Claude
+ * proposed, with buttons to apply or discard it) can use uploads until the
+ * click.
  */
 final class Uploads
 {
@@ -33,19 +36,22 @@ final class Uploads
     public const PREVIEW = 1568;
     public const THUMB = 240;
 
-    /** Everything goes at the latest after this many days. */
+    /** `cleanup()` deletes uploads and unused chat folders after this many days. */
     public const DAYS = 7;
 
-    /** An upload id, and the image files a message may name. */
+    /**
+     * Patterns for an upload id, for the image files that a message may name
+     * ("u…" from an upload, "v…" from `image()`), and for a chat folder.
+     */
     public const ID = '/^u[0-9a-f]{16}$/';
     public const IMAGE = '/^[uv][0-9a-f]{16}(?:\.preview)?\.jpg$/';
     public const FOLDER = '/^[0-9a-f]{32}$/';
 
     /**
-     * Code in an image file: such a file is refused. PHP's short echo tag
-     * counts with the text it runs, up to "?>" or the end of the file: the
-     * three bytes "<?=" alone come by chance in the image data of large
-     * photos, a few times in 20 MB.
+     * Matches code in an image file, which is then refused. PHP's short echo
+     * tag "<?=" counts only together with printable text up to "?>" or the
+     * end of the file. The three bytes "<?=" alone occur by chance in the
+     * image data of large photos, a few times in 20 MB.
      */
     public const CODE = '/<\?php|<\?=[\x20-\x7E\t\r\n]*?(?:\?>|\z)|<script|<html/i';
 
@@ -66,7 +72,10 @@ final class Uploads
         return kirby()->session()->get(self::SESSION) ?? ['folder' => null, 'items' => [], 'pending' => []];
     }
 
-    /** The folder of this chat, created on first use. Every call counts as use. */
+    /**
+     * The folder of this chat, created on first use. Every call touches the
+     * file .last, which `cleanup()` reads as the time of the last use.
+     */
     public static function dir(): string
     {
         $state = Session::update(self::SESSION, self::state(...), function (array $state): array {
@@ -80,16 +89,17 @@ final class Uploads
     }
 
     /**
-     * Takes one uploaded file: checks it, stores it under a name of the server
-     * and marks it for the next message. Returns the stored metadata.
-     * Throws Error with the reason the Panel shows.
+     * Takes one uploaded file: checks it, stores it under a name that the
+     * server chooses and marks it for the next message. Returns the stored
+     * metadata. Throws `Error` with the reason that the Panel shows.
      *
      * @return array<string, mixed>
      */
     public static function accept(string $tmp, string $name): array
     {
         // A 64-megapixel photo and its previews take a while on a slow host.
-        // set_time_limit may be disabled on a host; then its limit stays.
+        // A host can disable set_time_limit(); the @ hides the warning, and
+        // the limit of the host applies.
         @set_time_limit(60);
         $size = (int) @filesize($tmp);
         if ($size === 0) {
@@ -119,7 +129,8 @@ final class Uploads
         $orientation = 1;
         try {
             if ($ext === 'jpg') {
-                // Camera data becomes file fields; GPS and the rest go with the segments.
+                // Exif::read() keeps the camera data for the file fields. GPS
+                // and all other metadata go with the removed segments.
                 $exif = Exif::read($tmp);
                 $orientation = (int) ((@exif_read_data($tmp) ?: [])['Orientation'] ?? 1);
                 $bytes = Strip::jpeg($bytes, $orientation);
@@ -129,8 +140,8 @@ final class Uploads
         } catch (RuntimeException) {
             throw self::error('Die Datei ist beschädigt.');
         }
-        // Every request of the chat carries every image: a chat takes 40, and
-        // no more bytes than a request to Claude can carry.
+        // Every request of the chat sends every image again, so a chat takes
+        // at most `Chat::IMAGES` images and `Chat::IMAGE_BYTES` of image data.
         $chat = Session::load();
         $load = Chat::imageLoad($chat->messages, $chat->images);
         if ($load['count'] >= Chat::IMAGES) {
@@ -152,15 +163,17 @@ final class Uploads
         try {
             F::write("$dir/$id.$ext", $bytes);
             self::image("$dir/$id.$ext", $orientation, null, self::PREVIEW, "$id.preview.jpg");
-            // The thumb comes from the upright preview: the original is decoded once.
+            // The thumbnail comes from the upright preview, so the large
+            // original is decoded only once.
             self::image("$dir/$id.preview.jpg", 1, null, self::THUMB, "$id.thumb.jpg");
             if ($load['bytes'] + self::base64((int) filesize("$dir/$id.preview.jpg")) > Chat::IMAGE_BYTES) {
                 throw self::error('Die Bilder dieses Chats sind zusammen zu groß für eine Anfrage an Claude. Für weitere beginn einen neuen Chat.');
             }
             return self::register($id, $meta);
         } catch (Throwable $e) {
-            // Any failure after the first write, also an Error from GD or in the
-            // metadata, leaves no half upload behind.
+            // Any failure after the first write deletes all files of this
+            // upload, so no half upload stays. This includes a PHP \Error
+            // from GD or from the metadata.
             array_map(fn($file) => F::remove($file), glob("$dir/$id.*") ?: []);
             throw $e instanceof Error ? $e : self::error('Das Bild lässt sich nicht lesen.');
         }
@@ -168,8 +181,8 @@ final class Uploads
 
     /**
      * An upload of this chat with its metadata, "id" and "path" (the stored
-     * file, or null when it is gone). Null for any id that does not match the
-     * pattern or does not belong to this chat.
+     * file, or null when it is gone). Null for any id that does not match
+     * `ID` or does not belong to this chat.
      *
      * @return ?array<string, mixed>
      */
@@ -206,7 +219,7 @@ final class Uploads
     }
 
     /**
-     * Marks uploads as sent: they went with a message.
+     * Marks uploads as sent with a message, so they no longer wait for the next one.
      *
      * @param list<string> $ids
      */
@@ -247,8 +260,10 @@ final class Uploads
     }
 
     /**
-     * The messages as the API takes them: every image block of the chat
-     * ("blog_image", also inside tool results) gets its bytes from the folder.
+     * The messages as the API takes them. The chat stores an image as a block
+     * of its own type "blog_image" with a file name, also inside tool
+     * results. This replaces each such block with the image data from the
+     * folder, so the session never holds image data.
      *
      * @param list<array<string, mixed>> $messages
      * @return list<array<string, mixed>>
@@ -291,7 +306,7 @@ final class Uploads
         return $path === null ? 0 : (int) @filesize($path);
     }
 
-    /** Bytes as base64 carries them, as a request to Claude does. */
+    /** The size of $bytes bytes in base64, the encoding of images in a request to Claude. */
     public static function base64(int $bytes): int
     {
         return 4 * (int) ceil($bytes / 3);
@@ -351,7 +366,8 @@ final class Uploads
             self::gd(imagecopyresampled($scaled, $image, 0, 0, 0, 0, $w, $h, imagesx($image), imagesy($image)), 'imagecopyresampled');
             $image = $scaled;
         }
-        // Transparent areas become white, not black.
+        // JPEG has no transparency. Without a white background, transparent
+        // areas turn black.
         $flat = self::gd(imagecreatetruecolor(imagesx($image), imagesy($image)), 'imagecreatetruecolor');
         self::gd(imagefill($flat, 0, 0, self::gd(imagecolorallocate($flat, 255, 255, 255), 'imagecolorallocate')), 'imagefill');
         self::gd(imagecopy($flat, $image, 0, 0, 0, 0, imagesx($image), imagesy($image)), 'imagecopy');
@@ -386,7 +402,7 @@ final class Uploads
         }
     }
 
-    /** A new chat starts without uploads. */
+    /** Deletes the uploads of the current chat, for "Neuer Chat". */
     public static function reset(): void
     {
         self::remove(self::state()['folder']);
@@ -394,10 +410,12 @@ final class Uploads
     }
 
     /**
-     * Runs with every request to the assistant. Folders of other chats go
-     * 7 days after their last use; any other folder stays. In this chat,
-     * uploads go 7 days after they came, even when an open card needs them:
-     * such a card then finds them gone, and Claude learns which ones went.
+     * Runs before every API request of the assistant (`Panel::api()`). It
+     * deletes the folders of other chats 7 days after their last use and
+     * leaves folders with other names alone. In the current chat it deletes
+     * uploads 7 days after they arrived, even when an open card needs them.
+     * Such a card then fails with a message, and a note tells Claude which
+     * uploads are gone.
      */
     public static function cleanup(): void
     {
@@ -466,7 +484,9 @@ final class Uploads
      */
     private static function register(string $id, array $meta): array
     {
-        // Camera texts in another encoding than UTF-8 keep their readable part.
+        // EXIF texts in an encoding other than UTF-8 would make json_encode()
+        // fail. JSON_INVALID_UTF8_SUBSTITUTE replaces the invalid bytes and
+        // keeps the readable part.
         F::write(self::dir() . "/$id.json", json_encode($meta, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR));
         Session::update(self::SESSION, self::state(...), function (array $state) use ($id, $meta): array {
             $state['items'][$id] = $meta['kind'];
@@ -485,8 +505,8 @@ final class Uploads
 
     /**
      * The path of $name in this chat's folder. Null without a folder, or when
-     * $name does not match $pattern: the name comes from Claude or the Panel
-     * and must not lead out of the folder.
+     * $name does not match $pattern. The name comes from Claude or the Panel,
+     * and the pattern keeps the path inside the folder.
      */
     private static function file(string $name, string $pattern): ?string
     {
@@ -495,7 +515,8 @@ final class Uploads
     }
 
     /**
-     * The result of a GD call; GD reports a failure as false, this throws it.
+     * Returns the result of a GD call. GD reports a failure as false, and
+     * this turns it into an exception.
      *
      * @template T
      * @param T|false $result

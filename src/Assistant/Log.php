@@ -6,11 +6,13 @@ use Throwable;
 use Website\Blog\Jsonl;
 
 /**
- * Protokoll of the assistant: one line per answer and per decision on a
- * card, without any content. It records who asked, when, how long the
- * answer took, how many rounds, which tools ran, the model, the tokens and
- * how it ended. Lives in content/.assistant/<year>-<month>.jsonl: state,
- * like the change log, so backups include it and the deploy never deletes it.
+ * The usage log of the assistant, which the Panel page "Protokoll"
+ * (assistent/protokoll) shows. It writes one line per answer and one per
+ * decision on a card, a change that Claude proposed. A line holds who asked and when, the duration, the
+ * rounds, the tools, the model, the tokens and the outcome, but never the
+ * text of a message. The files are content/.assistant/<year>-<month>.jsonl.
+ * They are under content/ like the log of "Verlauf" (`Website\Changelog\Log`),
+ * so bin/backup.sh includes them and a deploy keeps them.
  */
 final class Log
 {
@@ -20,7 +22,7 @@ final class Log
     }
 
     /**
-     * Appends one entry (Website\Blog\Jsonl).
+     * Appends one entry. `Jsonl::append()` adds the time and the Panel user.
      *
      * @param array<string, mixed> $entry
      */
@@ -29,13 +31,14 @@ final class Log
         try {
             Jsonl::append(self::dir(), $entry);
         } catch (Throwable $e) {
-            // A log line must never break the chat.
+            // A failed log write must not stop the chat, so it goes only to
+            // the PHP error log.
             error_log('blog assistant log: ' . $e->getMessage());
         }
     }
 
     /**
-     * The newest entries, newest first.
+     * At most $limit entries, newest first.
      *
      * @return list<array<string, mixed>>
      */
@@ -44,7 +47,10 @@ final class Log
         return Jsonl::read(self::dir(), $limit);
     }
 
-    /** Starts the measurement of one answer. */
+    /**
+     * Starts measuring one answer. An answer is everything Claude does for one
+     * message of the Panel user, over one or more rounds (requests to Claude).
+     */
     public static function start(ChatState $chat): void
     {
         $chat->id ??= bin2hex(random_bytes(4));
@@ -73,11 +79,12 @@ final class Log
         $usage = $response['usage'] ?? [];
         $chat->turn['in'] += (int) ($usage['input_tokens'] ?? 0) + (int) ($usage['cache_read_input_tokens'] ?? 0) + (int) ($usage['cache_creation_input_tokens'] ?? 0);
         $chat->turn['out'] += (int) ($usage['output_tokens'] ?? 0);
-        // Read from the prompt cache: the fixed rules, the tools and the chat so far.
+        // Input tokens that the API read from the prompt cache: the tools, the
+        // system text and the earlier history. "in" counts them as well.
         $chat->turn['cached'] += (int) ($usage['cache_read_input_tokens'] ?? 0);
     }
 
-    /** Ends the measurement and writes the line: ok, stopped or the error kind. */
+    /** Ends the measurement and writes its line. $outcome is "ok", "stopped" or the kind of the `Error`. */
     public static function end(ChatState $chat, string $outcome): void
     {
         if ($chat->turn === null) {

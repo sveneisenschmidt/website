@@ -3,17 +3,23 @@
 namespace Website\Assistant;
 
 /**
- * Runs of words of the prompt, shared by the git hook bin/prompt-guard.php
- * (no prompt in git) and Guard (no prompt in a proposal). Standalone: no
- * Kirby, no Composer; make hooks copies it next to the hook as
- * prompt-words.php, where the hook requires it by its path.
+ * Splits a text into runs of 8 consecutive words. The prompt is the text
+ * under Website › Assistent that tells Claude how the author writes. The git
+ * hook bin/prompt-guard.php stops a commit or push whose new lines contain a
+ * run from the prompt, so the prompt never reaches this public repository.
+ * `Guard::prompt()` rejects a proposal that contains such a run, so the
+ * prompt never reaches a post. The file uses neither Kirby nor Composer:
+ * `make hooks` copies it into the git hooks folder as prompt-words.php, and
+ * the hook loads it from there.
  */
 final class Words
 {
     public const LENGTH = 8;
 
     /**
-     * Lowercase words, without punctuation and Markdown.
+     * The words of a text in lowercase. Punctuation and Markdown marks
+     * separate words and do not count, so a run still matches when only the
+     * formatting differs.
      *
      * @return list<string>
      */
@@ -23,7 +29,8 @@ final class Words
     }
 
     /**
-     * Every run of LENGTH words of a text, as keys.
+     * Every run of `LENGTH` consecutive words, as array keys, so that
+     * `array_intersect_key()` can compare two texts.
      *
      * @return array<string, true>
      */

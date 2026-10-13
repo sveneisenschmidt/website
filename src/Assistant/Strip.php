@@ -5,18 +5,20 @@ namespace Website\Assistant;
 use RuntimeException;
 
 /**
- * The metadata filters of the uploads: a JPEG, PNG or WebP keeps only what
- * draws the image (security review, 2026-10-12). Each works on the bytes,
- * lossless, and throws RuntimeException on a broken file.
+ * Removes the metadata of an uploaded image before the file is stored, such
+ * as the GPS position and the thumbnails. A JPEG, PNG or WebP keeps only the
+ * parts that draw the image and its colours (security review of 2026-10-12).
+ * Each method works on the bytes and does not decode the image, so the image
+ * loses no quality. A broken file throws RuntimeException.
  */
 final class Strip
 {
     /**
-     * The segments of a JPEG that stay: what draws the image (SOFn, DHT,
-     * DAC, DQT, DRI, SOS with its scan data and RSTn), and APP0 JFIF, APP2
-     * ICC_PROFILE and APP14 Adobe for its colours. Everything else goes:
-     * EXIF and XMP, IPTC, comments, C2PA in APP11, MPF, thumbnails, segments
-     * not known today.
+     * The JPEG segments that stay, by marker: what draws the image (SOFn,
+     * DHT, DAC, DQT, DRI, SOS with its scan data and RSTn), and APP0 JFIF,
+     * APP2 ICC_PROFILE and APP14 Adobe for its colours. Everything else goes:
+     * EXIF and XMP, IPTC, comments, C2PA (content credentials) in APP11, MPF,
+     * thumbnails, and any segment type not in these lists.
      */
     public const JPEG_KEEP = [0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF, 0xDB, 0xDD];
     public const JPEG_APP_KEEP = [0xE0 => "JFIF\x00", 0xE2 => "ICC_PROFILE\x00", 0xEE => 'Adobe'];
@@ -28,11 +30,12 @@ final class Strip
     public const WEBP_KEEP = ['VP8 ', 'VP8L', 'VP8X', 'ALPH', 'ANIM', 'ANMF', 'ICCP'];
 
     /**
-     * A JPEG with only the segments of JPEG_KEEP, lossless: every scan of a
-     * progressive JPEG stays, what lies between them is checked as well, and
-     * whatever follows the end of the image goes (motion photos, gain maps).
-     * An orientation other than 1 comes back as an EXIF segment with only
-     * that tag.
+     * Keeps only the segments of `JPEG_KEEP` and `JPEG_APP_KEEP`. Every scan
+     * of a progressive JPEG stays, and the segments between the scans are
+     * filtered too. All bytes after the end of the image go; phones store
+     * motion photos and gain maps there. An orientation other than 1 comes
+     * back as a new EXIF segment with only that tag, so the image still
+     * shows upright.
      */
     public static function jpeg(string $jpeg, int $orientation = 1): string
     {
@@ -100,7 +103,7 @@ final class Strip
         throw new RuntimeException('JPEG without end');
     }
 
-    /** A PNG with only the chunks of PNG_KEEP, lossless: text, EXIF, time, C2PA (caBX) and unknown chunks go. */
+    /** Keeps only the chunks of `PNG_KEEP`: text, EXIF, time, C2PA (caBX) and unknown chunks go. */
     public static function png(string $png): string
     {
         $signature = "\x89PNG\r\n\x1a\n";
@@ -127,7 +130,7 @@ final class Strip
         throw new RuntimeException('PNG without end');
     }
 
-    /** A WebP with only the chunks of WEBP_KEEP, lossless: EXIF, XMP and unknown chunks go. */
+    /** Keeps only the chunks of `WEBP_KEEP`: EXIF, XMP and unknown chunks go. */
     public static function webp(string $webp): string
     {
         if (substr($webp, 0, 4) !== 'RIFF' || substr($webp, 8, 4) !== 'WEBP') {

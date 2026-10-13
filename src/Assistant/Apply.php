@@ -12,28 +12,32 @@ use Website\Blog\Text;
 use Website\Blog\Types;
 
 /**
- * Sven's click on a card. Only here does anything change, and always as
- * his account, so "Verlauf" logs it like his own edit. A draft gets the change
- * at once. A published post and About get
- * it as Kirby's unsaved changes: live only with his "Speichern" in the
- * Panel, and he can discard it there. The next message tells Claude.
+ * Applies or discards a card when the Panel user clicks it. A card is a
+ * change that Claude proposed; the chat shows it with buttons to apply or
+ * discard it. This is the only class of the assistant that changes content.
+ * It runs as the logged-in account, so "Verlauf" (the change log in the
+ * Panel) lists the change like an edit by hand. A draft gets the change at
+ * once. A published post and About get it as unsaved changes: it goes live
+ * only when the Panel user clicks "Speichern", and it can be discarded there.
+ * Claude learns the decision with the next message.
  */
 final class Apply
 {
-    /** Applies or discards a proposal; $version picks one of several versions. Returns the chat. */
+    /** Applies or discards a card. $version picks one of the versions of a card "Passage". */
     public static function decide(string $id, string $action, ?int $version = null): ChatState
     {
         if (!in_array($action, ['apply', 'discard'], true)) {
             throw new Error('chat', 'Unbekannte Entscheidung');
         }
-        // A second click on the same card waits for the first and then sees its decision.
+        // The lock makes a second click on the same card wait for the first.
+        // It then sees the first decision and changes nothing.
         Session::lock();
         $chat = Session::load();
         $proposal = $chat->proposals[$id] ?? throw new Error('chat', 'Vorschlag nicht gefunden');
-        // Decisions live in their own session key: a round that runs meanwhile
-        // stores the chat, never the decisions.
+        // Decisions have their own session key, because a request to Claude
+        // that runs meanwhile writes the whole chat back but never this key.
         $decisions = Session::decisions();
-        // A failed change may be tried again; a decided one stays.
+        // A card whose change failed can be tried again; any other decision is final.
         if (!in_array($decisions[$id]['state'] ?? 'open', ['open', 'failed'], true)) {
             return Session::load();
         }
@@ -64,7 +68,8 @@ final class Apply
     }
 
     /**
-     * Runs the change of a card. Returns what the card shows after it, and the note for Claude.
+     * Runs the change of a card. Returns the text and the link that the card
+     * shows afterwards, and the note for Claude.
      *
      * @param array<string, mixed> $proposal
      * @return array<string, string>
@@ -83,8 +88,9 @@ final class Apply
     }
 
     /**
-     * Writes fields: into a draft at once, into a published
-     * post, About and their files only as Kirby's unsaved changes.
+     * Writes fields. A draft and its files get them at once. A published
+     * post, About and their files get them as unsaved changes (Kirby's
+     * version `changes`), which go live only with "Speichern".
      *
      * @param array<string, mixed> $fields
      */
@@ -93,7 +99,9 @@ final class Apply
         $changes = $model->version('changes');
         if (Content::isDraft($model)) {
             $model = $model->update($fields);
-            // Unsaved changes in the Panel get the new values too, so his next "Speichern" keeps them.
+            // A draft can have unsaved changes in the Panel as well. They get
+            // the new values too, or the next "Speichern" would write the old
+            // values back. Unsaved changes equal to the saved content are deleted.
             $changes = $model->version('changes');
             if ($changes->exists()) {
                 $changes->update($fields);
@@ -128,7 +136,8 @@ final class Apply
     }
 
     /**
-     * The card "Feld": the whole field, while it still holds what the card showed before.
+     * Applies a card "Feld" (a new value for a whole field). It refuses when
+     * the field changed since the proposal.
      *
      * @param array<string, mixed> $in
      * @return array<string, string>
@@ -143,7 +152,8 @@ final class Apply
     }
 
     /**
-     * The card "Passage": the version Sven picked, while the passage still occurs exactly once.
+     * Applies a card "Passage" with the version that the Panel user picked.
+     * It refuses unless the passage still occurs exactly once in the field.
      *
      * @param array<string, mixed> $in
      * @return array<string, string>
@@ -162,7 +172,8 @@ final class Apply
     }
 
     /**
-     * The card "Bildtexte": the texts of an image, while they still hold what the card showed before.
+     * Applies a card "Bildtexte" (alt text, caption and photographer of an
+     * image). It refuses when one of these texts changed since the proposal.
      *
      * @param array<string, mixed> $in
      * @return array<string, string>
@@ -178,17 +189,22 @@ final class Apply
         return self::result(self::write($file, array_map(fn($change) => $change['after'], $in['changes'])));
     }
 
-    /** Copies a route file into content/.assistant/routes/ before it is replaced: state, in every backup. */
+    /**
+     * Copies a route file into content/.assistant/routes/ before a new route
+     * replaces it. The copy is under content/, so bin/backup.sh includes it
+     * and the old route can be restored.
+     */
     private static function keepRoute(Page $page, File $file): void
     {
         F::copy($file->root(), Log::dir() . '/routes/' . str_replace('/', '+', $page->id()) . '-' . date('Ymd-His') . '-' . $file->filename());
     }
 
     /**
-     * Writes a line as route file of a page. A draft's old file gets the new
-     * content in place. Otherwise the file is new: route.json, or with the time
-     * in its name when that exists, because the live page keeps its file until
-     * Sven saves.
+     * Writes a line as the route file of a page. The old file of a draft gets
+     * the new content in place. A published page gets a new file: route.json,
+     * or route-<time>.json when route.json exists. The live page keeps its
+     * old file until the Panel user saves, because only the unsaved changes
+     * point to the new one.
      *
      * @param list<array<int, float|int>> $line
      */
@@ -226,7 +242,9 @@ final class Apply
     }
 
     /**
-     * The card "Route": a new route file, points and zoom; the old file is kept as state first.
+     * Applies a card "Route": a new route file, map points and zoom. It
+     * refuses when the route changed since the proposal. The old file is
+     * copied first (`keepRoute()`).
      *
      * @param array<string, mixed> $in
      * @return array<string, string>
@@ -253,9 +271,10 @@ final class Apply
     }
 
     /**
-     * A new draft with everything in one click, all or nothing: a step that
-     * fails takes the draft away again. The uploads go only after success,
-     * so "Nochmal versuchen" works.
+     * Applies a card "Neuer Entwurf": creates the draft with its photos and
+     * route in one click. When a step fails, the draft is deleted again, so
+     * the click creates all or nothing. The uploads are deleted only after
+     * success, so the button "Nochmal versuchen" still finds them.
      *
      * @param array<string, mixed> $in
      * @return array<string, string>
@@ -280,7 +299,8 @@ final class Apply
                     'source' => $sources[$photo['filename']],
                     'filename' => $photo['filename'],
                     'template' => 'image',
-                    // The camera data read on arrival; the stored file has no EXIF any more.
+                    // The camera data comes from the metadata of the upload,
+                    // read on arrival. The stored file has no EXIF (`Strip`).
                     'content' => array_filter(['alt' => $photo['alt'], 'caption' => $photo['caption'], 'photographer' => $photo['photographer'], ...$photo['exif']], fn($v) => $v !== ''),
                 ]);
                 if ($photo['filename'] === $in['cover']) {
@@ -308,7 +328,7 @@ final class Apply
         ];
     }
 
-    /** A card with a GPX upload can only apply while the upload is there. */
+    /** Refuses a card whose GPX upload is gone, for example after 7 days (`Uploads::cleanup()`). */
     private static function gpxPresent(?string $upload): void
     {
         if ($upload !== null && Uploads::meta($upload) === null) {

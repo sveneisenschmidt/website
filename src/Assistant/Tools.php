@@ -8,36 +8,43 @@ use Website\Blog\Exif;
 use Website\Blog\Types;
 
 /**
- * The tools Claude may call, and the read tools, which run at once. Propose
- * tools (Proposals) change nothing: they return a card, and only Sven's
- * click applies it (Apply). The tools map the content model, security and
- * integrity, nothing else: how Sven writes is up to the prompt.
+ * Defines the tools Claude may call and runs the read tools (`find_posts`,
+ * `read_post`, `view_photo`), which return data at once. The propose tools
+ * (`Proposals`) change nothing: they return a card, a proposed change that
+ * the chat shows with buttons, and only a click of the Panel user applies it
+ * (`Apply`). The tool descriptions cover the content model and the security
+ * rules only. How the author writes is up to the prompt.
  */
 final class Tools
 {
-    /** The fields of a map (post types with Types::hasMap): only propose_route writes them. */
+    /** The map fields of a photo or trip post (`Types::hasMap()`). Only `propose_route` writes them. */
     public const ROUTE_FIELDS = ['route', 'mappoints', 'mapzoom'];
 
-    /** The texts of an image; the camera data (Exif::FIELDS) is not writable. */
+    /** The texts of an image. The camera data (`Exif::FIELDS`) is not writable. */
     public const IMAGE_TEXTS = ['alt', 'caption', 'photographer'];
 
-    /** The answer of a proposal whose GPX upload another open card holds. */
+    /** The error for a proposal whose GPX upload another open card uses. */
     public const GPX_TAKEN = 'Another open card uses this GPX upload already.';
 
-    /** The answer of a tool for a post id that matches nothing. */
+    /** The error of a tool for a post id that matches no post. */
     public const NO_POST = 'No post found. find_posts lists the ids; the page about is "about".';
 
-    /** Posts find_posts lists at most. */
+    /** The most posts that `find_posts` lists. */
     public const FIND_LIMIT = 20;
 
-    /** What Guard checks, for the tool descriptions. */
+    /**
+     * The checks of `Guard` in words, for the tool descriptions. A change here
+     * changes the tool definitions and reaches new chats only.
+     */
     public const TEXT_RULES = 'Texts: no raw HTML. KirbyText tags only (image: file name), (map:) and (link: page://<uuid> text: …). Links only to URLs from the user\'s messages, from web search results of this chat, or already in the field. Captions: Markdown links by the same rule, otherwise plain text.';
 
     /**
-     * Tool definitions for the request. Not strict: with all tools strict the API
-     * refuses the request ("compiled grammar is too large"); the propose and read
-     * tools check every input themselves. A chat freezes them (ChatState::$tools):
-     * a change here reaches new chats only.
+     * The tool definitions for the request. They are not strict (no
+     * `strict: true`): with all tools strict, the API refuses the request
+     * with "compiled grammar is too large". The propose and read tools check
+     * every input themselves instead. A chat keeps the definitions of its
+     * first message (`ChatState::$tools`), so a change here reaches new chats
+     * only.
      *
      * @return list<array<string, mixed>>
      */
@@ -126,7 +133,7 @@ final class Tools
         ];
     }
 
-    /** Progress line of a read tool, as the Panel shows it while the next round runs. */
+    /** The progress line of a read tool, which the Panel shows while the next request to Claude runs. */
     public static function progress(string $tool): ?string
     {
         return [
@@ -137,8 +144,9 @@ final class Tools
     }
 
     /**
-     * Runs a read tool. Returns the tool_result content: text, or an image
-     * with text. $load: the images the next request carries already.
+     * Runs a read tool. Returns the content of the tool_result: text, or an
+     * image with text. $load counts the images that the next request
+     * already contains (`Chat::imageLoad()`).
      *
      * @param array<string, mixed> $input
      * @param array{count: int, bytes: int} $load
@@ -253,10 +261,10 @@ final class Tools
     }
 
     /**
-     * view_photo: a preview or a crop as an image block, with the facts as
-     * text. $load: the images the next request carries already
-     * (Chat::imageLoad); a chat takes 40, and no more bytes than a request
-     * can carry.
+     * Runs `view_photo`: a preview or a crop as an image block, with the
+     * facts as text. $load counts the images that the next request already
+     * contains (`Chat::imageLoad()`). A chat takes at most `Chat::IMAGES` images, and
+     * a request at most `Chat::IMAGE_BYTES` of image data.
      *
      * @param array<string, mixed> $input
      * @param array{count: int, bytes: int} $load
@@ -273,7 +281,8 @@ final class Tools
         if ($load['count'] >= Chat::IMAGES) {
             return [$text($full)];
         }
-        // The image is made first: its size decides. One that does not fit goes again.
+        // The size of the JPEG is known only after it is written, so the image
+        // is made first. An image that does not fit is deleted again.
         $fits = function (string $name) use ($load): bool {
             if ($load['bytes'] + Uploads::base64(Uploads::size($name)) <= Chat::IMAGE_BYTES) {
                 return true;

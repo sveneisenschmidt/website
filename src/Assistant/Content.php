@@ -9,13 +9,19 @@ use Kirby\Data\Yaml;
 use Website\Blog\Types;
 
 /**
- * The content as the assistant reads it: posts, About and their files, each
- * field as the Panel shows it, and the route of a post. The read tools, the
- * propose tools and the click (Apply) all read through these.
+ * Finds and reads the pages the assistant may work on: the posts of the four
+ * sections and About, with their files. A field reads as the Panel shows it,
+ * unsaved changes included. The read tools (`Tools`), the checks of the
+ * proposals (`Proposals`) and `Apply` all read content through this class,
+ * so all three see the same values.
  */
 final class Content
 {
-    /** A page by its id, drafts on every level included ("photos/aika"), or by its UUID. */
+    /**
+     * A page by its id ("photos/aika") or by its UUID ("page://…"). Kirby's
+     * `find()` skips drafts, so the loop looks up each slug with
+     * `findPageOrDraft()`.
+     */
     public static function page(string $id): ?Page
     {
         $id = trim($id, " /");
@@ -32,7 +38,7 @@ final class Content
         return $page;
     }
 
-    /** A post of the four sections, or About; null for any other page. */
+    /** A post or About by id or UUID. Any other page gives null, so the assistant cannot touch it. */
     public static function find(string $ref): ?Page
     {
         $page = self::page($ref);
@@ -54,7 +60,8 @@ final class Content
     }
 
     /**
-     * A YAML list as a field stores it (files, structure), or none.
+     * Decodes a YAML list as a `files` or `structure` field stores it. An
+     * empty field gives an empty list.
      *
      * @return list<mixed>
      */
@@ -64,7 +71,9 @@ final class Content
     }
 
     /**
-     * The fields the assistant reads and writes: name => [label, type]. The title first.
+     * The fields of a model's blueprint, by lowercase name, as Kirby stores
+     * them: name => [label, type]. A page gets "title" first, because Kirby's
+     * blueprints do not list the title as a field.
      *
      * @return array<string, array{label: string, type: string}>
      */
@@ -78,7 +87,11 @@ final class Content
         return $fields;
     }
 
-    /** A field's value as the Panel shows it: the unsaved changes if there are any. */
+    /**
+     * A field's value as the Panel shows it. Kirby 5 keeps edits that are not
+     * saved yet in the version `changes` and the saved content in `latest`;
+     * this reads `changes` when it exists.
+     */
     public static function current(ModelWithContent $model, string $field): string
     {
         $changes = $model->version('changes');
@@ -94,8 +107,6 @@ final class Content
     }
 
     /**
-     * The image file names of a post.
-     *
      * @return list<string>
      */
     public static function filenames(Page $page): array
@@ -104,9 +115,11 @@ final class Content
     }
 
     /**
-     * The route of a photo or trip as the Panel shows it: km, points, markers,
-     * zoom. "hash" covers file, points and zoom as stored: a route card
-     * compares it at the click.
+     * The route of a photo or trip post as the Panel shows it: km, points,
+     * markers, zoom. Other post types have no map and give null. "hash"
+     * covers the route file and the fields `mappoints` and `mapzoom`. A
+     * proposed route stores it, and `Apply` refuses the proposal when the
+     * hash differs at the click.
      *
      * @return ?array<string, mixed>
      */
@@ -132,7 +145,12 @@ final class Content
         ];
     }
 
-    /** The page that uses a slug in one of the four sections or at the top, drafts included, or null. */
+    /**
+     * The id of the page that already uses a slug, drafts included, or null.
+     * A post URL (/YYYY-MM-DD-slug/) does not name the section, and `Router`
+     * takes the first section that has the slug. So a new slug must be free
+     * in all four sections; top-level pages count too.
+     */
     public static function slugTaken(string $slug): ?string
     {
         foreach (Types::ALL as $info) {

@@ -9,18 +9,23 @@ use Throwable;
 use Website\Blog\Text;
 
 /**
- * Routes for the map of a post: a car route from the public OSRM server,
- * and the geometry the GPX files (Gpx) share. Points are [lon, lat], as
- * in GeoJSON. Coordinates keep 5 decimals.
+ * Builds the route on the map of a photo or trip post. It gets car routes
+ * from the public server of OSRM, an open-source routing service, and holds
+ * the geometry that `Gpx` uses as well. Points are [lon, lat], the order of
+ * GeoJSON. Coordinates keep 5 decimals, about 1 m.
  */
 final class Route
 {
     public const OSRM = 'https://router.project-osrm.org/route/v1/driving/';
 
-    /** Own User-Agent for OSRM: one request per proposal, no retry. */
+    /**
+     * The User-Agent for OSRM names the site and its use. The usage policy of
+     * the public server asks for a User-Agent that identifies the client and
+     * for few requests. The assistant sends one per proposal, without a retry.
+     */
     public const AGENT = 'sven.eisenschmidt.website/assistant (Kirby; one request per proposal)';
 
-    /** Douglas-Peucker tolerance in degrees for OSRM lines (Gpx::EPSILON for tracks). */
+    /** Tolerance of `simplify()` for OSRM lines in degrees, about 55 m. GPX tracks use `Gpx::EPSILON`. */
     public const EPSILON = 0.0005;
 
     /**
@@ -53,7 +58,9 @@ final class Route
     }
 
     /**
-     * Douglas-Peucker without recursion: a GPX file has up to 100,000 points.
+     * Removes the points that lie closer than $epsilon to the line through
+     * their neighbours (Douglas-Peucker algorithm). A stack replaces the
+     * recursion, because a GPX file has up to 100,000 points.
      *
      * @param array<int, array<int, float|int>> $points
      * @return list<array<int, float|int>>
@@ -96,7 +103,7 @@ final class Route
     }
 
     /**
-     * 5 decimals, without points that repeat the one before.
+     * Rounds points to 5 decimals and drops a point that equals the one before.
      *
      * @param array<array<int, mixed>> $points
      * @return list<array{float, float}>
@@ -133,12 +140,14 @@ final class Route
     }
 
     /**
-     * The indexes of the first and last point that stay when both ends are
-     * cut: the start until $head meters along the line lie behind it and the
-     * point is $head meters or more from both ends in a straight line, the end
-     * the same with $tail. Rides start and end at home, and a standstill there
-     * walks along the line without leaving (security review, 2026-10-12). The
-     * distance counts for the point as Claude gets it, to 5 decimals.
+     * The indexes of the first and the last point that stay when both ends of
+     * a ride are cut. The start is cut until the line has run $head meters
+     * and the point lies at least $head meters from both ends in a straight
+     * line. The end is cut the same way with $tail. Rides start and end at
+     * home. GPS drift during a stop at home adds length to the line without
+     * moving away, so the length alone is not enough (security review of
+     * 2026-10-12). The distances use the point as Claude gets it, rounded to
+     * 5 decimals.
      *
      * @param list<array<int, float|int>> $points
      * @return array{int, int}
@@ -166,9 +175,10 @@ final class Route
     }
 
     /**
-     * One request to OSRM for a car route through the stations ([lon, lat]).
-     * No retry. $http replaces the request in tests: fn (string $url, string $agent): [status, body].
-     * Throws RuntimeException with the message Claude gets.
+     * Sends one request to OSRM for a car route through the stations
+     * ([lon, lat]), without a retry. Tests replace the request with $http:
+     * fn (string $url, string $agent): [status, body]. Throws
+     * RuntimeException with the message that Claude gets.
      *
      * @param list<array<int, float|int>> $stations
      * @return array{line: list<array{float, float}>, km: float, seconds: int}
