@@ -42,6 +42,7 @@ final class TestSite
             'roots' => [
                 'index' => $root,
                 'site' => realpath(self::SITE),
+                'assets' => realpath(self::SITE . '/../assets'),
                 'config' => $root . '/config',
                 'content' => $root . '/content',
                 'accounts' => $root . '/accounts',

@@ -28,6 +28,23 @@ return array_replace_recursive([
     'public' => false,
     'locale' => 'en_US.utf-8',
     'content' => array_filter(['salt' => $salt]),
+    // Markdown as Hugo rendered it: a line break in the source is no <br>.
+    'markdown' => ['breaks' => false],
+    // Quotes, dashes and ellipses as Hugo's typographer (Goldmark) wrote
+    // them: named entities, -- an en dash, --- an em dash, no extra spaces.
+    'smartypants' => [
+        'attr' => 'qDe',
+        'doublequote.open' => '&ldquo;',
+        'doublequote.close' => '&rdquo;',
+        'singlequote.open' => '&lsquo;',
+        'singlequote.close' => '&rsquo;',
+        'emdash' => '&mdash;',
+        'endash' => '&ndash;',
+        'ellipsis' => '&hellip;',
+    ],
+    // GD, plus conversion to sRGB for photos with another color profile
+    // (plugins/blog/srgb.php).
+    'thumbs' => ['driver' => 'blog-gd'],
     'panel' => [
         'install' => false,
         'language' => 'de',

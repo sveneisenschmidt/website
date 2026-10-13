@@ -1,13 +1,14 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= $page->title()->esc() ?> · <?= $site->title()->esc() ?></title>
-</head>
-<body>
-    <h1><?= $page->title()->esc() ?></h1>
-    <?= $page->intro()->kt() ?>
-    <?= $page->text()->kt() ?>
-</body>
-</html>
+<?php
+/**
+ * Any other page: its title in the frame of the site. The section pages
+ * photos, trips, notes and essays only order the posts; their URLs lead
+ * to the archive (data/redirects.yaml).
+ *
+ * @var Kirby\Cms\Page $page
+ */
+?>
+<?php snippet('layout', slots: true) ?>
+<article class="article">
+<h1><?= $page->title()->esc() ?></h1>
+</article>
+<?php endsnippet() ?>

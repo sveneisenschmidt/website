@@ -1,0 +1,264 @@
+/* Der Link steht über der Seite und rutscht erst bei Tastaturfokus ins Bild.
+   Er ist das erste fokussierbare Element im Dokument. */
+.skip-link {
+    position: absolute;
+    top: 0;
+    left: var(--space-page);
+    padding: var(--space-tight);
+    background: var(--color-page);
+    font-size: var(--text-action);
+    font-weight: var(--weight-label);
+    line-height: var(--leading-caps);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    text-decoration: underline;
+    text-decoration-thickness: var(--rule-hairline);
+    text-underline-offset: var(--space-underline);
+    transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+    transform: none;
+}
+
+.site-header {
+    padding-bottom: var(--space-header-end);
+}
+
+.masthead {
+    margin: 0;
+    font-size: var(--text-sitename);
+    font-weight: var(--weight-masthead);
+    line-height: var(--leading-caps);
+    text-transform: uppercase;
+}
+
+main {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    gap: var(--space-gutter);
+}
+
+.stream-title {
+
+    display: flex;
+    align-items: baseline;
+    font-size: var(--text-section);
+
+    line-height: var(--leading-caps);
+    font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+}
+
+.stream-opening {
+    font-weight: var(--weight-opening);
+}
+
+/* Die Überschrift steht in der Flex-Zeile neben der Navigation und übernimmt
+   deren Schriftbild; ohne die Regel griffe der h2-Reset mit Titelgewicht. */
+.stream-title h2 {
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+.stream-count {
+    margin-left: var(--space-count);
+    font-weight: var(--weight-label);
+}
+
+.stream-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-filter);
+    font-size: var(--text-section);
+    font-weight: var(--weight-label);
+    line-height: var(--leading-caps);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+}
+
+.stream-title,
+.stream-filter {
+    padding-bottom: var(--space-title);
+}
+
+.stream-search {
+    display: flex;
+    gap: var(--space-filter);
+}
+
+.far {
+    display: flex;
+    gap: var(--space-filter);
+    margin-left: auto;
+
+    font-weight: var(--weight-label);
+}
+
+.article h1,
+.picture h3,
+.writing-lead h3 {
+    font-size: var(--text-title);
+    text-transform: uppercase;
+}
+
+.writing-item h3 {
+    font-size: var(--text-subtitle);
+    text-transform: uppercase;
+}
+
+.frame-picture {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.frame {
+    display: block;
+}
+
+.tile {
+    aspect-ratio: 1;
+    width: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-image);
+}
+
+.thumb {
+    align-self: center;
+}
+
+.thumb img {
+    object-fit: cover;
+}
+
+.metadata {
+
+    padding-top: var(--space-tight);
+    font-size: var(--text-metadata);
+
+    font-weight: var(--weight-metadata);
+    line-height: var(--leading-caps);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+}
+
+.picture .metadata,
+.article-head .metadata {
+    padding-bottom: var(--space-figure);
+}
+
+/* Unterstreichung nur, wo die Seite eine Interaktion anbietet: Aktionen der
+   Label-Ebene und Textlinks. Metadaten wie das Datum bleiben ohne. */
+a.far,
+.far a,
+.site-footer a,
+.stream-filter a,
+.post-footer a,
+.body a {
+    text-decoration: underline;
+    text-decoration-thickness: var(--rule-hairline);
+    text-underline-offset: var(--space-underline);
+}
+
+/* Alle Filter sind unterstrichene Links; den aktiven markiert das Gewicht,
+   nicht die Unterstreichung, sonst kollidieren "Link" und "du bist hier". */
+.stream-filter [aria-current] {
+    font-weight: var(--weight-opening);
+}
+
+.writing {
+    grid-column: span var(--span-writing);
+}
+
+.writing-lead {
+    padding-bottom: var(--space-lead);
+    border-bottom: var(--rule-hairline) solid var(--color-rule);
+}
+
+.writing-aside .writing-lead {
+    padding-bottom: var(--space-figure);
+}
+
+.writing-lead:last-child {
+    border-bottom: 0;
+}
+
+.writing-lead .excerpt {
+    padding-top: var(--space-excerpt);
+    font-size: var(--text-excerpt);
+}
+
+.writing-item.has-thumb,
+.writing-lead.has-thumb {
+    display: grid;
+    grid-template-columns: 1fr var(--size-thumb);
+    gap: var(--space-figure);
+    align-items: start;
+}
+
+.writing-lead.has-thumb .excerpt {
+    grid-column: 1 / -1;
+}
+
+.writing-label {
+    font-weight: var(--weight-label);
+}
+
+.writing-lead,
+.writing-item {
+    position: relative;
+}
+
+.writing-lead h3 a::after,
+.writing-item h3 a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+}
+
+.writing-item {
+    padding-block: var(--space-row);
+    border-bottom: var(--rule-hairline) solid var(--color-rule);
+}
+
+.writing-item:last-child {
+    border-bottom: 0;
+}
+
+/* fit.js schneidet die Timeline an der Unterkante der Galerie ab. Die Regel
+   steht am Ende, damit sie das display der Einträge mit Vorschaubild schlägt,
+   und der letzte sichtbare Eintrag verliert seine Linie. */
+.writing-list .is-trimmed {
+    display: none;
+}
+
+.writing-item:has(+ .is-trimmed) {
+    border-bottom: 0;
+}
+
+.site-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-filter);
+    margin-top: var(--space-stack);
+    font-size: var(--text-action);
+    font-weight: var(--weight-label);
+    line-height: var(--leading-caps);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+    .writing-aside {
+        display: none;
+    }
+
+    /* Sieben Einträge auf einer Telefonbreite brauchen einen engeren Abstand als
+       auf dem Bildschirm. */
+    .stream-filter,
+    .stream-search {
+        gap: var(--space-filter-tight);
+    }
+}

@@ -8,6 +8,10 @@ use Kirby\Cms\File;
  */
 
 require_once __DIR__ . '/exif.php';
+require_once __DIR__ . '/srgb.php';
+require_once __DIR__ . '/text.php';
+require_once __DIR__ . '/posts.php';
+require_once __DIR__ . '/layout.php';
 
 Kirby::plugin('sveneisenschmidt/blog', [
     'hooks' => [
@@ -23,4 +27,6 @@ Kirby::plugin('sveneisenschmidt/blog', [
             'html' => fn () => '<div class="map"></div>',
         ],
     ],
+    // One template for the four post types, as Hugo's page.html.
+    'templates' => array_fill_keys(['photo', 'trip', 'note', 'essay'], __DIR__ . '/../../templates/post.php'),
 ]);
