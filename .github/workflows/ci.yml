@@ -161,22 +161,3 @@ jobs:
     uses: ./.github/workflows/speed.yml
     secrets:
       PAGESPEED_API_KEY: ${{ secrets.PAGESPEED_API_KEY }}
-
-  # A failed run that nobody watches sends a push message: a run on main and
-  # a run for a pull request of Dependabot. GitHub mails a failure only to
-  # the actor of the run, and these runs have a bot as their actor.
-  notify:
-    needs: [test, merge, deploy, speed]
-    if: failure() && (github.event_name != 'pull_request' || github.event.pull_request.user.login == 'dependabot[bot]')
-    runs-on: self-hosted
-    timeout-minutes: 5
-    steps:
-      - name: Push message
-        env:
-          NTFY_SERVER: ${{ secrets.NTFY_SERVER }}
-          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
-          NTFY_TOKEN: ${{ secrets.NTFY_TOKEN }}
-          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: |
-          curl -fsS -H "Authorization: Bearer $NTFY_TOKEN" -H "Title: Website: CI failed" -H "Tags: warning" \
-            -d "Run: $RUN" "$NTFY_SERVER/$NTFY_TOPIC" > /dev/null
