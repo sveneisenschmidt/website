@@ -8,8 +8,6 @@
 
 return [
     'debug' => false,
-    // true: search engines may index the site. The deploy sets it.
-    'public' => false,
     // Key of the assistant (plugins/assistant) for the Anthropic API, its own
     // with a spending limit. The deploy sets it; without it the assistant is off.
     // 'assistantKey' => 'sk-ant-…',

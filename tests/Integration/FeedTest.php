@@ -58,12 +58,9 @@ final class FeedTest extends IntegrationTestCase
         );
     }
 
-    public function testRobotsKeepSearchEnginesAwayUntilThePublicLaunch(): void
+    public function testRobotsAllowEverythingAndNameTheSitemap(): void
     {
-        $this->assertSame("User-agent: *\nDisallow: /\n", $this->kirby->render('robots.txt')->body());
-
-        $public = TestSite::app($this->root, ['public' => true]);
-        $this->assertSame("User-agent: *\nAllow: /\n\nSitemap: http://localhost/sitemap.xml\n", $public->render('robots.txt')->body());
+        $this->assertSame("User-agent: *\nAllow: /\n\nSitemap: http://localhost/sitemap.xml\n", $this->kirby->render('robots.txt')->body());
     }
 
     public function testLlmsTxtFromTheContent(): void

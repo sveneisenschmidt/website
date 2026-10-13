@@ -51,6 +51,7 @@
 - **Grenzen von Web-PHP:** eine Datei `limits.php` nur für angemeldete Admins, nur für die Messung auf dem Server, nie in Git.
 - **Vorwärmen:** nur Vorschaubilder. Originale kopiert Kirby beim ersten Abruf ohne Rechnen, zusammen sind sie 4,1 GB.
 - **Deploy vom Mac:** `make kirby-deploy` hängt an `kirby-lint` und `kirby-test`, also laufen Lint und PHPUnit vor jedem Deploy. Den Restore-Test startet Sven nach Codeänderungen selbst, er kopiert die 4 GB des Seeds zweimal. Ein Workflow auf GitHub kommt in 5b.
+- **Kein Schalter `public` (Entscheidung vom 2026-10-13, nach Aufgabe 39):** Er schaltete nur `robots.txt` auf `Disallow: /`. Auf Staging liegt die Datei ohnehin hinter dem Passwort, und ein vergessenes `true` beim Umschalten hätte Suchmaschinen ausgesperrt. `robots.txt` erlaubt jetzt immer alles und nennt die Sitemap, der Deploy setzt nur noch `url`. Die Codeblöcke der Aufgaben 31 und 32 zeigen den Stand davor. Auf dem Server bleibt der Schlüssel `public` in `env.php` stehen, Kirby liest ihn nicht mehr.
 - **Keine Inhaltsmigrationen:** Das Repo hat keine, der Deploy hat darum keinen Schritt dafür.
 
 ---
@@ -1143,7 +1144,7 @@ curl -s -u "$STAGING_USER:$STAGING_PASSWORD" "$S/robots.txt"
 IMG=$(curl -s -u "$STAGING_USER:$STAGING_PASSWORD" "$S/" | grep -o 'src="[^"]*/media/[^"]*"' | head -1 | cut -d'"' -f2)
 curl -s -o /dev/null -u "$STAGING_USER:$STAGING_PASSWORD" -w '%{http_code} %{content_type}\n' "$IMG"
 ```
-Expected: `0` vor jedem der fünf Pfade. `robots.txt` sperrt alles (`Disallow: /`), denn `public` ist `false`. Das Bild: `200 image/webp`.
+Expected: `0` vor jedem der fünf Pfade. `robots.txt` erlaubt alles und nennt die Sitemap, wie bei Hugo. Das Bild: `200 image/webp`.
 
 Das Muster sucht nur Links: Die Notiz `building-with-hugo-pt2` nennt `/www/htdocs` im Text, das zählt nicht.
 
@@ -1279,7 +1280,7 @@ Expected: höchstens dieser Plan. Keine Pfade unter `www/content`, `www/media`, 
 
 - **Hugos Deploy zuerst abschalten:** `.github/workflows/deploy.yml` läuft bei jedem Push auf `main` und alle 2 Stunden. Es lädt `public/` mit `--delete` in den Ordner aus dem Secret `DEPLOY_PATH`, ohne Ausschlüsse. Liegt Kirby in diesem Ordner, löscht der nächste Lauf `www/`, `vendor/`, `storage/` und `backups/`. Der Workflow geht also weg, bevor Kirby den Ordner von Hugo bekommt, spätestens im selben Merge.
 - **Umschalten, zwei Wege:** (a) Die Domain sven.eisenschmidt.website zeigt in KAS auf den Ordner `kirby.eisenschmidt.website/`, Document Root wieder der Ordner selbst. Hugos Ordner bleibt unberührt, der Rückweg ist dieselbe Einstellung zurück. (b) Kirby zieht in den Ordner `sven.eisenschmidt.website/` mit derselben Anordnung (`www/`, `vendor/`, `server/root.htaccess` als `.htaccess`). Hugos `.htaccess` vorher als `.htaccess.hugo` sichern, Hugos übrige Dateien sind dann nicht mehr erreichbar. Rückweg: `.htaccess.hugo` zurück. In beiden Fällen bleibt das Document Root der Ordner selbst, KAS bleibt einheitlich.
-- **Deploy für live:** `PUBLIC=1` (setzt `public` auf `true`, löscht `.htpasswd`, lädt `www/.htaccess` ohne Staging-Block), `KIRBY_SITE_URL=https://sven.eisenschmidt.website`, bei Weg (b) auch `KIRBY_DEPLOY_PATH`. Eine eigene Umgebung `production` mit eigenem Workflow oder Eingabe.
+- **Deploy für live:** `PUBLIC=1` (löscht `.htpasswd`, lädt `www/.htaccess` ohne Staging-Block), `KIRBY_SITE_URL=https://sven.eisenschmidt.website`, bei Weg (b) auch `KIRBY_DEPLOY_PATH`. Eine eigene Umgebung `production` mit eigenem Workflow oder Eingabe.
 - **Workflow auf GitHub:** kommt mit dem Merge in `main`. `workflow_dispatch` startet nur, wenn die Datei auf dem Standard-Branch liegt. Dazu eine Umgebung mit `STAGING_USER`, `STAGING_PASSWORD`, `ANTHROPIC_API_KEY`, kein `pull_request`-Trigger (öffentliches Repo, Runner im Homelab), `setup-php` mit PHP 8.5 auf dem Runner. Das Repository-Secret `DEPLOY_PATH` zeigt auf Hugos Ordner.
 - **Kirby-Lizenz:** Basic, 99 EUR, vor dem Umschalten kaufen, binnen einer Woche aktivieren. `.license` ist Zustand und geht in die Snapshots.
 - **Letzter Import:** `git merge main`, `make kirby-seed FORCE=1`, frische Kopie von Pops `data.db` und `bin/pop-import.php` (danach Kopie löschen), `bin/backup.sh --snapshot --no-accounts`, `make kirby-upload-state` gegen den Ordner von live. Der Restore leert `site/accounts`: Svens Konto danach neu wie in Aufgabe 37, Schritt 9. Den Prompt prüfen wie in Schritt 10. Was auf Staging im Panel entstand, geht dabei verloren.
@@ -1312,14 +1313,14 @@ Der Controller trägt die Werte während der Abnahme ein.
 | Deploy mit 4 GB Zustand, Dauer; Größe des neuen Snapshots (37) | 32,1 s; 1,5 MB |
 | Vorwärmen: Seiten, Vorschaubilder, Dauer (38) | 303 Seiten in 8 s, 3.517 Vorschaubilder in 404 s, 0 Fehler |
 | Platz: `www/content`, `www/media`, `backups`, `vendor` (38) | 4,1 GB, 260 MB, 4,1 GB, 3,8 MB |
-| Startseite kalt / Cache (39) | |
-| Foto-Beitrag kalt / Cache (39) | |
-| Reise mit Karte kalt / Cache (39) | |
-| Archiv kalt / Cache (39) | |
-| Feed kalt / Cache (39) | |
-| Suche (39) | |
-| Hugo live, Startseite (39) | |
-| Web-PHP: `upload_max_filesize`, `post_max_size`, `memory_limit`, `ini_set` 1024M, `max_execution_time`, `set_time_limit` (39) | |
+| Startseite kalt / Cache (39) | 0,23 s / 0,11 s |
+| Foto-Beitrag kalt / Cache (39) | 0,13 s / 0,10 s |
+| Reise mit Karte kalt / Cache (39) | 0,14 s / 0,10 s |
+| Archiv kalt / Cache (39) | 0,69 s / 0,10 s |
+| Feed kalt / Cache (39) | 1,85 s / 0,10 s |
+| Suche (39) | 0,17 s (ohne Cache) |
+| Hugo live, Startseite (39) | 0,12 s |
+| Web-PHP: `upload_max_filesize`, `post_max_size`, `memory_limit`, `ini_set` 1024M, `max_execution_time`, `set_time_limit` (39) || 512M, 512M, 512M, `ini_set` 1024M ok, `max_execution_time` 60, `set_time_limit` ok, `max_file_uploads` 20, alle Erweiterungen da (gemessen hinter dem Staging-Passwort, Datei danach gelöscht) |
 | Upload von 20 Fotos, größte Datei (39) | |
 | Opus-Runde mit 4 Fotos: Dauer, Tokens (39) | |
 | OSRM-Route: Dauer (39) | |

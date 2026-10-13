@@ -24,8 +24,6 @@ if (is_file(__DIR__ . '/env.php') && ($salt === null || $salt === '')) {
 
 return array_replace_recursive([
     'debug' => false,
-    // Search engines may index the site. Set per host in env.php.
-    'public' => false,
     'locale' => 'en_US.utf-8',
     'content' => array_filter(['salt' => $salt]),
     // Markdown as Hugo rendered it: a line break in the source is no <br>.

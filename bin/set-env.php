@@ -3,7 +3,6 @@
 /**
  * Sets keys in a host config (env.php). Other keys stay as they are.
  * The deploy runs it on the server for:
- *   public  true lets search engines index the site (only without staging password)
  *   url     the canonical site URL, so every host name and scheme links to one address
  *
  * Usage: php bin/set-env.php <env.php> key=value ...   (value "true"/"false" is a boolean)

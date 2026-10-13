@@ -84,12 +84,10 @@ function blog_sitemap(): string
     return $xml . "</urlset>\n";
 }
 
-/** Until the site is public (env.php: 'public' => true) search engines stay away. */
+/** Search engines may index everything. Staging keeps them out with its password. */
 function blog_robots(): string
 {
-    return option('public') === true
-        ? "User-agent: *\nAllow: /\n\nSitemap: " . url('sitemap.xml') . "\n"
-        : "User-agent: *\nDisallow: /\n";
+    return "User-agent: *\nAllow: /\n\nSitemap: " . url('sitemap.xml') . "\n";
 }
 
 /**

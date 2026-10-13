@@ -11,9 +11,8 @@
 # 3. rsync of www/ and vendor/, with --delete, but state, host config and
 #    generated files are excluded, so rsync neither uploads nor deletes them.
 # 4. Staging password: .htpasswd next to www/, the auth block in www/.htaccess.
-# 5. Host config: env.php and, for a fresh site, .salt. 'public' is true only
-#    without staging password; 'url' is SITE_URL; 'assistantKey' is
-#    ANTHROPIC_API_KEY, if set.
+# 5. Host config: env.php and, for a fresh site, .salt. 'url' is SITE_URL;
+#    'assistantKey' is ANTHROPIC_API_KEY, if set.
 # 6. Page cache cleared under the site's cache lock, then a request to the start page.
 #
 # Environment:
@@ -133,11 +132,9 @@ echo "== Host config"
 # change every media URL. Restore .salt from a backup instead.
 remote "cd '$DEPLOY_PATH/www/site/config' && { test -f env.php || printf '<?php\n\nreturn [\n    \x27debug\x27 => false,\n];\n' > env.php; } && { test -f .salt || { test ! -d ../../content || { echo 'content without .salt: restore .salt from a backup' >&2; exit 1; }; $RPHP -r 'echo bin2hex(random_bytes(24)), \"\n\";' > .salt; }; }"
 
-# Search engines may index the site only without staging password. Kirby
-# runs from www/index.php: without a fixed url it would take /www as its
-# base, and every link would start with /www/.
-if [ -n "${STAGING_USER:-}" ] && [ -n "${STAGING_PASSWORD:-}" ]; then PUBLIC_FLAG=false; else PUBLIC_FLAG=true; fi
-remote "$RPHP -- '$DEPLOY_PATH/www/site/config/env.php' public=$PUBLIC_FLAG 'url=$SITE_URL'" < bin/set-env.php
+# Kirby runs from www/index.php: without a fixed url it would take /www as
+# its base, and every link would start with /www/.
+remote "$RPHP -- '$DEPLOY_PATH/www/site/config/env.php' 'url=$SITE_URL'" < bin/set-env.php
 
 # The assistant's key travels on stdin, never on a command line. Without it
 # the assistant is off; an existing key stays.
