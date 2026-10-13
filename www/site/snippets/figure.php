@@ -3,9 +3,9 @@ use Website\Blog\Exif;
 use Website\Blog\Images;
 
 /**
- * An image of a post: linked to the original, 600, 1000 and 1600 px WebP,
- * the EXIF rows below. No blank lines: Markdown would end the HTML block
- * there.
+ * One image of a post, for the KirbyText tag (image:): the image as a link
+ * to the original file, and below it the EXIF lines, the caption and the
+ * photographer.
  *
  * @var Kirby\Cms\File $file
  * @var Website\Models\SitePage $page
@@ -14,10 +14,14 @@ $picture = Images::picture($file);
 $rows = Exif::rows($file);
 $caption = (string) $file->caption()->value();
 $photographer = (string) $file->photographer()->value();
-// The first image of the post is the one under the title: the browser
-// loads it first. The cover keeps the transition from its tile.
+// The first image of the post is at the top of the page, so the browser
+// loads it at once and with high priority. The cover gets the
+// view-transition-name of its tile on the front page, so the browser
+// animates it from the tile into the post.
 $first = $page->firstImageName() === $file->filename();
 $cover = $page->coverImage()?->is($file) === true;
+// The HTML below must not contain a blank line. Markdown ends an HTML block
+// at a blank line and would treat the rest as Markdown text.
 ?>
 <figure>
 <a class="frame" href="<?= $file->url() ?>">

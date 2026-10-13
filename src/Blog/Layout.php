@@ -8,14 +8,17 @@ use Website\Models\PostPage;
 use Website\Models\SitePage;
 
 /**
- * What the frame of a page needs (snippets/layout.php, snippets/head.php):
- * meta tags, JSON-LD, the CSS and the scripts inline, asset URLs.
+ * The data for the HTML around the content of every page, which
+ * snippets/layout.php and snippets/head.php render: meta tags, JSON-LD
+ * (structured data for search engines), the inline CSS and scripts, and
+ * asset URLs.
  */
 final class Layout
 {
     /**
-     * What the head says about a page: title, description, URL, whether it is
-     * an article (a post or About) and the picture for link previews.
+     * The values for the meta tags of a page: title, description, URL,
+     * whether it is an article (a post or About), and the image for link
+     * previews.
      *
      * @return array{title: string, description: string, article: bool, url: string, image: ?string}
      */
@@ -32,8 +35,9 @@ final class Layout
     }
 
     /**
-     * JSON-LD: the person on the home page, the article on a post, else null.
-     * Job title and employer come from About; an empty field leaves its key out.
+     * The JSON-LD data (schema.org): a Person on the home page, an Article on
+     * a post, null on every other page. Job title and employer come from the
+     * fields of About. array_filter() drops a key whose value is empty.
      *
      * @param array{title: string, description: string, article: bool, url: string, image: ?string} $meta
      * @return array<string, mixed>|null
@@ -72,7 +76,8 @@ final class Layout
     }
 
     /**
-     * JSON for a script tag: "<" escaped, so it cannot close the tag.
+     * JSON for an inline script element. JSON_HEX_TAG escapes "<" and ">", so
+     * a value that contains "</script>" cannot end the element.
      *
      * @param array<string, mixed> $data
      */
@@ -82,9 +87,10 @@ final class Layout
     }
 
     /**
-     * The CSS of the site in one piece, inline in every page, so without
-     * comments and with less whitespace. The order counts: a later file
-     * overrides an earlier one.
+     * All CSS files joined into one string, which snippets/head.php puts
+     * inline into every page. Every page contains the full CSS, so comments
+     * and most whitespace are removed. The order of the files matters: a
+     * rule in a later file overrides the same rule in an earlier one.
      */
     public static function css(): string
     {
@@ -92,9 +98,10 @@ final class Layout
         foreach (['fonts', 'tokens', 'base', 'page', 'exif', 'home', 'article', 'archive'] as $name) {
             $css .= F::read(kirby()->root('assets') . "/css/$name.css");
         }
-        // Outside strings: comments go, whitespace shrinks to one space, and
-        // none around { } ; and ",". Other spaces stay: one before ":" can be
-        // a descendant selector, calc() needs the ones around + and -.
+        // Outside quoted strings, comments are removed, each run of whitespace
+        // becomes one space, and the spaces around { } ; and "," are removed.
+        // Other spaces must stay. A space before ":" can be a descendant
+        // combinator (`a :hover`), and calc() requires the spaces around + and -.
         $string = '"(?:[^"\\\\]|\\\\.)*"|\'(?:[^\'\\\\]|\\\\.)*\'';
         $css = preg_replace_callback("!($string)|/\*.*?\*/!s", fn(array $m) => $m[1] ?? '', $css);
         $parts = preg_split("!($string)!s", $css, -1, PREG_SPLIT_DELIM_CAPTURE);
@@ -107,10 +114,12 @@ final class Layout
     }
 
     /**
-     * The scripts of a page, inline, in this order. Lists keep their scroll
-     * position. Pages with a text (posts, About) get the back link and copy
-     * buttons, the archive the back link too. Search asks search.json while
-     * typing, as a module.
+     * The names of the scripts under assets/js that snippets/head.php puts
+     * inline into a page, in this order. scroll.js keeps the scroll position
+     * when the visitor changes the filter. Pages with a text (posts, About,
+     * default) get back.js and copy.js, the archive gets back.js too. fit.js
+     * shortens the timeline on the home page to the height of the pictures.
+     * search.js loads the results while the visitor types.
      *
      * @return list<string>
      */
@@ -127,13 +136,17 @@ final class Layout
         ]));
     }
 
-    /** A script under assets/js, for a script tag. */
+    /** The content of assets/js/$name.js, for an inline script element. */
     public static function js(string $name): string
     {
         return (string) F::read(kirby()->root('assets') . "/js/$name.js");
     }
 
-    /** URL of a file under assets/ with its time: a changed file gets a new URL. */
+    /**
+     * The URL of a file under assets/ with its modification time as ?v=. A
+     * changed file gets a new URL, so the one-year browser cache that
+     * .htaccess sets never serves an old copy.
+     */
     public static function asset(string $path): string
     {
         return url('assets/' . $path) . '?v=' . filemtime(kirby()->root('assets') . '/' . $path);

@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Codeblöcke bekommen oben rechts einen Copy-Button, Inline-Code nimmt den
-    // Klick selbst entgegen, weil ein Button mitten im Satz die Zeile aufbricht.
-    // Ohne Clipboard-API bleibt beides gewöhnlicher Text.
+    // Each code block gets a Copy button in its top right corner. Inline code
+    // copies itself on a click, because a button inside a sentence would
+    // break the line. Without the Clipboard API, both stay plain text.
     if (!navigator.clipboard) return;
 
     function copy(text, done) {
@@ -39,6 +39,8 @@ document.addEventListener("DOMContentLoaded", function () {
         code.classList.add("is-copyable");
 
         code.addEventListener("click", function () {
+            // A click that ends a text selection copies nothing, so the
+            // visitor can select a part of the code.
             var selection = window.getSelection();
             if (selection && selection.toString()) return;
 

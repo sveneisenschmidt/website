@@ -7,14 +7,16 @@ use Kirby\Cms\Pages;
 use Website\Models\PostPage;
 
 /**
- * The published posts and the lists made from them: the picks of the front
- * page, the timeline, the archive by month and the search.
+ * Lists of published posts for templates, snippets and controllers: the
+ * featured posts of the front page, the timeline (the list of posts beside
+ * the content, snippets/stream.php), the archive by month and the search.
  */
 final class Posts
 {
     /**
-     * All published posts, newest first, posts of the same time by title.
-     * The plugin registers this as the collection "posts".
+     * Builds the Kirby collection "posts", which plugins/blog registers: all
+     * published posts, newest first. Posts with the same date and time sort
+     * by title.
      *
      * @return Pages<PostPage>
      */
@@ -24,7 +26,8 @@ final class Posts
     }
 
     /**
-     * The collection "posts".
+     * All published posts, newest first. Kirby's collection() builds the
+     * list once per request and returns a copy on every later call.
      *
      * @return Pages<PostPage>
      */
@@ -35,7 +38,8 @@ final class Posts
     }
 
     /**
-     * The picks with a cover, newest first: the front page shows them.
+     * The featured posts (the toggle "Hervorgehoben", field `pick`) that
+     * have a cover, newest first. The front page shows them.
      *
      * @return Pages<PostPage>
      */
@@ -45,9 +49,10 @@ final class Posts
     }
 
     /**
-     * The timeline beside a page, as entries [post, label]: beside a post its
-     * two neighbours, Next and Previous; beside any other page the newest
-     * $limit posts, the first one Latest. neighbours says which of the two.
+     * The entries of the timeline beside a page, each [post, label]. Beside
+     * a published post: the newer post labelled Next and the older one
+     * labelled Previous. Beside any other page: the newest $limit posts, the
+     * first one labelled Latest. The key `neighbours` is true in the first case.
      *
      * @return array{neighbours: bool, entries: list<array{PostPage, string}>}
      */
@@ -80,9 +85,10 @@ final class Posts
     }
 
     /**
-     * Posts that hold every word of $query in title, intro, text or the alt
-     * text of an image, newest first, at most 40. KirbyText tags and link
-     * targets do not count: a file name or URL would match almost anything.
+     * Posts that contain every word of $query in title, intro, text or the
+     * alt text of an image, newest first, at most 40. KirbyText tags such as
+     * (image: photo.jpg) and the targets of Markdown links are removed first,
+     * because a file name or URL would match almost any query.
      *
      * @return Pages<PostPage>
      */

@@ -1,4 +1,4 @@
-/* The tables use .blog-log from the change log plugin. */
+/* The tables use the class .blog-log from plugins/changelog/index.css. */
 .blog-stats-tiles {
   margin-bottom: var(--spacing-8);
 }

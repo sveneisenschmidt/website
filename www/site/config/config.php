@@ -1,23 +1,25 @@
 <?php
 
 /**
- * Shared configuration. Lives in git.
- * Host-specific values (debug and the like) go into env.php: not in git,
- * not in backups, imported per host. See env.example.php.
+ * The Kirby configuration for every host. A value that differs per host,
+ * such as debug or url, goes into env.php, and env.php overrides the values
+ * here. env.php is in neither git nor the backups; see env.example.php.
  */
 
-// Dates in the Panel (default: now) and in feeds are Berlin time.
+// Dates in the Panel (also the default "now" of a post's date) and in the
+// feed use Berlin time.
 date_default_timezone_set('Europe/Berlin');
 
 $env = is_file(__DIR__ . '/env.php') ? require __DIR__ . '/env.php' : [];
 
-// The media salt is state, not host config: it lives in .salt, which is part
-// of every backup. If it changed, every image URL would change.
+// Kirby puts a hash with this salt into every media URL (the thumbnails
+// under /media/). The salt is in .salt, which every backup includes and git
+// does not. A new salt would change every image URL.
 $salt = is_file(__DIR__ . '/.salt') ? trim(file_get_contents(__DIR__ . '/.salt')) : null;
 
-// A host config without .salt means the salt got lost: restore it from a
-// backup. Kirby would otherwise derive a salt from the content path, and
-// every media URL would change without an error.
+// A host with env.php but without .salt has lost its salt, and it must come
+// back from a backup. Without this check, Kirby would derive a salt from the
+// content path, and every media URL would change without an error.
 if (is_file(__DIR__ . '/env.php') && ($salt === null || $salt === '')) {
     throw new RuntimeException('site/config/.salt is missing: restore it from a backup.');
 }
@@ -25,27 +27,32 @@ if (is_file(__DIR__ . '/env.php') && ($salt === null || $salt === '')) {
 return array_replace_recursive([
     'locale' => 'en_US.utf-8',
     'content' => array_filter(['salt' => $salt]),
-    // A single line break in a text is no <br>: the posts are written that way.
+    // A single line break in Markdown does not become a <br>. The posts are
+    // written for this setting.
     'markdown' => ['breaks' => false],
-    // Curly quotes and ellipses; "--" is an en dash and "---" an em dash
-    // (Kirby's default makes "--" an em dash).
+    // SmartyPants replaces plain punctuation with typographic characters.
+    // "qDe" sets curly quotes (q), "--" as en dash and "---" as em dash (D),
+    // and ellipses (e). Kirby's default makes "--" an em dash.
     'smartypants' => ['attr' => 'qDe'],
     // GD, plus conversion to sRGB for photos with another color profile
     // (Website\Blog\SrgbGd).
     'thumbs' => ['driver' => 'blog-gd'],
-    // HTML cache. Kirby clears it on every change in the Panel. The type
-    // clears it under a lock, for parallel uploads (Website\Blog\FileCache).
-    // About shows the visitor numbers, which change all day: never cached.
+    // The page cache keeps the rendered HTML of each page. Kirby empties it
+    // on every change in the Panel. The cache type blog-file
+    // (Website\Blog\FileCache) empties it under a lock, so parallel uploads
+    // do not fail. About is never cached, because its visitor numbers
+    // change all day.
     'cache' => [
         'pages' => ['active' => true, 'type' => 'blog-file', 'ignore' => ['about']],
     ],
     'routes' => require __DIR__ . '/routes.php',
     'panel' => [
         'language' => 'de',
-        // Each post type gets its own entry in the menu, linked to its page in
-        // the tree under Site. Site is current only outside these four pages.
-        // Areas and tabs have German ids, as they show in the Panel's
-        // addresses (/panel/besucher); the code around them is English.
+        // Each post type gets its own entry in the Panel menu, which links to
+        // its parent page (for example /panel/pages/photos). The entry of the
+        // site is marked as current only outside these four pages. Areas and
+        // tabs have German ids, because the ids appear in Panel URLs such as
+        // /panel/besucher. All other names in the code are English.
         'menu' => function (Kirby\Cms\App $kirby) {
             $types = array_column(Website\Blog\Types::ALL, null, 'section');
             $path = $kirby->path();
@@ -56,8 +63,9 @@ return array_replace_recursive([
             }
             return [...$menu, '-', 'besucher', 'verlauf', 'assistent', '-', 'users', 'system'];
         },
-        // Kirby's page buttons plus "Assistent" (plugins/assistant). It shows
-        // on posts and About.
+        // The buttons at the top of a page in the Panel: Kirby's own and the
+        // button of the assistant (plugins/assistant), which shows on posts
+        // and About.
         'viewButtons' => [
             'page' => ['open', 'preview', '-', 'assistant', 'settings', 'languages', 'status'],
         ],

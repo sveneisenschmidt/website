@@ -2,9 +2,10 @@
 use Website\Blog\Site;
 
 /**
- * The frame of every page. A template puts its content between
- * snippet('layout', slots: true) and endsnippet(). The body carries the
- * name of the template as its class.
+ * The HTML document around the content of every page: head, site header,
+ * main and footer. A template puts its content between
+ * snippet('layout', slots: true) and endsnippet(), and the content arrives
+ * as $slot. The class of the body is the name of the template.
  *
  * @var Kirby\Cms\Page $page
  * @var Kirby\Template\Slot $slot

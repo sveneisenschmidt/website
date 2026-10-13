@@ -5,15 +5,15 @@ use Website\Analytics\Counter;
 use Website\Analytics\Totals;
 
 /**
- * Visitor statistics without cookies, scripts or external services. The
- * code lives in src/Analytics (Counter, Months, Totals); this file
- * registers it with Kirby. The Panel shows the numbers under "Besucher",
- * About shows them in snippets/stats.php.
+ * Registers the visitor statistics with Kirby: the hook that counts page
+ * views and the Panel view "Besucher". The classes are in src/Analytics.
+ * About shows the totals through snippets/stats.php.
  */
 
 App::plugin('sveneisenschmidt/analytics', [
     'hooks' => [
-        // Before Page::render() reads the page cache, so cached pages count too.
+        // Kirby runs route:after before Page::render() reads the page cache,
+        // so views of cached pages count too.
         'route:after' => fn(string $method, mixed $result, bool $final) => Counter::route($method, $result, $final),
     ],
     'areas' => [

@@ -11,15 +11,20 @@ use Kirby\Uuid\Uuid;
 use Throwable;
 
 /**
- * What a change changed, for an entry of the change log (Log): each
- * field with its label, the old and the new value.
+ * Compares the old and the new version of a page, file, site or user for
+ * the change log (Log). The result lists each changed field with its Panel
+ * label, the old and the new value.
  */
 final class Diff
 {
-    /** Fields that are not content: never logged. */
+    /** Fields that are never logged: `uuid` is an internal id, `password` is secret. */
     public const SKIP = ['uuid', 'password'];
 
-    /** Fields whose values never go into the log: a change shows as "geändert". */
+    /**
+     * Fields whose values never go into the log. The assistant's prompt must
+     * exist only in content/site.txt, so a change of it shows only as
+     * "geändert" (changed).
+     */
     public const SECRET = ['assistantprompt'];
 
     /** Longer values are cut after this many characters. */
@@ -32,8 +37,9 @@ final class Diff
      */
     public static function changes(ModelWithContent $old, ModelWithContent $new): array
     {
-        // A status, sort or slug change moves the page folder: the old object then
-        // reads no content, and every field would look new.
+        // A change of status, sort number or slug renames the page folder.
+        // The old page object then finds no content file, and every field
+        // would look new. Such a change logs only slug, status and number.
         $moved = $old instanceof Page && $new instanceof Page && ($old->status() !== $new->status() || $old->num() !== $new->num() || $old->slug() !== $new->slug());
         $a = $moved ? [] : $old->content()->toArray();
         $b = $moved ? [] : $new->content()->toArray();
@@ -47,12 +53,12 @@ final class Diff
             if ($from === $to) {
                 continue;
             }
-            // The assistant's prompt lives only in content/site.txt.
             if (in_array(strtolower($key), self::SECRET, true)) {
                 $changes[] = ['field' => $key, 'label' => self::label($new, $key), 'old' => '', 'new' => 'geändert'];
                 continue;
             }
-            // Lists (structure, files, pages): the rows that went and came.
+            // For a list (structure, files, pages), the entry shows only the
+            // removed and the added items.
             $fromList = self::items($from);
             $toList = self::items($to);
             if ($fromList !== null && $toList !== null) {
@@ -70,18 +76,22 @@ final class Diff
                 'new' => Str::short($to, self::MAX),
             ];
         }
-        // Slug and status are no content fields.
+        // Slug, status, sort number and file name are not content fields,
+        // so the loop above does not see them.
         if ($old instanceof Page && $new instanceof Page) {
             if ($old->slug() !== $new->slug()) {
                 $changes[] = ['field' => 'slug', 'label' => 'URL-Anhang', 'old' => $old->slug(), 'new' => $new->slug()];
             }
-            // Publishing goes draft, unlisted, listed: Kirby logs the last step as a
-            // sort change. Two states with the same Panel name are no change.
+            // Kirby publishes a draft in two steps: draft to unlisted, then
+            // changeNum() to listed. The post blueprints name only draft and
+            // listed, so status() returns "Veröffentlicht" for unlisted and
+            // for listed. Two states with the same name are no change.
             [$from, $to] = [self::status($old, $old->status()), self::status($new, $new->status())];
             if ($from !== $to) {
                 $changes[] = ['field' => 'status', 'label' => 'Status', 'old' => $from, 'new' => $to];
             }
-            // A status change sets or clears the number itself: not a second change.
+            // A status change sets or clears the sort number. That number
+            // change is part of the status change and is not logged twice.
             if ($old->num() !== $new->num() && $old->status() === $new->status()) {
                 $changes[] = ['field' => 'num', 'label' => 'Reihenfolge', 'old' => (string) $old->num(), 'new' => (string) $new->num()];
             }
@@ -92,7 +102,11 @@ final class Diff
         return $changes;
     }
 
-    /** A page status as the Panel names it for this page: "Entwurf", "Veröffentlicht". */
+    /**
+     * The name of a status in the page's blueprint, for example "Entwurf"
+     * (draft) or "Veröffentlicht" (published). Without a name there, draft
+     * is "Entwurf" and every other status "Veröffentlicht".
+     */
     private static function status(Page $page, string $status): string
     {
         $label = $page->blueprint()->status()[$status]['label'] ?? null;
@@ -103,9 +117,11 @@ final class Diff
     }
 
     /**
-     * A YAML list as readable items, or null for any other value.
-     * A file or page reference (UUID or id) becomes its name, a structure row
-     * its first value: a reference written as id and later as UUID is the same item.
+     * Decodes a YAML list into readable items, or returns null for any other
+     * value. A file or page reference (UUID or id) becomes the title of the
+     * file or page. A structure row becomes its first value that is not
+     * empty. Kirby can store a reference as an id and later as a UUID; both
+     * become the same item, so the change log shows no change.
      *
      * @return list<string>|null
      */
@@ -137,7 +153,10 @@ final class Diff
         }, $items);
     }
 
-    /** The field label from the blueprint, or the field name. */
+    /**
+     * The field label from the blueprint, or the field name with a capital
+     * letter. Of a translated label, the German one wins: the Panel is German.
+     */
     private static function label(ModelWithContent $model, string $key): string
     {
         $label = $model->blueprint()->field($key)['label'] ?? null;

@@ -6,8 +6,8 @@ use Kirby\Cms\Page;
 use Website\Models\PostPage;
 
 /**
- * The counted days added up: for the Panel view "Besucher" and for the
- * visitor numbers on About (snippets/stats.php).
+ * Adds up the daily visitor totals for the Panel view "Besucher"
+ * (plugins/analytics) and for the statistics on About (snippets/stats.php).
  */
 final class Totals
 {
@@ -62,8 +62,8 @@ final class Totals
     }
 
     /**
-     * All counted days together, for the block on About: visits, views, the
-     * number of pages and the five posts with the most visits (id => visits).
+     * The totals of all months for the statistics on About: visits, views,
+     * the number of pages, and the five posts with the most visits (id => visits).
      *
      * @return array{visits: int, views: int, pages: int, top: array<string, int>}
      */
@@ -87,8 +87,8 @@ final class Totals
     }
 
     /**
-     * The visitor numbers on About: visits, views, pages,
-     * and the most visited posts as [post, visits]. Null before the first visit.
+     * The statistics on About: visits, views, pages, and the most visited
+     * posts as [post, visits]. Null before the first visit.
      *
      * @return array{visits: int, views: int, pages: int, top: list<array{0: Page, 1: int}>}|null
      */
@@ -106,7 +106,8 @@ final class Totals
     }
 
     /**
-     * Title and public URL of a counted page, also for deleted pages.
+     * Title and public URL of a counted page. A deleted page keeps its id
+     * with "(gelöscht)" (deleted) as its title and has no URL.
      *
      * @return array{id: string, title: string, url: ?string}
      */

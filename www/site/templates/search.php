@@ -1,7 +1,8 @@
 <?php
 /**
- * Search. With ?q= the results come from the server; search.js asks
- * search.json while typing (controllers/search.php).
+ * The search page: the filter row, the search field and the results. With
+ * ?q= in the URL, the server renders the results. While the visitor types,
+ * search.js loads them from search.json. Variables from controllers/search.php.
  *
  * @var string $query
  * @var Kirby\Cms\Pages $results

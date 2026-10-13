@@ -1,4 +1,5 @@
-# Website: the posts and the settings of the assistant (plugins/assistant).
+# The site view "Website" of the Panel: the tab "Beiträge" with the posts
+# and the tab "Assistent" with the settings of the assistant (plugins/assistant).
 title: Website
 tabs:
   beitraege: tabs/posts

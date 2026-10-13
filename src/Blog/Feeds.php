@@ -10,15 +10,16 @@ use Website\Models\PostPage;
 use Website\Models\SitePage;
 
 /**
- * The files for machines, from the content: the feed (index.xml), the
- * sitemap, robots.txt and llms.txt. config/routes.php serves them.
+ * Builds the files that programs read: the RSS feed (/index.xml), the
+ * sitemap (/sitemap.xml), /robots.txt and /llms.txt. config/routes.php
+ * serves them.
  */
 final class Feeds
 {
-    /** The date format of RSS. */
+    /** The RFC 822 date format, which RSS 2.0 requires. */
     private const RSS_DATE = 'D, d M Y H:i:s O';
 
-    /** The text of the feed, newest post first. */
+    /** The RSS feed with every published post, newest first. */
     public static function rss(): string
     {
         $site = site();
@@ -36,6 +37,8 @@ final class Feeds
             . "    <atom:link href=\"{$home}index.xml\" rel=\"self\" type=\"application/rss+xml\" />\n";
         $frozen = self::guids();
         foreach ($posts as $post) {
+            // Feed readers rarely send a Referer header. With ?source=rss,
+            // Website\Analytics\Counter counts the visit as coming from the feed.
             $link = $post->url() . '?source=rss';
             $xml .= "    <item>\n"
                 . '      <title>' . Xml::encode($post->title()->value()) . "</title>\n"
@@ -48,12 +51,16 @@ final class Feeds
         return $xml . "  </channel>\n</rss>\n";
     }
 
-    /** A feed item: cover, summary and the number of words after it. */
+    /**
+     * The HTML of a feed item: the cover, the summary, and a link that names
+     * how many words the post has beyond the summary.
+     */
     private static function rssDescription(PostPage $post, string $link): string
     {
         $html = '';
         if ($cover = $post->coverImage()) {
-            // fit() changes its object: a copy, so the file keeps its own size.
+            // fit() changes the object it is called on, and the file keeps its
+            // dimensions object for later calls. The clone keeps the file's size intact.
             $size = (clone $cover->dimensions())->fit(768);
             $html .= '<img src="' . $cover->thumb(['width' => 768, 'height' => 768, 'format' => 'webp', 'quality' => 80])->url()
                 . '" width="' . $size->width() . '" height="' . $size->height()
@@ -69,9 +76,11 @@ final class Feeds
     }
 
     /**
-     * The GUIDs that never change, so a feed reader shows no post twice: path
-     * of a post => the old URL of each redirect with rss: keep. A later
-     * redirect wins.
+     * A feed reader identifies an item by its GUID and shows an item with a
+     * new GUID as a new post. When a post moves to a new URL, the redirect
+     * from its old URL has `rss: keep`, and the feed keeps that old URL as
+     * the GUID. Returns new path => old URL. Of two redirects to the same
+     * path, the later one wins.
      *
      * @return array<string, string>
      */
@@ -86,7 +95,7 @@ final class Feeds
         return $guids;
     }
 
-    /** The home page, About and every post, each with its time, a post with its cover. */
+    /** The sitemap: the home page, About and every post, each with the time of its last change. A post also names its cover image. */
     public static function sitemap(): string
     {
         $posts = Posts::all();
@@ -102,7 +111,7 @@ final class Feeds
         foreach ($posts as $post) {
             $xml .= "  <url>\n    <loc>" . $post->url() . "</loc>\n"
                 . '    <lastmod>' . date('c', $post->lastModified()) . "</lastmod>\n";
-            // The cover as image entry, in the size the page shows.
+            // The 1600 px version, the same image file that the post page shows.
             if ($cover = $post->coverImage()) {
                 $xml .= "    <image:image>\n      <image:loc>" . Images::wide($cover, 1600)->url() . "</image:loc>\n    </image:image>\n";
             }
@@ -118,9 +127,10 @@ final class Feeds
     }
 
     /**
-     * Summary for language models (llmstxt.org): the introduction from
-     * Website › Beiträge, then essays and notes with their summary, then
-     * the pages of the site.
+     * The summary of the site for language models (format of llmstxt.org):
+     * the introduction from the site field `llms` (Panel: Website ›
+     * Beiträge), then essays and notes with their summaries, then the pages
+     * of the site.
      */
     public static function llms(): string
     {
@@ -151,9 +161,10 @@ final class Feeds
     }
 
     /**
-     * A file for machines from the page cache, which Kirby clears on every
-     * change: built by $build when missing, its build time as Last-Modified.
-     * A reader that has this build gets 304 without a body.
+     * Serves a generated file from Kirby's page cache. Kirby empties that
+     * cache on every content change, and $build then builds the file again.
+     * The build time is sent as Last-Modified. A client that sends
+     * If-Modified-Since with that time or later gets 304 without a body.
      *
      * @param Closure(): string $build
      */
@@ -161,14 +172,16 @@ final class Feeds
     {
         $cache = kirby()->cache('pages');
         $entry = $cache->get($name);
-        // An entry with only the text has no build time: it is built again.
+        // A missing entry is null. An entry that holds only the text has no
+        // build time. Both are built again.
         if (!is_array($entry)) {
             $entry = ['text' => $build(), 'time' => time()];
             $cache->set($name, $entry);
         }
         $headers = ['Last-Modified' => gmdate('D, d M Y H:i:s', $entry['time']) . ' GMT'];
         $since = strtotime((string) kirby()->request()->header('If-Modified-Since'));
-        // A date in the future comes from a wrong clock and does not count (RFC 9110).
+        // RFC 9110 says to ignore an If-Modified-Since date later than the
+        // server's time. Such a date comes from a wrong clock.
         if ($since !== false && $since >= $entry['time'] && $since <= time()) {
             return new Response('', $type, 304, $headers);
         }

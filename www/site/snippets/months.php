@@ -3,12 +3,12 @@ use Website\Blog\Images;
 use Website\Blog\Posts;
 
 /**
- * Posts by month, as the archive lists them and search.js shows its
- * results: a bar with month and count, below it a sheet of covers
- * ($sheet) or rows of day, title and cover.
+ * Posts by month, for the archive and the search results: a heading with
+ * month and count, then a grid of covers ($sheet) or one row per post with
+ * day, title and cover.
  *
  * @var Kirby\Cms\Pages<Website\Models\PostPage> $posts Newest first
- * @var bool $sheet
+ * @var bool $sheet True for the grid of covers
  */
 $sheet ??= false;
 ?>

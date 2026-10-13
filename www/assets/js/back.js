@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Der Back-Link zeigt im Markup auf die Startseite und funktioniert so auch
-    // ohne JavaScript. Kam der Besucher von einer Seite dieser Site, ist der
-    // Verlauf das bessere Ziel. Bei einem Einstieg von außen oder direkt bleibt
-    // es bei der Startseite.
+    // In the HTML, the Back link points to the front page, so it works
+    // without JavaScript. When the visitor came from a page of this site,
+    // the link goes back in the browser history. A visitor who came from
+    // another site or opened the URL directly keeps the link to the front page.
     var link = document.querySelector("a[data-back]");
     if (!link) return;
 

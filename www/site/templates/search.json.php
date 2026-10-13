@@ -1,8 +1,8 @@
 <?php
 
 /**
- * The results of /search.json?q= for search.js: the result list of the
- * search page as HTML (snippets/search-results.php).
+ * The response of /search.json?q= for search.js: JSON with the key `html`,
+ * the result list of the search page (snippets/search-results.php).
  *
  * @var string $query
  * @var Kirby\Cms\Pages $results

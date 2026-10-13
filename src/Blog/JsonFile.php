@@ -6,9 +6,10 @@ use Kirby\Filesystem\Dir;
 use RuntimeException;
 
 /**
- * JSON into a temporary file first, then renamed: a crash or a full disk
- * never leaves half a file. For the redirects and the visitor numbers
- * (Website\Analytics).
+ * Writes JSON to a temporary file and then renames it to the target name.
+ * rename() replaces the target in one step, so a crash or a full disk never
+ * leaves half a file. Redirects and Website\Analytics write their files
+ * with it.
  */
 final class JsonFile
 {

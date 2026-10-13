@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // A click on a filter link of the archive or the search stores the
+    // scroll positions of the page and of the timeline. The next page with
+    // the filter row restores them, so a change of filter keeps the view.
     var KEY = "stream-scroll";
 
     var nav = document.querySelector(".stream-filter");

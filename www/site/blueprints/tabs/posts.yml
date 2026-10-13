@@ -1,4 +1,5 @@
-# Website › Beiträge (blueprints/site.yml).
+# The tab "Beiträge" of the site view (blueprints/site.yml): the newest posts
+# of each type, the other pages, and the introduction of llms.txt.
 label: Beiträge
 icon: page
 columns:

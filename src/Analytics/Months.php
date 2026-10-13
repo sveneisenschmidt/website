@@ -7,8 +7,10 @@ use Throwable;
 use Website\Blog\JsonFile;
 
 /**
- * The daily totals of "Besucher", one file per month:
- * content/.analytics/<year>-<month>.json. State, like the change log.
+ * Reads and writes the daily visitor totals, one JSON file per month:
+ * content/.analytics/<year>-<month>.json. The files are in content/, so
+ * every backup has them and git does not. Totals adds them up for the Panel
+ * view "Besucher" and for About.
  *
  * @phpstan-type Day array{visits?: int, views?: int, pages?: array<string, int>, referrers?: array<string, int>}
  */
@@ -20,8 +22,9 @@ final class Months
     }
 
     /**
-     * The days of one month ("2026-10"), keyed by date. An unreadable file
-     * throws when $strict, else it reads as empty, so the Panel still opens.
+     * The days of one month ("2026-10"), keyed by date. With $strict, an
+     * unreadable file throws. Without $strict, the error is logged and the
+     * month reads as empty, so the Panel view still opens.
      *
      * @return array<string, Day>
      */
@@ -40,8 +43,6 @@ final class Months
     }
 
     /**
-     * Saves the days of one month, through a temporary file.
-     *
      * @param array<string, Day> $days
      */
     public static function write(string $month, array $days): void

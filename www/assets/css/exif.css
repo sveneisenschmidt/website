@@ -8,7 +8,8 @@
     margin: 0;
 }
 
-/* Caption und Fotograf beginnen eine eigene Zeile unter den Kameradaten. */
+/* Caption and photographer start a new row below the camera data. A
+   photographer directly after a caption stays in the row of the caption. */
 .exif .caption,
 .exif .photographer:not(.caption + .photographer) {
     grid-column-start: 1;

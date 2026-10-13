@@ -6,15 +6,15 @@ use Kirby\Cms\Page;
 use Kirby\Toolkit\Str;
 
 /**
- * Text from Markdown: headings with an id and an anchor, the text a reader
- * reads and its words. The models (SitePage) build the content and the
- * summary of a page from these.
+ * Turns the Markdown of a page into HTML or into plain text. SitePage uses
+ * it for the body, the summary and the word count of a page.
  */
 final class Text
 {
     /**
-     * KirbyText, with an id and an anchor on every heading. Links point at
-     * these ids: they stay as they are.
+     * Renders KirbyText and gives every heading an id and an anchor link "#".
+     * Links from other pages point at these ids, so anchor() must keep
+     * producing the same ids for the same headings.
      */
     public static function html(string $text, Page $page): string
     {
@@ -28,7 +28,7 @@ final class Text
         }, kirby()->kirbytext($text, ['parent' => $page]));
     }
 
-    /** The id of a heading: letters, digits and "_" in lower case, space and "-" as "-". */
+    /** The id of a heading: letters, digits and "_" in lower case, each space or "-" as "-", every other character dropped. */
     public static function anchor(string $text): string
     {
         $id = '';
@@ -43,10 +43,11 @@ final class Text
     }
 
     /**
-     * Markdown without its (image:) and (map:) tags, for plain text only. A
-     * figure or a map has no words a reader reads, and each figure would cost
-     * three thumbnails, a file lookup and its EXIF. Nested brackets as in
-     * Kirby's own tag pattern.
+     * Removes the (image:) and (map:) tags from Markdown that is rendered as
+     * plain text. A figure or a map adds no words to read. Rendering a figure
+     * would also create three thumbnails, look up the file and read its EXIF.
+     * The pattern allows nested parentheses inside a tag, as Kirby's own tag
+     * pattern does.
      */
     public static function withoutMedia(string $markdown): string
     {
@@ -54,15 +55,16 @@ final class Text
     }
 
     /**
-     * Rendered HTML as the text a reader reads: no tags, entities decoded,
-     * without the EXIF rows of figures and the scripts of maps.
+     * Rendered HTML as plain text: tags removed, entities decoded. The EXIF
+     * lines of figures and the route scripts of maps are removed first,
+     * because they are not text that a reader reads.
      */
     public static function plain(string $html): string
     {
         return trim(Str::unhtml(preg_replace(['!<dl class="exif">.*?</dl>!s', '!<script\b.*?</script>!s'], '', $html)));
     }
 
-    /** The words of a plain text. */
+    /** The number of words in a plain text, split at whitespace. */
     public static function words(string $text): int
     {
         return count(preg_split('/\s+/u', $text, -1, PREG_SPLIT_NO_EMPTY));

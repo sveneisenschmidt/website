@@ -2,7 +2,8 @@
 use Website\Analytics\Totals;
 
 /**
- * The visitor numbers on About, from "Besucher" (Website\Analytics\Totals).
+ * The statistics on About: visits, page views, pages, and the most visited
+ * posts (Website\Analytics\Totals). Nothing before the first visit.
  */
 $totals = Totals::stats();
 if ($totals === null) {

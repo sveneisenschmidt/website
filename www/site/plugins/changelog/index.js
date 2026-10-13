@@ -1,5 +1,6 @@
-// Panel view "Verlauf": the change log, newest first. No build step:
-// Kirby ships the Vue template compiler (panel.vue.compiler, on by default).
+// The Panel view "Verlauf": the change log, newest first. The file needs no
+// build step: the Panel includes the Vue template compiler (option
+// panel.vue.compiler, on by default) and compiles the template in the browser.
 const actions = {
   "page.create": "Seite angelegt",
   "page.update": "Seite geändert",
@@ -32,12 +33,13 @@ panel.plugin("sveneisenschmidt/changelog", {
       props: { entries: Array },
       methods: {
         when(time) {
-          // "11.10.2026, 09:17": dates as in the Panel lists.
+          // "11.10.2026, 09:17": the date format of the Panel lists.
           return new Date(time).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
         },
         what(e) {
           const text = actions[e.action] || e.action;
-          // Older entries have no kind and keep "Seite".
+          // `kind` is null for a page that is not a post, and older log files
+          // have entries without it. Such an entry keeps "Seite" (page).
           return e.kind && e.action.startsWith("page.") ? text.replace("Seite", e.kind) : text;
         },
       },

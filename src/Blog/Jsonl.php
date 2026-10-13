@@ -5,16 +5,18 @@ namespace Website\Blog;
 use Kirby\Filesystem\F;
 
 /**
- * Logs as JSON Lines, one file per month: <dir>/<year>-<month>.jsonl.
- * Verlauf (Website\Changelog\Log) and the Protokoll of the assistant
- * (Website\Assistant\Log) keep their entries this way.
+ * Writes and reads a log in the JSON Lines format: one JSON object per
+ * line, one file per month (<dir>/<year>-<month>.jsonl). The change log
+ * (Website\Changelog\Log) and the log of the assistant
+ * (Website\Assistant\Log) use it.
  */
 final class Jsonl
 {
     /**
-     * Appends one entry with the time and the person logged in. A change that
-     * Kirby makes as its own user ("kirby") has no person. Parallel requests
-     * append under a lock (F::write uses LOCK_EX).
+     * Appends one entry and adds the time and the user logged in to the
+     * Panel. Kirby makes some changes as its internal user "kirby", for
+     * example inside impersonate(); such an entry has no user. F::write()
+     * appends with LOCK_EX, so parallel requests do not mix their lines.
      *
      * @param array<string, mixed> $entry
      */

@@ -3,9 +3,10 @@
 namespace Website\Blog;
 
 /**
- * The four post types: template => the section that holds them, the name
- * of one post (Panel, assistant, Verlauf), the menu entry in the Panel
- * (label and icon) and whether a post has a map.
+ * The four post types, keyed by template name. `section` is the parent page
+ * that holds the posts of the type. `label` is the German name of one post
+ * in the Panel, the assistant and the change log. `menu` and `icon` make
+ * the entry in the Panel menu. `map` says whether a post can have a map.
  */
 final class Types
 {
@@ -18,8 +19,6 @@ final class Types
     ];
 
     /**
-     * The templates of the four types.
-     *
      * @return list<string>
      */
     public static function templates(): array
@@ -28,8 +27,6 @@ final class Types
     }
 
     /**
-     * The sections that hold posts.
-     *
      * @return list<string>
      */
     public static function sections(): array

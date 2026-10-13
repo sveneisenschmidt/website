@@ -78,8 +78,9 @@
     text-decoration: none;
 }
 
-/* Das Porträt steht im Text, die ersten Absätze laufen daneben. Überschriften
-   beginnen immer wieder auf voller Breite, siehe clear weiter unten. */
+/* An image with the class inline (the portrait) floats left, and the first
+   paragraphs run beside it. Headings start at the full width again, see
+   clear: left on h2 and h3 at the top of this file. */
 .body img.inline {
     float: left;
     width: var(--width-portrait);
@@ -91,8 +92,8 @@
     margin-top: 0;
 }
 
-/* Unter 600px bleibt neben dem Bild zu wenig Textbreite, dort steht es wieder
-   über dem Text. */
+/* Below 600 px the text beside the image would be too narrow, so the image
+   is above the text. */
 @media (max-width: 600px) {
     .body img.inline {
         float: none;
@@ -112,9 +113,10 @@
     text-transform: uppercase;
 }
 
-/* Label-Zeile und Titel bleiben beim Scrollen zusammen oben stehen, solange der
-   Artikel läuft, und verschwinden mit dessen Ende. Der Seitenhintergrund deckt
-   den Text darunter, das negative Margin hält die Regel layoutneutral. */
+/* The label row and the title stay at the top while the article scrolls,
+   and leave with the end of the article. The page background hides the
+   text below them. The negative margin cancels the padding, so the rule
+   does not change the layout. */
 .article-head {
     position: sticky;
     top: 0;
@@ -124,10 +126,10 @@
     background: var(--color-page);
 }
 
-/* Der Copy-Button sitzt in der rechten oberen Ecke des Codeblocks, auf der
-   Höhe der ersten Zeile, und trägt die Label-Ebene der übrigen Aktionen. Er
-   erscheint beim Überfahren des Blocks und bleibt auf Geräten ohne Zeiger
-   dauerhaft sichtbar. */
+/* The Copy button is in the top right corner of the code block, at the
+   height of the first line, in the type style of the other actions. It
+   shows when the pointer is over the block. On a device without hover, it
+   is always visible. */
 .body pre.has-copy {
     position: relative;
 }
@@ -164,8 +166,8 @@
     }
 }
 
-/* Inline-Code nimmt den Klick selbst entgegen. Die Rückmeldung läuft über den
-   Hintergrund, damit die Zeile nicht umbricht. */
+/* Inline code copies itself on a click. The feedback changes only the
+   background, so the width of the code and the line breaks stay the same. */
 .body code.is-copyable {
     cursor: pointer;
 }

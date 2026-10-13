@@ -3,9 +3,10 @@
 use Website\Models\PostPage;
 
 /**
- * A post of any type, for templates/post.php: the section its links lead
- * to, the label above the title and the type line. plugins/blog registers
- * it for photo, trip, note and essay.
+ * The variables of templates/post.php for all four post types; plugins/blog
+ * registers the controller for each. `section` is the archive sub-page that
+ * the label and the type line link to, `label` the text above the title,
+ * `type` the type line after the date.
  */
 return function (PostPage $page) {
     return [

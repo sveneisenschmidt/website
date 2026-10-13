@@ -2,8 +2,9 @@
 use Website\Blog\Images;
 
 /**
- * The front page: the newest pick large, the twelve before it as tiles,
- * the timeline next to them (controllers/home.php).
+ * The front page: the newest featured post as a large picture, the next
+ * twelve as tiles, and the timeline beside them. Variables from
+ * controllers/home.php.
  *
  * @var Website\Models\PostPage|null $lead
  * @var Kirby\Cms\Pages<Website\Models\PostPage> $tiles

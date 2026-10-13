@@ -7,24 +7,26 @@ use Kirby\Cms\Response;
 use Website\Models\PostPage;
 
 /**
- * The URL scheme of the site, which links and feed readers know and which
- * stays as it is: a post at /YYYY-MM-DD-slug/, every other page at its
- * path with a slash at the end, the home page at /. The page models build
- * these URLs (SitePage, PostPage); config/routes.php sends every path here
- * before Kirby's own routes.
+ * Resolves a request path to a page or a redirect. A post is at
+ * /YYYY-MM-DD-slug/, every other page at its path with a slash at the end,
+ * the home page at /. These URLs must not change, because links on other
+ * sites and feed readers use them. SitePage and PostPage build the URLs.
+ * config/routes.php sends every path here before Kirby's own routes.
  */
 final class Router
 {
     /**
-     * Answers a path before Kirby does, or null for Kirby's own routes:
-     * a redirect, a post, an original image at its old URL next to its post
-     * (a redirect to the file), every page only at its URL with the slash at
-     * the end.
+     * Returns, in this order: a redirect from content/.redirects.json; the
+     * post for /YYYY-MM-DD-slug/; for /YYYY-MM-DD-slug/<file>, a redirect to
+     * the original file, because older links use that URL; any other page,
+     * only at its URL with the slash at the end. Returns null to let Kirby's
+     * own routes answer.
      */
     public static function resolve(string $path): Page|Response|null
     {
         if (($to = Redirects::target($path)) !== null) {
-            // Absolute, so "/" keeps its slash.
+            // Url::to() turns the path "/" into the home URL without the slash.
+            // An absolute URL passes through unchanged.
             return Response::redirect(kirby()->url('base') . $to, 301);
         }
         if (preg_match('!^(\d{4}-\d{2}-\d{2})-([a-z0-9-]+)(?:/([^/]+))?$!', $path, $m)) {
@@ -35,14 +37,16 @@ final class Router
             }
             return $post ? self::canonical($post, $path) : null;
         }
-        // A path with an extension is a content representation (search.json): Kirby's.
+        // A path with a dot in its last part is a content representation, such
+        // as search.json (templates/search.json.php). Kirby's own route answers it.
         $page = $path === '' || str_contains(basename($path), '.') ? null : kirby()->site()->find($path);
         return $page && !$page->isErrorPage() ? self::canonical($page, $path) : null;
     }
 
     /**
-     * The page, if $path is its address; else a redirect there. The router
-     * drops the slash at the end, so it comes from the request itself.
+     * The page when $path is its URL, else a 301 redirect to its URL with the
+     * query string. Kirby's router strips the slash at the end of $path, so
+     * the check reads the path from REQUEST_URI.
      */
     public static function canonical(Page $page, string $path): Page|Response
     {
@@ -58,8 +62,9 @@ final class Router
     }
 
     /**
-     * The post at /YYYY-MM-DD-slug/, or null. A draft only for the Panel or
-     * with its preview token, as Kirby resolves drafts.
+     * The post for a date and a slug, or null. A draft resolves only for a
+     * Panel user who may open it, or for a request with the draft's preview
+     * token, as in Kirby's own draft routing.
      */
     private static function post(string $date, string $slug): ?PostPage
     {

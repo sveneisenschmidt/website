@@ -3,9 +3,9 @@ use Website\Blog\Layout;
 use Website\Blog\Site;
 
 /**
- * Everything in <head>: title, icons, feed, font, meta tags, JSON-LD, the
- * CSS inline, the scripts a page needs inline, Leaflet only with a map
- * (Website\Blog\Layout).
+ * The content of <head>: title, icons, feed link, font preload, meta tags,
+ * JSON-LD, the inline CSS and scripts, and on a page with a map Leaflet
+ * (the map library) and map.js. The values come from Website\Blog\Layout.
  *
  * @var Website\Models\SitePage $page
  * @var Kirby\Cms\Site $site

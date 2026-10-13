@@ -2,12 +2,13 @@
 use Website\Blog\Posts;
 
 /**
- * The timeline: a post shows its two neighbours, every other page the
- * newest $limit posts with their count.
+ * The timeline, a list of posts beside the content. Beside a post it shows
+ * the newer and the older post. Beside any other page it shows the newest
+ * $limit posts with their count, and the summary of the newest one.
  *
- * @var Kirby\Cms\Page|null $current The page the timeline stands beside
+ * @var Kirby\Cms\Page|null $current The page beside the timeline
  * @var int $limit
- * @var bool $fit The list ends with the pictures next to it (fit.js)
+ * @var bool $fit fit.js hides the entries below the end of the pictures beside the list
  */
 $current ??= null;
 $limit ??= 25;

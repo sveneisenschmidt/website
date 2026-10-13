@@ -6,15 +6,17 @@ use Kirby\Cms\File;
 use Throwable;
 
 /**
- * EXIF of photos. Read once, on upload, and stored as file fields:
- * camera, lens, focal, aperture, shutter, iso. The values carry no units;
- * rows() formats them for the figure under a photo.
+ * Reads the EXIF data of a photo (the camera settings stored in the image
+ * file) and formats it for the lines under the photo. The upload hooks in
+ * plugins/blog call store(), which writes six fields into the file's
+ * content file: camera, lens, focal, aperture, shutter, iso. The stored
+ * values have no units. snippets/figure.php calls rows(), which adds them.
  */
 final class Exif
 {
     public const FIELDS = ['camera', 'lens', 'focal', 'aperture', 'shutter', 'iso'];
 
-    /** Evaluate an EXIF rational such as "450/10". */
+    /** Converts an EXIF fraction such as "450/10" to a number, or null for an empty value or a zero denominator. */
     private static function rational(mixed $v): ?float
     {
         if (is_array($v)) {
@@ -30,7 +32,10 @@ final class Exif
         return is_numeric($v) ? (float) $v : null;
     }
 
-    /** "Canon EOS R6m2" from make "Canon" and model "Canon EOS R6m2": the make once. */
+    /**
+     * Joins make and model. Many cameras repeat the make in the model (make
+     * "Canon", model "Canon EOS R6m2"), so the result names the make once.
+     */
     public static function camera(string $make, string $model): string
     {
         $make = trim($make);
@@ -41,7 +46,7 @@ final class Exif
         return trim($make . ' ' . $model);
     }
 
-    /** Shutter speed: "1/250" when 1/t is a whole number, otherwise seconds ("0.8", "2.5"). */
+    /** Formats an exposure time of $t seconds: "1/250" when 1/$t is close to a whole number, else a decimal ("0.8", "2.5"). */
     public static function shutter(float $t): string
     {
         if ($t < 1) {
@@ -54,7 +59,8 @@ final class Exif
     }
 
     /**
-     * File fields from the sections exif_read_data() returns. Missing or zero values are left out.
+     * Maps the arrays that exif_read_data() returns to the six file fields.
+     * A missing or zero value gets no field.
      *
      * @param array<string, mixed> $d
      * @return array<string, string>
@@ -87,9 +93,10 @@ final class Exif
             $out['shutter'] = self::shutter($t);
         }
 
-        // The first of these tags the photo has. The Canon EOS R5 writes ISO
-        // only in the tags 0x8832 (RecommendedExposureIndex) and 0x8833
-        // (ISOSpeed), which PHP does not name.
+        // The first of these tags that the photo has wins. The Canon EOS R5
+        // writes ISO only in the tags 0x8832 (RecommendedExposureIndex) and
+        // 0x8833 (ISOSpeed). PHP has no name for them and returns them as
+        // "UndefinedTag:0x8832" and "UndefinedTag:0x8833".
         $iso = $exif['ISOSpeedRatings']
             ?? $exif['RecommendedExposureIndex'] ?? $exif['UndefinedTag:0x8832']
             ?? $exif['ISOSpeed'] ?? $exif['UndefinedTag:0x8833']
@@ -106,7 +113,8 @@ final class Exif
     }
 
     /**
-     * EXIF of an image file, as file fields.
+     * The EXIF of the image at $path as file fields. Without PHP's exif
+     * extension the result is empty.
      *
      * @return array<string, string>
      */
@@ -119,9 +127,10 @@ final class Exif
     }
 
     /**
-     * Store the EXIF of an uploaded image. On upload a value already in the
-     * file's content wins. A replaced photo is a new file: all six fields come
-     * from it, and a value the new file does not have is cleared.
+     * Writes the EXIF of an uploaded image into its content file. On upload,
+     * a field that already has a value keeps it. With $replace (the photo
+     * was replaced), all six fields come from the new photo, and a field
+     * that the new photo has no value for is emptied.
      */
     public static function store(File $file, bool $replace = false): void
     {
@@ -144,13 +153,15 @@ final class Exif
         try {
             $file->kirby()->impersonate('kirby', fn() => $file->update($update));
         } catch (Throwable $e) {
-            // The upload itself worked; the fields can be filled in in the Panel.
+            // The upload has succeeded at this point, and this error must not
+            // fail it. The fields can be filled in by hand in the Panel.
             error_log('blog exif: ' . $e->getMessage());
         }
     }
 
     /**
-     * The EXIF rows under an image: label => value, only the values the file has.
+     * The lines under a photo in snippets/figure.php, label => value with
+     * units. A field without a value gets no line.
      *
      * @return array<string, string>
      */

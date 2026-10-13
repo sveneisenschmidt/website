@@ -2,8 +2,9 @@
 use Website\Blog\Site;
 
 /**
- * A post of any type: head with type and date, the text, the mail link,
- * the neighbours in the timeline (controllers/post.php).
+ * A post of any type: label, title, date and type line, the text, a mail
+ * link, and the timeline with the newer and the older post. Variables from
+ * controllers/post.php.
  *
  * @var Website\Models\PostPage $page
  * @var string $section

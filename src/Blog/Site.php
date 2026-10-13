@@ -3,7 +3,8 @@
 namespace Website\Blog;
 
 /**
- * The site and its author, for the frame, meta tags and JSON-LD.
+ * Fixed texts about the site and its author for the page header, the meta
+ * tags, the feed and JSON-LD.
  */
 final class Site
 {

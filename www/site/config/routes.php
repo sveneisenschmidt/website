@@ -5,14 +5,14 @@ use Website\Blog\Feeds;
 use Website\Blog\Router;
 
 /**
- * Routes before Kirby's own: the files for machines (Website\Blog\Feeds),
- * then every other path through the URL scheme of the site (Website\Blog\Router).
+ * The routes that Kirby checks before its own: feed, sitemap, robots.txt and
+ * llms.txt (Website\Blog\Feeds), then every other path (Website\Blog\Router).
  */
 return [
-    // Feed, sitemap and llms.txt read every post: they go into the page
-    // cache, which Kirby clears on every change. Feed and sitemap answer
-    // If-Modified-Since. Every route here answers HEAD as well: a route of
-    // Kirby answers GET only, unless it names its methods.
+    // Feed, sitemap and llms.txt read every post, so they are kept in the
+    // page cache, which Kirby empties on every change. Feed and sitemap
+    // answer If-Modified-Since with 304. Each route names GET|HEAD, because
+    // a Kirby route without `method` answers GET only.
     ['pattern' => 'index.xml', 'method' => 'GET|HEAD', 'action' => fn() => Feeds::machineFile('index.xml', 'application/rss+xml', Feeds::rss(...))],
     ['pattern' => 'sitemap.xml', 'method' => 'GET|HEAD', 'action' => fn() => Feeds::machineFile('sitemap.xml', 'application/xml', Feeds::sitemap(...))],
     ['pattern' => 'robots.txt', 'method' => 'GET|HEAD', 'action' => fn() => new Response(Feeds::robots(), 'text/plain')],
