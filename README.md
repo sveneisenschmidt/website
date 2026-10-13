@@ -44,7 +44,7 @@ backups/         snapshots of the state
 
 A release links its state paths to `shared/`. The switch replaces `.htaccess` in one rename. If the start page then does not answer 200, the site switches back to the release before and the deploy fails. The newest 5 releases stay. To go back to an older version, run the deploy of its commit again in GitHub Actions.
 
-`bin/deploy-test.sh` runs the deploy against a folder on this machine; CI runs it too. A site from before releases moves once with `bin/migrate-to-releases.sh`.
+`bin/deploy-test.sh` runs the deploy against a folder on this machine, a way back included; CI runs it too.
 
 The workflow reads the host key of the server from the secret `DEPLOY_KNOWN_HOSTS` (the output of `ssh-keyscan` for the deploy host) and the key of the Panel assistant from the secret `ANTHROPIC_API_KEY`.
 

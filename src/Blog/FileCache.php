@@ -14,7 +14,7 @@ use Kirby\Filesystem\Dir;
  * page that writes its cache entry during a flush fails too (the folder
  * vanishes between mkdir and the write). A flush takes the lock alone,
  * writes share it. The plugin registers it as the cache type blog-file;
- * bin/clear-cache.php uses it on the server.
+ * bin/clear-cache.php takes the same lock on the server.
  */
 class FileCache extends KirbyFileCache
 {
