@@ -1,12 +1,12 @@
 <?php
+use Website\Blog\Site;
+
 /**
  * About: its label, the date it was last checked, the text, the visitor
- * numbers.
+ * numbers. It stays out of the page cache (config.php).
  *
- * @var Kirby\Cms\Page $page
+ * @var Website\Models\SitePage $page
  */
-// The visitor numbers change all day: this page never goes into the cache.
-kirby()->response()->cache(false);
 ?>
 <?php snippet('layout', slots: true) ?>
 <article class="article">
@@ -16,14 +16,14 @@ kirby()->response()->cache(false);
 </p>
 <h1><?= $page->title()->esc() ?></h1>
 <p class="metadata">
-Last updated: <time datetime="<?= date('Y-m-d', blog_modified($page)) ?>"><?= date('F j, Y', blog_modified($page)) ?></time>
+Last updated: <time datetime="<?= date('Y-m-d', $page->lastModified()) ?>"><?= date('F j, Y', $page->lastModified()) ?></time>
 </p>
 </div>
 <div class="body">
-<?= blog_html($page->text()->value(), $page) ?>
+<?= $page->bodyHtml() ?>
 <?php snippet('stats') ?>
 </div>
-<p class="post-footer"><a href="mailto:<?= BLOG_SITE['email'] ?>?subject=<?= rawurlencode('Re: ' . $page->title()->value()) ?>">Leave me a message</a>
+<p class="post-footer"><a href="mailto:<?= Site::EMAIL ?>?subject=<?= rawurlencode('Re: ' . $page->title()->value()) ?>">Leave me a message</a>
 </p>
 </article>
 <?php snippet('stream', ['current' => $page]) ?>

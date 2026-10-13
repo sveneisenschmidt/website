@@ -4,7 +4,7 @@ namespace Website\Tests\Integration;
 
 /**
  * guard.php: every proposed text, before a card exists. The tests check
- * security and content model only, never style (spec, "Prüfung der Texte").
+ * security and content model only, never style.
  */
 final class GuardTest extends IntegrationTestCase
 {
@@ -32,7 +32,7 @@ final class GuardTest extends IntegrationTestCase
     public function testRawHtmlIsRefused(): void
     {
         foreach (['<script>alert(1)</script>', 'A <a href="https://x.test">link</a>', '<!-- note -->', '</p>', '<?php echo 1; ?>', '<https://x.test>'] as $text) {
-            $this->assertStringContainsString('HTML', (string)$this->markdown($text), $text);
+            $this->assertStringContainsString('HTML', (string) $this->markdown($text), $text);
         }
         $this->assertNull($this->markdown('3 < 4 and 5 > 2'));
     }
@@ -40,14 +40,14 @@ final class GuardTest extends IntegrationTestCase
     public function testOnlyThreeKirbyTagsAreAllowed(): void
     {
         foreach (['(email: me@x.test)', '(file: a.jpg)', '(video: https://youtube.com/x)', '(youtube: https://x)', '(date: year)', '(gist: x)', '(tel: 123)'] as $text) {
-            $this->assertStringContainsString('not allowed', (string)$this->markdown($text), $text);
+            $this->assertStringContainsString('not allowed', (string) $this->markdown($text), $text);
         }
-        $this->assertStringContainsString('names no image', (string)$this->markdown('(image: c.jpg)'));
+        $this->assertStringContainsString('names no image', (string) $this->markdown('(image: c.jpg)'));
         // (image:) knows only imgclass: anything else is part of the file name.
-        $this->assertStringContainsString('names no image', (string)$this->markdown('(image: a.jpg link: https://x.test)'));
-        $this->assertStringContainsString('photo and trip', (string)$this->markdown('(map:)', [], false));
-        $this->assertStringContainsString('page://', (string)$this->markdown('(link: https://x.test text: X)'));
-        $this->assertStringContainsString('page://', (string)$this->markdown('(link: page:// text: X)'));
+        $this->assertStringContainsString('names no image', (string) $this->markdown('(image: a.jpg link: https://x.test)'));
+        $this->assertStringContainsString('photo and trip', (string) $this->markdown('(map:)', [], false));
+        $this->assertStringContainsString('page://', (string) $this->markdown('(link: https://x.test text: X)'));
+        $this->assertStringContainsString('page://', (string) $this->markdown('(link: page:// text: X)'));
     }
 
     public function testAPageLinkNeedsAnExistingPage(): void
@@ -55,7 +55,7 @@ final class GuardTest extends IntegrationTestCase
         $uuid = $this->post->uuid()->toString();
         $this->assertNull($this->markdown("(link: $uuid text: the test photo)"));
         $this->assertNotNull($this->markdown('(link: page://doesnotexist1234 text: X)'));
-        $this->assertStringContainsString('text:', (string)$this->markdown("(link: $uuid target: _blank)"));
+        $this->assertStringContainsString('text:', (string) $this->markdown("(link: $uuid target: _blank)"));
     }
 
     public function testLinksGoOnlyToKnownUrls(): void
@@ -63,7 +63,7 @@ final class GuardTest extends IntegrationTestCase
         $allowed = ['https://known.test/a', 'mailto:me@x.test'];
         $this->assertNull($this->markdown('See [this](https://known.test/a), mail [me](mailto:me@x.test) or https://known.test/a.', $allowed));
         foreach (['[x](https://evil.test)', 'Go to https://evil.test/path now.', "[x][1]\n\n[1]: https://evil.test", '![x](https://evil.test/p.png)', '[x](javascript:alert(1))', '[x](/2024-01-01-old/)'] as $text) {
-            $this->assertStringContainsString('not allowed', (string)$this->markdown($text, $allowed), $text);
+            $this->assertStringContainsString('not allowed', (string) $this->markdown($text, $allowed), $text);
         }
     }
 
@@ -103,15 +103,15 @@ final class GuardTest extends IntegrationTestCase
 
     public function testImagesComeOnlyFromThisPost(): void
     {
-        $this->assertStringContainsString('(image:', (string)$this->markdown('![x](https://ok.example/p.png)', ['https://ok.example/p.png']));
-        $this->assertStringContainsString('names no image', (string)$this->markdown('(image: photos/test-photo/a.jpg)'));
+        $this->assertStringContainsString('(image:', (string) $this->markdown('![x](https://ok.example/p.png)', ['https://ok.example/p.png']));
+        $this->assertStringContainsString('names no image', (string) $this->markdown('(image: photos/test-photo/a.jpg)'));
     }
 
     public function testLinksTargetsAreFound(): void
     {
         $this->assertSame(
             ['https://a.test', 'https://b.test/x', 'https://c.test', 'https://d.test/y'],
-            blog_guard_links("[a](https://a.test) ![b](https://b.test/x \"title\")\n\n[ref]: https://c.test\n\nBare https://d.test/y.")
+            blog_guard_links("[a](https://a.test) ![b](https://b.test/x \"title\")\n\n[ref]: https://c.test\n\nBare https://d.test/y."),
         );
     }
 

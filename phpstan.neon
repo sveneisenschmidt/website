@@ -1,0 +1,35 @@
+parameters:
+    level: 5
+    paths:
+        - src
+        - www/site/plugins/analytics
+        - www/site/plugins/assistant
+        - www/site/plugins/blog
+        - www/site/plugins/changelog
+        - www/site/config
+        - www/site/controllers
+        - bin
+        - tests
+    excludePaths:
+        - www/site/config/env.php (?)
+    bootstrapFiles:
+        - vendor/autoload.php
+        - www/kirby/bootstrap.php
+    ignoreErrors:
+        # Kirby answers content fields ($page->cover()), field methods
+        # ($field->toDate()), session values ($session->get()) and thumbnail
+        # sizes through __call.
+        -
+            identifier: method.notFound
+            message: '#^Call to an undefined method Kirby\\(Cms\\(Page|Pages|Site|File|FileVersion|User|ModelWithContent)|Content\\Field|Session\\Session)(\|Kirby\\Cms\\[A-Za-z]+)?::#'
+        # Kirby binds route closures to the route.
+        -
+            identifier: variable.undefined
+            message: '#^Undefined variable: \$this$#'
+            paths:
+                - www/site/config/routes.php
+                - www/site/plugins/assistant/index.php
+        # PHP sets $argv in every command line script.
+        -
+            identifier: variable.undefined
+            message: '#^Variable \$argv might not be defined\.$#'

@@ -5,11 +5,13 @@ use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
 use Kirby\Data\Yaml;
 use Kirby\Filesystem\F;
+use Website\Blog\Text;
+use Website\Blog\Types;
 
 /**
  * Sven's click on a card. Only here does anything change, and always as
- * his account, so "Verlauf" logs it like his own edit (spec, "Karten und
- * Klick"). A draft gets the change at once. A published post and About get
+ * his account, so "Verlauf" logs it like his own edit. A draft gets the change
+ * at once. A published post and About get
  * it as Kirby's unsaved changes: live only with his "Speichern" in the
  * Panel, and he can discard it there. The next message tells Claude.
  */
@@ -27,12 +29,12 @@ final class BlogAssistantStale extends RuntimeException
 function blog_assistant_decide(string $id, string $action, ?int $version = null): array
 {
     if (!in_array($action, ['apply', 'discard'], true)) {
-        throw new InvalidArgumentException('Unbekannte Entscheidung');
+        throw new BlogAssistantError('chat', 'Unbekannte Entscheidung');
     }
     // A second click on the same card waits for the first and then sees its decision.
     blog_assistant_lock();
     $chat = blog_assistant_load();
-    $proposal = $chat['proposals'][$id] ?? throw new InvalidArgumentException('Vorschlag nicht gefunden');
+    $proposal = $chat['proposals'][$id] ?? throw new BlogAssistantError('chat', 'Vorschlag nicht gefunden');
     // Decisions live in their own session key: a round that runs meanwhile
     // stores the chat, never the decisions.
     $decisions = blog_assistant_decisions();
@@ -54,12 +56,14 @@ function blog_assistant_decide(string $id, string $action, ?int $version = null)
             blog_assistant_note("($card: not applied, {$e->reason}. Nothing changed.)");
         } catch (Throwable $e) {
             $decision = ['state' => 'failed'];
-            error_log('blog assistant: ' . $e->getMessage());
+            error_log('blog assistant: ' . $e::class . ': ' . $e->getMessage());
             blog_assistant_note("($card: failed, nothing changed. The user may try again.)");
         }
     }
-    $decisions[$id] = $decision;
-    kirby()->session()->set(BLOG_ASSISTANT_SESSION . '.decisions', $decisions);
+    blog_assistant_update(BLOG_ASSISTANT_SESSION . '.decisions', blog_assistant_decisions(...), function (array $decisions) use ($id, $decision): array {
+        $decisions[$id] = $decision;
+        return $decisions;
+    });
     blog_assistant_log_write(['type' => 'decision', 'chat' => $chat['id'] ?? null, 'kind' => $proposal['kind'], 'decision' => $decision['state']]);
     return blog_assistant_load();
 }
@@ -74,19 +78,12 @@ function blog_assistant_apply(array $proposal, ?int $version): array
         'edit' => blog_assistant_apply_edit($in, $version ?? 0),
         'file' => blog_assistant_apply_file($in),
         'route' => blog_assistant_apply_route($in),
-        default => throw new RuntimeException('Unbekannter Vorschlag'),
+        default => throw new BlogAssistantError('chat', 'Unbekannter Vorschlag'),
     };
 }
 
-/** True for a draft and the files of a draft. */
-function blog_assistant_is_draft(ModelWithContent $model): bool
-{
-    $page = $model instanceof File ? $model->page() : $model;
-    return $page instanceof Page && $page->isDraft();
-}
-
 /**
- * Writes fields as the spec asks: into a draft at once, into a published
+ * Writes fields: into a draft at once, into a published
  * post, About and their files only as Kirby's unsaved changes.
  */
 function blog_assistant_write(ModelWithContent $model, array $fields): ModelWithContent
@@ -127,7 +124,7 @@ function blog_assistant_result(ModelWithContent $model): array
 /** The card "Feld": the whole field, while it still holds what the card showed before. */
 function blog_assistant_apply_field(array $in): array
 {
-    $page = blog_assistant_find($in['page']) ?? throw new RuntimeException('Seite nicht gefunden');
+    $page = blog_assistant_find($in['page']) ?? throw new BlogAssistantError('chat', 'Seite nicht gefunden');
     if (blog_assistant_current($page, $in['field']) !== $in['before']) {
         throw new BlogAssistantStale('Das Feld wurde seit dem Vorschlag bearbeitet. Nichts geändert.', 'the field changed since the proposal');
     }
@@ -137,8 +134,8 @@ function blog_assistant_apply_field(array $in): array
 /** The card "Passage": the version Sven picked, while the passage still occurs exactly once. */
 function blog_assistant_apply_edit(array $in, int $version): array
 {
-    $page = blog_assistant_find($in['page']) ?? throw new RuntimeException('Seite nicht gefunden');
-    $text = $in['versions'][$version] ?? throw new InvalidArgumentException('Fassung nicht gefunden');
+    $page = blog_assistant_find($in['page']) ?? throw new BlogAssistantError('chat', 'Seite nicht gefunden');
+    $text = $in['versions'][$version] ?? throw new BlogAssistantError('chat', 'Fassung nicht gefunden');
     $current = blog_assistant_current($page, $in['field']);
     if (substr_count($current, $in['passage']) !== 1) {
         throw new BlogAssistantStale('Die Passage steht nicht mehr genau einmal im Feld. Nichts geändert.', 'the passage no longer occurs exactly once');
@@ -151,13 +148,13 @@ function blog_assistant_apply_edit(array $in, int $version): array
 /** The card "Bildtexte": the texts of an image, while they still hold what the card showed before. */
 function blog_assistant_apply_file(array $in): array
 {
-    $file = blog_assistant_file($in['file']) ?? throw new RuntimeException('Datei nicht gefunden');
+    $file = blog_assistant_file($in['file']) ?? throw new BlogAssistantError('chat', 'Datei nicht gefunden');
     foreach ($in['changes'] as $name => $change) {
         if (blog_assistant_current($file, $name) !== $change['before']) {
             throw new BlogAssistantStale('Die Bildtexte wurden seit dem Vorschlag bearbeitet. Nichts geändert.', 'the image texts changed since the proposal');
         }
     }
-    return blog_assistant_result(blog_assistant_write($file, array_map(fn ($change) => $change['after'], $in['changes'])));
+    return blog_assistant_result(blog_assistant_write($file, array_map(fn($change) => $change['after'], $in['changes'])));
 }
 
 /** Copies a route file into content/.assistant/routes/ before it is replaced: state, in every backup. */
@@ -195,7 +192,7 @@ function blog_assistant_route_fields(File $file, array $route): array
 {
     return [
         'route' => Yaml::encode([$file->uuid()->toString()]),
-        'mappoints' => Yaml::encode(array_map(fn ($m) => ['label' => $m['label'], 'lat' => blog_route_num($m['lat']), 'lon' => blog_route_num($m['lon'])], $route['markers'])),
+        'mappoints' => Yaml::encode(array_map(fn($m) => ['label' => $m['label'], 'lat' => Text::number($m['lat'], 6), 'lon' => Text::number($m['lon'], 6)], $route['markers'])),
         'mapzoom' => $route['zoom'] ? 'true' : 'false',
     ];
 }
@@ -203,15 +200,13 @@ function blog_assistant_route_fields(File $file, array $route): array
 /** The card "Route": a new route file, points and zoom; the old file is kept as state first. */
 function blog_assistant_apply_route(array $in): array
 {
-    $page = blog_assistant_find($in['page']) ?? throw new RuntimeException('Seite nicht gefunden');
+    $page = blog_assistant_find($in['page']) ?? throw new BlogAssistantError('chat', 'Seite nicht gefunden');
     $now = blog_assistant_route_summary($page);
     if ($now['hash'] !== $in['hash']) {
         throw new BlogAssistantStale('Die Route wurde seit dem Vorschlag geändert. Nichts geändert.', 'the route changed since the proposal');
     }
     $upload = $in['route']['upload'];
-    if ($upload !== null && blog_uploads_meta($upload) === null) {
-        throw new BlogAssistantStale('Die GPX-Datei dieses Vorschlags ist nicht mehr da. Nichts geändert.', 'the GPX upload is gone');
-    }
+    blog_assistant_gpx_present($upload);
     $old = $now['file'] !== null ? $page->file($now['file']) : null;
     if ($old !== null) {
         blog_assistant_keep_route($page, $old);
@@ -231,7 +226,7 @@ function blog_assistant_apply_route(array $in): array
  */
 function blog_assistant_apply_post(array $in): array
 {
-    $section = site()->find(BLOG_ASSISTANT_TYPES[$in['type']]['section']) ?? throw new RuntimeException('Bereich nicht gefunden');
+    $section = site()->find(Types::ALL[$in['type']]['section']) ?? throw new BlogAssistantError('chat', 'Bereich nicht gefunden');
     if (($taken = blog_assistant_slug_taken($in['slug'])) !== null) {
         throw new BlogAssistantStale('Diesen URL-Anhang gibt es inzwischen. Nichts geändert.', "the slug is taken by $taken now");
     }
@@ -240,9 +235,7 @@ function blog_assistant_apply_post(array $in): array
         $sources[$photo['filename']] = blog_uploads_meta($photo['upload'])['path'] ?? throw new BlogAssistantStale('Ein Foto dieses Vorschlags ist nicht mehr da. Nichts geändert.', 'an upload of the card is gone');
     }
     $upload = $in['route']['upload'] ?? null;
-    if ($upload !== null && blog_uploads_meta($upload) === null) {
-        throw new BlogAssistantStale('Die GPX-Datei dieses Vorschlags ist nicht mehr da. Nichts geändert.', 'the GPX upload is gone');
-    }
+    blog_assistant_gpx_present($upload);
     $draft = $section->createChild(['slug' => $in['slug'], 'template' => $in['type'], 'content' => $in['content']]);
     try {
         $fields = [];
@@ -252,7 +245,7 @@ function blog_assistant_apply_post(array $in): array
                 'filename' => $photo['filename'],
                 'template' => 'image',
                 // The camera data read on arrival; the stored file has no EXIF any more.
-                'content' => array_filter(['alt' => $photo['alt'], 'caption' => $photo['caption'], 'photographer' => $photo['photographer'], ...$photo['exif']], fn ($v) => $v !== ''),
+                'content' => array_filter(['alt' => $photo['alt'], 'caption' => $photo['caption'], 'photographer' => $photo['photographer'], ...$photo['exif']], fn($v) => $v !== ''),
             ]);
             if ($photo['filename'] === $in['cover']) {
                 $fields['cover'] = Yaml::encode([$file->uuid()->toString()]);
@@ -277,4 +270,12 @@ function blog_assistant_apply_post(array $in): array
         'linkText' => 'Entwurf öffnen',
         'claude' => ' New draft: ' . $draft->id() . ' (' . $draft->uuid()->toString() . ').',
     ];
+}
+
+/** A card with a GPX upload can only apply while the upload is there. */
+function blog_assistant_gpx_present(?string $upload): void
+{
+    if ($upload !== null && blog_uploads_meta($upload) === null) {
+        throw new BlogAssistantStale('Die GPX-Datei dieses Vorschlags ist nicht mehr da. Nichts geändert.', 'the GPX upload is gone');
+    }
 }

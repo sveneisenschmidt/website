@@ -8,9 +8,10 @@ use Kirby\Cms\Page;
 use Kirby\Cms\Site;
 use Kirby\Cms\User;
 use Kirby\Data\Yaml;
-use Kirby\Filesystem\F;
 use Kirby\Toolkit\Str;
 use Kirby\Uuid\Uuid;
+use Website\Blog\Jsonl;
+use Website\Blog\Types;
 
 /**
  * Change log: who changed what, when and where.
@@ -82,19 +83,10 @@ function blog_changelog_event(Event $event): void
     }
 }
 
-/** Appends one entry. Parallel requests append under a lock (F::write uses LOCK_EX). */
+/** Appends one entry (Website\Blog\Jsonl). */
 function blog_changelog_write(array $entry): void
 {
-    $user = kirby()->user();
-    $person = $user === null || $user->isKirby() ? null : $user;
-    $entry = [
-        'time' => date('c'),
-        'user' => $person?->email(),
-        'name' => $person ? ($person->name()->or($person->email())->value()) : null,
-        ...$entry,
-    ];
-    $line = json_encode($entry, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n";
-    F::write(blog_changelog_dir() . '/' . date('Y-m') . '.jsonl', $line, true);
+    Jsonl::append(blog_changelog_dir(), $entry);
 }
 
 function blog_changelog_id(ModelWithContent $model): string
@@ -119,13 +111,7 @@ function blog_changelog_title(ModelWithContent $model): string
 /** The post types Sven writes. Other pages stay "Seite". */
 function blog_changelog_kind(Page $page): ?string
 {
-    return match ($page->intendedTemplate()->name()) {
-        'photo' => 'Foto',
-        'trip' => 'Reise',
-        'note' => 'Notiz',
-        'essay' => 'Essay',
-        default => null,
-    };
+    return Types::ALL[$page->intendedTemplate()->name()]['label'] ?? null;
 }
 
 /** A page status as the Panel names it for this page: "Entwurf", "Veröffentlicht". */
@@ -151,12 +137,12 @@ function blog_changelog_diff(ModelWithContent $old, ModelWithContent $new): arra
         if (in_array($key, BLOG_CHANGELOG_SKIP, true)) {
             continue;
         }
-        $from = (string)($a[$key] ?? '');
-        $to = (string)($b[$key] ?? '');
+        $from = (string) ($a[$key] ?? '');
+        $to = (string) ($b[$key] ?? '');
         if ($from === $to) {
             continue;
         }
-        // The assistant's prompt lives only in content/site.txt (spec, "System-Prompt").
+        // The assistant's prompt lives only in content/site.txt.
         if (in_array(strtolower($key), BLOG_CHANGELOG_SECRET, true)) {
             $changes[] = ['field' => $key, 'label' => blog_changelog_label($new, $key), 'old' => '', 'new' => 'geändert'];
             continue;
@@ -192,7 +178,7 @@ function blog_changelog_diff(ModelWithContent $old, ModelWithContent $new): arra
         }
         // A status change sets or clears the number itself: not a second change.
         if ($old->num() !== $new->num() && $old->status() === $new->status()) {
-            $changes[] = ['field' => 'num', 'label' => 'Reihenfolge', 'old' => (string)$old->num(), 'new' => (string)$new->num()];
+            $changes[] = ['field' => 'num', 'label' => 'Reihenfolge', 'old' => (string) $old->num(), 'new' => (string) $new->num()];
         }
     }
     if ($old instanceof File && $new instanceof File && $old->filename() !== $new->filename()) {
@@ -221,10 +207,10 @@ function blog_changelog_list(string $value): ?array
     }
     return array_map(function ($item) {
         if (is_array($item)) {
-            $first = array_filter($item, fn ($v) => is_scalar($v) && (string)$v !== '');
-            return (string)(reset($first) ?: '');
+            $first = array_filter($item, fn($v) => is_scalar($v) && (string) $v !== '');
+            return (string) (reset($first) ?: '');
         }
-        $item = (string)$item;
+        $item = (string) $item;
         $model = Uuid::is($item) ? Uuid::for($item)?->model() : (kirby()->file($item) ?? kirby()->page($item));
         return match (true) {
             $model instanceof File => blog_changelog_title($model),
@@ -247,40 +233,25 @@ function blog_changelog_label(ModelWithContent $model, string $key): string
 /** The newest entries first, at most $limit. */
 function blog_changelog_entries(int $limit = 500): array
 {
-    $files = glob(blog_changelog_dir() . '/*.jsonl') ?: [];
-    rsort($files);
-    $entries = [];
-    foreach ($files as $file) {
-        $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [];
-        foreach (array_reverse($lines) as $line) {
-            $entry = json_decode($line, true);
-            if (is_array($entry)) {
-                $entries[] = $entry;
-                if (count($entries) >= $limit) {
-                    return $entries;
-                }
-            }
-        }
-    }
-    return $entries;
+    return Jsonl::read(blog_changelog_dir(), $limit);
 }
 
 App::plugin('sveneisenschmidt/changelog', [
     'hooks' => [
-        'page.*:after' => fn (Event $event) => blog_changelog_event($event),
-        'file.*:after' => fn (Event $event) => blog_changelog_event($event),
-        'site.*:after' => fn (Event $event) => blog_changelog_event($event),
-        'user.*:after' => fn (Event $event) => blog_changelog_event($event),
+        'page.*:after' => fn(Event $event) => blog_changelog_event($event),
+        'file.*:after' => fn(Event $event) => blog_changelog_event($event),
+        'site.*:after' => fn(Event $event) => blog_changelog_event($event),
+        'user.*:after' => fn(Event $event) => blog_changelog_event($event),
     ],
     'areas' => [
-        'verlauf' => fn () => [
+        'verlauf' => fn() => [
             'label' => 'Verlauf',
             'icon' => 'clock',
             'menu' => true,
             'link' => 'verlauf',
             'views' => [[
                 'pattern' => 'verlauf',
-                'action' => fn () => [
+                'action' => fn() => [
                     'component' => 'k-blog-changelog-view',
                     'title' => 'Verlauf',
                     'props' => ['entries' => blog_changelog_entries()],

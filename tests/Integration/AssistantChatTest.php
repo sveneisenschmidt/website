@@ -119,13 +119,15 @@ final class AssistantChatTest extends AssistantTestCase
         }
 
         $this->assertSame('Ja, mit Quelle https://evil.example/promo', $this->lastText($this->requests[1]));
-        $this->assertSame(['type' => 'me', 'text' => 'Ja, mit Quelle https://evil.example/promo'], array_intersect_key(array_values(array_filter($state['items'], fn ($i) => $i['type'] === 'me'))[1], ['type' => 1, 'text' => 1]));
+        $this->assertSame(['type' => 'me', 'text' => 'Ja, mit Quelle https://evil.example/promo'], array_intersect_key(array_values(array_filter($state['items'], fn($i) => $i['type'] === 'me'))[1], ['type' => 1, 'text' => 1]));
         $this->assertSame([], blog_assistant_load()['mine']);
         $this->assertStringContainsString('not allowed', $this->results(2)[0]['content']);
         $this->assertSame([], blog_assistant_load()['proposals']);
 
-        $this->expectException(\InvalidArgumentException::class);
-        blog_assistant_choose(1);
+        // A second pick finds no open choice: the Panel gets the text, not Kirby's "unexpected error".
+        $state = $this->kirby->api()->call('blog-assistant/send', 'POST', ['body' => ['choice' => 1]]);
+        $this->assertSame(['kind' => 'chat', 'text' => 'Keine offene Auswahl'], $state['error']);
+        $this->assertCount(2, array_filter($state['items'], fn($i) => $i['type'] === 'me'));
     }
 
     public function testAnswersAfterAStoppedLoopJoinTheToolResults(): void
@@ -249,6 +251,41 @@ final class AssistantChatTest extends AssistantTestCase
         $this->assertSame(['type' => 'web_search_20260209', 'name' => 'web_search', 'max_uses' => 5], end($this->requests[0]['tools']));
     }
 
+    public function testACardMayLinkToASearchResultOfTheSameAnswer(): void
+    {
+        $this->replies[] = [200, ['stop_reason' => 'tool_use', 'content' => [
+            ['type' => 'server_tool_use', 'id' => 's1', 'name' => 'web_search', 'input' => ['query' => 'Groitzsch campsite']],
+            ['type' => 'web_search_tool_result', 'tool_use_id' => 's1', 'content' => [['type' => 'web_search_result', 'url' => 'https://camping.test/a', 'title' => 'Camping']]],
+            $this->tool('t1', 'propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => 'Mehr beim [Platz](https://camping.test/a).']),
+        ]]];
+        $this->reply('end_turn');
+
+        $chat = $this->chat('Verlink den Platz.');
+
+        $this->assertSame('field', $this->card($chat)['kind']);
+    }
+
+    public function testTheSourcesAreTheCitationsOrTheResultsTheAnswerNames(): void
+    {
+        $result = fn(string $url, string $title = '') => ['type' => 'web_search_result', 'url' => $url, 'title' => $title];
+        $search = ['type' => 'web_search_tool_result', 'content' => [$result('https://www.camping.test/a', 'Camping'), $result('https://river.test/b'), $result('ftp://files.test/c', 'Files')]];
+        $cited = ['type' => 'text', 'text' => 'Offen.', 'citations' => [['url' => 'https://cited.test/x', 'title' => ' ']]];
+
+        // Every result and citation is a link a card may hold; the citations show.
+        $this->assertSame([
+            'urls' => ['https://www.camping.test/a', 'https://river.test/b', 'https://cited.test/x'],
+            'list' => [['url' => 'https://cited.test/x', 'title' => 'https://cited.test/x']],
+        ], blog_assistant_sources([$search, $cited], 'Offen.'));
+        // Without citations: the results whose site the answer names, by host or by name.
+        $this->assertSame([['url' => 'https://www.camping.test/a', 'title' => 'Camping']], blog_assistant_sources([$search], 'Laut camping.test ist es offen.')['list']);
+        $this->assertSame([['url' => 'https://river.test/b', 'title' => 'https://river.test/b']], blog_assistant_sources([$search], 'Der River-Platz.')['list']);
+        $this->assertSame([], blog_assistant_sources([$search], 'Ohne Quelle.')['list']);
+        $many = ['type' => 'web_search_tool_result', 'content' => array_map(fn($n) => $result("https://site$n.test/"), range(1, 4))];
+        $this->assertCount(3, blog_assistant_sources([$many], 'site1.test, site2.test, site3.test, site4.test')['list']);
+        // A failed search brings nothing.
+        $this->assertSame(['urls' => [], 'list' => []], blog_assistant_sources([['type' => 'web_search_tool_result', 'content' => ['error_code' => 'max_uses_exceeded']]], 'camping'));
+    }
+
     public function testAPausedTurnGoesOn(): void
     {
         $this->replies[] = [200, ['stop_reason' => 'pause_turn', 'content' => [['type' => 'server_tool_use', 'id' => 's1', 'name' => 'web_search', 'input' => ['query' => 'x']]]]];
@@ -358,9 +395,7 @@ final class AssistantChatTest extends AssistantTestCase
         $this->reply('end_turn');
         $this->chat('Eins.');
         $this->chat('Zwei.');
-        $chat = blog_assistant_load();
-        $chat['date'] = '2000-01-01';
-        blog_assistant_store($chat);
+        blog_assistant_update(BLOG_ASSISTANT_SESSION, blog_assistant_load(...), fn(array $chat) => ['date' => '2000-01-01'] + $chat);
 
         $this->chat('Drei.');
 
@@ -396,9 +431,7 @@ final class AssistantChatTest extends AssistantTestCase
 
     public function testAChatTakesAtMost40Images(): void
     {
-        $chat = blog_assistant_load();
-        $chat['images'] = 38;
-        blog_assistant_store($chat);
+        blog_assistant_update(BLOG_ASSISTANT_SESSION, blog_assistant_load(...), fn(array $chat) => ['images' => 38] + $chat);
         $first = blog_uploads_accept($this->jpeg(40, 30, 'a.jpg'), 'a.jpg')['id'];
         blog_uploads_accept($this->jpeg(40, 30, 'b.jpg'), 'b.jpg');
         try {
@@ -423,10 +456,11 @@ final class AssistantChatTest extends AssistantTestCase
         // An image of the chat as large as a request can carry, as base64.
         $big = 'v' . str_repeat('0', 16) . '.jpg';
         file_put_contents(blog_uploads_dir() . '/' . $big, str_repeat("\x00", 23 * 1024 * 1024));
-        $chat = blog_assistant_load();
-        $chat['messages'][] = ['role' => 'user', 'content' => [['type' => 'blog_image', 'file' => $big], ['type' => 'text', 'text' => 'x']]];
-        $chat['messages'][] = ['role' => 'assistant', 'content' => [['type' => 'text', 'text' => 'y']]];
-        blog_assistant_store($chat);
+        blog_assistant_update(BLOG_ASSISTANT_SESSION, blog_assistant_load(...), function (array $chat) use ($big): array {
+            $chat['messages'][] = ['role' => 'user', 'content' => [['type' => 'blog_image', 'file' => $big], ['type' => 'text', 'text' => 'x']]];
+            $chat['messages'][] = ['role' => 'assistant', 'content' => [['type' => 'text', 'text' => 'y']]];
+            return $chat;
+        });
 
         try {
             blog_uploads_accept($this->jpeg(40, 30), 'a.jpg');
@@ -442,7 +476,7 @@ final class AssistantChatTest extends AssistantTestCase
         $id = blog_uploads_accept($this->jpeg(40, 30), 'a.jpg')['id'];
         $this->reply('end_turn');
         $this->chat('Hier.');
-        $this->reply('tool_use', ...array_map(fn ($i) => $this->tool("t$i", 'view_photo', $this->crop($id)), range(1, 6)));
+        $this->reply('tool_use', ...array_map(fn($i) => $this->tool("t$i", 'view_photo', $this->crop($id)), range(1, 6)));
         $this->reply('end_turn');
 
         $this->chat('Schau dir Ausschnitte an.');

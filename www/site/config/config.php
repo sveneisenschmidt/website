@@ -31,25 +31,28 @@ return array_replace_recursive([
     // (Kirby's default makes "--" an em dash).
     'smartypants' => ['attr' => 'qDe'],
     // GD, plus conversion to sRGB for photos with another color profile
-    // (plugins/blog/srgb.php).
+    // (Website\Blog\SrgbGd).
     'thumbs' => ['driver' => 'blog-gd'],
     // HTML cache. Kirby clears it on every change in the Panel. The type
-    // clears it under a lock, for parallel uploads (plugins/blog/cache.php).
+    // clears it under a lock, for parallel uploads (Website\Blog\FileCache).
+    // About shows the visitor numbers, which change all day: never cached.
     'cache' => [
-        'pages' => ['active' => true, 'type' => 'blog-file'],
+        'pages' => ['active' => true, 'type' => 'blog-file', 'ignore' => ['about']],
     ],
     'routes' => require __DIR__ . '/routes.php',
     'panel' => [
         'language' => 'de',
         // Each post type gets its own entry in the menu, linked to its page in
         // the tree under Site. Site is current only outside these four pages.
+        // Areas and tabs have German ids, as they show in the Panel's
+        // addresses (/panel/besucher); the code around them is English.
         'menu' => function (Kirby\Cms\App $kirby) {
-            $types = ['photos' => ['Fotos', 'image'], 'trips' => ['Reisen', 'map'], 'notes' => ['Notizen', 'text'], 'essays' => ['Essays', 'book']];
+            $types = array_column(Website\Blog\Types::ALL, null, 'section');
             $path = $kirby->path();
-            $inType = fn (string $slug) => preg_match('!^panel/pages/' . $slug . '(\+|/|$)!', $path) === 1;
-            $menu = ['site' => ['current' => fn (?string $current) => $current === 'site' && !array_filter(array_keys($types), $inType)]];
-            foreach ($types as $slug => [$label, $icon]) {
-                $menu[$slug] = ['label' => $label, 'icon' => $icon, 'link' => "pages/$slug", 'current' => fn () => $inType($slug)];
+            $inType = fn(string $slug) => preg_match('!^panel/pages/' . $slug . '(\+|/|$)!', $path) === 1;
+            $menu = ['site' => ['current' => fn(?string $current) => $current === 'site' && !array_filter(array_keys($types), $inType)]];
+            foreach ($types as $slug => $type) {
+                $menu[$slug] = ['label' => $type['menu'], 'icon' => $type['icon'], 'link' => "pages/$slug", 'current' => fn() => $inType($slug)];
             }
             return [...$menu, '-', 'besucher', 'verlauf', 'assistent', '-', 'users', 'system'];
         },

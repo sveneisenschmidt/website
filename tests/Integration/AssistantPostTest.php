@@ -4,13 +4,24 @@ namespace Website\Tests\Integration;
 
 use Kirby\Cms\File;
 use RuntimeException;
+use Website\Blog\Exif;
+use Website\Blog\Types;
 
 /**
  * The card "Neuer Entwurf": fields, photos and route in one click, all or
- * nothing (spec, "Karten und Klick").
+ * nothing.
  */
 final class AssistantPostTest extends AssistantTestCase
 {
+    /**
+     * The fields of the post blueprints and what fills them in propose_post.
+     * A field missing here fails testTheToolCoversThePostBlueprints: the tool must learn it.
+     */
+    private const POST_FIELDS = [
+        'intro' => 'intro', 'text' => 'text', 'date' => 'date', 'cover' => 'cover', 'pick' => 'pick',
+        'trip' => 'trip', 'route' => 'route', 'mappoints' => 'route', 'mapzoom' => 'route',
+    ];
+
     /** While true, the upload of "broken.jpg" fails, as a full disk would. */
     public bool $breakUploads = true;
 
@@ -73,9 +84,9 @@ final class AssistantPostTest extends AssistantTestCase
         ]));
         $card = $this->card($chat);
         $this->assertSame('Neuer Entwurf · Foto', $card['title']);
-        $this->assertContains(['URL-Anhang', 'aika'], $card['rows']);
-        $this->assertContains(['Marker', 'Start, End'], $card['rows']);
-        $view = array_values(array_filter(blog_assistant_view(blog_assistant_load())['items'], fn ($i) => $i['type'] === 'card'));
+        $this->assertContains(['label' => 'URL-Anhang', 'value' => 'aika'], $card['rows']);
+        $this->assertContains(['label' => 'Marker', 'value' => 'Start, End'], $card['rows']);
+        $view = array_values(array_filter(blog_assistant_view(blog_assistant_load())['items'], fn($i) => $i['type'] === 'card'));
         $this->assertStringStartsWith('data:image/jpeg;base64,', $view[0]['proposal']['photos'][0]['thumb']);
         $this->assertNull(blog_assistant_slug_taken('aika'), 'Nothing exists before the click.');
 
@@ -168,11 +179,11 @@ final class AssistantPostTest extends AssistantTestCase
 
     public function testTheToolCoversThePostBlueprints(): void
     {
-        foreach (array_keys(BLOG_ASSISTANT_TYPES) as $type) {
-            $page = $this->post(BLOG_ASSISTANT_TYPES[$type]['section'], $type, 'model-' . $type, 'Model');
-            $this->assertSame([], array_diff(array_keys($page->blueprint()->fields()), array_keys(BLOG_ASSISTANT_POST_FIELDS)), $type);
+        foreach (Types::templates() as $type) {
+            $page = $this->post(Types::ALL[$type]['section'], $type, 'model-' . $type, 'Model');
+            $this->assertSame([], array_diff(array_keys($page->blueprint()->fields()), array_keys(self::POST_FIELDS)), $type);
         }
         $file = $this->upload(__DIR__ . '/../fixtures/exif.jpg', 'a.jpg');
-        $this->assertEqualsCanonicalizing([...BLOG_ASSISTANT_IMAGE_TEXTS, ...BLOG_EXIF_FIELDS], array_keys($file->blueprint()->fields()));
+        $this->assertEqualsCanonicalizing([...BLOG_ASSISTANT_IMAGE_TEXTS, ...Exif::FIELDS], array_keys($file->blueprint()->fields()));
     }
 }

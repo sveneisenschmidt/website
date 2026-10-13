@@ -7,8 +7,7 @@ use Website\Tests\Support\GpxFixture;
 
 /**
  * The route card: stations through OSRM or a GPX upload; replacing the
- * route keeps the old file as state (spec, "Karten und Klick" and "GPX und
- * Svens Zuhause").
+ * route keeps the old file as state.
  */
 final class AssistantRouteTest extends AssistantTestCase
 {
@@ -51,9 +50,9 @@ final class AssistantRouteTest extends AssistantTestCase
 
         $this->assertCount(1, $this->osrmCalls);
         $this->assertStringStartsWith('https://router.project-osrm.org/route/v1/driving/12.2823,51.1547;9.4797,51.3127;6.1724,51.3704?', $this->osrmCalls[0]);
-        $this->assertSame(['Länge', '13,1 km', '513,4 km · OSRM'], $card['diff'][0]);
-        $this->assertSame(['Fahrzeit', '', '6 h 0 min'], $card['diff'][1]);
-        $this->assertSame(['Marker', 'Old', 'Groitzsch, Venlo'], $card['diff'][3]);
+        $this->assertSame(['label' => 'Länge', 'before' => '13,1 km', 'after' => '513,4 km · OSRM'], $card['diff'][0]);
+        $this->assertSame(['label' => 'Fahrzeit', 'before' => '', 'after' => '6 h 0 min'], $card['diff'][1]);
+        $this->assertSame(['label' => 'Marker', 'before' => 'Old', 'after' => 'Groitzsch, Venlo'], $card['diff'][3]);
 
         blog_assistant_decide($card['id'], 'apply');
 
@@ -128,7 +127,7 @@ final class AssistantRouteTest extends AssistantTestCase
         $home = GpxFixture::home();
         $id = blog_uploads_accept(GpxFixture::write($this->root, GpxFixture::xml(GpxFixture::ride())), 'ride.gpx')['id'];
         // 1199 m from home, on the side away from the stored, rounded end.
-        $rounded = array_map(fn ($v) => round($v, 3), $home);
+        $rounded = array_map(fn($v) => round($v, 3), $home);
         $east = ($home[0] - $rounded[0]) * 111320 * cos(deg2rad($home[1]));
         $north = ($home[1] - $rounded[1]) * 111320;
         $norm = sqrt($east ** 2 + $north ** 2);
@@ -159,7 +158,7 @@ final class AssistantRouteTest extends AssistantTestCase
         preg_match_all('/\[(-?\d+\.\d+),(-?\d+\.\d+)\]/', json_encode($this->requests), $pairs, PREG_SET_ORDER);
         $this->assertGreaterThan(30, count($pairs));
         foreach ($pairs as [, $lon, $lat]) {
-            $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, blog_route_distance($home, [(float)$lon, (float)$lat]));
+            $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, blog_route_distance($home, [(float) $lon, (float) $lat]));
         }
         $trip = $this->kirby->site()->find('trips')->findPageOrDraft('day-1');
         $file = blog_assistant_file_ref($trip, blog_assistant_list($trip->version('changes')->read()['route'])[0]);

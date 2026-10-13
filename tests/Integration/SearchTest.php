@@ -2,11 +2,12 @@
 
 namespace Website\Tests\Integration;
 
+use Website\Blog\Posts;
 use Website\Tests\Support\TestSite;
 
 /**
  * Search on the server: /search/?q= renders the results, search.js asks
- * /search.json while typing (plugins/blog/posts.php, templates/search*).
+ * /search.json while typing (Website\Blog\Posts, templates/search*).
  */
 final class SearchTest extends IntegrationTestCase
 {
@@ -21,7 +22,7 @@ final class SearchTest extends IntegrationTestCase
             $this->post = $this->post->update(['text' => "A grey heron by the pond.\n\n(image: heron.jpg)\n\n[Link](https://example.com/kingfisher)"]);
         });
         $heron = $this->upload($this->jpeg(8, 8), 'heron.jpg');
-        $this->kirby->impersonate('kirby', fn () => $heron->update(['alt' => 'Bird in the reeds']));
+        $this->kirby->impersonate('kirby', fn() => $heron->update(['alt' => 'Bird in the reeds']));
         $this->post('notes', 'note', 'pond-note', 'Pond Note');
     }
 
@@ -33,11 +34,11 @@ final class SearchTest extends IntegrationTestCase
 
     public function testFindsEveryWordInTitleTextAndAltText(): void
     {
-        $this->assertSame(['photos/test-photo'], blog_search('Heron REEDS')->keys());
-        $this->assertSame(['notes/pond-note', 'photos/test-photo'], blog_search('pond')->keys());
-        $this->assertSame([], blog_search('heron kingfisher')->keys(), 'link targets do not count');
-        $this->assertSame([], blog_search('jpg')->keys(), 'file names do not count');
-        $this->assertSame([], blog_search('  ')->keys());
+        $this->assertSame(['photos/test-photo'], Posts::search('Heron REEDS')->keys());
+        $this->assertSame(['notes/pond-note', 'photos/test-photo'], Posts::search('pond')->keys());
+        $this->assertSame([], Posts::search('heron kingfisher')->keys(), 'link targets do not count');
+        $this->assertSame([], Posts::search('jpg')->keys(), 'file names do not count');
+        $this->assertSame([], Posts::search('  ')->keys());
     }
 
     public function testResultsComeFromTheServer(): void
@@ -54,13 +55,16 @@ final class SearchTest extends IntegrationTestCase
         $this->assertStringContainsString('<span>Nothing found</span><span>0</span>', $this->search('zebra'));
     }
 
-    public function testJsonForSearchJs(): void
+    public function testJsonForSearchJsIsTheResultListOfThePage(): void
     {
         $json = json_decode($this->search('pond', 'json'), true);
+        preg_match('!<div class="search-results" data-search-results>(.*?)</div>\n</section>!s', $this->search('pond'), $page);
 
-        $this->assertSame(['url', 'title', 'date', 'thumb', 'thumb2x'], array_keys($json[0]));
-        $this->assertSame(['Pond Note', 'Test Photo'], array_column($json, 'title'));
-        $this->assertSame('2026-10-07', $json[1]['date']);
+        $this->assertSame(['html'], array_keys($json));
+        $this->assertSame($page[1], $json['html'], 'search.js shows what the page with ?q= shows');
+        $this->assertMatchesRegularExpression('!>Pond Note</a>.*>Test Photo</a>!s', $json['html'], 'newest first');
+        $this->assertStringContainsString('<span>Nothing found</span><span>0</span>', json_decode($this->search('zebra', 'json'), true)['html']);
+        $this->assertSame(['html' => ''], json_decode($this->search('', 'json'), true));
     }
 
     /** The search page for ?q=$query: Kirby reads the query when it starts. */

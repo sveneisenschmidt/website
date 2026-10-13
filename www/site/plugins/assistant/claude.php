@@ -20,6 +20,15 @@ const BLOG_ASSISTANT_MODELS = [
 
 const BLOG_ASSISTANT_DEFAULT_MODEL = 'claude-opus-5-5';
 
+/**
+ * Opus and Sonnet: the server-side fallback and the web search with
+ * dynamic filtering. Haiku has neither.
+ */
+function blog_assistant_full_model(string $model): bool
+{
+    return !str_contains($model, 'haiku');
+}
+
 /** Errors the Panel shows, by kind. "Nichts geändert" holds for all of them. */
 const BLOG_ASSISTANT_ERRORS = [
     'access' => 'Der Schlüssel für Anthropic fehlt oder wird abgelehnt. Nichts geändert. Er steht als assistantKey in env.php.',
@@ -42,14 +51,14 @@ final class BlogAssistantError extends RuntimeException
 
 function blog_assistant_key(): ?string
 {
-    $key = trim((string)option('assistantKey', ''));
+    $key = trim((string) option('assistantKey', ''));
     return $key === '' ? null : $key;
 }
 
 /** The model from Website › Assistent, or the default when the saved one is gone. */
 function blog_assistant_model(): string
 {
-    $model = (string)site()->content()->get('assistantModel');
+    $model = (string) site()->content()->get('assistantModel');
     return array_key_exists($model, BLOG_ASSISTANT_MODELS) ? $model : BLOG_ASSISTANT_DEFAULT_MODEL;
 }
 
@@ -57,11 +66,8 @@ function blog_assistant_model(): string
  * Sends one request body, returns the decoded response.
  * Throws BlogAssistantError with the kind the Panel needs.
  */
-function blog_assistant_post(array $body): array
+function blog_assistant_http(array $body): array
 {
-    // A request to Claude takes long: "Abbrechen" and clicks on cards must
-    // get into the session meanwhile.
-    blog_assistant_unlock();
     $transport = option('blog.assistant.transport');
     if ($transport instanceof Closure) {
         [$status, $response] = $transport($body);
@@ -72,8 +78,8 @@ function blog_assistant_post(array $body): array
             'anthropic-version: 2023-06-01',
             'content-type: application/json',
         ];
-        // Opus and Sonnet: a refused request falls back server-side.
-        if (!str_contains($body['model'], 'haiku')) {
+        // A refused request falls back server-side.
+        if (blog_assistant_full_model($body['model'])) {
             $headers[] = 'anthropic-beta: server-side-fallback-2026-07-01';
             $body['fallbacks'] = 'default';
         }
@@ -87,11 +93,12 @@ function blog_assistant_post(array $body): array
                 'data' => json_encode($body, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
                 'timeout' => 150,
             ]);
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            error_log('blog assistant: Anthropic ' . $e::class . ': ' . $e->getMessage());
             throw new BlogAssistantError('busy');
         }
         $status = $remote->code();
-        $response = json_decode((string)$remote->content(), true) ?? [];
+        $response = json_decode((string) $remote->content(), true) ?? [];
     }
 
     if ($status === 200) {
@@ -100,13 +107,13 @@ function blog_assistant_post(array $body): array
         }
         // An answer without a list of blocks is no answer: nothing goes into the chat.
         $content = $response['content'] ?? null;
-        if (!is_array($content) || $content === [] || !array_is_list($content) || array_filter($content, fn ($block) => !is_string($block['type'] ?? null)) !== []) {
+        if (!is_array($content) || $content === [] || !array_is_list($content) || array_filter($content, fn($block) => !is_string($block['type'] ?? null)) !== []) {
             error_log('blog assistant: Anthropic 200 without content');
             throw new BlogAssistantError('busy');
         }
         return $response;
     }
-    $message = (string)($response['error']['message'] ?? '');
+    $message = (string) ($response['error']['message'] ?? '');
     error_log('blog assistant: Anthropic ' . $status . ' ' . $message);
     throw new BlogAssistantError(match (true) {
         $status === 401, $status === 403 => 'access',

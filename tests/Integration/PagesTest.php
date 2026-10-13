@@ -24,7 +24,22 @@ final class PagesTest extends IntegrationTestCase
             $archive->createChild(['slug' => 'photos', 'template' => 'archive', 'draft' => false, 'content' => ['title' => 'Archive · Photos', 'stream' => 'photos']]);
         });
         $cover = $this->upload($this->jpeg(8, 8), 'cover.jpg');
-        $this->post = $this->kirby->impersonate('kirby', fn () => $this->post->update(['cover' => [$cover->uuid()->toString()], 'pick' => 'true']));
+        $this->post = $this->kirby->impersonate('kirby', fn() => $this->post->update(['cover' => [$cover->uuid()->toString()], 'pick' => 'true']));
+    }
+
+    /** Job title and employer come from About; an empty field leaves its key out. */
+    public function testThePersonOnTheHomePageTakesTheJobFromAbout(): void
+    {
+        $person = fn() => json_decode(preg_match('!<script type="application/ld\+json">(.*?)</script>!s', $this->kirby->site()->homePage()->render(), $m) ? $m[1] : 'null', true);
+
+        $this->assertArrayNotHasKey('jobTitle', $person());
+        $this->assertArrayNotHasKey('worksFor', $person());
+
+        $this->kirby->impersonate('kirby', fn() => $this->kirby->page('about')->update(['jobtitle' => 'CTO', 'employer' => 'roadsurfer', 'employerurl' => 'https://roadsurfer.com']));
+        $this->kirby->cache('pages')->flush();
+
+        $this->assertSame('CTO', $person()['jobTitle']);
+        $this->assertSame(['@type' => 'Organization', 'name' => 'roadsurfer', 'url' => 'https://roadsurfer.com'], $person()['worksFor']);
     }
 
     public function testHomeShowsThePickAndTheTimeline(): void
@@ -82,6 +97,8 @@ final class PagesTest extends IntegrationTestCase
         $this->assertStringContainsString('<li><a href="' . $this->post->url() . '">Test Photo</a> - 3 visits</li>', $html);
         $this->assertStringContainsString('<section class="writing writing-aside"', $html);
         $this->assertFalse($this->kirby->cache('pages')->exists('about.latest.html'));
+        $this->assertFalse($this->kirby->page('about')->isCacheable(), 'cache.pages.ignore in config.php');
+        $this->assertTrue($this->kirby->page('archive')->isCacheable());
     }
 
     public function testErrorPage(): void

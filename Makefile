@@ -1,9 +1,18 @@
 WWW := www
+# make ohne Ziel startet die Seite lokal.
+.DEFAULT_GOAL := dev
 # PHP für alle Ziele. Die Seite läuft auf dem Server mit PHP 8.5
 # (.php-version), lokal ist es dieselbe Version. Anderes PHP: make PHP=...
 PHP ?= php
 # Port von make dev. Luisas Seite nutzt lokal 8000.
 PORT := 8010
+
+# Einmal nach dem Klonen: Abhängigkeiten, lokale Konfiguration, Git-Hooks.
+# Danach holt make pull die Inhalte vom Server.
+.PHONY: setup
+setup:
+	composer install
+	@$(MAKE) --no-print-directory config hooks
 
 .PHONY: config
 config:
@@ -45,7 +54,17 @@ restore-test:
 
 .PHONY: lint
 lint:
-	@find $(WWW)/site $(WWW)/index.php bin tests -name '*.php' -print0 | xargs -0 -n1 $(PHP) -l >/dev/null && echo "lint ok"
+	@find src $(WWW)/site $(WWW)/index.php bin tests -name '*.php' -print0 | xargs -0 -n1 $(PHP) -l >/dev/null && echo "lint ok"
+
+# Formatiert den Code nach PER-CS 2.0 (.php-cs-fixer.dist.php). CI prüft das.
+.PHONY: format
+format:
+	@$(PHP) vendor/bin/php-cs-fixer fix --show-progress=none
+
+# Statische Analyse (phpstan.neon). CI prüft das.
+.PHONY: analyse
+analyse:
+	@$(PHP) vendor/bin/phpstan analyse --no-progress
 
 # Pre-commit- und Pre-push-Hook gegen den Prompt des Assistenten in Git
 # (bin/prompt-guard.php). Die Hooks laufen auf jedem Branch, auch auf main.
@@ -66,26 +85,19 @@ hooks:
 
 # Die URLs der Live-Seite gegen Kirby (bin/check-urls.php). Läuft gegen
 # make dev in einem zweiten Terminal. Gegen die Live-Seite:
-# make check-urls SITE=$(LIVE_URL). Ein Staging-Passwort kommt aus
-# STAGING_USER und STAGING_PASSWORD.
+# make check-urls SITE=$(LIVE_URL).
 SITE ?= http://localhost:$(PORT)
 .PHONY: check-urls
 check-urls:
 	@$(PHP) bin/check-urls.php $(SITE)
 
-# Deploy der Live-Seite über den SSH-Alias website. Den Ordner auf dem Server
-# nennt die lokale .env (nie in Git, sie nennt das Hosting-Konto):
+# Der Server über den SSH-Alias website. Den Ordner auf dem Server nennt die
+# lokale .env (nie in Git, sie nennt das Hosting-Konto):
 #   LIVE_PATH=/www/htdocs/<konto>/sven.eisenschmidt.website
-# Den API-Schlüssel holt bin/deploy-env.sh aus der lokalen env.php. Ein
-# Staging-Passwort kommt nur, wenn STAGING_USER und STAGING_PASSWORD gesetzt
-# sind. Lint und Tests laufen vorher.
+# Deployt wird nur über den Workflow CI.
 LIVE_HOST ?= website
 -include .env
 LIVE_URL ?= https://sven.eisenschmidt.website
-
-.PHONY: deploy
-deploy: lint test live-path
-	. bin/deploy-env.sh && DEPLOY_HOST=$(LIVE_HOST) DEPLOY_PATH=$(LIVE_PATH) SITE_URL=$(LIVE_URL) bin/deploy.sh
 
 .PHONY: live-path
 live-path:
@@ -101,15 +113,3 @@ pull: live-path
 .PHONY: warm
 warm:
 	@$(PHP) bin/warm.php $(LIVE_URL)
-
-# Holt die Zugriffslogs vom Server und öffnet den Bericht von GoAccess.
-.PHONY: logs
-logs:
-	@command -v goaccess >/dev/null 2>&1 || { echo "goaccess is required but not installed. Install with: brew install goaccess"; exit 1; }
-	@mkdir -p logs
-	@echo "Fetching logs from server..."
-	@ssh website 'zcat /www/htdocs/*/logs/access_log_sven_eisenschmidt_website*.gz' > logs/access.log
-	@echo "Analyzing logs with GoAccess..."
-	@goaccess logs/access.log -o logs/report.html --log-format='%h - - [%d:%t %^] "%r" %s %b "%R" "%u" "%^" "%^"' --date-format='%d/%b/%Y' --time-format='%H:%M:%S'
-	@echo "Report generated: logs/report.html"
-	@open logs/report.html

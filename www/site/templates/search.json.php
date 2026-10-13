@@ -1,16 +1,10 @@
 <?php
+
 /**
- * The results of /search.json?q=, for search.js: newest first.
+ * The results of /search.json?q= for search.js: the result list of the
+ * search page as HTML (snippets/search-results.php).
+ *
+ * @var string $query
+ * @var Kirby\Cms\Pages $results
  */
-$results = [];
-foreach (blog_search(trim((string)get('q'))) as $post) {
-    $cover = $post->cover()->toFile();
-    $results[] = [
-        'url' => $post->url(),
-        'title' => $post->title()->value(),
-        'date' => $post->date()->toDate('Y-m-d'),
-        'thumb' => $cover ? blog_square($cover, 48, 80)->url() : '',
-        'thumb2x' => $cover ? blog_square($cover, 96, 80)->url() : '',
-    ];
-}
-echo json_encode($results, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+echo json_encode(['html' => $query === '' ? '' : snippet('search-results', ['results' => $results], true)], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);

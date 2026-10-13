@@ -1,18 +1,21 @@
-# .htaccess in the site folder on the server, next to www/ and vendor/
-# (the deploy uploads it from server/root.htaccess). The document root in KAS
-# is the site folder: every request goes into www/, so vendor/, storage/,
-# backups/ and .htpasswd are not reachable from outside. www/.htaccess
-# carries Kirby's rules and the staging password.
+# .htaccess in the site folder on the server. bin/deploy.sh writes the live
+# release in place of RELEASE_ID and uploads it; the new file replaces the
+# old one in one rename, and that is the switch to a release.
+# The document root in KAS is the site folder: every request goes into the
+# www/ of the live release, so releases/, shared/ and backups/ are not
+# reachable from outside. www/.htaccess has Kirby's rules.
+# The path names the release itself, not the link current: PHP keeps a
+# resolved link for up to 2 minutes (realpath cache), and a switch through
+# the link would reach running PHP processes only that late.
 
 RewriteEngine On
 
-# Let's Encrypt (HTTP-01) reads /.well-known/ from this folder, without the
-# staging password of www/.htaccess.
+# Let's Encrypt (HTTP-01) reads /.well-known/ from this folder.
 RewriteRule ^\.well-known/ - [L]
 
-# The folder also answers as kirby.eisenschmidt.website, where it began as
-# staging: every other host name leads to the one address.
+# The folder also answers as kirby.eisenschmidt.website: every other host
+# name leads to the one address.
 RewriteCond %{HTTP_HOST} !^sven\.eisenschmidt\.website$ [NC]
 RewriteRule ^(.*)$ https://sven.eisenschmidt.website/$1 [R=301,L]
 
-RewriteRule ^(.*)$ www/$1 [L]
+RewriteRule ^(.*)$ releases/RELEASE_ID/www/$1 [L]

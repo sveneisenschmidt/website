@@ -1,17 +1,10 @@
 <?php
 /**
- * The archive and its four streams. Photos are the photo posts and the
- * trips with a cover.
+ * The archive and its four streams (controllers/archive.php).
  *
- * @var Kirby\Cms\Page $page
+ * @var string $stream all, photos, trips, notes or essays
+ * @var Kirby\Cms\Pages $posts The posts of the stream
  */
-$stream = $page->stream()->or('all')->value();
-$posts = collection('posts');
-if ($stream === 'photos') {
-    $posts = $posts->filter(fn ($post) => $post->parent()->id() === 'photos' || ($post->parent()->id() === 'trips' && $post->cover()->isNotEmpty()));
-} elseif ($stream !== 'all') {
-    $posts = $posts->filter(fn ($post) => $post->parent()->id() === $stream);
-}
 ?>
 <?php snippet('layout', slots: true) ?>
 <section class="archive">

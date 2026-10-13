@@ -3,7 +3,7 @@
 namespace Website\Tests\Integration;
 
 /**
- * The URL scheme of the site, from the page model (plugins/blog/urls.php),
+ * The URL scheme of the site, from the page models (SitePage, PostPage),
  * so links in the text and the Panel's preview use it too.
  */
 final class UrlTest extends IntegrationTestCase
@@ -25,7 +25,7 @@ final class UrlTest extends IntegrationTestCase
 
     public function testANewDateIsANewUrl(): void
     {
-        $post = $this->kirby->impersonate('kirby', fn () => $this->post->update(['date' => '2026-10-08 06:00:00']));
+        $post = $this->kirby->impersonate('kirby', fn() => $this->post->update(['date' => '2026-10-08 06:00:00']));
 
         $this->assertSame('http://localhost/2026-10-08-test-photo/', $post->url());
     }
@@ -36,6 +36,6 @@ final class UrlTest extends IntegrationTestCase
         $draft = $this->post('notes', 'note', 'a-draft', 'A Draft', 'draft');
 
         $this->assertSame('<p><a href="http://localhost/2026-10-07-test-photo/">this photo</a></p>', $this->kirby->kirbytext("(link: $uuid text: this photo)"));
-        $this->assertStringStartsWith('http://localhost/2026-10-07-a-draft/?', $this->kirby->impersonate('kirby', fn () => $draft->previewUrl()));
+        $this->assertStringStartsWith('http://localhost/2026-10-07-a-draft/?', $this->kirby->impersonate('kirby', fn() => $draft->previewUrl()));
     }
 }

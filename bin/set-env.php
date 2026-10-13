@@ -38,7 +38,7 @@ foreach ($pairs as $pair) {
     echo "$key: $value\n";
 }
 // The key is never printed. A terminal on stdin means no key.
-$assistantKey = stream_isatty(STDIN) ? '' : trim((string)stream_get_contents(STDIN));
+$assistantKey = stream_isatty(STDIN) ? '' : trim((string) stream_get_contents(STDIN));
 if ($assistantKey !== '') {
     $new['assistantKey'] = $assistantKey;
     echo "assistantKey: set\n";

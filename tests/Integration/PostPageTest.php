@@ -47,8 +47,8 @@ final class PostPageTest extends IntegrationTestCase
 
     public function testTimelineShowsTheNeighbours(): void
     {
-        $older = $this->kirby->impersonate('kirby', fn () => $this->post('notes', 'note', 'older', 'Older')->update(['date' => '2026-10-01 10:00:00']));
-        $newer = $this->kirby->impersonate('kirby', fn () => $this->post('essays', 'essay', 'newer', 'Newer')->update(['date' => '2026-10-09 10:00:00']));
+        $older = $this->kirby->impersonate('kirby', fn() => $this->post('notes', 'note', 'older', 'Older')->update(['date' => '2026-10-01 10:00:00']));
+        $newer = $this->kirby->impersonate('kirby', fn() => $this->post('essays', 'essay', 'newer', 'Newer')->update(['date' => '2026-10-09 10:00:00']));
 
         $html = $this->kirby->page('photos/test-photo')->render();
 

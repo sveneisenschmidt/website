@@ -6,7 +6,7 @@
  * site and kirby go to Kirby, which answers 404, as on Apache. Everything
  * else goes through Kirby's router.php.
  */
-$uri = urldecode((string)parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+$uri = urldecode((string) parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 if (preg_match('#(^|/)\.(?!well-known/)|^/(content|site|kirby)/#', $uri)) {
     $_SERVER['SCRIPT_NAME'] = '/index.php';
     require $_SERVER['DOCUMENT_ROOT'] . '/index.php';

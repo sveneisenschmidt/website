@@ -4,7 +4,7 @@ namespace Website\Tests\Integration;
 
 /**
  * The prompt is set to a marker. It goes to Claude and nowhere else: no
- * page, no route, no Panel view of the assistant, no log (spec, "System-Prompt").
+ * page, no route, no Panel view of the assistant, no log.
  */
 final class PromptLeakTest extends AssistantTestCase
 {
@@ -45,7 +45,7 @@ final class PromptLeakTest extends AssistantTestCase
 
         $this->assertGreaterThan(10, count($outputs));
         foreach ($outputs as $where => $output) {
-            $this->assertStringNotContainsString('PROMPT-CANARY', (string)$output, (string)$where);
+            $this->assertStringNotContainsString('PROMPT-CANARY', (string) $output, (string) $where);
         }
     }
 }

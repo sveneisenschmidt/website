@@ -14,7 +14,7 @@ use Kirby\Cms\Page;
  *
  * The history is append-only: Claude's answers go back unchanged, thinking
  * blocks included. System text and tool list are frozen when a chat starts:
- * every round sends the same bytes (spec, "System-Prompt").
+ * every round sends the same bytes.
  */
 
 const BLOG_ASSISTANT_SESSION = 'blog.assistant';
@@ -49,7 +49,7 @@ TXT;
 /** The prompt from Website › Assistent, or null: then the assistant is off. */
 function blog_assistant_prompt(): ?string
 {
-    $prompt = trim((string)site()->content()->get('assistantPrompt')->value());
+    $prompt = trim((string) site()->content()->get('assistantPrompt')->value());
     return $prompt === '' ? null : $prompt;
 }
 
@@ -64,18 +64,32 @@ function blog_assistant_system(string $prompt): array
 /** The prompt the chat was started with: its frozen system text without the fixed rules. */
 function blog_assistant_frozen_prompt(array $chat): string
 {
-    $text = (string)($chat['system'][0]['text'] ?? '');
+    $text = (string) ($chat['system'][0]['text'] ?? '');
     return str_starts_with($text, BLOG_ASSISTANT_SAFETY . "\n\n") ? substr($text, strlen(BLOG_ASSISTANT_SAFETY) + 2) : $text;
 }
 
+/**
+ * A new chat, with every key a chat gets. A chat stored before a key came
+ * here may still lack it.
+ *
+ * @return array{
+ *     model: ?string, system: ?array, tools: ?array, date: ?string,
+ *     messages: list<array>, items: list<array>, proposals: array<string, array>,
+ *     rounds: int, next: bool, paused: bool, run: int, images: int,
+ *     mine: array<string, true>, sources: array<string, true>,
+ *     id: ?string, asked: int, turn: ?array
+ * }
+ */
 function blog_assistant_empty(): array
 {
     return [
         'model' => null, 'system' => null, 'tools' => null, 'date' => null,
         'messages' => [], 'items' => [], 'proposals' => [],
-        'rounds' => 0, 'next' => false, 'run' => 0, 'images' => 0,
+        'rounds' => 0, 'next' => false, 'paused' => false, 'run' => 0, 'images' => 0,
         // URLs from Sven's messages and from the web search: the links a card may hold.
         'mine' => [], 'sources' => [],
+        // For the Protokoll (log.php): the chat's id, its messages, the answer being measured.
+        'id' => null, 'asked' => 0, 'turn' => null,
     ];
 }
 
@@ -97,6 +111,20 @@ function blog_assistant_unlock(): void
     kirby()->session()->commit();
 }
 
+/**
+ * Changes one key of the session: locks it, reads the key anew with $read
+ * and stores what $change returns for it. Every write goes through here: a
+ * change of a value read before the lock would undo what a parallel
+ * request wrote meanwhile.
+ */
+function blog_assistant_update(string $key, Closure $read, Closure $change): mixed
+{
+    blog_assistant_lock();
+    $value = $change($read());
+    kirby()->session()->set($key, $value);
+    return $value;
+}
+
 function blog_assistant_load(): array
 {
     return kirby()->session()->get(BLOG_ASSISTANT_SESSION) ?? blog_assistant_empty();
@@ -108,18 +136,16 @@ function blog_assistant_decisions(): array
     return kirby()->session()->get(BLOG_ASSISTANT_SESSION . '.decisions') ?? [];
 }
 
+/** The lines that wait for Sven's next message. */
+function blog_assistant_notes(): array
+{
+    return kirby()->session()->get(BLOG_ASSISTANT_SESSION . '.notes') ?? [];
+}
+
 /** A line Claude gets with Sven's next message, such as a decision on a card. */
 function blog_assistant_note(string $note): void
 {
-    blog_assistant_lock();
-    $notes = kirby()->session()->get(BLOG_ASSISTANT_SESSION . '.notes') ?? [];
-    $notes[] = $note;
-    kirby()->session()->set(BLOG_ASSISTANT_SESSION . '.notes', $notes);
-}
-
-function blog_assistant_store(array $chat): void
-{
-    kirby()->session()->set(BLOG_ASSISTANT_SESSION, $chat);
+    blog_assistant_update(BLOG_ASSISTANT_SESSION . '.notes', blog_assistant_notes(...), fn(array $notes) => [...$notes, $note]);
 }
 
 /**
@@ -133,7 +159,7 @@ function blog_assistant_image_load(array $chat): array
     $walk = function (array $blocks) use (&$walk, &$files): void {
         foreach ($blocks as $block) {
             if (($block['type'] ?? '') === 'blog_image') {
-                $files[] = (string)$block['file'];
+                $files[] = (string) $block['file'];
             } elseif (($block['type'] ?? '') === 'tool_result' && is_array($block['content'] ?? null)) {
                 $walk($block['content']);
             }
@@ -144,14 +170,14 @@ function blog_assistant_image_load(array $chat): array
             $walk($message['content']);
         }
     }
-    $count = $chat['images'] ?? 0;
+    $count = $chat['images'];
     foreach (blog_uploads_state()['pending'] as $id) {
         if ((blog_uploads_meta($id)['kind'] ?? '') === 'image') {
             $files[] = "$id.preview.jpg";
             $count++;
         }
     }
-    $bytes = array_sum(array_map(fn ($file) => blog_uploads_base64(blog_uploads_size($file)), $files));
+    $bytes = array_sum(array_map(fn($file) => blog_uploads_base64(blog_uploads_size($file)), $files));
     return ['count' => $count, 'bytes' => $bytes];
 }
 
@@ -190,7 +216,7 @@ function blog_assistant_view(array $chat): array
         'items' => $items,
         'next' => $chat['next'],
         // Images make a chat heavy as well: every request sends them again.
-        'long' => count($chat['items']) >= BLOG_ASSISTANT_LONG || ($chat['images'] ?? 0) >= BLOG_ASSISTANT_IMAGES,
+        'long' => count($chat['items']) >= BLOG_ASSISTANT_LONG || $chat['images'] >= BLOG_ASSISTANT_IMAGES,
         'open' => $open,
         'hasKey' => blog_assistant_key() !== null || option('blog.assistant.transport') instanceof Closure,
         'hasPrompt' => blog_assistant_prompt() !== null,
@@ -219,7 +245,7 @@ function blog_assistant_send(string $text, ?string $context = null, bool $mine =
 {
     $text = trim($text);
     if ($text === '') {
-        throw new InvalidArgumentException('Leere Nachricht');
+        throw new BlogAssistantError('chat', 'Leere Nachricht');
     }
     $prompt = blog_assistant_prompt() ?? throw new BlogAssistantError('prompt');
     $chat = blog_assistant_load();
@@ -233,7 +259,7 @@ function blog_assistant_send(string $text, ?string $context = null, bool $mine =
     $today = (new DateTimeImmutable('now', new DateTimeZone('Europe/Berlin')))->format('Y-m-d');
     $date = $chat['date'] === $today ? [] : ["Today is $today (Europe/Berlin)."];
     $chat['date'] = $today;
-    $notes = kirby()->session()->get(BLOG_ASSISTANT_SESSION . '.notes') ?? [];
+    $notes = blog_assistant_notes();
     $lines = array_merge($notes, $date, array_filter([blog_assistant_context($context)]), [$text]);
 
     $uploads = blog_uploads_state()['pending'];
@@ -243,7 +269,7 @@ function blog_assistant_send(string $text, ?string $context = null, bool $mine =
         $blocks = [...$blocks, ...blog_uploads_blocks($id)];
         $meta = blog_uploads_meta($id);
         $files[] = $meta['name'] ?? $id;
-        $chat['images'] = ($chat['images'] ?? 0) + (($meta['kind'] ?? '') === 'image' ? 1 : 0);
+        $chat['images'] += ($meta['kind'] ?? '') === 'image' ? 1 : 0;
     }
     $blocks[] = ['type' => 'text', 'text' => implode("\n\n", $lines)];
     foreach ($mine ? blog_guard_links($text) : [] as $url) {
@@ -273,17 +299,15 @@ function blog_assistant_send(string $text, ?string $context = null, bool $mine =
     } catch (Throwable $e) {
         // Nothing was stored before the round: the chat is as it was.
         $e = blog_assistant_error($e);
-        blog_assistant_turn_end($chat, $e->kind);
+        blog_assistant_finish($chat, $e->kind);
         throw $e;
     }
     blog_uploads_sent($uploads);
-    blog_assistant_lock();
-    if (!$chat['next'] && (blog_assistant_load()['run'] ?? 0) === ($chat['run'] ?? 0)) {
-        $chat = blog_assistant_turn_end($chat, 'ok');
+    if (!$chat['next']) {
+        $chat = blog_assistant_finish($chat, 'ok');
     }
     // The notes that went with the message; a click during the round added its own after them.
-    $now = kirby()->session()->get(BLOG_ASSISTANT_SESSION . '.notes') ?? [];
-    kirby()->session()->set(BLOG_ASSISTANT_SESSION . '.notes', array_slice($now, array_slice($now, 0, count($notes)) === $notes ? count($notes) : 0));
+    blog_assistant_update(BLOG_ASSISTANT_SESSION . '.notes', blog_assistant_notes(...), fn(array $now) => array_slice($now, array_slice($now, 0, count($notes)) === $notes ? count($notes) : 0));
     return blog_assistant_keep($chat);
 }
 
@@ -302,7 +326,7 @@ function blog_assistant_choose(int $index, ?string $context = null): array
             default => $open,
         };
     }
-    $option = $open['options'][$index] ?? throw new InvalidArgumentException('Keine offene Auswahl');
+    $option = $open['options'][$index] ?? throw new BlogAssistantError('chat', 'Keine offene Auswahl');
     return blog_assistant_send($option, $context, false);
 }
 
@@ -312,7 +336,7 @@ function blog_assistant_error(Throwable $e): BlogAssistantError
     if ($e instanceof BlogAssistantError) {
         return $e;
     }
-    error_log('blog assistant: ' . $e->getMessage());
+    error_log('blog assistant: ' . $e::class . ': ' . $e->getMessage());
     return new BlogAssistantError('chat');
 }
 
@@ -322,13 +346,7 @@ function blog_assistant_error(Throwable $e): BlogAssistantError
  */
 function blog_assistant_keep(array $chat): array
 {
-    blog_assistant_lock();
-    $current = blog_assistant_load();
-    if (($current['run'] ?? 0) !== ($chat['run'] ?? 0)) {
-        return $current;
-    }
-    blog_assistant_store($chat);
-    return $chat;
+    return blog_assistant_update(BLOG_ASSISTANT_SESSION, blog_assistant_load(...), fn(array $current) => $current['run'] === $chat['run'] ? $chat : $current);
 }
 
 /** Runs the next round of a tool loop. */
@@ -342,7 +360,7 @@ function blog_assistant_next(): array
         $chat = blog_assistant_round($chat);
     } catch (Throwable $e) {
         $e = blog_assistant_error($e);
-        $chat = blog_assistant_turn_end($chat, $e->kind);
+        $chat = blog_assistant_finish($chat, $e->kind);
         $chat['next'] = false;
         // His message is in the chat already: nothing goes back to the input.
         $text = $e->kind === 'busy' ? 'Anthropic antwortet gerade nicht. Nichts geändert.' : $e->getMessage();
@@ -350,33 +368,44 @@ function blog_assistant_next(): array
         blog_assistant_keep($chat);
         throw $e;
     }
-    // A stop that came meanwhile has logged this answer already.
-    if (!$chat['next'] && (blog_assistant_load()['run'] ?? 0) === ($chat['run'] ?? 0)) {
-        $chat = blog_assistant_turn_end($chat, 'ok');
+    if (!$chat['next']) {
+        $chat = blog_assistant_finish($chat, 'ok');
     }
     return blog_assistant_keep($chat);
+}
+
+/**
+ * Logs the end of an answer, unless a stop or "Neuer Chat" came meanwhile:
+ * they log it themselves and count run up. The lock comes first, so a stop
+ * cannot come between the check and the log line and log the answer twice.
+ */
+function blog_assistant_finish(array $chat, string $outcome): array
+{
+    blog_assistant_lock();
+    return blog_assistant_load()['run'] === $chat['run'] ? blog_assistant_turn_end($chat, $outcome) : $chat;
 }
 
 /** Stops a running tool loop. The answer of a round already running is dropped. */
 function blog_assistant_stop(): array
 {
-    blog_assistant_lock();
-    $chat = blog_assistant_turn_end(blog_assistant_load(), 'stopped');
-    $chat['next'] = false;
-    $chat['run'] = ($chat['run'] ?? 0) + 1;
-    $chat['items'][] = ['type' => 'note', 'text' => 'Abgebrochen. Nichts geändert.'];
-    blog_assistant_store($chat);
-    return $chat;
+    return blog_assistant_update(BLOG_ASSISTANT_SESSION, blog_assistant_load(...), function (array $chat): array {
+        $chat = blog_assistant_turn_end($chat, 'stopped');
+        $chat['next'] = false;
+        $chat['run']++;
+        $chat['items'][] = ['type' => 'note', 'text' => 'Abgebrochen. Nichts geändert.'];
+        return $chat;
+    });
 }
 
 /** "Neuer Chat": the old chat goes with its uploads; the prompt counts anew. */
 function blog_assistant_reset(): array
 {
-    blog_assistant_lock();
-    $chat = blog_assistant_empty();
-    // A round still running must not bring the old chat back.
-    $chat['run'] = (blog_assistant_load()['run'] ?? 0) + 1;
-    blog_assistant_store($chat);
+    $chat = blog_assistant_update(BLOG_ASSISTANT_SESSION, blog_assistant_load(...), function (array $old): array {
+        $chat = blog_assistant_empty();
+        // A round still running must not bring the old chat back.
+        $chat['run'] = $old['run'] + 1;
+        return $chat;
+    });
     kirby()->session()->remove(BLOG_ASSISTANT_SESSION . '.decisions');
     kirby()->session()->remove(BLOG_ASSISTANT_SESSION . '.notes');
     blog_uploads_reset();
@@ -397,38 +426,20 @@ function blog_assistant_round(array $chat): array
     $chat = blog_assistant_turn_round($chat, $response);
     $content = $response['content'] ?? [];
     $chat['messages'][] = ['role' => 'assistant', 'content' => $content];
+    // Before the tools run: a card of this round may link to a source of it.
+    $answer = implode(' ', array_column(array_filter($content, fn($block) => $block['type'] === 'text'), 'text'));
+    $sources = blog_assistant_sources($content, $answer);
+    foreach ($sources['urls'] as $url) {
+        $chat['sources'][$url] = true;
+    }
 
     $results = [];
     $progress = [];
     $choice = false;
-    $sources = [];
-    $found = [];
-    $answer = '';
     $start = count($chat['items']);
     $searched = false;
     $views = 0;
     foreach ($content as $block) {
-        // Search results: every URL counts as a source a card may link to.
-        // Shown below the answer when the answer carries no citations.
-        if ($block['type'] === 'web_search_tool_result' && is_array($block['content']) && !isset($block['content']['error_code'])) {
-            foreach ($block['content'] as $result) {
-                if (isset($result['url']) && preg_match('#^https?://#i', $result['url'])) {
-                    $found[$result['url']] ??= ['url' => $result['url'], 'title' => trim((string)($result['title'] ?? '')) ?: $result['url']];
-                    $chat['sources'][$result['url']] = true;
-                }
-            }
-        }
-        if ($block['type'] === 'text') {
-            $answer .= ' ' . $block['text'];
-        }
-        // Sources of a web search come as citations on the text blocks.
-        foreach ($block['citations'] ?? [] as $cite) {
-            if (isset($cite['url']) && preg_match('#^https?://#i', $cite['url'])) {
-                $title = trim((string)($cite['title'] ?? ''));
-                $sources[$cite['url']] = ['url' => $cite['url'], 'title' => $title === '' ? $cite['url'] : $title];
-                $chat['sources'][$cite['url']] = true;
-            }
-        }
         if ($block['type'] === 'server_tool_use' && ($block['name'] ?? '') === 'web_search') {
             $searched = true;
         }
@@ -443,12 +454,19 @@ function blog_assistant_round(array $chat): array
             continue;
         }
         try {
-            $results[] = blog_assistant_tool($chat, $block, $progress, $choice, $results);
+            $ran = blog_assistant_tool($chat, $block, $results);
         } catch (Throwable $e) {
             // One broken call answers as an error; the round goes on.
-            error_log('blog assistant tool ' . $block['name'] . ': ' . $e->getMessage());
+            error_log('blog assistant tool ' . $block['name'] . ': ' . $e::class . ': ' . $e->getMessage());
             $results[] = ['type' => 'tool_result', 'tool_use_id' => $block['id'], 'content' => 'Error: ' . $e->getMessage(), 'is_error' => true];
+            continue;
         }
+        $chat = $ran['chat'];
+        $results[] = $ran['result'];
+        if ($ran['progress'] !== null) {
+            $progress[] = $ran['progress'];
+        }
+        $choice = $choice || $ran['choice'];
     }
 
     // The search ran before the answer of this round: its line goes above it.
@@ -456,21 +474,8 @@ function blog_assistant_round(array $chat): array
     if ($searched && !(($last['type'] ?? '') === 'progress' && in_array('Im Web gesucht', $last['lines'], true))) {
         array_splice($chat['items'], $start, 0, [['type' => 'progress', 'lines' => ['Im Web gesucht']]]);
     }
-    // Without citations: the results whose site the answer names, at most three.
-    if ($sources === [] && $found !== []) {
-        foreach ($found as $url => $result) {
-            $host = preg_replace('/^www\./', '', (string)parse_url($url, PHP_URL_HOST));
-            $name = explode('.', $host)[0];
-            if ($host !== '' && (stripos($answer, $host) !== false || ($name !== '' && strlen($name) > 3 && stripos($answer, $name) !== false))) {
-                $sources[$url] = $result;
-            }
-            if (count($sources) === 3) {
-                break;
-            }
-        }
-    }
-    if ($sources !== []) {
-        $chat['items'][] = ['type' => 'sources', 'list' => array_values($sources)];
+    if ($sources['list'] !== []) {
+        $chat['items'][] = ['type' => 'sources', 'list' => $sources['list']];
     }
     // A choice waits for Sven: no further round. A long web search pauses
     // the turn; the next round goes on with the answer as it is.
@@ -487,36 +492,77 @@ function blog_assistant_round(array $chat): array
 }
 
 /**
- * Runs one tool call and returns its tool_result. A propose tool adds a
- * card, a choice adds buttons, a read tool adds a progress line. $results:
- * the results of this round so far, which go with the next request.
+ * The web sources of an answer. "urls": every URL of its search results
+ * and citations, the links a card may hold. "list": the sources shown
+ * below the answer: its citations, or without citations the results whose
+ * site $answer (its text) names, at most three.
  */
-function blog_assistant_tool(array &$chat, array $block, array &$progress, bool &$choice, array $results = []): array
+function blog_assistant_sources(array $content, string $answer): array
+{
+    $urls = [];
+    $found = [];
+    $shown = [];
+    foreach ($content as $block) {
+        if ($block['type'] === 'web_search_tool_result' && is_array($block['content']) && !isset($block['content']['error_code'])) {
+            foreach ($block['content'] as $result) {
+                if (isset($result['url']) && preg_match('#^https?://#i', $result['url'])) {
+                    $found[$result['url']] ??= ['url' => $result['url'], 'title' => trim((string) ($result['title'] ?? '')) ?: $result['url']];
+                    $urls[$result['url']] = true;
+                }
+            }
+        }
+        // Sources of a web search come as citations on the text blocks.
+        foreach ($block['citations'] ?? [] as $cite) {
+            if (isset($cite['url']) && preg_match('#^https?://#i', $cite['url'])) {
+                $title = trim((string) ($cite['title'] ?? ''));
+                $shown[$cite['url']] = ['url' => $cite['url'], 'title' => $title === '' ? $cite['url'] : $title];
+                $urls[$cite['url']] = true;
+            }
+        }
+    }
+    if ($shown === []) {
+        foreach ($found as $url => $result) {
+            $host = preg_replace('/^www\./', '', (string) parse_url($url, PHP_URL_HOST));
+            $name = explode('.', $host)[0];
+            if ($host !== '' && (stripos($answer, $host) !== false || ($name !== '' && strlen($name) > 3 && stripos($answer, $name) !== false))) {
+                $shown[$url] = $result;
+            }
+            if (count($shown) === 3) {
+                break;
+            }
+        }
+    }
+    return ['urls' => array_keys($urls), 'list' => array_values($shown)];
+}
+
+/**
+ * Runs one tool call. Returns the chat, the tool_result, the progress line
+ * of a read tool (or null) and whether the call was a choice. A propose
+ * tool adds a card to the chat, a choice its buttons. $results: the results
+ * of this round so far, which go with the next request.
+ */
+function blog_assistant_tool(array $chat, array $block, array $results = []): array
 {
     $name = $block['name'];
     $input = $block['input'] ?? [];
-    $result = fn ($content, bool $error = false) => ['type' => 'tool_result', 'tool_use_id' => $block['id'], 'content' => $content] + ($error ? ['is_error' => true] : []);
+    $result = fn($content, bool $error = false) => ['type' => 'tool_result', 'tool_use_id' => $block['id'], 'content' => $content] + ($error ? ['is_error' => true] : []);
 
     if (str_starts_with($name, 'propose_')) {
         $proposal = blog_assistant_propose($chat, $name, $input);
         if (is_string($proposal)) {
-            return $result($proposal, true);
+            return ['chat' => $chat, 'result' => $result($proposal, true), 'progress' => null, 'choice' => false];
         }
         $chat['proposals'][$proposal['id']] = $proposal;
         $chat['items'][] = ['type' => 'card', 'id' => $proposal['id']];
-        return $result('The proposal is shown to the user as a card. The user decides.');
+        return ['chat' => $chat, 'result' => $result('The proposal is shown to the user as a card. The user decides.'), 'progress' => null, 'choice' => false];
     }
     if ($name === 'ask_choice') {
-        $choice = true;
-        $chat['items'][] = ['type' => 'choice', 'question' => (string)$input['question'], 'options' => array_values(array_map('strval', $input['options']))];
-        return $result('The options are shown to the user. The pick comes as the next message.');
+        $chat['items'][] = ['type' => 'choice', 'question' => (string) $input['question'], 'options' => array_values(array_map('strval', $input['options']))];
+        return ['chat' => $chat, 'result' => $result('The options are shown to the user. The pick comes as the next message.'), 'progress' => null, 'choice' => true];
     }
     $read = blog_assistant_read($name, $input, blog_assistant_image_load(['messages' => [...$chat['messages'], ['role' => 'user', 'content' => $results]]] + $chat));
-    $chat['images'] = ($chat['images'] ?? 0) + count(array_filter($read, fn ($c) => $c['type'] === 'blog_image'));
-    if ($label = blog_assistant_progress($name)) {
-        $progress[] = $label;
-    }
-    return $result($read);
+    $chat['images'] += count(array_filter($read, fn($c) => $c['type'] === 'blog_image'));
+    return ['chat' => $chat, 'result' => $result($read), 'progress' => blog_assistant_progress($name), 'choice' => false];
 }
 
 /**
@@ -525,14 +571,14 @@ function blog_assistant_tool(array &$chat, array $block, array &$progress, bool 
  */
 function blog_assistant_web_search(string $model): array
 {
-    // The dynamic-filtering version needs Opus or Sonnet; Haiku keeps the basic one.
-    $type = str_contains($model, 'haiku') ? 'web_search_20250305' : 'web_search_20260209';
+    // Haiku keeps the basic version (blog_assistant_full_model).
+    $type = blog_assistant_full_model($model) ? 'web_search_20260209' : 'web_search_20250305';
     return ['type' => $type, 'name' => 'web_search', 'max_uses' => 5];
 }
 
 function blog_assistant_request(array $chat): array
 {
-    return blog_assistant_post([
+    $body = [
         'model' => $chat['model'],
         'max_tokens' => 16000,
         'system' => $chat['system'],
@@ -541,14 +587,20 @@ function blog_assistant_request(array $chat): array
         'output_config' => ['effort' => 'medium'],
         // One hour, like the system text: a pause in the chat does not pay for the photos again.
         'cache_control' => ['type' => 'ephemeral', 'ttl' => '1h'],
-    ]);
+    ];
+    // A request to Claude takes long: "Abbrechen" and clicks on cards must
+    // get into the session meanwhile.
+    blog_assistant_unlock();
+    return blog_assistant_http($body);
 }
 
 /** A short request to see that key, credit and model work. */
 function blog_assistant_check(): array
 {
+    // Kirby may lock the session to renew it; other requests must not wait for Claude.
+    blog_assistant_unlock();
     try {
-        blog_assistant_post([
+        blog_assistant_http([
             'model' => blog_assistant_model(),
             'max_tokens' => 64,
             'messages' => [['role' => 'user', 'content' => 'ping']],

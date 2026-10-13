@@ -2,12 +2,13 @@
 
 namespace Website\Tests\Integration;
 
+use BlogAssistantError;
 use Kirby\Cms\Page;
 
 /**
  * Cards for existing posts: a passage, a whole field, the texts of an
  * image. A published post gets the click as unsaved changes, a draft at
- * once (spec, "Karten und Klick").
+ * once.
  */
 final class AssistantEditTest extends AssistantTestCase
 {
@@ -38,7 +39,7 @@ final class AssistantEditTest extends AssistantTestCase
     public function testAFieldOfAPublishedPostGoesIntoTheChanges(): void
     {
         $card = $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'intro', 'value' => 'A new intro.']);
-        $this->assertSame([['Anriss', 'Test intro', 'A new intro.', [], []]], $card['diff']);
+        $this->assertSame([['label' => 'Anriss', 'before' => 'Test intro', 'after' => 'A new intro.', 'marksBefore' => [], 'marksAfter' => []]], $card['diff']);
         $this->assertStringContainsString('Änderungen', $card['where']);
         $this->assertSame('Test intro', $this->page()->intro()->value(), 'Nothing changes before the click.');
 
@@ -92,7 +93,7 @@ final class AssistantEditTest extends AssistantTestCase
         $page = $this->page();
         $page->version('changes')->save([...$page->version('latest')->read(), 'text' => 'Not saved yet.']);
         $card = $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => 'Better.']);
-        $this->assertSame('Not saved yet.', $card['diff'][0][1]);
+        $this->assertSame('Not saved yet.', $card['diff'][0]['before']);
         $this->assertTrue($card['unsaved']);
 
         blog_assistant_decide($card['id'], 'apply');
@@ -171,14 +172,17 @@ final class AssistantEditTest extends AssistantTestCase
 
         $card = $this->card($this->chat('Verlinke https://new.test/page bitte.'));
 
-        $this->assertSame(['Text', 'See [old](https://old.test).', $value, ['https://old.test'], ['https://new.test/page', "(link: $uuid text: this photo)"]], $card['diff'][0]);
+        $this->assertSame(['label' => 'Text', 'before' => 'See [old](https://old.test).', 'after' => $value, 'marksBefore' => ['https://old.test'], 'marksAfter' => ['https://new.test/page', "(link: $uuid text: this photo)"]], $card['diff'][0]);
     }
 
     public function testTheTextsOfAnImage(): void
     {
         $this->upload(__DIR__ . '/../fixtures/exif.jpg', 'a.jpg');
         $card = $this->propose('propose_file_fields', ['file' => 'photos/test-photo/a.jpg', 'fields' => [['name' => 'alt', 'value' => 'A dog on a beach'], ['name' => 'photographer', 'value' => 'Nadine']]]);
-        $this->assertSame([['Alternativtext', '', 'A dog on a beach', [], []], ['Fotografiert von', '', 'Nadine', [], []]], $card['diff']);
+        $this->assertSame([
+            ['label' => 'Alternativtext', 'before' => '', 'after' => 'A dog on a beach', 'marksBefore' => [], 'marksAfter' => []],
+            ['label' => 'Fotografiert von', 'before' => '', 'after' => 'Nadine', 'marksBefore' => [], 'marksAfter' => []],
+        ], $card['diff']);
 
         blog_assistant_decide($card['id'], 'apply');
 
@@ -196,7 +200,8 @@ final class AssistantEditTest extends AssistantTestCase
             try {
                 blog_assistant_decide($card['id'], $action);
                 $this->fail("Took the action \"$action\"");
-            } catch (\InvalidArgumentException) {
+            } catch (BlogAssistantError $e) {
+                $this->assertSame(['chat', 'Unbekannte Entscheidung'], [$e->kind, $e->getMessage()]);
             }
         }
 

@@ -5,7 +5,7 @@
 # Everything else is code (git), host config (env.php, imported per host)
 # or generated (media, cache, sessions).
 #
-# Usage: bin/backup.sh [--snapshot] [www-root] [output-dir]
+# Usage: bin/backup.sh [--snapshot] [www-root or shared/ of the server] [output-dir]
 # Output: <output-dir>/website-<UTC timestamp>.tar.gz containing state/, MANIFEST.sha256 and META.
 #
 # --snapshot writes the folder <output-dir>/website-<UTC timestamp>/ with the same
@@ -31,7 +31,9 @@ OUT="${2:-backups}"
 PHP="${PHP:-php}"
 PATHS=(content site/accounts site/config/.salt site/config/.license)
 
-[ -d "$WWW/kirby" ] || { echo "Not a site root: $WWW" >&2; exit 1; }
+# A site root (local www/) or the shared/ folder of the server: both hold
+# the state at the same paths (bin/deploy.sh).
+[ -d "$WWW/content" ] || { echo "No content in $WWW" >&2; exit 1; }
 mkdir -p "$OUT"
 
 sha256() { if command -v sha256sum >/dev/null; then sha256sum "$@"; else shasum -a 256 "$@"; fi; }
@@ -94,7 +96,9 @@ fi
 {
   echo "created: $STAMP"
   echo "git: $(git rev-parse HEAD 2>/dev/null || echo none)"
-  echo "kirby: $("$PHP" -r 'echo json_decode(file_get_contents($argv[1]), true)["version"] ?? "unknown";' "$WWW/kirby/composer.json" 2>/dev/null || echo unknown)"
+  kirby="$WWW/kirby/composer.json"
+  [ -f "$kirby" ] || kirby="$(dirname "$WWW")/current/www/kirby/composer.json"
+  echo "kirby: $("$PHP" -r 'echo json_decode(file_get_contents($argv[1]), true)["version"] ?? "unknown";' "$kirby" 2>/dev/null || echo unknown)"
   echo "php: $("$PHP" -r 'echo PHP_VERSION;' 2>/dev/null || echo unknown)"
   echo "files: $(wc -l < "$TMP/MANIFEST.sha256" | tr -d ' ')"
 } > "$TMP/META"

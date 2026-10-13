@@ -25,5 +25,15 @@ columns:
           lastmod:
             label: Zuletzt geprüft
             type: date
+          jobtitle:
+            label: Jobtitel
+            type: text
+            help: Steht nicht auf der Seite, nur in den Angaben für Suchmaschinen auf der Startseite. Das gilt auch für den Arbeitgeber.
+          employer:
+            label: Arbeitgeber
+            type: text
+          employerurl:
+            label: Website des Arbeitgebers
+            type: url
       images:
         extends: sections/post-images

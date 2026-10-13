@@ -1,9 +1,10 @@
 <?php
 
 use Kirby\Http\Remote;
+use Website\Blog\Text;
 
 /**
- * Routes for the map of a post (spec, "Tools" and "GPX und Svens Zuhause"):
+ * Routes for the map of a post:
  * a car route from the public OSRM server, or the line of a GPX file.
  * Points are [lon, lat], as in GeoJSON. Coordinates keep 5 decimals.
  */
@@ -97,7 +98,7 @@ function blog_route_simplify(array $points, float $epsilon): array
             $stack[] = [$index, $end];
         }
     }
-    return array_values(array_filter($points, fn ($i) => $keep[$i], ARRAY_FILTER_USE_KEY));
+    return array_values(array_filter($points, fn($i) => $keep[$i], ARRAY_FILTER_USE_KEY));
 }
 
 /** 5 decimals, without points that repeat the one before. */
@@ -105,7 +106,7 @@ function blog_route_round(array $points): array
 {
     $out = [];
     foreach ($points as [$lon, $lat]) {
-        $point = [round((float)$lon, 5), round((float)$lat, 5)];
+        $point = [round((float) $lon, 5), round((float) $lat, 5)];
         if ($out === [] || end($out) !== $point) {
             $out[] = $point;
         }
@@ -113,16 +114,10 @@ function blog_route_round(array $points): array
     return $out;
 }
 
-/** A coordinate as text: at most 6 decimals, no trailing zeros. */
-function blog_route_num(float $value): string
-{
-    return rtrim(rtrim(number_format($value, 6, '.', ''), '0'), '.');
-}
-
 /** "1 h 52 min", "35 min". */
 function blog_route_duration(int $seconds): string
 {
-    $minutes = (int)round($seconds / 60);
+    $minutes = (int) round($seconds / 60);
     return $minutes >= 60 ? intdiv($minutes, 60) . ' h ' . ($minutes % 60) . ' min' : $minutes . ' min';
 }
 
@@ -131,7 +126,7 @@ function blog_route_line(string $json): array
 {
     $data = json_decode($json, true);
     $points = is_array($data) && ($data['type'] ?? '') === 'LineString' ? ($data['coordinates'] ?? []) : [];
-    return array_values(array_filter($points, fn ($p) => is_array($p) && count($p) >= 2 && is_numeric($p[0]) && is_numeric($p[1])));
+    return array_values(array_filter($points, fn($p) => is_array($p) && count($p) >= 2 && is_numeric($p[0]) && is_numeric($p[1])));
 }
 
 /**
@@ -146,7 +141,7 @@ function blog_route_cut(array $points, float $head, float $tail): array
 {
     $ends = [$points[0], $points[count($points) - 1]];
     $away = function (array $point, float $length) use ($ends): bool {
-        $point = [round((float)$point[0], 5), round((float)$point[1], 5)];
+        $point = [round((float) $point[0], 5), round((float) $point[1], 5)];
         return blog_route_distance($ends[0], $point) >= $length && blog_route_distance($ends[1], $point) >= $length;
     };
     $first = 0;
@@ -171,27 +166,28 @@ function blog_route_cut(array $points, float $head, float $tail): array
  */
 function blog_route_osrm(array $stations, ?Closure $http = null): array
 {
-    $url = BLOG_ROUTE_OSRM . implode(';', array_map(fn (array $p) => blog_route_num((float)$p[0]) . ',' . blog_route_num((float)$p[1]), $stations)) . '?overview=full&geometries=geojson';
+    $url = BLOG_ROUTE_OSRM . implode(';', array_map(fn(array $p) => Text::number((float) $p[0], 6) . ',' . Text::number((float) $p[1], 6), $stations)) . '?overview=full&geometries=geojson';
     try {
         if ($http !== null) {
             [$status, $body] = $http($url, BLOG_ROUTE_AGENT);
         } else {
             $remote = Remote::get($url, ['agent' => BLOG_ROUTE_AGENT, 'timeout' => 20]);
-            [$status, $body] = [$remote->code(), (string)$remote->content()];
+            [$status, $body] = [$remote->code(), (string) $remote->content()];
         }
-    } catch (Throwable) {
+    } catch (Throwable $e) {
+        error_log('blog assistant: OSRM ' . $e::class . ': ' . $e->getMessage());
         $status = 0;
     }
     if (!$status) {
         throw new RuntimeException('OSRM is not reachable. No route.');
     }
-    $data = json_decode((string)$body, true);
+    $data = json_decode((string) $body, true);
     $route = $data['routes'][0] ?? null;
     $line = blog_route_round(blog_route_simplify($route['geometry']['coordinates'] ?? [], BLOG_ROUTE_EPSILON));
     if ($status !== 200 || ($data['code'] ?? '') !== 'Ok' || count($line) < 2) {
         throw new RuntimeException('OSRM found no route' . (isset($data['message']) ? ': ' . $data['message'] : '') . '.');
     }
-    return ['line' => $line, 'km' => round((float)$route['distance'] / 1000, 1), 'seconds' => (int)round((float)$route['duration'])];
+    return ['line' => $line, 'km' => round((float) $route['distance'] / 1000, 1), 'seconds' => (int) round((float) $route['duration'])];
 }
 
 /**
@@ -202,7 +198,7 @@ function blog_route_osrm(array $stations, ?Closure $http = null): array
 function blog_gpx_read(string $path): array
 {
     if (!is_file($path) || filesize($path) > BLOG_GPX_MAX_BYTES) {
-        throw new RuntimeException('Die GPX-Datei ist größer als 5 MB.');
+        throw new RuntimeException('Die GPX-Datei ist größer als ' . intdiv(BLOG_GPX_MAX_BYTES, 1024 * 1024) . ' MB.');
     }
     $previous = libxml_use_internal_errors(true);
     libxml_clear_errors();
@@ -219,13 +215,13 @@ function blog_gpx_read(string $path): array
             if ($reader->nodeType === XMLReader::ELEMENT && $reader->localName === 'trkpt') {
                 $lat = $reader->getAttribute('lat');
                 $lon = $reader->getAttribute('lon');
-                if (!is_numeric($lat) || !is_numeric($lon) || abs((float)$lat) > 90 || abs((float)$lon) > 180) {
+                if (!is_numeric($lat) || !is_numeric($lon) || abs((float) $lat) > 90 || abs((float) $lon) > 180) {
                     throw new RuntimeException('Ein Punkt der GPX-Datei hat keine gültigen Koordinaten.');
                 }
                 if (count($points) === BLOG_GPX_MAX_POINTS) {
-                    throw new RuntimeException('Die GPX-Datei hat mehr als 100.000 Punkte.');
+                    throw new RuntimeException('Die GPX-Datei hat mehr als ' . number_format(BLOG_GPX_MAX_POINTS, 0, ',', '.') . ' Punkte.');
                 }
-                $points[] = [(float)$lon, (float)$lat];
+                $points[] = [(float) $lon, (float) $lat];
                 $times[] = null;
                 $inPoint = !$reader->isEmptyElement;
             } elseif ($inPoint && $reader->nodeType === XMLReader::ELEMENT && $reader->localName === 'time') {
@@ -273,18 +269,18 @@ function blog_gpx_line(array $points, array $times): array
         }
     }
     if (!$far) {
-        return ['error' => 'The GPX track never gets farther than 1.5 km from its start and end. It gives no route.'];
+        return ['error' => 'The GPX track never gets farther than ' . (BLOG_GPX_NEAR / 1000) . ' km from its start and end. It gives no route.'];
     }
     [$first, $last] = blog_route_cut($points, random_int(BLOG_GPX_TRIM_MIN, BLOG_GPX_TRIM_MAX), random_int(BLOG_GPX_TRIM_MIN, BLOG_GPX_TRIM_MAX));
     $kept = array_slice($points, $first, $last - $first + 1);
     $length = blog_route_length($kept);
     if (count($kept) < 2 || $length < BLOG_GPX_MIN_LENGTH) {
-        return ['error' => 'The GPX track is shorter than 3 km after cutting its ends.'];
+        return ['error' => 'The GPX track is shorter than ' . (BLOG_GPX_MIN_LENGTH / 1000) . ' km after cutting its ends.'];
     }
     return [
         'line' => blog_route_round(blog_route_simplify($kept, BLOG_GPX_EPSILON)),
         'km' => round($length / 1000, 1),
         'seconds' => isset($times[$first], $times[$last]) ? max(0, $times[$last] - $times[$first]) : null,
-        'ends' => array_map(fn ($end) => [round((float)$end[0], BLOG_GPX_ENDS_DECIMALS), round((float)$end[1], BLOG_GPX_ENDS_DECIMALS)], $ends),
+        'ends' => array_map(fn($end) => [round((float) $end[0], BLOG_GPX_ENDS_DECIMALS), round((float) $end[1], BLOG_GPX_ENDS_DECIMALS)], $ends),
     ];
 }

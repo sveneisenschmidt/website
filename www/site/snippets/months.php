@@ -1,34 +1,31 @@
 <?php
+use Website\Blog\Images;
+use Website\Blog\Posts;
+
 /**
  * Posts by month, as the archive lists them and search.js shows its
  * results: a bar with month and count, below it a sheet of covers
  * ($sheet) or rows of day, title and cover.
  *
- * @var Kirby\Cms\Pages $posts Newest first
+ * @var Kirby\Cms\Pages<Website\Models\PostPage> $posts Newest first
  * @var bool $sheet
  */
 $sheet ??= false;
 ?>
-<?php
-$months = [];
-foreach ($posts as $post) {
-    $months[$post->date()->toDate('F Y')][] = $post;
-}
-?>
-<?php foreach ($months as $month => $group): ?>
+<?php foreach (Posts::months($posts) as $month => $group): ?>
 <h2 class="archive-month stream-title">
 <span><?= $month ?></span>
 <span><?= count($group) ?></span>
 </h2>
 <?php if ($sheet): ?>
 <ul class="archive-sheet">
-<?php foreach ($group as $post): if ($cover = $post->cover()->toFile()): ?>
+<?php foreach ($group as $post): if ($cover = $post->coverImage()): ?>
 <li>
 <a href="<?= $post->url() ?>" aria-label="<?= $post->title()->esc() ?>">
 <img
 class="tile"
-src="<?= blog_square($cover, 400, 85)->url() ?>"
-srcset="<?= blog_square($cover, 200, 85)->url() ?> 200w, <?= blog_square($cover, 400, 85)->url() ?> 400w"
+src="<?= Images::square($cover, 400, 85)->url() ?>"
+srcset="<?= Images::square($cover, 200, 85)->url() ?> 200w, <?= Images::square($cover, 400, 85)->url() ?> 400w"
 sizes="(max-width: 900px) 45vw, (max-width: 1200px) 200px, 170px"
 width="400"
 height="400"

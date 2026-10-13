@@ -6,6 +6,8 @@ use Kirby\Data\Json;
 use Kirby\Filesystem\Dir;
 use Kirby\Filesystem\F;
 use Kirby\Http\Route;
+use Website\Blog\JsonFile;
+use Website\Models\PostPage;
 
 /**
  * Visitor statistics without cookies, scripts or external services.
@@ -132,35 +134,23 @@ function blog_analytics_count(string $id, string $ip, string $ua, string $refere
         }
         $month[$date] = $day;
 
-        blog_analytics_write("$cache/$date.json", $seen);
-        blog_analytics_write(blog_analytics_dir() . '/' . substr($date, 0, 7) . '.json', $month);
+        JsonFile::write("$cache/$date.json", $seen);
+        JsonFile::write(blog_analytics_dir() . '/' . substr($date, 0, 7) . '.json', $month);
     } finally {
         flock($lock, LOCK_UN);
         fclose($lock);
     }
 }
 
-/** Writes to a temporary file first: a crash or a full disk never leaves half a file. */
-function blog_analytics_write(string $file, array $data): void
-{
-    Dir::make(dirname($file));
-    $tmp = $file . '.' . bin2hex(random_bytes(4)) . '.tmp';
-    $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR) . "\n";
-    if (file_put_contents($tmp, $json) !== strlen($json) || !rename($tmp, $file)) {
-        @unlink($tmp);
-        throw new RuntimeException("Could not write $file");
-    }
-}
-
 /** The host of an external referrer without "www.", or null. */
 function blog_analytics_referrer(string $referer): ?string
 {
-    $host = strtolower((string)parse_url($referer, PHP_URL_HOST));
+    $host = strtolower((string) parse_url($referer, PHP_URL_HOST));
     if ($host === '') {
         return null;
     }
-    $strip = fn (string $h) => preg_replace('/^www\./', '', $h);
-    $own = [$strip(strtolower((string)parse_url(kirby()->url(), PHP_URL_HOST))), $strip(strtolower($_SERVER['HTTP_HOST'] ?? ''))];
+    $strip = fn(string $h) => preg_replace('/^www\./', '', $h);
+    $own = [$strip(strtolower((string) parse_url(kirby()->url(), PHP_URL_HOST))), $strip(strtolower($_SERVER['HTTP_HOST'] ?? ''))];
     return in_array($strip($host), $own, true) ? null : $strip($host);
 }
 
@@ -203,7 +193,7 @@ function blog_analytics_summary(int $days = 30): array
     }
     arsort($pages);
     arsort($referrers);
-    $sum = fn (array $days) => array_sum(array_column($days, 'visits'));
+    $sum = fn(array $days) => array_sum(array_column($days, 'visits'));
     return [
         'days' => $list,
         'totals' => [
@@ -213,12 +203,12 @@ function blog_analytics_summary(int $days = 30): array
             'views' => array_sum(array_column($list, 'views')),
         ],
         'pages' => array_map(
-            fn ($id) => [...blog_analytics_page($id), 'visits' => $pages[$id]],
-            array_slice(array_keys($pages), 0, 20)
+            fn($id) => [...blog_analytics_page($id), 'visits' => $pages[$id]],
+            array_slice(array_keys($pages), 0, 20),
         ),
         'referrers' => array_map(
-            fn ($host) => ['host' => $host, 'visits' => $referrers[$host]],
-            array_slice(array_keys($referrers), 0, 10)
+            fn($host) => ['host' => $host, 'visits' => $referrers[$host]],
+            array_slice(array_keys($referrers), 0, 10),
         ),
     ];
 }
@@ -239,11 +229,28 @@ function blog_analytics_totals(): array
             }
         }
     }
-    $posts = array_filter($totals['pages'], fn ($id) => ($page = page($id)) !== null && blog_is_post($page), ARRAY_FILTER_USE_KEY);
+    $posts = array_filter($totals['pages'], fn($id) => page($id) instanceof PostPage, ARRAY_FILTER_USE_KEY);
     arsort($posts);
     $totals['top'] = array_slice($posts, 0, 5, true);
     $totals['pages'] = count($totals['pages']);
     return $totals;
+}
+
+/**
+ * The visitor numbers on About: visits, views, pages,
+ * and the most visited posts as [post, visits]. Null before the first visit.
+ */
+function blog_analytics_stats(): ?array
+{
+    $totals = blog_analytics_totals();
+    if ($totals['visits'] === 0) {
+        return null;
+    }
+    $top = [];
+    foreach ($totals['top'] as $id => $visits) {
+        $top[] = [page($id), $visits];
+    }
+    return ['top' => $top] + $totals;
 }
 
 /** Title and public URL of a counted page, also for deleted pages. */
@@ -258,17 +265,17 @@ function blog_analytics_page(string $id): array
 
 App::plugin('sveneisenschmidt/analytics', [
     'hooks' => [
-        'route:after' => fn (Route $route, string $path, string $method, mixed $result, bool $final) => blog_analytics_route($route, $path, $method, $result, $final),
+        'route:after' => fn(Route $route, string $path, string $method, mixed $result, bool $final) => blog_analytics_route($route, $path, $method, $result, $final),
     ],
     'areas' => [
-        'besucher' => fn () => [
+        'besucher' => fn() => [
             'label' => 'Besucher',
             'icon' => 'chart',
             'menu' => true,
             'link' => 'besucher',
             'views' => [[
                 'pattern' => 'besucher',
-                'action' => fn () => [
+                'action' => fn() => [
                     'component' => 'k-blog-analytics-view',
                     'title' => 'Besucher',
                     'props' => ['summary' => blog_analytics_summary(30)],

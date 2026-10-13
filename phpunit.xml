@@ -21,6 +21,7 @@
     <!-- Deprecations and notices fail the run only for our own code, not for Kirby or vendor. -->
     <source restrictNotices="true" ignoreIndirectDeprecations="true">
         <include>
+            <directory>src</directory>
             <directory>www/site</directory>
             <directory>bin</directory>
             <directory>tests</directory>

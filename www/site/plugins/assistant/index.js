@@ -284,7 +284,9 @@ panel.plugin("sveneisenschmidt/assistant", {
           await this.post("stop");
         },
         async decide(id, action, version = null) {
-          await this.post("decide", { id, action, version });
+          // A card that is gone, such as after "Neuer Chat" in another tab, comes back as {error}.
+          const state = await this.post("decide", { id, action, version });
+          this.error = state.error ?? null;
         },
         reset() {
           if (this.chat.open === 0) {
@@ -428,8 +430,8 @@ panel.plugin("sveneisenschmidt/assistant", {
                       </header>
                       <dl v-if="item.proposal.rows" class="blog-ai-rows">
                         <template v-for="row in item.proposal.rows">
-                          <dt :key="row[0] + 't'">{{ row[0] }}</dt>
-                          <dd :key="row[0] + 'd'" :class="{ 'blog-ai-empty': !row[1] }" v-html="row[1] ? marked(row[1], row[2]) : 'leer'"></dd>
+                          <dt :key="row.label + 't'">{{ row.label }}</dt>
+                          <dd :key="row.label + 'd'" :class="{ 'blog-ai-empty': !row.value }" v-html="row.value ? marked(row.value, row.marks) : 'leer'"></dd>
                         </template>
                       </dl>
                       <ul v-if="item.proposal.photos && item.proposal.photos.length" class="blog-ai-photos">
@@ -444,14 +446,14 @@ panel.plugin("sveneisenschmidt/assistant", {
                         </li>
                       </ul>
                       <template v-for="(row, r) in item.proposal.diff || []">
-                        <p :key="'f' + r" class="blog-ai-field">{{ row[0] }}</p>
+                        <p :key="'f' + r" class="blog-ai-field">{{ row.label }}</p>
                         <div :key="'o' + r" class="blog-ai-diff blog-ai-old">
                           <span>{{ item.proposal.unsaved ? 'Vorher, nicht gespeichert' : 'Vorher' }}</span>
-                          <p :class="{ 'blog-ai-empty': !row[1] }" v-html="row[1] ? marked(row[1], row[3]) : 'leer'"></p>
+                          <p :class="{ 'blog-ai-empty': !row.before }" v-html="row.before ? marked(row.before, row.marksBefore) : 'leer'"></p>
                         </div>
                         <div :key="'n' + r" class="blog-ai-diff blog-ai-new">
                           <span>Nachher</span>
-                          <p :class="{ 'blog-ai-empty': !row[2] }" v-html="row[2] ? marked(row[2], row[4]) : 'leer'"></p>
+                          <p :class="{ 'blog-ai-empty': !row.after }" v-html="row.after ? marked(row.after, row.marksAfter) : 'leer'"></p>
                         </div>
                       </template>
                       <template v-if="item.proposal.kind === 'edit'">

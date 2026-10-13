@@ -1,11 +1,11 @@
 <?php
 /**
  * Search. With ?q= the results come from the server; search.js asks
- * search.json while typing.
+ * search.json while typing (controllers/search.php).
  *
- * @var Kirby\Cms\Page $page
+ * @var string $query
+ * @var Kirby\Cms\Pages $results
  */
-$query = trim((string)get('q'));
 ?>
 <?php snippet('layout', slots: true) ?>
 <section class="archive">
@@ -25,12 +25,7 @@ data-search-input
 <span class="search-caret" aria-hidden="true"></span>
 </form>
 <div class="search-results" data-search-results><?php if ($query !== ''): ?>
-<?php $results = blog_search($query) ?>
-<?php if ($results->isEmpty()): ?>
-<h2 class="archive-month stream-title"><span>Nothing found</span><span>0</span></h2>
-<?php else: ?>
-<?php snippet('months', ['posts' => $results]) ?>
-<?php endif ?>
+<?php snippet('search-results', ['results' => $results]) ?>
 <?php endif ?></div>
 </section>
 <?php endsnippet() ?>

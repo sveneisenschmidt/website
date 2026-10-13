@@ -18,7 +18,7 @@ SSH_OPTS=(-o ConnectTimeout=30 -o BatchMode=yes)
 [ -n "${DEPLOY_SSH_KEY_FILE:-}" ] && SSH_OPTS+=(-i "$DEPLOY_SSH_KEY_FILE")
 remote() { ssh "${SSH_OPTS[@]}" "$DEPLOY_HOST" "$@"; }
 
-snapshot=$(remote "mkdir -p '$BACKUP_DIR' && cd '$BACKUP_DIR' && PHP=$RPHP bash -s -- --snapshot '$DEPLOY_PATH/www' '$BACKUP_DIR'" < bin/backup.sh | tail -1)
+snapshot=$(remote "mkdir -p '$BACKUP_DIR' && cd '$BACKUP_DIR' && PHP=$RPHP bash -s -- --snapshot '$DEPLOY_PATH/shared' '$BACKUP_DIR'" < bin/backup.sh | tail -1)
 ARCHIVE="backups/$(basename "$snapshot").tar.gz"
 mkdir -p backups
 # The archive holds what bin/backup.sh would write; .part until it is complete.

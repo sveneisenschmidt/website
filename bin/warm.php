@@ -8,21 +8,21 @@
  * Pages come from a crawl from the start page: links on the same host,
  * without query and without a file extension. Four requests at a time. The
  * user agent says "bot", so "Besucher" does not count the requests.
- * The staging password comes from STAGING_USER and STAGING_PASSWORD in the
- * environment, never from the command line.
+ * The crawl also starts at the feed and the sitemap: their links have a
+ * file extension and the crawl would never reach them.
+ * --pages stops after the pages. The deploy runs it that way: a deploy
+ * clears the page cache, the thumbnails stay.
  *
- * Usage: php bin/warm.php <site-url>
+ * Usage: php bin/warm.php [--pages] <site-url>
  */
 
-$site = rtrim($argv[1] ?? '', '/');
+$pagesOnly = ($argv[1] ?? '') === '--pages';
+$site = rtrim($argv[$pagesOnly ? 2 : 1] ?? '', '/');
 if (!preg_match('!^https?://[^/]+$!', $site)) {
-    fwrite(STDERR, "Usage: php bin/warm.php <site-url>\n");
+    fwrite(STDERR, "Usage: php bin/warm.php [--pages] <site-url>\n");
     exit(1);
 }
 $headers = ['User-Agent: website-warm (bot)'];
-if (getenv('STAGING_USER') && getenv('STAGING_PASSWORD')) {
-    $headers[] = 'Authorization: Basic ' . base64_encode(getenv('STAGING_USER') . ':' . getenv('STAGING_PASSWORD'));
-}
 
 /** GETs the URLs, four at a time, and calls $done(url, status, body) for each. */
 function warm_get(array $urls, array $headers, Closure $done): void
@@ -49,7 +49,7 @@ function warm_get(array $urls, array $headers, Closure $done): void
         curl_multi_select($multi, 1.0);
         while ($info = curl_multi_info_read($multi)) {
             $handle = $info['handle'];
-            $done((string)curl_getinfo($handle, CURLINFO_PRIVATE), (int)curl_getinfo($handle, CURLINFO_RESPONSE_CODE), (string)curl_multi_getcontent($handle));
+            $done((string) curl_getinfo($handle, CURLINFO_PRIVATE), (int) curl_getinfo($handle, CURLINFO_RESPONSE_CODE), (string) curl_multi_getcontent($handle));
             curl_multi_remove_handle($multi, $handle);
             $active--;
         }
@@ -91,15 +91,15 @@ function warm_links(string $html, string $site): array
 }
 
 $started = microtime(true);
-$seen = ['/' => true];
+$seen = ['/' => true, '/index.xml' => true, '/sitemap.xml' => true];
 $media = [];
 // Links in old posts may lead to a redirect or to nothing (404): noted, no failure.
 $other = [];
 $failed = [];
-$level = ['/'];
+$level = array_keys($seen);
 while ($level !== []) {
     $next = [];
-    warm_get(array_map(fn ($path) => $site . $path, $level), $headers, function (string $url, int $status, string $body) use ($site, &$seen, &$media, &$other, &$failed, &$next): void {
+    warm_get(array_map(fn($path) => $site . $path, $level), $headers, function (string $url, int $status, string $body) use ($site, &$seen, &$media, &$other, &$failed, &$next): void {
         if ($status !== 200) {
             if ($status >= 300 && $status < 500) {
                 $other[] = "$status $url";
@@ -125,10 +125,16 @@ printf("%d pages in %.0f s, %d links to a redirect or 404\n", count($seen) - cou
 foreach (array_slice($other, 0, 20) as $line) {
     echo "  $line\n";
 }
+if ($pagesOnly) {
+    foreach (array_slice($failed, 0, 20) as $line) {
+        echo "  $line\n";
+    }
+    exit($failed === [] ? 0 : 1);
+}
 
 $started = microtime(true);
 $count = 0;
-warm_get(array_map(fn ($path) => $site . $path, array_keys($media)), $headers, function (string $url, int $status) use (&$failed, &$count, $media, $started): void {
+warm_get(array_map(fn($path) => $site . $path, array_keys($media)), $headers, function (string $url, int $status) use (&$failed, &$count, $media, $started): void {
     if ($status !== 200) {
         $failed[] = "$status $url";
     }

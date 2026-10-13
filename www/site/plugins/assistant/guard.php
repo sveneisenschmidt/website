@@ -3,12 +3,13 @@
 use Kirby\Cms\Page;
 use Kirby\Text\KirbyTag;
 use Kirby\Uuid\Uuid;
+use Website\Blog\Types;
 
 require_once __DIR__ . '/words.php';
 
 /**
- * Checks every text Claude proposes, before a card exists (spec, "Prüfung
- * der Texte"). Text from photos, GPX files, web pages or old posts can carry
+ * Checks every text Claude proposes, before a card exists. Text from photos,
+ * GPX files, web pages or old posts can carry
  * instructions, so the code checks, not only the prompt. Each check returns
  * null when the text passes, else the error Claude gets back. No check
  * judges style.
@@ -129,7 +130,7 @@ function blog_guard_targets(string $text, array $allowed): ?string
 /** The type of a KirbyText tag when Kirby knows it, else null: "(https://…)" or "(Update: …)" stay text. */
 function blog_guard_tag_type(string $tag): ?string
 {
-    $type = strtolower(trim(substr($tag, 1, (int)strpos($tag, ':') - 1)));
+    $type = strtolower(trim(substr($tag, 1, (int) strpos($tag, ':') - 1)));
     return isset(KirbyTag::$types[$type]) || isset(KirbyTag::$aliases[$type]) ? $type : null;
 }
 
@@ -155,8 +156,8 @@ function blog_guard_tag(string $tag, array $files, bool $map): ?string
         return "The KirbyText tag ($type:) is not allowed. Allowed are (image: file name), (map:) and (link: page://… text: …).";
     }
     $parsed = KirbyTag::parse($tag);
-    $value = trim((string)$parsed->value);
-    $attrs = array_keys(array_filter($parsed->attrs, fn ($v) => trim((string)$v) !== ''));
+    $value = trim((string) $parsed->value);
+    $attrs = array_keys(array_filter($parsed->attrs, fn($v) => trim((string) $v) !== ''));
     if ($type === 'image') {
         if (!in_array($value, $files, true)) {
             return "(image: $value) names no image of this post. Images: " . ($files === [] ? 'none' : implode(', ', $files)) . '.';
@@ -175,7 +176,7 @@ function blog_guard_tag(string $tag, array $files, bool $map): ?string
     if (array_diff($attrs, ['text']) !== []) {
         return '(link:) takes only text: besides the page.';
     }
-    return preg_match(BLOG_GUARD_HTML, (string)($parsed->attrs['text'] ?? '')) ? 'Raw HTML is not allowed.' : null;
+    return preg_match(BLOG_GUARD_HTML, (string) ($parsed->attrs['text'] ?? '')) ? 'Raw HTML is not allowed.' : null;
 }
 
 /** The URLs the (link: page://…) tags of a text render: tag => URL. */
@@ -184,7 +185,7 @@ function blog_guard_page_links(string $text): array
     $urls = [];
     preg_match_all(BLOG_GUARD_TAG, $text, $m);
     foreach ($m[1] as $tag) {
-        if (blog_guard_tag_type($tag) === 'link' && ($page = blog_guard_page(trim((string)KirbyTag::parse($tag)->value))) !== null) {
+        if (blog_guard_tag_type($tag) === 'link' && ($page = blog_guard_page(trim((string) KirbyTag::parse($tag)->value))) !== null) {
             $urls[$tag] = $page->url();
         }
     }
@@ -210,14 +211,14 @@ function blog_guard_rules(string $text, array $allowed, ?Page $page, string $bef
         foreach ($m[1] as $tag) {
             if (in_array(blog_guard_tag_type($tag), ['image', 'map'], true)) {
                 foreach (blog_guard_body(blog_guard_render($tag, $page))->children as $element) {
-                    $tags[$element->ownerDocument->saveHtml($element)] = true;
+                    $tags[blog_guard_html($element)] = true;
                 }
             }
         }
     }
     return [
         'elements' => $caption ? array_intersect_key(BLOG_GUARD_ELEMENTS, array_flip(BLOG_GUARD_INLINE)) : BLOG_GUARD_ELEMENTS,
-        'link' => fn (string $url) => isset($produced[$url])
+        'link' => fn(string $url) => isset($produced[$url])
             || (isset($known[$url]) && preg_match(BLOG_GUARD_SCHEMES, $url) && !preg_match('/[\x00-\x20\x7F]/', $url)),
         'produced' => $produced,
         'tags' => $tags,
@@ -251,7 +252,7 @@ function blog_guard_walk(Dom\Node $parent, array $rules, array &$problems): void
         if ($node instanceof Dom\Text) {
             continue;
         }
-        $markup = $node->ownerDocument->saveHtml($node);
+        $markup = blog_guard_html($node);
         if (!$node instanceof Dom\Element) {
             $problems[] = ['Raw HTML is not allowed. Use Markdown.', $markup];
             continue;
@@ -271,7 +272,7 @@ function blog_guard_walk(Dom\Node $parent, array $rules, array &$problems): void
             continue;
         }
         if ($name === 'a') {
-            $href = (string)$node->getAttribute('href');
+            $href = (string) $node->getAttribute('href');
             if (!$rules['link']($href)) {
                 $problems[] = [blog_guard_link_error($href), $markup];
                 continue;
@@ -323,8 +324,8 @@ function blog_guard_markdown(string $text, array $allowed, Page $page, string $b
     if (preg_match(BLOG_GUARD_HTML, $new)) {
         return 'Raw HTML is not allowed. Use Markdown.';
     }
-    $files = array_values($page->files()->template('image')->pluck('filename'));
-    $map = in_array($page->intendedTemplate()->name(), BLOG_ASSISTANT_MAP_TYPES, true);
+    $files = blog_assistant_filenames($page);
+    $map = Types::hasMap($page->intendedTemplate()->name());
     preg_match_all(BLOG_GUARD_TAG, $new, $m);
     foreach ($m[1] as $tag) {
         if (($error = blog_guard_tag($tag, $files, $map)) !== null) {
@@ -367,7 +368,7 @@ function blog_guard_marks(string $text, ?Page $page = null, bool $caption = fals
     }
     $marks = [];
     foreach (blog_guard_body(blog_guard_render($text, $page, $caption))->querySelectorAll('a[href]') as $link) {
-        $href = (string)$link->getAttribute('href');
+        $href = (string) $link->getAttribute('href');
         if ($href !== '' && $link->closest('figure') === null && str_contains($text, $href)) {
             $marks[] = $href;
         }
@@ -378,7 +379,7 @@ function blog_guard_marks(string $text, ?Page $page = null, bool $caption = fals
 /**
  * Any proposed value: no run of 8 words of the chat's prompt, by the same
  * words as the git hook counts them (words.php). A card can end up on the
- * site, and the prompt never does (spec, "System-Prompt").
+ * site, and the prompt never does.
  */
 function blog_guard_prompt(string $text, array $runs): ?string
 {
@@ -400,4 +401,12 @@ function blog_guard_plain(string $text, int $max = 0): ?string
         return "At most $max characters.";
     }
     return null;
+}
+
+/** The HTML of one node, as its document writes it. blog_guard_body makes every document an HTMLDocument. */
+function blog_guard_html(Dom\Node $node): string
+{
+    $document = $node->ownerDocument;
+    assert($document instanceof Dom\HTMLDocument);
+    return $document->saveHtml($node);
 }
