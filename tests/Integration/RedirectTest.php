@@ -38,9 +38,17 @@ final class RedirectTest extends IntegrationTestCase
         $this->assertRedirect('/projects/', 'http://localhost/about/#things-i-built');
     }
 
-    private function assertRedirect(string $uri, string $location, string $message = ''): void
+    /** HEAD answers like GET: a link checker sees the post and the redirect, no 404. */
+    public function testHeadAnswersLikeGet(): void
     {
-        $response = TestSite::app($this->root, $this->options, ['server' => ['REQUEST_URI' => $uri]])->render();
+        $this->assertRedirect('/posts/daily-photo-test/', 'http://localhost/2026-10-07-test-photo/', 'HEAD', 'HEAD');
+        $response = TestSite::app($this->root, $this->options, ['server' => ['REQUEST_URI' => '/2026-10-07-test-photo/', 'REQUEST_METHOD' => 'HEAD']])->render();
+        $this->assertSame(200, $response?->code());
+    }
+
+    private function assertRedirect(string $uri, string $location, string $message = '', string $method = 'GET'): void
+    {
+        $response = TestSite::app($this->root, $this->options, ['server' => ['REQUEST_URI' => $uri, 'REQUEST_METHOD' => $method]])->render();
         $this->assertInstanceOf(Response::class, $response);
         $this->assertSame(301, $response->code(), "$uri $message");
         $this->assertSame($location, (string) $response->header('Location'), "$uri $message");

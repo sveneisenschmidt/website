@@ -7,7 +7,7 @@ use RuntimeException;
 
 /**
  * The card "Neuer Entwurf": fields, photos and route in one click, all or
- * nothing (spec, "Karten und Klick").
+ * nothing.
  */
 final class AssistantPostTest extends AssistantTestCase
 {

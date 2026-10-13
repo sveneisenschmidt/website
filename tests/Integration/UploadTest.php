@@ -8,7 +8,7 @@ use Website\Tests\Support\GpxFixture;
 
 /**
  * uploads.php: what the chat accepts, what it keeps and when it deletes
- * (spec, "Uploads" and "GPX und Svens Zuhause").
+ *.
  */
 final class UploadTest extends AssistantTestCase
 {

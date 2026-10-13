@@ -69,6 +69,12 @@ function blog_without_media(string $markdown): string
     return preg_replace('!(?=\((?:image|map):)(\((?:[^()]+|(?1))*+\))!i', '', $markdown);
 }
 
+/** The file name in the first (image:) of intro and text, or null without one. */
+function blog_first_image(Page $page): ?string
+{
+    return preg_match('!\(image:\s*([^\s)]+)!i', $page->intro()->value() . "\n" . $page->text()->value(), $m) ? $m[1] : null;
+}
+
 /**
  * Rendered HTML as the text a reader reads: no tags, entities decoded,
  * without the EXIF rows of figures and the scripts of maps.

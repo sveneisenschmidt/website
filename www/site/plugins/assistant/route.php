@@ -3,7 +3,7 @@
 use Kirby\Http\Remote;
 
 /**
- * Routes for the map of a post (spec, "Tools" and "GPX und Svens Zuhause"):
+ * Routes for the map of a post:
  * a car route from the public OSRM server, or the line of a GPX file.
  * Points are [lon, lat], as in GeoJSON. Coordinates keep 5 decimals.
  */

@@ -286,7 +286,7 @@ panel.plugin("sveneisenschmidt/assistant", {
         async decide(id, action, version = null) {
           // A card that is gone, such as after "Neuer Chat" in another tab, comes back as {error}.
           const state = await this.post("decide", { id, action, version });
-          if (state.error) this.error = state.error;
+          this.error = state.error ?? null;
         },
         reset() {
           if (this.chat.open === 0) {

@@ -1,9 +1,10 @@
 <?php
 
 /**
- * Sends the URLs of the sitemap that changed in the last 26 hours to
+ * Sends the URLs of the sitemap that changed in the last 50 hours to
  * IndexNow (Bing, Yandex, ...). The workflow IndexNow runs it once a day;
- * the two hours on top cover a run that starts late. The key is the name
+ * the window covers one failed or late run, and IndexNow takes a URL
+ * again without harm. The key is the name
  * of the file www/<key>.txt, which the site serves for IndexNow to check.
  *
  * Usage: php bin/indexnow.php <site-url>
@@ -27,14 +28,14 @@ if ($xml === false) {
     exit(1);
 }
 preg_match_all('!<loc>([^<]+)</loc>\s*<lastmod>([^<]+)</lastmod>!', $xml, $entries, PREG_SET_ORDER);
-$since = time() - 26 * 3600;
+$since = time() - 50 * 3600;
 $urls = [];
 foreach ($entries as [, $loc, $lastmod]) {
     if (strtotime($lastmod) >= $since) {
         $urls[] = $loc;
     }
 }
-printf("%d of %d URLs changed in the last 26 hours\n", count($urls), count($entries));
+printf("%d of %d URLs changed in the last 50 hours\n", count($urls), count($entries));
 if ($urls === []) {
     exit(0);
 }

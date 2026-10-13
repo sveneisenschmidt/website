@@ -8,7 +8,7 @@ use Website\Tests\Support\GpxFixture;
 
 /**
  * route.php: OSRM, simplification, GPX reading and the random cut of both
- * ends (spec, "Tools" and "GPX und Svens Zuhause").
+ * ends.
  */
 final class RouteTest extends TestCase
 {

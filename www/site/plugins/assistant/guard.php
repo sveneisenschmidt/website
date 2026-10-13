@@ -7,8 +7,8 @@ use Kirby\Uuid\Uuid;
 require_once __DIR__ . '/words.php';
 
 /**
- * Checks every text Claude proposes, before a card exists (spec, "Prüfung
- * der Texte"). Text from photos, GPX files, web pages or old posts can carry
+ * Checks every text Claude proposes, before a card exists. Text from photos,
+ * GPX files, web pages or old posts can carry
  * instructions, so the code checks, not only the prompt. Each check returns
  * null when the text passes, else the error Claude gets back. No check
  * judges style.
@@ -378,7 +378,7 @@ function blog_guard_marks(string $text, ?Page $page = null, bool $caption = fals
 /**
  * Any proposed value: no run of 8 words of the chat's prompt, by the same
  * words as the git hook counts them (words.php). A card can end up on the
- * site, and the prompt never does (spec, "System-Prompt").
+ * site, and the prompt never does.
  */
 function blog_guard_prompt(string $text, array $runs): ?string
 {

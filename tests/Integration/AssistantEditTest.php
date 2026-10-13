@@ -8,7 +8,7 @@ use Kirby\Cms\Page;
 /**
  * Cards for existing posts: a passage, a whole field, the texts of an
  * image. A published post gets the click as unsaved changes, a draft at
- * once (spec, "Karten und Klick").
+ * once.
  */
 final class AssistantEditTest extends AssistantTestCase
 {

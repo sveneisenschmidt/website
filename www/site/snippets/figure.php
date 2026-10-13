@@ -11,7 +11,9 @@ $picture = blog_picture($file);
 $rows = blog_exif_rows($file);
 $caption = (string) $file->caption()->value();
 $photographer = (string) $file->photographer()->value();
-// The cover is the picture under the title: the browser loads it first.
+// The first image of the post is the one under the title: the browser
+// loads it first. The cover keeps the transition from its tile.
+$first = blog_first_image($page) === $file->filename();
 $cover = $page->cover()->toFile()?->is($file) === true;
 ?>
 <figure>
@@ -25,7 +27,7 @@ sizes="(max-width: 900px) calc(100vw - 2rem), (max-width: 90rem) 63vw, 907px"
 width="<?= $picture['width'] ?>"
 height="<?= $picture['height'] ?>"
 alt="<?= $file->alt()->esc() ?>"
-<?php if ($cover): ?>loading="eager"
+<?php if ($first): ?>loading="eager"
 fetchpriority="high"
 <?php else: ?>loading="lazy"
 <?php endif ?>decoding="async"

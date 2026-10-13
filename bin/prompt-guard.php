@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Git hook against a leak of the assistant's prompt (spec, "System-Prompt").
+ * Git hook against a leak of the assistant's prompt.
  * The prompt lives only in Website › Assistent, the field assistantPrompt
  * in www/content/site.txt; this repository is public. The hook stops a
  * commit or push whose added lines hold a run of 8 words of the prompt.

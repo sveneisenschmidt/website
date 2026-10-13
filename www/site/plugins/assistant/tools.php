@@ -7,7 +7,7 @@ use Kirby\Filesystem\F;
  * The tools Claude may call, and the read tools, which run at once. Propose
  * tools (propose.php) change nothing: they return a card, and only Sven's
  * click applies it (apply.php). The tools map the content model, security
- * and integrity, nothing else (spec, "Grundsatz"): how Sven writes is up to
+ * and integrity, nothing else: how Sven writes is up to
  * the prompt.
  */
 

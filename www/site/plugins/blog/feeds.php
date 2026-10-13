@@ -142,7 +142,8 @@ function blog_machine_file(string $name, string $type, Closure $build): Response
     }
     $headers = ['Last-Modified' => gmdate('D, d M Y H:i:s', $entry['time']) . ' GMT'];
     $since = strtotime((string) kirby()->request()->header('If-Modified-Since'));
-    if ($since !== false && $since >= $entry['time']) {
+    // A date in the future comes from a wrong clock and does not count (RFC 9110).
+    if ($since !== false && $since >= $entry['time'] && $since <= time()) {
         return new Response('', $type, 304, $headers);
     }
     return new Response($entry['text'], $type, 200, $headers);

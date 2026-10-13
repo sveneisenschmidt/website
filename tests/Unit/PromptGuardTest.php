@@ -9,7 +9,7 @@ require_once __DIR__ . '/../../bin/prompt-guard.php';
 
 /**
  * The git hook of make hooks: no commit and no push with 8 words in
- * a row from the prompt (spec, "System-Prompt"). The prompt here is a marker.
+ * a row from the prompt. The prompt here is a marker.
  */
 final class PromptGuardTest extends TestCase
 {

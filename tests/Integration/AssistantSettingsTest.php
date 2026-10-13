@@ -4,7 +4,7 @@ namespace Website\Tests\Integration;
 
 /**
  * Website › Assistent: the prompt has no default, no template and no help
- * text; it lives only in content/site.txt (spec, "System-Prompt").
+ * text; it lives only in content/site.txt.
  */
 final class AssistantSettingsTest extends IntegrationTestCase
 {

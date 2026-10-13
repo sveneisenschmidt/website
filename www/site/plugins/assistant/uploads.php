@@ -4,7 +4,7 @@ use Kirby\Filesystem\Dir;
 use Kirby\Filesystem\F;
 
 /**
- * Uploads of the chat (spec, "Uploads"): photos and GPX files Sven drags
+ * Uploads of the chat: photos and GPX files Sven drags
  * into the chat. They live in storage/assistant/ next to www/ and vendor/,
  * outside the document root, one folder per chat. Its random name stands
  * only in the session. The server names every file itself. A JPEG loses its

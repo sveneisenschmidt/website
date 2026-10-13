@@ -4,7 +4,7 @@ namespace Website\Tests\Integration;
 
 /**
  * guard.php: every proposed text, before a card exists. The tests check
- * security and content model only, never style (spec, "Prüfung der Texte").
+ * security and content model only, never style.
  */
 final class GuardTest extends IntegrationTestCase
 {

@@ -140,7 +140,7 @@ function blog_changelog_diff(ModelWithContent $old, ModelWithContent $new): arra
         if ($from === $to) {
             continue;
         }
-        // The assistant's prompt lives only in content/site.txt (spec, "System-Prompt").
+        // The assistant's prompt lives only in content/site.txt.
         if (in_array(strtolower($key), BLOG_CHANGELOG_SECRET, true)) {
             $changes[] = ['field' => $key, 'label' => blog_changelog_label($new, $key), 'old' => '', 'new' => 'geändert'];
             continue;

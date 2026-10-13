@@ -14,7 +14,7 @@ use Kirby\Cms\Page;
  *
  * The history is append-only: Claude's answers go back unchanged, thinking
  * blocks included. System text and tool list are frozen when a chat starts:
- * every round sends the same bytes (spec, "System-Prompt").
+ * every round sends the same bytes.
  */
 
 const BLOG_ASSISTANT_SESSION = 'blog.assistant';
@@ -299,13 +299,12 @@ function blog_assistant_send(string $text, ?string $context = null, bool $mine =
     } catch (Throwable $e) {
         // Nothing was stored before the round: the chat is as it was.
         $e = blog_assistant_error($e);
-        blog_assistant_turn_end($chat, $e->kind);
+        blog_assistant_finish($chat, $e->kind);
         throw $e;
     }
     blog_uploads_sent($uploads);
-    blog_assistant_lock();
-    if (!$chat['next'] && blog_assistant_load()['run'] === $chat['run']) {
-        $chat = blog_assistant_turn_end($chat, 'ok');
+    if (!$chat['next']) {
+        $chat = blog_assistant_finish($chat, 'ok');
     }
     // The notes that went with the message; a click during the round added its own after them.
     blog_assistant_update(BLOG_ASSISTANT_SESSION . '.notes', blog_assistant_notes(...), fn(array $now) => array_slice($now, array_slice($now, 0, count($notes)) === $notes ? count($notes) : 0));
@@ -361,7 +360,7 @@ function blog_assistant_next(): array
         $chat = blog_assistant_round($chat);
     } catch (Throwable $e) {
         $e = blog_assistant_error($e);
-        $chat = blog_assistant_turn_end($chat, $e->kind);
+        $chat = blog_assistant_finish($chat, $e->kind);
         $chat['next'] = false;
         // His message is in the chat already: nothing goes back to the input.
         $text = $e->kind === 'busy' ? 'Anthropic antwortet gerade nicht. Nichts geändert.' : $e->getMessage();
@@ -369,13 +368,21 @@ function blog_assistant_next(): array
         blog_assistant_keep($chat);
         throw $e;
     }
-    // A stop that came meanwhile has logged this answer already. Without the
-    // lock a stop between this check and the write logs the answer twice.
-    blog_assistant_lock();
-    if (!$chat['next'] && blog_assistant_load()['run'] === $chat['run']) {
-        $chat = blog_assistant_turn_end($chat, 'ok');
+    if (!$chat['next']) {
+        $chat = blog_assistant_finish($chat, 'ok');
     }
     return blog_assistant_keep($chat);
+}
+
+/**
+ * Logs the end of an answer, unless a stop or "Neuer Chat" came meanwhile:
+ * they log it themselves and count run up. The lock comes first, so a stop
+ * cannot come between the check and the log line and log the answer twice.
+ */
+function blog_assistant_finish(array $chat, string $outcome): array
+{
+    blog_assistant_lock();
+    return blog_assistant_load()['run'] === $chat['run'] ? blog_assistant_turn_end($chat, $outcome) : $chat;
 }
 
 /** Stops a running tool loop. The answer of a round already running is dropped. */

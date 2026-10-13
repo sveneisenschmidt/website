@@ -8,8 +8,8 @@ use Kirby\Filesystem\F;
 
 /**
  * Sven's click on a card. Only here does anything change, and always as
- * his account, so "Verlauf" logs it like his own edit (spec, "Karten und
- * Klick"). A draft gets the change at once. A published post and About get
+ * his account, so "Verlauf" logs it like his own edit. A draft gets the change
+ * at once. A published post and About get
  * it as Kirby's unsaved changes: live only with his "Speichern" in the
  * Panel, and he can discard it there. The next message tells Claude.
  */
@@ -81,7 +81,7 @@ function blog_assistant_apply(array $proposal, ?int $version): array
 }
 
 /**
- * Writes fields as the spec asks: into a draft at once, into a published
+ * Writes fields: into a draft at once, into a published
  * post, About and their files only as Kirby's unsaved changes.
  */
 function blog_assistant_write(ModelWithContent $model, array $fields): ModelWithContent

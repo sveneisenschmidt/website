@@ -11,6 +11,10 @@
 /.design/
 /DESIGN.md
 
+# Datenbanken, etwa die von Pop: Besucherdaten gehören nie ins öffentliche Repo
+*.db
+*.sqlite*
+
 # Lokale Einstellungen für das Makefile, z. B. der Ordner auf dem Server (nennt das Hosting-Konto)
 /.env
 

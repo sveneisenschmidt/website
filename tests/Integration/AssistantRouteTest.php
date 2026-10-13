@@ -7,8 +7,7 @@ use Website\Tests\Support\GpxFixture;
 
 /**
  * The route card: stations through OSRM or a GPX upload; replacing the
- * route keeps the old file as state (spec, "Karten und Klick" and "GPX und
- * Svens Zuhause").
+ * route keeps the old file as state.
  */
 final class AssistantRouteTest extends AssistantTestCase
 {

@@ -59,15 +59,17 @@ final class TagTest extends IntegrationTestCase
         $this->assertStringContainsString('style="view-transition-name: ' . blog_vt_name($this->post) . '"', $html);
     }
 
-    public function testOnlyTheCoverLoadsAtOnce(): void
+    /** The first image of the post loads at once, also when the cover comes later. */
+    public function testOnlyTheFirstImageLoadsAtOnce(): void
     {
         $cover = $this->upload($this->jpeg(8, 8), 'c.jpg');
         $this->upload($this->jpeg(8, 8), 'e.jpg');
-        $this->kirby->impersonate('kirby', fn() => $this->post->update(['cover' => [$cover->uuid()->toString()]]));
-        $post = $this->kirby->page('photos/test-photo');
+        $this->kirby->impersonate('kirby', fn() => $this->post->update(['cover' => [$cover->uuid()->toString()], 'text' => "(image: e.jpg)\n\n(image: c.jpg)"]));
+        $html = blog_content($this->kirby->page('photos/test-photo'));
 
-        $this->assertStringContainsString("loading=\"eager\"\nfetchpriority=\"high\"\ndecoding=\"async\"", blog_html('(image: c.jpg)', $post));
-        $this->assertStringContainsString("loading=\"lazy\"\ndecoding=\"async\"", blog_html('(image: e.jpg)', $post));
+        $this->assertSame(1, substr_count($html, 'loading="eager"'));
+        $this->assertMatchesRegularExpression('!e-1600x-q80\\.webp"[^>]*loading="eager"\nfetchpriority="high"!s', $html);
+        $this->assertMatchesRegularExpression('!c-1600x-q80\\.webp"[^>]*loading="lazy"!s', $html);
     }
 
     public function testImgclassIsAPlainMarkdownImage(): void
