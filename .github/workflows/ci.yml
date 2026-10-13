@@ -61,6 +61,10 @@ jobs:
       - name: Tests
         run: vendor/bin/phpunit
 
+      # The move to releases, a deploy and a way back, into a folder on the runner.
+      - name: Deploy test
+        run: bin/deploy-test.sh
+
   deploy:
     needs: test
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'

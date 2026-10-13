@@ -31,7 +31,20 @@ make test
 
 ## Deploy
 
-Every push to `main` deploys: the workflow `CI` runs the tests, then the deploy, on a self-hosted runner. There is no deploy by hand. The deploy takes a snapshot of the live state, then uploads the code. It never touches the content. At the end the start page must answer 200, and every page is requested once to fill the page cache.
+Every push to `main` deploys: the workflow `CI` runs the checks, then the deploy, on a self-hosted runner. There is no deploy by hand.
+
+The deploy builds the code once and uploads it as a new release next to the old ones. The site folder on the server holds:
+
+```
+.htaccess        names the live release
+releases/<id>/   the code of a release: www/, vendor/
+shared/          the state: content, media, accounts, cache, sessions, env.php, .salt, storage
+backups/         snapshots of the state
+```
+
+A release links its state paths to `shared/`. The switch replaces `.htaccess` in one rename. If the start page then does not answer 200, the site switches back to the release before and the deploy fails. The newest 5 releases stay. To go back to an older version, run the deploy of its commit again in GitHub Actions.
+
+`bin/deploy-test.sh` runs the deploy against a folder on this machine; CI runs it too. A site from before releases moves once with `bin/migrate-to-releases.sh`.
 
 The workflow reads the host key of the server from the secret `DEPLOY_KNOWN_HOSTS` (the output of `ssh-keyscan` for the deploy host) and the key of the Panel assistant from the secret `ANTHROPIC_API_KEY`.
 
