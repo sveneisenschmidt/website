@@ -27,8 +27,10 @@ use Website\Blog\Site;
 <div class="body">
 <?= $page->bodyHtml() ?>
 </div>
-<p class="post-footer"><a href="mailto:<?= Site::EMAIL ?>?subject=<?= rawurlencode('Re: ' . $page->title()->value()) ?>">Leave me a message</a>
+<?php if (Site::email() !== ''): ?>
+<p class="post-footer"><a href="mailto:<?= Site::email() ?>?subject=<?= rawurlencode('Re: ' . $page->title()->value()) ?>">Leave me a message</a>
 </p>
+<?php endif ?>
 </article>
 <?php snippet('stream', ['current' => $page]) ?>
 <?php endsnippet() ?>

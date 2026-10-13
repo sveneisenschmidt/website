@@ -7,11 +7,15 @@
  * content/.redirects.json must answer 301 to its target, and the target
  * must answer 200. make check-urls runs it against make dev or the live site.
  *
- * Usage: php bin/check-urls.php [site-url] [sitemap-url-or-file] [www-root]
+ * Usage: php bin/check-urls.php <site-url> <sitemap-url-or-file> [www-root]
  */
 
-$site = rtrim($argv[1] ?? 'http://localhost:8010', '/');
-$sitemap = $argv[2] ?? 'https://sven.eisenschmidt.website/sitemap.xml';
+if (!isset($argv[1], $argv[2])) {
+    fwrite(STDERR, "Usage: php bin/check-urls.php <site-url> <sitemap-url-or-file> [www-root]\n");
+    exit(1);
+}
+$site = rtrim($argv[1], '/');
+$sitemap = $argv[2];
 $www = rtrim($argv[3] ?? 'www', '/');
 
 /**

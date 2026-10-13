@@ -93,25 +93,27 @@ hooks:
 # Prüft jede URL der Sitemap der Live-Seite und jede Weiterleitung
 # (bin/check-urls.php). Ohne SITE prüft es make dev, das dafür in einem
 # zweiten Terminal laufen muss. Gegen die Live-Seite:
-# make check-urls SITE=$(LIVE_URL).
+# make check-urls SITE=$(LIVE_URL). Die URLs kommen aus der Sitemap der
+# Live-Seite.
 SITE ?= http://localhost:$(PORT)
 .PHONY: check-urls
-check-urls:
-	@$(PHP) bin/check-urls.php $(SITE)
+check-urls: live-path
+	@$(PHP) bin/check-urls.php $(SITE) $(LIVE_URL)/sitemap.xml
 
 # make pull erreicht den Server über den SSH-Alias website. Den Ordner auf
 # dem Server nennt die lokale Datei .env. Sie ist nicht in Git, weil der Pfad
 # das Hosting-Konto nennt:
-#   LIVE_PATH=/www/htdocs/<konto>/sven.eisenschmidt.website
+#   LIVE_URL=https://<domain>
+#   LIVE_PATH=/www/htdocs/<konto>/<domain>
 # Ein Deploy läuft nur über den Workflow CI.
 LIVE_HOST ?= website
 -include .env
-LIVE_URL ?= https://sven.eisenschmidt.website
 
 .PHONY: live-path
 live-path:
 	@test -n "$(LIVE_PATH)" || { echo "LIVE_PATH fehlt. Der Kommentar über LIVE_HOST im Makefile zeigt, was in .env steht." >&2; exit 1; }
-	@test "$(notdir $(LIVE_PATH))" = sven.eisenschmidt.website || { echo "LIVE_PATH zeigt nicht auf den Ordner sven.eisenschmidt.website." >&2; exit 1; }
+	@test -n "$(LIVE_URL)" || { echo "LIVE_URL fehlt. Der Kommentar über LIVE_HOST im Makefile zeigt, was in .env steht." >&2; exit 1; }
+	@test "$(notdir $(LIVE_PATH))" = "$(patsubst https://%,%,$(LIVE_URL))" || { echo "LIVE_PATH endet nicht im Ordner, der wie die Domain aus LIVE_URL heißt." >&2; exit 1; }
 
 # Ersetzt Inhalte und Konten in www/ durch den Stand des Servers.
 .PHONY: pull
@@ -121,5 +123,5 @@ pull: live-path
 # Ruft jede Seite der Live-Seite und jedes Vorschaubild unter /media/ einmal
 # ab, damit Kirby sie vor dem ersten Besuch erzeugt (bin/warm.php).
 .PHONY: warm
-warm:
+warm: live-path
 	@$(PHP) bin/warm.php $(LIVE_URL)

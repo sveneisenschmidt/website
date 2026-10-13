@@ -27,7 +27,7 @@ use Website\Models\TripPage;
 // conversion to sRGB before the resize (SrgbGd).
 Darkroom::$types['blog-gd'] = SrgbGd::class;
 
-Kirby::plugin('sveneisenschmidt/blog', [
+Kirby::plugin('website/blog', [
     'hooks' => [
         // The EXIF goes into the content file of the image once, on upload.
         // So every backup has it, and a wrong value can be corrected in the

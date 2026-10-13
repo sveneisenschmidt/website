@@ -27,4 +27,4 @@ jobs:
       # No setup-php: the job uses the PHP that the workflow CI installed on
       # the self-hosted runner.
       - name: Submit to IndexNow
-        run: php bin/indexnow.php https://sven.eisenschmidt.website
+        run: php bin/indexnow.php "${{ vars.SITE_URL }}"

@@ -161,7 +161,8 @@ final class RouteTest extends TestCase
 
         $route = Route::osrm([[12.3, 51.3], [13.4, 52.5]], $http);
 
-        $this->assertSame([['https://router.project-osrm.org/route/v1/driving/12.3,51.3;13.4,52.5?overview=full&geometries=geojson', Route::AGENT]], $calls);
+        $this->assertSame([['https://router.project-osrm.org/route/v1/driving/12.3,51.3;13.4,52.5?overview=full&geometries=geojson', Route::agent()]], $calls);
+        $this->assertStringEndsWith('/assistant (Kirby; one request per proposal)', Route::agent());
         $this->assertSame(['line' => [[12.3, 51.3], [12.35, 51.31], [13.4, 52.5]], 'km' => 12.3, 'seconds' => 900], $route);
     }
 

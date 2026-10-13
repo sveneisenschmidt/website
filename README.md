@@ -1,4 +1,4 @@
-# sven.eisenschmidt.website
+# Website
 
 My personal website, built with [Kirby](https://getkirby.com/).
 
@@ -49,12 +49,13 @@ A release has a symlink into `shared/` for each of these paths. The switch repla
 
 `bin/deploy-test.sh` runs the deploy against a folder on this machine, a switch back after a failed health check included. CI runs it too.
 
-The workflow reads the host key of the server from the secret `DEPLOY_KNOWN_HOSTS` (the output of `ssh-keyscan` for the deploy host) and the key of the Panel assistant from the secret `ANTHROPIC_API_KEY`.
+The workflow reads the host key of the server from the secret `DEPLOY_KNOWN_HOSTS` (the output of `ssh-keyscan` for the deploy host) and the key of the Panel assistant from the secret `ANTHROPIC_API_KEY`. The URL of the site comes from the repository variable `SITE_URL`.
 
 `make pull` reads the server folder from a local `.env`, which is not in git:
 
 ```
-LIVE_PATH=/www/htdocs/<account>/sven.eisenschmidt.website
+LIVE_URL=https://<domain>
+LIVE_PATH=/www/htdocs/<account>/<domain>
 ```
 
 ## Backups

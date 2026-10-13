@@ -131,7 +131,8 @@ ln -s ../../shared/storage "$BUILD/storage"
 # never a missing one. PHP's rename() replaces the symlink `current`; mv would
 # move current.new into the folder that `current` points to.
 switch_to() {
-  sed "s|RELEASE_ID|$1|" server/root.htaccess > "$BUILD/htaccess"
+  # Only the Rewrite lines: the comments name the placeholders too.
+  sed -e "/^Rewrite/s|RELEASE_ID|$1|" -e "/^Rewrite/s|SITE_HOST_PATTERN|${SITE_HOST//./\\\\.}|" -e "/^Rewrite/s|SITE_URL|$SITE_URL|" server/root.htaccess > "$BUILD/htaccess"
   chmod 644 "$BUILD/htaccess"
   rsync -tpz ${RSYNC_SSH[@]+"${RSYNC_SSH[@]}"} "$BUILD/htaccess" "$DEST/.htaccess.new"
   remote "cd '$DEPLOY_PATH' && rm -f current.new && ln -s 'releases/$1' current.new && $RPHP -r 'exit(rename(\"current.new\", \"current\") && rename(\".htaccess.new\", \".htaccess\") ? 0 : 1);'"

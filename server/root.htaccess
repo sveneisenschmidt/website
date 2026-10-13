@@ -17,8 +17,9 @@ RewriteEngine On
 RewriteRule ^\.well-known/ - [L]
 
 # The site folder also answers under other host names. A request for any of
-# them gets a 301 to the same path on sven.eisenschmidt.website.
-RewriteCond %{HTTP_HOST} !^sven\.eisenschmidt\.website$ [NC]
-RewriteRule ^(.*)$ https://sven.eisenschmidt.website/$1 [R=301,L]
+# them gets a 301 to the same path on the host of SITE_URL. bin/deploy.sh
+# writes SITE_HOST_PATTERN (the host as a regular expression) and SITE_URL.
+RewriteCond %{HTTP_HOST} !^SITE_HOST_PATTERN$ [NC]
+RewriteRule ^(.*)$ SITE_URL/$1 [R=301,L]
 
 RewriteRule ^(.*)$ releases/RELEASE_ID/www/$1 [L]

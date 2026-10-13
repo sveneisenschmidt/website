@@ -23,7 +23,10 @@ final class Route
      * the public server asks for a User-Agent that identifies the client and
      * for few requests. The assistant sends one per proposal, without a retry.
      */
-    public const AGENT = 'sven.eisenschmidt.website/assistant (Kirby; one request per proposal)';
+    public static function agent(): string
+    {
+        return (string) parse_url(site()->url(), PHP_URL_HOST) . '/assistant (Kirby; one request per proposal)';
+    }
 
     /** Tolerance of `simplify()` for OSRM lines in degrees, about 55 m. GPX tracks use `Gpx::EPSILON`. */
     public const EPSILON = 0.0005;
@@ -188,9 +191,9 @@ final class Route
         $url = self::OSRM . implode(';', array_map(fn(array $p) => Text::number((float) $p[0], 6) . ',' . Text::number((float) $p[1], 6), $stations)) . '?overview=full&geometries=geojson';
         try {
             if ($http !== null) {
-                [$status, $body] = $http($url, self::AGENT);
+                [$status, $body] = $http($url, self::agent());
             } else {
-                $remote = Remote::get($url, ['agent' => self::AGENT, 'timeout' => 20]);
+                $remote = Remote::get($url, ['agent' => self::agent(), 'timeout' => 20]);
                 [$status, $body] = [$remote->code(), (string) $remote->content()];
             }
         } catch (Throwable $e) {

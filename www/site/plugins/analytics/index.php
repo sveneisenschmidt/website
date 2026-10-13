@@ -10,7 +10,7 @@ use Website\Analytics\Totals;
  * About shows the totals through snippets/stats.php.
  */
 
-App::plugin('sveneisenschmidt/analytics', [
+App::plugin('website/analytics', [
     'hooks' => [
         // Kirby runs route:after before Page::render() reads the page cache,
         // so views of cached pages count too.

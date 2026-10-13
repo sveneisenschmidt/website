@@ -20,9 +20,9 @@ use Website\Blog\Site;
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
 <?php if ($page->isHomePage()): ?>
-<h1 class="masthead"><a href="/"><?= esc(Site::HEADING) ?></a></h1>
+<h1 class="masthead"><a href="/"><?= esc(Site::heading()) ?></a></h1>
 <?php else: ?>
-<p class="masthead"><a href="/"><?= esc(Site::HEADING) ?></a></p>
+<p class="masthead"><a href="/"><?= esc(Site::heading()) ?></a></p>
 <?php endif ?>
 </header>
 <main id="main"><?= $slot ?></main>

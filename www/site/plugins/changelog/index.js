@@ -27,7 +27,7 @@ const actions = {
   "user.changePassword": "Passwort geändert",
 };
 
-panel.plugin("sveneisenschmidt/changelog", {
+panel.plugin("website/changelog", {
   components: {
     "k-blog-changelog-view": {
       props: { entries: Array },

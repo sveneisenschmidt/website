@@ -93,7 +93,7 @@ const ABOUT = `
   <p class="blog-ai-note">Bei veröffentlichten Beiträgen und About schreibt ein Klick in die Änderungen. Live geht es erst mit deinem Speichern. Was du schickst, auch Fotos, geht an Anthropic. Orte einer Route gehen an OSRM. Von einer GPX-Datei sieht Claude nur die Linie ohne ihre Enden.</p>
 `;
 
-panel.plugin("sveneisenschmidt/assistant", {
+panel.plugin("website/assistant", {
   icons: {
     robot: '<g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="7.5" width="15" height="12" rx="3"/><path d="M12 7.5V4.5M9.3 19.5v1.8M14.7 19.5v1.8M2.3 12.8v3M21.7 12.8v3M9.5 16.5h5"/><circle cx="12" cy="3.5" r=".9"/></g><circle cx="9" cy="12.9" r="1.4"/><circle cx="15" cy="12.9" r="1.4"/>',
   },

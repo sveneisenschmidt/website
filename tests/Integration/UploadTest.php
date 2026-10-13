@@ -251,7 +251,12 @@ final class UploadTest extends AssistantTestCase
         $meta = Uploads::meta($upload['id']);
         $this->assertSame('gpx', $meta['kind']);
         $this->assertNull($meta['path']);
-        $this->assertEqualsWithDelta(13.8, $meta['km'], 0.6);
+        // Each end loses a random length between TRIM_MIN and TRIM_MAX, and the
+        // simplified line is up to 0.2 km shorter than the cut one. A fixed
+        // expected value failed when both ends lost long pieces.
+        $full = Route::length(GpxFixture::ride()) / 1000;
+        $this->assertGreaterThanOrEqual(round($full - 2 * Gpx::TRIM_MAX / 1000 - 0.2, 1), $meta['km']);
+        $this->assertLessThanOrEqual(round($full - 2 * Gpx::TRIM_MIN / 1000, 1), $meta['km']);
         foreach ($meta['line'] as $point) {
             $this->assertGreaterThanOrEqual(Gpx::TRIM_MIN, Route::distance(GpxFixture::home(), $point));
         }

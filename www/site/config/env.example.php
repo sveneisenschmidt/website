@@ -15,5 +15,5 @@ return [
     // 'assistantKey' => 'sk-ant-…',
     // The canonical URL of the site on the server. The deploy sets it. Leave
     // it out locally.
-    // 'url' => 'https://sven.eisenschmidt.website',
+    // 'url' => 'https://example.com',
 ];

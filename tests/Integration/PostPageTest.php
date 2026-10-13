@@ -20,8 +20,7 @@ final class PostPageTest extends IntegrationTestCase
         $this->assertStringContainsString("<link rel=\"canonical\" href=\"$url\">", $html);
         $this->assertStringContainsString('"@type": "Article"', $html);
         $this->assertStringContainsString('<body class="photo">', $html);
-        $this->assertStringContainsString('<p class="masthead"><a href="/">Sven Eisenschmidt</a></p>', $html);
-        $this->assertStringNotContainsString('pop.eisenschmidt.website', $html);
+        $this->assertStringContainsString('<p class="masthead"><a href="/">Personal Blog</a></p>', $html, 'without a heading the site title');
     }
 
     public function testCssAndTheScriptsOfAPostInline(): void
@@ -42,7 +41,7 @@ final class PostPageTest extends IntegrationTestCase
         $this->assertStringContainsString('<a href="/archive/photos/">photo</a>', $html);
         $this->assertStringContainsString('<a href="/archive/"><time datetime="2026-10-07">October 7, 2026</time></a>', $html);
         $this->assertStringContainsString('<div class="body">' . "\n<p>Test intro</p>", $html);
-        $this->assertStringContainsString('<a href="mailto:sven.eisenschmidt@gmail.com?subject=Re%3A%20Test%20Photo">Leave me a message</a>', $html);
+        $this->assertStringNotContainsString('mailto:', $html, 'without an address in About there is no link');
     }
 
     public function testTimelineShowsTheNeighbours(): void

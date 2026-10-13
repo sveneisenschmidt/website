@@ -23,7 +23,7 @@ use Website\Assistant\Uploads;
  * file only registers it with Kirby.
  */
 
-App::plugin('sveneisenschmidt/assistant', [
+App::plugin('website/assistant', [
     'areas' => [
         'assistent' => function () {
             return [

@@ -30,7 +30,7 @@ final class Feeds
             . "  <channel>\n"
             . '    <title>' . Xml::encode($site->title()->value()) . "</title>\n"
             . "    <link>$home</link>\n"
-            . '    <description>' . Xml::encode(Site::DESCRIPTION) . "</description>\n"
+            . '    <description>' . Xml::encode(Site::description()) . "</description>\n"
             . "    <generator>Kirby</generator>\n"
             . "    <language>en-us</language>\n"
             . '    <lastBuildDate>' . ($posts->first()?->date()->toDate(self::RSS_DATE) ?? '') . "</lastBuildDate>\n"

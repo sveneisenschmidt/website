@@ -1,7 +1,7 @@
 // The Panel view "Besucher": the visits of the last 30 days. The file needs
 // no build step: the Panel includes the Vue template compiler (option
 // panel.vue.compiler, on by default) and compiles the template in the browser.
-panel.plugin("sveneisenschmidt/analytics", {
+panel.plugin("website/analytics", {
   components: {
     "k-blog-analytics-view": {
       props: { summary: Object },

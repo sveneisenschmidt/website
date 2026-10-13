@@ -9,7 +9,7 @@ use Website\Changelog\Log;
  * Panel view "Verlauf". The classes are in src/Changelog.
  */
 
-App::plugin('sveneisenschmidt/changelog', [
+App::plugin('website/changelog', [
     'hooks' => [
         'page.*:after' => fn(Event $event) => Log::event($event),
         'file.*:after' => fn(Event $event) => Log::event($event),

@@ -99,12 +99,12 @@ class SitePage extends Page
 
     /**
      * The meta description: for a post or About, its summary, shortened at
-     * a word to about 160 characters; for every other page, Site::DESCRIPTION.
+     * a word to about 160 characters; for every other page, Site::description().
      */
     public function metaDescription(): string
     {
         $summary = $this->isArticle() ? $this->summary() : '';
-        return $summary === '' ? Site::DESCRIPTION : Str::excerpt($summary, 160, false);
+        return $summary === '' ? Site::description() : Str::excerpt($summary, 160, false);
     }
 
     public function coverImage(): ?File

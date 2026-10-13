@@ -46,16 +46,15 @@ final class Layout
     {
         $home = $page->site()->url() . '/';
         if ($page->isHomePage()) {
-            $about = page('about');
-            $employer = (string) $about?->employer()->value();
+            $employer = Site::employer();
             return array_filter([
                 '@context' => 'https://schema.org',
                 '@type' => 'Person',
-                'name' => Site::AUTHOR,
+                'name' => Site::author(),
                 'url' => $home,
-                'jobTitle' => (string) $about?->jobtitle()->value(),
-                'worksFor' => $employer === '' ? null : array_filter(['@type' => 'Organization', 'name' => $employer, 'url' => (string) $about->employerurl()->value()]),
-                'sameAs' => [Site::GITHUB_URL, Site::LINKEDIN_URL, Site::STRAVA_URL],
+                'jobTitle' => Site::jobTitle(),
+                'worksFor' => $employer === '' ? null : array_filter(['@type' => 'Organization', 'name' => $employer, 'url' => Site::employerUrl()]),
+                'sameAs' => Site::profiles(),
             ]);
         }
         if (!$page instanceof PostPage) {
@@ -70,8 +69,8 @@ final class Layout
             'image' => $meta['image'],
             'url' => $meta['url'],
             'description' => $meta['description'],
-            'author' => ['@type' => 'Person', 'name' => Site::AUTHOR, 'url' => $home],
-            'publisher' => ['@type' => 'Person', 'name' => Site::AUTHOR, 'url' => $home],
+            'author' => array_filter(['@type' => 'Person', 'name' => Site::author(), 'url' => $home]),
+            'publisher' => array_filter(['@type' => 'Person', 'name' => Site::author(), 'url' => $home]),
         ]);
     }
 
