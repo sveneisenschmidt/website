@@ -2,6 +2,8 @@
 
 namespace Website\Tests\Integration;
 
+use Website\Changelog\Log;
+
 /**
  * The prompt is set to a marker. It goes to Claude and nowhere else: no
  * page, no route, no Panel view of the assistant, no log.
@@ -38,7 +40,7 @@ final class PromptLeakTest extends AssistantTestCase
         }
         $outputs['assistant view'] = json_encode(blog_assistant_view(blog_assistant_load()));
         $outputs['protokoll'] = json_encode(blog_assistant_log_view());
-        $outputs['verlauf'] = json_encode(blog_changelog_entries());
+        $outputs['verlauf'] = json_encode(Log::entries());
         foreach (glob($this->root . '/content/{.assistant,.changelog}/*.jsonl', GLOB_BRACE) as $file) {
             $outputs[$file] = file_get_contents($file);
         }
