@@ -16,10 +16,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          sparse-checkout: static
+          sparse-checkout: www
       - name: Submit to IndexNow
         run: |
-          INDEXNOW_KEY=$(basename static/*-*-*-*-*.txt .txt)
+          INDEXNOW_KEY=$(basename www/*-*-*-*-*.txt .txt)
           URLS=$(curl -s https://sven.eisenschmidt.website/sitemap.xml | grep -oE 'https://sven\.eisenschmidt\.website[^<]+')
           URL_LIST=$(echo "$URLS" | jq -R -s -c 'split("\n") | map(select(length > 0))')
           echo "Submitting $(echo "$URLS" | wc -l | tr -d ' ') URLs to IndexNow..."
