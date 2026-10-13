@@ -54,13 +54,16 @@ final class SearchTest extends IntegrationTestCase
         $this->assertStringContainsString('<span>Nothing found</span><span>0</span>', $this->search('zebra'));
     }
 
-    public function testJsonForSearchJs(): void
+    public function testJsonForSearchJsIsTheResultListOfThePage(): void
     {
         $json = json_decode($this->search('pond', 'json'), true);
+        preg_match('!<div class="search-results" data-search-results>(.*?)</div>\n</section>!s', $this->search('pond'), $page);
 
-        $this->assertSame(['url', 'title', 'date', 'thumb', 'thumb2x'], array_keys($json[0]));
-        $this->assertSame(['Pond Note', 'Test Photo'], array_column($json, 'title'));
-        $this->assertSame('2026-10-07', $json[1]['date']);
+        $this->assertSame(['html'], array_keys($json));
+        $this->assertSame($page[1], $json['html'], 'search.js shows what the page with ?q= shows');
+        $this->assertMatchesRegularExpression('!>Pond Note</a>.*>Test Photo</a>!s', $json['html'], 'newest first');
+        $this->assertStringContainsString('<span>Nothing found</span><span>0</span>', json_decode($this->search('zebra', 'json'), true)['html']);
+        $this->assertSame(['html' => ''], json_decode($this->search('', 'json'), true));
     }
 
     /** The search page for ?q=$query: Kirby reads the query when it starts. */

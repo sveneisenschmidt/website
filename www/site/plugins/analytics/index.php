@@ -132,23 +132,11 @@ function blog_analytics_count(string $id, string $ip, string $ua, string $refere
         }
         $month[$date] = $day;
 
-        blog_analytics_write("$cache/$date.json", $seen);
-        blog_analytics_write(blog_analytics_dir() . '/' . substr($date, 0, 7) . '.json', $month);
+        blog_write_json("$cache/$date.json", $seen);
+        blog_write_json(blog_analytics_dir() . '/' . substr($date, 0, 7) . '.json', $month);
     } finally {
         flock($lock, LOCK_UN);
         fclose($lock);
-    }
-}
-
-/** Writes to a temporary file first: a crash or a full disk never leaves half a file. */
-function blog_analytics_write(string $file, array $data): void
-{
-    Dir::make(dirname($file));
-    $tmp = $file . '.' . bin2hex(random_bytes(4)) . '.tmp';
-    $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR) . "\n";
-    if (file_put_contents($tmp, $json) !== strlen($json) || !rename($tmp, $file)) {
-        @unlink($tmp);
-        throw new RuntimeException("Could not write $file");
     }
 }
 
@@ -244,6 +232,23 @@ function blog_analytics_totals(): array
     $totals['top'] = array_slice($posts, 0, 5, true);
     $totals['pages'] = count($totals['pages']);
     return $totals;
+}
+
+/**
+ * The visitor numbers on About: visits, views, pages,
+ * and the most visited posts as [post, visits]. Null before the first visit.
+ */
+function blog_analytics_stats(): ?array
+{
+    $totals = blog_analytics_totals();
+    if ($totals['visits'] === 0) {
+        return null;
+    }
+    $top = [];
+    foreach ($totals['top'] as $id => $visits) {
+        $top[] = [page($id), $visits];
+    }
+    return ['top' => $top] + $totals;
 }
 
 /** Title and public URL of a counted page, also for deleted pages. */

@@ -41,6 +41,24 @@ final class TextTest extends IntegrationTestCase
         $this->assertSame(str_repeat('word ', 31) . 'word …', blog_description($post));
     }
 
+    public function testPlainTextSkipsFiguresAndMapsWithoutRenderingThem(): void
+    {
+        $note = $this->post('notes', 'note', 'with-figure', 'With figure');
+        $this->upload($this->jpeg(8, 8), 'a.jpg', $note);
+        $note = $this->kirby->impersonate('kirby', fn () => $note->update([
+            'intro' => '',
+            'text' => "(image: a.jpg)\n\nOne two.\n\n## A heading\n\n(map:)\n\nThree (image: a.jpg caption: (four)) five.",
+        ]));
+        $thumbs = fn () => glob($this->kirby->root('media') . '/pages/notes/with-figure/*/.jobs/*.json') ?: [];
+
+        $this->assertSame("One two.\nA heading\nThree  five.", blog_summary($note));
+        $this->assertSame(6, blog_words(blog_plain_content($note)));
+        $this->assertSame([], $thumbs(), 'no figure was rendered');
+
+        blog_html($note->text()->value(), $note);
+        $this->assertNotSame([], $thumbs(), 'the page itself renders the figures');
+    }
+
     public function testSummaryIsTheIntroOrTheText(): void
     {
         $this->assertSame('Test intro', blog_summary($this->post));

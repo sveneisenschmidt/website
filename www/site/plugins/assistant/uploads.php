@@ -13,7 +13,7 @@ use Kirby\Filesystem\F;
  * session and the chat hold only their names.
  */
 
-const BLOG_UPLOADS_SESSION = 'blog.assistant.uploads';
+const BLOG_UPLOAD_SESSION = 'blog.assistant.uploads';
 
 /** Accepted image types: MIME type from finfo => extension. */
 const BLOG_UPLOAD_TYPES = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
@@ -51,23 +51,16 @@ function blog_uploads_root(): string
 /** The uploads of this session's chat: folder, upload ids with their kind, ids not yet sent. */
 function blog_uploads_state(): array
 {
-    return kirby()->session()->get(BLOG_UPLOADS_SESSION) ?? ['folder' => null, 'items' => [], 'pending' => []];
-}
-
-function blog_uploads_save(array $state): void
-{
-    kirby()->session()->set(BLOG_UPLOADS_SESSION, $state);
+    return kirby()->session()->get(BLOG_UPLOAD_SESSION) ?? ['folder' => null, 'items' => [], 'pending' => []];
 }
 
 /** The folder of this chat, created on first use. Every call counts as use. */
 function blog_uploads_dir(): string
 {
-    blog_assistant_lock();
-    $state = blog_uploads_state();
-    if ($state['folder'] === null) {
-        $state['folder'] = bin2hex(random_bytes(16));
-        blog_uploads_save($state);
-    }
+    $state = blog_assistant_update(BLOG_UPLOAD_SESSION, blog_uploads_state(...), function (array $state): array {
+        $state['folder'] ??= bin2hex(random_bytes(16));
+        return $state;
+    });
     $dir = blog_uploads_root() . '/' . $state['folder'];
     Dir::make($dir);
     touch($dir . '/.last');
@@ -97,7 +90,7 @@ function blog_uploads_accept(string $tmp, string $name): array
         return blog_uploads_accept_gpx($tmp, $name);
     }
     if ($size > BLOG_UPLOAD_MAX_BYTES) {
-        throw blog_uploads_error('Die Datei ist größer als 60 MB.');
+        throw blog_uploads_error('Die Datei ist größer als ' . intdiv(BLOG_UPLOAD_MAX_BYTES, 1024 * 1024) . ' MB.');
     }
     $mime = (new finfo(FILEINFO_MIME_TYPE))->file($tmp);
     $ext = BLOG_UPLOAD_TYPES[$mime] ?? null;
@@ -107,7 +100,7 @@ function blog_uploads_accept(string $tmp, string $name): array
     }
     [$width, $height] = $info;
     if ($width < 1 || $height < 1 || $width * $height > BLOG_UPLOAD_MAX_PIXELS) {
-        throw blog_uploads_error('Das Bild hat mehr als 64 Megapixel.');
+        throw blog_uploads_error('Das Bild hat mehr als ' . intdiv(BLOG_UPLOAD_MAX_PIXELS, 1000000) . ' Megapixel.');
     }
     $bytes = (string)file_get_contents($tmp);
     if (preg_match(BLOG_UPLOAD_CODE, $bytes)) {
@@ -181,11 +174,11 @@ function blog_uploads_register(string $id, array $meta): array
 {
     // Camera texts in another encoding than UTF-8 keep their readable part.
     F::write(blog_uploads_dir() . "/$id.json", json_encode($meta, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR));
-    blog_assistant_lock();
-    $state = blog_uploads_state();
-    $state['items'][$id] = $meta['kind'];
-    $state['pending'][] = $id;
-    blog_uploads_save($state);
+    blog_assistant_update(BLOG_UPLOAD_SESSION, blog_uploads_state(...), function (array $state) use ($id, $meta): array {
+        $state['items'][$id] = $meta['kind'];
+        $state['pending'][] = $id;
+        return $state;
+    });
     return ['id' => $id] + $meta;
 }
 
@@ -232,10 +225,10 @@ function blog_uploads_pending(): array
 /** Marks uploads as sent: they went with a message. */
 function blog_uploads_sent(array $ids): void
 {
-    blog_assistant_lock();
-    $state = blog_uploads_state();
-    $state['pending'] = array_values(array_diff($state['pending'], $ids));
-    blog_uploads_save($state);
+    blog_assistant_update(BLOG_UPLOAD_SESSION, blog_uploads_state(...), function (array $state) use ($ids): array {
+        $state['pending'] = array_values(array_diff($state['pending'], $ids));
+        return $state;
+    });
 }
 
 /** What Claude gets with the message: the preview once, and the facts as text. */
@@ -292,22 +285,27 @@ function blog_uploads_expand(array $messages): array
 /** An image file of this chat's folder, or null. */
 function blog_uploads_read(string $file): ?string
 {
-    $folder = blog_uploads_state()['folder'];
-    if ($folder === null || !preg_match(BLOG_UPLOAD_IMAGE, $file)) {
-        return null;
-    }
-    $data = @file_get_contents(blog_uploads_root() . "/$folder/$file");
+    $path = blog_uploads_file($file, BLOG_UPLOAD_IMAGE);
+    $data = $path === null ? false : @file_get_contents($path);
     return $data === false ? null : $data;
 }
 
 /** The size of an image file of this chat's folder in bytes, 0 when it is gone. */
 function blog_uploads_size(string $file): int
 {
+    $path = blog_uploads_file($file, BLOG_UPLOAD_IMAGE);
+    return $path === null ? 0 : (int)@filesize($path);
+}
+
+/**
+ * The path of $name in this chat's folder. Null without a folder, or when
+ * $name does not match $pattern: the name comes from Claude or the Panel
+ * and must not lead out of the folder.
+ */
+function blog_uploads_file(string $name, string $pattern): ?string
+{
     $folder = blog_uploads_state()['folder'];
-    if ($folder === null || !preg_match(BLOG_UPLOAD_IMAGE, $file)) {
-        return 0;
-    }
-    return (int)@filesize(blog_uploads_root() . "/$folder/$file");
+    return $folder !== null && preg_match($pattern, $name) ? blog_uploads_root() . "/$folder/$name" : null;
 }
 
 /** Bytes as base64 carries them, as a request to Claude does. */
@@ -319,11 +317,8 @@ function blog_uploads_base64(int $bytes): int
 /** The thumbnail of an image upload as data URL for a card, or null. */
 function blog_uploads_thumb(string $id): ?string
 {
-    $state = blog_uploads_state();
-    if (!preg_match(BLOG_UPLOAD_ID, $id) || $state['folder'] === null) {
-        return null;
-    }
-    $data = @file_get_contents(blog_uploads_root() . '/' . $state['folder'] . "/$id.thumb.jpg");
+    $path = blog_uploads_file($id, BLOG_UPLOAD_ID);
+    $data = $path === null ? false : @file_get_contents("$path.thumb.jpg");
     return $data === false ? null : 'data:image/jpeg;base64,' . base64_encode($data);
 }
 
@@ -581,7 +576,7 @@ function blog_uploads_remove(?string $folder): void
 function blog_uploads_reset(): void
 {
     blog_uploads_remove(blog_uploads_state()['folder']);
-    kirby()->session()->remove(BLOG_UPLOADS_SESSION);
+    kirby()->session()->remove(BLOG_UPLOAD_SESSION);
 }
 
 /**
@@ -618,10 +613,10 @@ function blog_uploads_cleanup(): void
         }
     }
     if ($gone !== []) {
-        blog_assistant_lock();
-        $state = blog_uploads_state();
-        $state['pending'] = array_values(array_diff($state['pending'], $gone));
-        blog_uploads_save($state);
+        blog_assistant_update(BLOG_UPLOAD_SESSION, blog_uploads_state(...), function (array $state) use ($gone): array {
+            $state['pending'] = array_values(array_diff($state['pending'], $gone));
+            return $state;
+        });
         blog_assistant_note('(Uploads deleted ' . BLOG_UPLOAD_DAYS . ' days after they came, no longer available: ' . implode(', ', $gone) . '.)');
     }
 }

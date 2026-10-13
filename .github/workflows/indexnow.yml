@@ -1,29 +1,29 @@
 name: IndexNow
 
-# Meldet einmal am Tag alle Seiten aus der Sitemap an IndexNow (Bing, Yandex, ...).
-# Eigener Workflow, damit ein Fehler bei IndexNow den Deploy nicht anhält.
-
+# Once a day, sends the pages that changed since the day before to IndexNow
+# (bin/indexnow.php). Posts change in the Panel without a deploy, so this
+# runs on a schedule. A workflow of its own, so an IndexNow error never
+# stops a deploy.
 on:
   schedule:
-    # Täglich um 6 Uhr UTC
+    # Every day at 6:00 UTC
     - cron: "0 6 * * *"
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   submit:
     runs-on: self-hosted
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          sparse-checkout: www
+          sparse-checkout: |
+            bin
+            www
+
+      # PHP is on the runner from the workflow Deploy.
       - name: Submit to IndexNow
-        run: |
-          INDEXNOW_KEY=$(basename www/*-*-*-*-*.txt .txt)
-          URLS=$(curl -s https://sven.eisenschmidt.website/sitemap.xml | grep -oE 'https://sven\.eisenschmidt\.website[^<]+')
-          URL_LIST=$(echo "$URLS" | jq -R -s -c 'split("\n") | map(select(length > 0))')
-          echo "Submitting $(echo "$URLS" | wc -l | tr -d ' ') URLs to IndexNow..."
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST "https://api.indexnow.org/indexnow" \
-            -H "Content-Type: application/json" \
-            -d "{\"host\":\"sven.eisenschmidt.website\",\"key\":\"$INDEXNOW_KEY\",\"urlList\":$URL_LIST}")
-          echo "IndexNow response: $HTTP_STATUS"
-          if [ "$HTTP_STATUS" -ge 400 ]; then exit 1; fi
+        run: php bin/indexnow.php https://sven.eisenschmidt.website

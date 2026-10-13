@@ -2,17 +2,6 @@
 
 Options -Indexes
 
-# BEGIN staging auth
-# Password protection while the site is not public (Kirby is free on a
-# password-protected staging site). Apache needs the absolute path to
-# .htpasswd: the deploy replaces __HTPASSWD__ and removes the "#" below.
-# Remove this block at launch.
-#AuthType Basic
-#AuthName "sven.eisenschmidt.website staging"
-#AuthUserFile __HTPASSWD__
-#Require valid-user
-# END staging auth
-
 <IfModule mod_rewrite.c>
 
 RewriteEngine on

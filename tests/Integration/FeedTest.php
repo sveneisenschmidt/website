@@ -21,6 +21,14 @@ final class FeedTest extends IntegrationTestCase
         ]));
     }
 
+    /** HEAD answers 200, as for every page. Without 'method' a route answers HEAD with 404. */
+    public function testTheFilesForMachinesAnswerHead(): void
+    {
+        foreach (['index.xml', 'sitemap.xml', 'robots.txt', 'llms.txt'] as $path) {
+            $this->assertSame(200, $this->kirby->render($path, 'HEAD')?->code(), $path);
+        }
+    }
+
     public function testFeedWithChannelAndItems(): void
     {
         $response = $this->kirby->render('index.xml');
@@ -41,6 +49,27 @@ final class FeedTest extends IntegrationTestCase
             . " (<a href=\"$link\" title=\"Continue reading Test Photo\">5 more words</a>)</p>]]></description>",
             $xml
         );
+    }
+
+    public function testFeedAndSitemapAnswerIfModifiedSince(): void
+    {
+        foreach (['index.xml', 'sitemap.xml'] as $path) {
+            $first = $this->kirby->render($path);
+            $modified = (string)$first->header('Last-Modified');
+            $request = fn (string $since) => TestSite::app($this->root, $this->options, ['server' => ['HTTP_IF_MODIFIED_SINCE' => $since]])->render($path);
+
+            $this->assertMatchesRegularExpression('/^\w{3}, \d{2} \w{3} \d{4} \d{2}:\d{2}:\d{2} GMT$/', $modified, $path);
+            $this->assertSame(200, $first->code(), $path);
+
+            $unchanged = $request($modified);
+            $this->assertSame(304, $unchanged->code(), $path);
+            $this->assertSame('', $unchanged->body(), $path);
+            $this->assertSame($modified, $unchanged->header('Last-Modified'), $path);
+
+            $older = $request(gmdate('D, d M Y H:i:s', strtotime($modified) - 60) . ' GMT');
+            $this->assertSame(200, $older->code(), $path);
+            $this->assertSame($first->body(), $older->body(), $path);
+        }
     }
 
     public function testSitemapWithTheTimeOfTheContentFileAndTheCover(): void
@@ -87,5 +116,6 @@ final class FeedTest extends IntegrationTestCase
 
         $this->assertStringStartsWith("# Sven Eisenschmidt - Personal Blog\n\n> A personal website.\n\nCrawl it.\n\n## Essays\n\n- [An Essay]({$essay->url()}): Test intro\n\n## Site\n", $text);
         $this->assertStringContainsString('- [Feed](http://localhost/index.xml)', $text);
+        $this->assertSame($text, $this->kirby->cache('pages')->get('llms.txt'), 'in the page cache');
     }
 }

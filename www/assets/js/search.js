@@ -1,13 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Die Treffer kommen beim Tippen von /search.json, schon nach Datum
-    // sortiert. Sie stehen im Aufbau des Archivs: Monatszeile mit Jahr und
-    // Anzahl, darunter Zeilen aus Tag, Titel und Vorschaubild. Mit ?q= in der
-    // Adresse stehen sie schon vom Server in der Seite.
-    var MONTHS = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ];
-
+    // While typing, /search.json brings the result list as HTML, from the
+    // same snippets as the search page with ?q= in the address.
     var input = document.querySelector("[data-search-input]");
     var output = document.querySelector("[data-search-results]");
     if (!input || !output) return;
@@ -19,107 +12,28 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // search.json is not in the page cache: a request waits for a pause in
+    // typing, and the next keystroke aborts it.
+    var timer = 0;
+    var request = null;
+
     function load(term) {
-        return fetch("/search.json?q=" + encodeURIComponent(term))
+        request = new AbortController();
+        var signal = request.signal;
+        fetch("/search.json?q=" + encodeURIComponent(term), { signal: signal })
             .then(function (response) {
                 return response.ok ? response.json() : null;
             })
             .catch(function () {
                 return null;
+            })
+            .then(function (data) {
+                if (signal.aborted) return;
+
+                output.innerHTML = data
+                    ? data.html
+                    : '<h2 class="archive-month stream-title"><span>Search unavailable</span><span>0</span></h2>';
             });
-    }
-
-    function bar(label, count) {
-        var heading = document.createElement("h2");
-        heading.className = "archive-month stream-title";
-
-        var name = document.createElement("span");
-        name.textContent = label;
-
-        var total = document.createElement("span");
-        total.textContent = count;
-
-        heading.appendChild(name);
-        heading.appendChild(total);
-        return heading;
-    }
-
-    function row(result) {
-        var item = document.createElement("li");
-        item.className = "archive-item";
-
-        var day = document.createElement("span");
-        day.className = "archive-day";
-
-        var stamp = document.createElement("time");
-        stamp.dateTime = result.date;
-        stamp.textContent = String(Number(result.date.slice(8, 10)));
-        day.appendChild(stamp);
-
-        var title = document.createElement("a");
-        title.className = "archive-title";
-        title.href = result.url;
-        title.textContent = result.title;
-
-        item.appendChild(day);
-        item.appendChild(title);
-
-        if (result.thumb) {
-            var frame = document.createElement("span");
-            frame.className = "thumb";
-
-            var image = document.createElement("img");
-            image.src = result.thumb;
-            if (result.thumb2x) {
-                image.srcset = result.thumb + " 1x, " + result.thumb2x + " 2x";
-            }
-            image.width = 48;
-            image.height = 48;
-            image.alt = "";
-            image.loading = "lazy";
-            image.decoding = "async";
-
-            frame.appendChild(image);
-            item.appendChild(frame);
-        }
-
-        return item;
-    }
-
-    function render(results) {
-        var next = document.createDocumentFragment();
-
-        if (!results.length) {
-            next.appendChild(bar("Nothing found", 0));
-            output.textContent = "";
-            output.appendChild(next);
-            return;
-        }
-
-        var month = "";
-        var list = null;
-
-        results.forEach(function (result) {
-            if (result.date.slice(0, 7) !== month) {
-                month = result.date.slice(0, 7);
-
-                var span = results.filter(function (other) {
-                    return other.date.slice(0, 7) === month;
-                }).length;
-
-                var label = MONTHS[Number(result.date.slice(5, 7)) - 1] + " " + result.date.slice(0, 4);
-                next.appendChild(bar(label, span));
-
-                list = document.createElement("ul");
-                list.className = "archive-list";
-                next.appendChild(list);
-            }
-
-            list.appendChild(row(result));
-        });
-
-        output.textContent = "";
-        output.appendChild(next);
     }
 
     // Der Suchbegriff steht in der Adresse, damit ein Neuladen ihn behält und
@@ -132,37 +46,32 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    function run() {
+    function run(delay) {
         var term = input.value.trim();
         remember(term);
 
         if (form) form.classList.toggle("has-term", !!input.value);
+
+        clearTimeout(timer);
+        if (request) request.abort();
 
         if (!term) {
             output.textContent = "";
             return;
         }
 
-        load(term).then(function (results) {
-            if (input.value.trim() !== term) return;
-
-            if (!results) {
-                output.textContent = "";
-                output.appendChild(bar("Search unavailable", 0));
-                return;
-            }
-
-            render(results);
-        });
+        timer = setTimeout(load, delay, term);
     }
 
-    input.addEventListener("input", run);
+    input.addEventListener("input", function () {
+        run(200);
+    });
 
     if (form) form.classList.toggle("has-term", !!input.value);
 
     var opening = new URLSearchParams(location.search).get("q");
     if (opening) {
         input.value = opening;
-        run();
+        run(0);
     }
 });

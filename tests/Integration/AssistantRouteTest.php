@@ -51,9 +51,9 @@ final class AssistantRouteTest extends AssistantTestCase
 
         $this->assertCount(1, $this->osrmCalls);
         $this->assertStringStartsWith('https://router.project-osrm.org/route/v1/driving/12.2823,51.1547;9.4797,51.3127;6.1724,51.3704?', $this->osrmCalls[0]);
-        $this->assertSame(['Länge', '13,1 km', '513,4 km · OSRM'], $card['diff'][0]);
-        $this->assertSame(['Fahrzeit', '', '6 h 0 min'], $card['diff'][1]);
-        $this->assertSame(['Marker', 'Old', 'Groitzsch, Venlo'], $card['diff'][3]);
+        $this->assertSame(['label' => 'Länge', 'before' => '13,1 km', 'after' => '513,4 km · OSRM'], $card['diff'][0]);
+        $this->assertSame(['label' => 'Fahrzeit', 'before' => '', 'after' => '6 h 0 min'], $card['diff'][1]);
+        $this->assertSame(['label' => 'Marker', 'before' => 'Old', 'after' => 'Groitzsch, Venlo'], $card['diff'][3]);
 
         blog_assistant_decide($card['id'], 'apply');
 

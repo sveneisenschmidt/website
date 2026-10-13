@@ -11,13 +11,12 @@ Posts, pages, images and accounts are state on the server. They are never in git
 Needs PHP 8.5 (see `.php-version`), Composer and the SSH alias `website`.
 
 ```bash
-composer install
-make config
+make setup
 make pull
 make dev
 ```
 
-`make config` creates the local `env.php`. `make pull` replaces the content and accounts in `www/` with the state of the server. `make dev` serves the site at http://localhost:8010.
+`make setup` runs `composer install`, creates the local `env.php` and installs git hooks that keep the prompt of the Panel assistant out of commits and pushes. `make pull` replaces the content and accounts in `www/` with the state of the server. `make dev` serves the site at http://localhost:8010; `make` alone does the same.
 
 ## Tests
 
@@ -26,7 +25,7 @@ make lint
 make test
 ```
 
-`make hooks` installs git hooks that keep the prompt of the Panel assistant out of commits and pushes.
+The workflow `Test` runs both for every pull request.
 
 ## Deploy
 
@@ -36,7 +35,9 @@ Every push to `main` deploys: the workflow `Deploy` runs on a self-hosted runner
 make deploy
 ```
 
-Lint and tests run first. The deploy takes a snapshot of the live state, then uploads the code. It never touches the content.
+Lint and tests run first. The deploy takes a snapshot of the live state, then uploads the code. It never touches the content. At the end the start page must answer 200, and every page is requested once to fill the page cache.
+
+The workflow reads the host key of the server from the secret `DEPLOY_KNOWN_HOSTS` (the output of `ssh-keyscan` for the deploy host).
 
 `make deploy` and `make pull` read the server folder from a local `.env`, which is not in git:
 

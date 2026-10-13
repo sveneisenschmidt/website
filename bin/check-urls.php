@@ -5,8 +5,7 @@
  * 200 at exactly its address, slash at the end included; every redirect
  * of content/.redirects.json answers 301 to its target, and the target
  * answers 200.
- * Runs against the local server (make dev) or staging; the staging
- * password comes from STAGING_USER and STAGING_PASSWORD in the environment.
+ * Runs against the local server (make dev) or the live site.
  *
  * Usage: php bin/check-urls.php [site-url] [sitemap-url-or-file] [www-root]
  */
@@ -18,10 +17,7 @@ $www = rtrim($argv[3] ?? 'www', '/');
 /** Status and Location of a GET request, without following a redirect. */
 function check_get(string $url): array
 {
-    $auth = getenv('STAGING_USER') && getenv('STAGING_PASSWORD')
-        ? 'Authorization: Basic ' . base64_encode(getenv('STAGING_USER') . ':' . getenv('STAGING_PASSWORD'))
-        : '';
-    $context = stream_context_create(['http' => ['follow_location' => 0, 'ignore_errors' => true, 'timeout' => 60, 'header' => $auth]]);
+    $context = stream_context_create(['http' => ['follow_location' => 0, 'ignore_errors' => true, 'timeout' => 60]]);
     @file_get_contents($url, false, $context);
     $headers = http_get_last_response_headers() ?? [];
     $location = null;
@@ -45,7 +41,7 @@ $expect = function (string $path, int $status, ?string $location = null) use ($s
     if ($got !== $status || ($location !== null && $to !== $site . $location)) {
         $failures[] = "$path: $got" . ($to ? " -> $to" : '') . ", expected $status" . ($location ? " -> $location" : '');
     }
-    // One request at a time, against staging several minutes: show progress.
+    // One request at a time, against the live site several minutes: show progress.
     if (++$count % 100 === 0) {
         printf("  %d of %d requests, %.0f s\n", $count, $total, microtime(true) - $started);
     }

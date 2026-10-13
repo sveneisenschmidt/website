@@ -323,8 +323,8 @@ function blog_guard_markdown(string $text, array $allowed, Page $page, string $b
     if (preg_match(BLOG_GUARD_HTML, $new)) {
         return 'Raw HTML is not allowed. Use Markdown.';
     }
-    $files = array_values($page->files()->template('image')->pluck('filename'));
-    $map = in_array($page->intendedTemplate()->name(), BLOG_ASSISTANT_MAP_TYPES, true);
+    $files = blog_assistant_filenames($page);
+    $map = blog_type_has_map($page->intendedTemplate()->name());
     preg_match_all(BLOG_GUARD_TAG, $new, $m);
     foreach ($m[1] as $tag) {
         if (($error = blog_guard_tag($tag, $files, $map)) !== null) {

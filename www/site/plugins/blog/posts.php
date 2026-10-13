@@ -7,8 +7,29 @@ use Kirby\Cms\Pages;
  * The posts and what the templates say about them.
  */
 
+/**
+ * The four post types: template => the section that holds them, the name
+ * of one post (Panel, assistant, Verlauf), the menu entry in the Panel
+ * (label and icon) and whether a post has a map.
+ */
+const BLOG_TYPES = [
+    'photo' => ['section' => 'photos', 'label' => 'Foto', 'menu' => 'Fotos', 'icon' => 'image', 'map' => true],
+    'trip' => ['section' => 'trips', 'label' => 'Reise', 'menu' => 'Reisen', 'icon' => 'map', 'map' => true],
+    'note' => ['section' => 'notes', 'label' => 'Notiz', 'menu' => 'Notizen', 'icon' => 'text', 'map' => false],
+    'essay' => ['section' => 'essays', 'label' => 'Essay', 'menu' => 'Essays', 'icon' => 'book', 'map' => false],
+];
+
 /** The sections that hold posts. */
-const BLOG_SECTIONS = ['photos', 'trips', 'notes', 'essays'];
+function blog_sections(): array
+{
+    return array_column(BLOG_TYPES, 'section');
+}
+
+/** True for a post type that can have a map (photo, trip). */
+function blog_type_has_map(string $template): bool
+{
+    return BLOG_TYPES[$template]['map'] ?? false;
+}
 
 /** The site and its author, for the frame, meta tags and JSON-LD. */
 const BLOG_SITE = [
@@ -16,9 +37,6 @@ const BLOG_SITE = [
     'heading' => 'Sven Eisenschmidt',
     'author' => 'Sven Eisenschmidt',
     'keywords' => 'Sven Eisenschmidt, Leipzig, Germany, video games, music, cycling, travel, software development, photography',
-    'jobTitle' => 'Chief Technology & Product Officer',
-    'employer' => 'roadsurfer',
-    'employerUrl' => 'https://roadsurfer.com',
     'githubUrl' => 'https://github.com/sveneisenschmidt',
     'linkedinUrl' => 'https://linkedin.com/in/sveneisenschmidt',
     'stravaUrl' => 'https://strava.com/athletes/sveneisenschmidt',
@@ -28,13 +46,47 @@ const BLOG_SITE = [
 /** True for a post (photo, trip, note or essay), also a draft. */
 function blog_is_post(Page $page): bool
 {
-    return in_array($page->parent()?->id(), BLOG_SECTIONS, true) && $page->parent()->parent() === null;
+    return in_array($page->parent()?->id(), blog_sections(), true) && $page->parent()->parent() === null;
 }
 
 /** The picks with a cover, newest first: the front page shows them. */
 function blog_picks(): Pages
 {
     return collection('posts')->filter(fn (Page $post) => $post->pick()->toBool() && $post->cover()->toFile() !== null);
+}
+
+/**
+ * The timeline beside a page, as entries [post, label]: beside a post its
+ * two neighbours, Next and Previous; beside any other page the newest
+ * $limit posts, the first one Latest. neighbours says which of the two.
+ */
+function blog_timeline(?Page $current, int $limit): array
+{
+    $posts = collection('posts');
+    $entries = [];
+    if ($current !== null && $posts->has($current->id())) {
+        if ($next = $current->prev($posts)) {
+            $entries[] = [$next, 'Next'];
+        }
+        if ($previous = $current->next($posts)) {
+            $entries[] = [$previous, 'Previous'];
+        }
+        return ['neighbours' => true, 'entries' => $entries];
+    }
+    foreach ($posts->limit($limit) as $post) {
+        $entries[] = [$post, $entries === [] ? 'Latest' : ''];
+    }
+    return ['neighbours' => false, 'entries' => $entries];
+}
+
+/** Posts by month in their order, "October 2026" => [post, ...]. */
+function blog_months(Pages $posts): array
+{
+    $months = [];
+    foreach ($posts as $post) {
+        $months[$post->date()->toDate('F Y')][] = $post;
+    }
+    return $months;
 }
 
 /** "January 2, 2006" */
@@ -57,7 +109,7 @@ function blog_type_line(Page $post, bool $withType = true): string
     }
     return match ($post->intendedTemplate()->name()) {
         // Reading time: 213 words a minute, rounded up.
-        'essay' => ($withType ? 'Essay, ' : '') . (int)ceil(blog_words(blog_plain(blog_content($post))) / 213) . ' min',
+        'essay' => ($withType ? 'Essay, ' : '') . (int)ceil(blog_words(blog_plain_content($post)) / 213) . ' min',
         'note' => $withType ? 'Note' : '',
         'photo' => $withType ? 'Photo' : '',
         default => '',

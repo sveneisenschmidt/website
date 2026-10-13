@@ -1,18 +1,18 @@
 <?php
 /**
  * A post of any type: head with type and date, the text, the mail link,
- * the neighbours in the timeline.
+ * the neighbours in the timeline (controllers/post.php).
  *
  * @var Kirby\Cms\Page $page
- * @var Kirby\Cms\Site $site
+ * @var string $section
+ * @var string $label
+ * @var string $type
  */
-$section = $page->parent()->slug();
-$type = blog_type_line($page, false);
 ?>
 <?php snippet('layout', slots: true) ?>
 <article class="article">
 <div class="article-head">
-<p class="stream-title stream-opening"><a href="/archive/<?= $section ?>/"><?= $page->pick()->toBool() ? 'Featured photo' : $page->intendedTemplate()->name() ?></a>
+<p class="stream-title stream-opening"><a href="/archive/<?= $section ?>/"><?= $label ?></a>
 <a class="far" href="/" data-back>Back</a>
 </p>
 <h1><?= $page->title()->esc() ?></h1>

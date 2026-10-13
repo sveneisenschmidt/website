@@ -7,28 +7,28 @@
  * @var Kirby\Cms\File $file
  * @var Kirby\Cms\Page $page
  */
-$wide = blog_wide($file, 1600);
-$mid = blog_wide($file, 1000);
-$narrow = blog_wide($file, 600);
-// fitWidth() changes its object: a copy, so the file keeps its own size.
-$size = (clone $file->dimensions())->fitWidth(1600);
+$picture = blog_picture($file);
 $rows = blog_exif_rows($file);
 $caption = (string)$file->caption()->value();
 $photographer = (string)$file->photographer()->value();
+// The cover is the picture under the title: the browser loads it first.
+$cover = $page->cover()->toFile()?->is($file) === true;
 ?>
 <figure>
 <a class="frame" href="<?= $file->url() ?>">
 <img
 class="frame-picture"
-<?php if ($page->cover()->toFile()?->is($file)): ?>style="view-transition-name: <?= blog_vt_name($page) ?>"
-<?php endif ?>src="<?= $wide->url() ?>"
-srcset="<?= $narrow->url() ?> 600w, <?= $mid->url() ?> 1000w, <?= $wide->url() ?> 1600w"
+<?php if ($cover): ?>style="view-transition-name: <?= blog_vt_name($page) ?>"
+<?php endif ?>src="<?= $picture['src'] ?>"
+srcset="<?= $picture['srcset'] ?>"
 sizes="(max-width: 900px) calc(100vw - 2rem), (max-width: 90rem) 63vw, 907px"
-width="<?= $size->width() ?>"
-height="<?= $size->height() ?>"
+width="<?= $picture['width'] ?>"
+height="<?= $picture['height'] ?>"
 alt="<?= $file->alt()->esc() ?>"
-loading="lazy"
-decoding="async"
+<?php if ($cover): ?>loading="eager"
+fetchpriority="high"
+<?php else: ?>loading="lazy"
+<?php endif ?>decoding="async"
 />
 </a><?php if ($rows !== [] || $caption !== '' || $photographer !== ''): ?><dl class="exif">
 <?php foreach ($rows as $key => $value): ?>

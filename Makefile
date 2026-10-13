@@ -1,9 +1,18 @@
 WWW := www
+# make ohne Ziel startet die Seite lokal.
+.DEFAULT_GOAL := dev
 # PHP für alle Ziele. Die Seite läuft auf dem Server mit PHP 8.5
 # (.php-version), lokal ist es dieselbe Version. Anderes PHP: make PHP=...
 PHP ?= php
 # Port von make dev. Luisas Seite nutzt lokal 8000.
 PORT := 8010
+
+# Einmal nach dem Klonen: Abhängigkeiten, lokale Konfiguration, Git-Hooks.
+# Danach holt make pull die Inhalte vom Server.
+.PHONY: setup
+setup:
+	composer install
+	@$(MAKE) --no-print-directory config hooks
 
 .PHONY: config
 config:
@@ -66,8 +75,7 @@ hooks:
 
 # Die URLs der Live-Seite gegen Kirby (bin/check-urls.php). Läuft gegen
 # make dev in einem zweiten Terminal. Gegen die Live-Seite:
-# make check-urls SITE=$(LIVE_URL). Ein Staging-Passwort kommt aus
-# STAGING_USER und STAGING_PASSWORD.
+# make check-urls SITE=$(LIVE_URL).
 SITE ?= http://localhost:$(PORT)
 .PHONY: check-urls
 check-urls:
@@ -76,9 +84,8 @@ check-urls:
 # Deploy der Live-Seite über den SSH-Alias website. Den Ordner auf dem Server
 # nennt die lokale .env (nie in Git, sie nennt das Hosting-Konto):
 #   LIVE_PATH=/www/htdocs/<konto>/sven.eisenschmidt.website
-# Den API-Schlüssel holt bin/deploy-env.sh aus der lokalen env.php. Ein
-# Staging-Passwort kommt nur, wenn STAGING_USER und STAGING_PASSWORD gesetzt
-# sind. Lint und Tests laufen vorher.
+# Den API-Schlüssel holt bin/deploy-env.sh aus der lokalen env.php. Lint und
+# Tests laufen vorher.
 LIVE_HOST ?= website
 -include .env
 LIVE_URL ?= https://sven.eisenschmidt.website
@@ -101,15 +108,3 @@ pull: live-path
 .PHONY: warm
 warm:
 	@$(PHP) bin/warm.php $(LIVE_URL)
-
-# Holt die Zugriffslogs vom Server und öffnet den Bericht von GoAccess.
-.PHONY: logs
-logs:
-	@command -v goaccess >/dev/null 2>&1 || { echo "goaccess is required but not installed. Install with: brew install goaccess"; exit 1; }
-	@mkdir -p logs
-	@echo "Fetching logs from server..."
-	@ssh website 'zcat /www/htdocs/*/logs/access_log_sven_eisenschmidt_website*.gz' > logs/access.log
-	@echo "Analyzing logs with GoAccess..."
-	@goaccess logs/access.log -o logs/report.html --log-format='%h - - [%d:%t %^] "%r" %s %b "%R" "%u" "%^" "%^"' --date-format='%d/%b/%Y' --time-format='%H:%M:%S'
-	@echo "Report generated: logs/report.html"
-	@open logs/report.html

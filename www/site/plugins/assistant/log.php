@@ -13,22 +13,11 @@ function blog_assistant_log_dir(): string
     return kirby()->root('content') . '/.assistant';
 }
 
-/** Appends one entry. Parallel requests append under a lock. */
+/** Appends one entry (plugins/blog/jsonl.php). */
 function blog_assistant_log_write(array $entry): void
 {
     try {
-        $user = kirby()->user();
-        $entry = [
-            'time' => date('c'),
-            'user' => $user?->email(),
-            'name' => $user?->name()->value() ?: $user?->email(),
-            ...$entry,
-        ];
-        $dir = blog_assistant_log_dir();
-        if (!is_dir($dir)) {
-            mkdir($dir, 0755, true);
-        }
-        file_put_contents($dir . '/' . date('Y-m') . '.jsonl', json_encode($entry, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n", FILE_APPEND | LOCK_EX);
+        blog_jsonl_append(blog_assistant_log_dir(), $entry);
     } catch (Throwable $e) {
         // A log line must never break the chat.
         error_log('blog assistant log: ' . $e->getMessage());
@@ -38,22 +27,7 @@ function blog_assistant_log_write(array $entry): void
 /** The newest entries, newest first. */
 function blog_assistant_log_read(int $limit = 300): array
 {
-    $files = glob(blog_assistant_log_dir() . '/*.jsonl') ?: [];
-    rsort($files);
-    $entries = [];
-    foreach ($files as $file) {
-        $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [];
-        foreach (array_reverse($lines) as $line) {
-            $entry = json_decode($line, true);
-            if (is_array($entry)) {
-                $entries[] = $entry;
-            }
-            if (count($entries) >= $limit) {
-                return $entries;
-            }
-        }
-    }
-    return $entries;
+    return blog_jsonl_read(blog_assistant_log_dir(), $limit);
 }
 
 /** Starts the measurement of one answer. */
@@ -108,7 +82,7 @@ function blog_assistant_turn_end(array $chat, string $outcome): array
         'tokensCached' => $turn['cached'] ?? 0,
         'outcome' => $outcome,
     ]);
-    unset($chat['turn']);
+    $chat['turn'] = null;
     return $chat;
 }
 

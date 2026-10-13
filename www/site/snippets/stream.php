@@ -10,21 +10,7 @@
 $current ??= null;
 $limit ??= 25;
 $fit ??= false;
-$posts = collection('posts');
-$neighbours = $current !== null && $posts->has($current->id());
-$entries = [];
-if ($neighbours) {
-    if ($next = $current->prev($posts)) {
-        $entries[] = [$next, 'Next'];
-    }
-    if ($previous = $current->next($posts)) {
-        $entries[] = [$previous, 'Previous'];
-    }
-} else {
-    foreach ($posts->limit($limit) as $post) {
-        $entries[] = [$post, $entries === [] ? 'Latest' : ''];
-    }
-}
+['neighbours' => $neighbours, 'entries' => $entries] = blog_timeline($current, $limit);
 ?>
 <section class="writing<?= $current ? ' writing-aside' : '' ?>" aria-label="Posts"<?= $fit ? ' data-fit=".pictures"' : '' ?>>
 <div class="writing-inner">

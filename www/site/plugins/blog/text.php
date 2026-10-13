@@ -47,7 +47,26 @@ function blog_content(Page $page): string
 /** The summary as plain text: the intro, without one the text. */
 function blog_summary(Page $page): string
 {
-    return blog_plain($page->intro()->or($page->text())->kirbytext()->value());
+    $field = $page->intro()->or($page->text());
+    return blog_plain($field->value(blog_without_media($field->value()))->kirbytext()->value());
+}
+
+/** Intro and text as plain text, for counting words. Heading anchors are no words. */
+function blog_plain_content(Page $page): string
+{
+    $text = trim($page->intro()->value() . "\n\n" . $page->text()->value());
+    return blog_plain(kirby()->kirbytext(blog_without_media($text), ['parent' => $page]));
+}
+
+/**
+ * Markdown without its (image:) and (map:) tags, for plain text only. A
+ * figure or a map has no words a reader reads, and each figure would cost
+ * three thumbnails, a file lookup and its EXIF. Nested brackets as in
+ * Kirby's own tag pattern.
+ */
+function blog_without_media(string $markdown): string
+{
+    return preg_replace('!(?=\((?:image|map):)(\((?:[^()]+|(?1))*+\))!i', '', $markdown);
 }
 
 /**

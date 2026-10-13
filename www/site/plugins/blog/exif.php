@@ -26,10 +26,10 @@ function blog_rational($v): ?float
     return is_numeric($v) ? (float)$v : null;
 }
 
-/** A number without trailing zeros: 2.80 -> "2.8", 45.0 -> "45". */
-function blog_num(float $v): string
+/** A number with at most $decimals decimals, without trailing zeros: 2.80 -> "2.8", 45.0 -> "45". */
+function blog_num(float $v, int $decimals = 1): string
 {
-    return rtrim(rtrim(number_format($v, 1, '.', ''), '0'), '.');
+    return rtrim(rtrim(number_format($v, $decimals, '.', ''), '0'), '.');
 }
 
 /** "Canon EOS R6m2" from make "Canon" and model "Canon EOS R6m2": the make once. */

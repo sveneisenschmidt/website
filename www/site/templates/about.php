@@ -1,12 +1,10 @@
 <?php
 /**
  * About: its label, the date it was last checked, the text, the visitor
- * numbers.
+ * numbers. It stays out of the page cache (config.php).
  *
  * @var Kirby\Cms\Page $page
  */
-// The visitor numbers change all day: this page never goes into the cache.
-kirby()->response()->cache(false);
 ?>
 <?php snippet('layout', slots: true) ?>
 <article class="article">

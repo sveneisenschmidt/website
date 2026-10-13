@@ -8,7 +8,6 @@ use Kirby\Cms\Page;
 use Kirby\Cms\Site;
 use Kirby\Cms\User;
 use Kirby\Data\Yaml;
-use Kirby\Filesystem\F;
 use Kirby\Toolkit\Str;
 use Kirby\Uuid\Uuid;
 
@@ -82,19 +81,10 @@ function blog_changelog_event(Event $event): void
     }
 }
 
-/** Appends one entry. Parallel requests append under a lock (F::write uses LOCK_EX). */
+/** Appends one entry (plugins/blog/jsonl.php). */
 function blog_changelog_write(array $entry): void
 {
-    $user = kirby()->user();
-    $person = $user === null || $user->isKirby() ? null : $user;
-    $entry = [
-        'time' => date('c'),
-        'user' => $person?->email(),
-        'name' => $person ? ($person->name()->or($person->email())->value()) : null,
-        ...$entry,
-    ];
-    $line = json_encode($entry, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n";
-    F::write(blog_changelog_dir() . '/' . date('Y-m') . '.jsonl', $line, true);
+    blog_jsonl_append(blog_changelog_dir(), $entry);
 }
 
 function blog_changelog_id(ModelWithContent $model): string
@@ -119,13 +109,7 @@ function blog_changelog_title(ModelWithContent $model): string
 /** The post types Sven writes. Other pages stay "Seite". */
 function blog_changelog_kind(Page $page): ?string
 {
-    return match ($page->intendedTemplate()->name()) {
-        'photo' => 'Foto',
-        'trip' => 'Reise',
-        'note' => 'Notiz',
-        'essay' => 'Essay',
-        default => null,
-    };
+    return BLOG_TYPES[$page->intendedTemplate()->name()]['label'] ?? null;
 }
 
 /** A page status as the Panel names it for this page: "Entwurf", "Veröffentlicht". */
@@ -247,22 +231,7 @@ function blog_changelog_label(ModelWithContent $model, string $key): string
 /** The newest entries first, at most $limit. */
 function blog_changelog_entries(int $limit = 500): array
 {
-    $files = glob(blog_changelog_dir() . '/*.jsonl') ?: [];
-    rsort($files);
-    $entries = [];
-    foreach ($files as $file) {
-        $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [];
-        foreach (array_reverse($lines) as $line) {
-            $entry = json_decode($line, true);
-            if (is_array($entry)) {
-                $entries[] = $entry;
-                if (count($entries) >= $limit) {
-                    return $entries;
-                }
-            }
-        }
-    }
-    return $entries;
+    return blog_jsonl_read(blog_changelog_dir(), $limit);
 }
 
 App::plugin('sveneisenschmidt/changelog', [

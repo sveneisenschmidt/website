@@ -9,13 +9,7 @@
  */
 $sheet ??= false;
 ?>
-<?php
-$months = [];
-foreach ($posts as $post) {
-    $months[$post->date()->toDate('F Y')][] = $post;
-}
-?>
-<?php foreach ($months as $month => $group): ?>
+<?php foreach (blog_months($posts) as $month => $group): ?>
 <h2 class="archive-month stream-title">
 <span><?= $month ?></span>
 <span><?= count($group) ?></span>

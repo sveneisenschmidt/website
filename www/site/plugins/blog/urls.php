@@ -3,6 +3,7 @@
 use Kirby\Cms\Page;
 use Kirby\Cms\Response;
 use Kirby\Data\Json;
+use Kirby\Filesystem\Dir;
 
 /**
  * The URL scheme of the site, which links and feed readers know and which
@@ -41,7 +42,7 @@ function blog_post_path(Page $post, ?string $slug = null): string
  */
 function blog_post(string $date, string $slug): ?Page
 {
-    foreach (BLOG_SECTIONS as $section) {
+    foreach (blog_sections() as $section) {
         $post = page($section)?->childrenAndDrafts()->find($slug);
         if ($post === null || $post->date()->toDate('Y-m-d') !== $date) {
             continue;
@@ -60,7 +61,7 @@ function blog_post(string $date, string $slug): ?Page
  * (a redirect to the file), every page only at its URL with the slash at
  * the end.
  */
-function blog_route(string $path): Page|Response|null
+function blog_resolve(string $path): Page|Response|null
 {
     if (($to = blog_redirect_to($path)) !== null) {
         // Absolute, so "/" keeps its slash.
@@ -112,10 +113,26 @@ function blog_redirects(): array
     return is_file($file) ? Json::read($file) : [];
 }
 
-/** Writes to a temporary file first, as the visitor numbers do. */
+/** Saves the redirects, through a temporary file. */
 function blog_redirects_write(array $redirects): void
 {
-    blog_analytics_write(blog_redirects_file(), array_values($redirects));
+    blog_write_json(blog_redirects_file(), array_values($redirects));
+}
+
+/**
+ * JSON into a temporary file first, then renamed: a crash or a full disk
+ * never leaves half a file. For the redirects and the visitor numbers
+ * (plugins/analytics).
+ */
+function blog_write_json(string $file, array $data): void
+{
+    Dir::make(dirname($file));
+    $tmp = $file . '.' . bin2hex(random_bytes(4)) . '.tmp';
+    $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR) . "\n";
+    if (file_put_contents($tmp, $json) !== strlen($json) || !rename($tmp, $file)) {
+        @unlink($tmp);
+        throw new RuntimeException("Could not write $file");
+    }
 }
 
 /** Where an old path leads, or null. A path matches with or without the slash at the end. */

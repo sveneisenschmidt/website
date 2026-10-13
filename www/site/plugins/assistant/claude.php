@@ -20,6 +20,15 @@ const BLOG_ASSISTANT_MODELS = [
 
 const BLOG_ASSISTANT_DEFAULT_MODEL = 'claude-opus-5-5';
 
+/**
+ * Opus and Sonnet: the server-side fallback and the web search with
+ * dynamic filtering. Haiku has neither.
+ */
+function blog_assistant_full_model(string $model): bool
+{
+    return !str_contains($model, 'haiku');
+}
+
 /** Errors the Panel shows, by kind. "Nichts geändert" holds for all of them. */
 const BLOG_ASSISTANT_ERRORS = [
     'access' => 'Der Schlüssel für Anthropic fehlt oder wird abgelehnt. Nichts geändert. Er steht als assistantKey in env.php.',
@@ -57,11 +66,8 @@ function blog_assistant_model(): string
  * Sends one request body, returns the decoded response.
  * Throws BlogAssistantError with the kind the Panel needs.
  */
-function blog_assistant_post(array $body): array
+function blog_assistant_http(array $body): array
 {
-    // A request to Claude takes long: "Abbrechen" and clicks on cards must
-    // get into the session meanwhile.
-    blog_assistant_unlock();
     $transport = option('blog.assistant.transport');
     if ($transport instanceof Closure) {
         [$status, $response] = $transport($body);
@@ -72,8 +78,8 @@ function blog_assistant_post(array $body): array
             'anthropic-version: 2023-06-01',
             'content-type: application/json',
         ];
-        // Opus and Sonnet: a refused request falls back server-side.
-        if (!str_contains($body['model'], 'haiku')) {
+        // A refused request falls back server-side.
+        if (blog_assistant_full_model($body['model'])) {
             $headers[] = 'anthropic-beta: server-side-fallback-2026-07-01';
             $body['fallbacks'] = 'default';
         }
@@ -87,7 +93,8 @@ function blog_assistant_post(array $body): array
                 'data' => json_encode($body, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
                 'timeout' => 150,
             ]);
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            error_log('blog assistant: Anthropic ' . $e::class . ': ' . $e->getMessage());
             throw new BlogAssistantError('busy');
         }
         $status = $remote->code();

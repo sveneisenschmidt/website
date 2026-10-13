@@ -1,6 +1,7 @@
 <?php
 
 use Kirby\Cms\Page;
+use Kirby\Cms\Response;
 use Kirby\Toolkit\Xml;
 
 /**
@@ -53,7 +54,7 @@ function blog_rss_description(Page $post, string $link): string
             . '" alt="' . esc($post->title()->value() . ' cover image') . '" />';
     }
     $summary = blog_summary($post);
-    $more = blog_words(blog_plain(blog_content($post))) - blog_words($summary);
+    $more = blog_words(blog_plain_content($post)) - blog_words($summary);
     $html .= '<p>' . esc($summary);
     if ($more > 0) {
         $html .= ' (<a href="' . $link . '" title="Continue reading ' . esc($post->title()->value()) . '">' . $more . ' more words</a>)';
@@ -86,7 +87,7 @@ function blog_sitemap(): string
     return $xml . "</urlset>\n";
 }
 
-/** Search engines may index everything. Staging keeps them out with its password. */
+/** robots.txt: every path may be crawled, and it names the sitemap. */
 function blog_robots(): string
 {
     return "User-agent: *\nAllow: /\n\nSitemap: " . url('sitemap.xml') . "\n";
@@ -119,6 +120,28 @@ function blog_llms(): string
         "- [Sitemap]($url/sitemap.xml)",
     );
     return implode("\n", $lines) . "\n";
+}
+
+/**
+ * A file for machines from the page cache, which Kirby clears on every
+ * change: built by $build when missing, its build time as Last-Modified.
+ * A reader that has this build gets 304 without a body.
+ */
+function blog_machine_file(string $name, string $type, Closure $build): Response
+{
+    $cache = kirby()->cache('pages');
+    $entry = $cache->get($name);
+    // An entry with only the text has no build time: it is built again.
+    if (!is_array($entry)) {
+        $entry = ['text' => $build(), 'time' => time()];
+        $cache->set($name, $entry);
+    }
+    $headers = ['Last-Modified' => gmdate('D, d M Y H:i:s', $entry['time']) . ' GMT'];
+    $since = strtotime((string)kirby()->request()->header('If-Modified-Since'));
+    if ($since !== false && $since >= $entry['time']) {
+        return new Response('', $type, 304, $headers);
+    }
+    return new Response($entry['text'], $type, 200, $headers);
 }
 
 /**

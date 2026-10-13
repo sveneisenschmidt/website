@@ -7,16 +7,18 @@ use Kirby\Cms\Response;
  * then every other path through the URL scheme of the site (plugins/blog/urls.php).
  */
 return [
-    // Feed and sitemap take a second to build: they go into the page cache,
-    // which Kirby clears on every change.
-    ['pattern' => 'index.xml', 'action' => fn () => new Response(kirby()->cache('pages')->getOrSet('index.xml', fn () => blog_rss()), 'application/rss+xml')],
-    ['pattern' => 'sitemap.xml', 'action' => fn () => new Response(kirby()->cache('pages')->getOrSet('sitemap.xml', fn () => blog_sitemap()), 'application/xml')],
-    ['pattern' => 'robots.txt', 'action' => fn () => new Response(blog_robots(), 'text/plain')],
-    ['pattern' => 'llms.txt', 'action' => fn () => new Response(blog_llms(), 'text/plain')],
+    // Feed, sitemap and llms.txt read every post: they go into the page
+    // cache, which Kirby clears on every change. Feed and sitemap answer
+    // If-Modified-Since. They answer HEAD like every page does: a route of
+    // Kirby answers GET only, unless it names its methods.
+    ['pattern' => 'index.xml', 'method' => 'GET|HEAD', 'action' => fn () => blog_machine_file('index.xml', 'application/rss+xml', fn () => blog_rss())],
+    ['pattern' => 'sitemap.xml', 'method' => 'GET|HEAD', 'action' => fn () => blog_machine_file('sitemap.xml', 'application/xml', fn () => blog_sitemap())],
+    ['pattern' => 'robots.txt', 'method' => 'GET|HEAD', 'action' => fn () => new Response(blog_robots(), 'text/plain')],
+    ['pattern' => 'llms.txt', 'method' => 'GET|HEAD', 'action' => fn () => new Response(kirby()->cache('pages')->getOrSet('llms.txt', fn () => blog_llms()), 'text/plain')],
     [
         'pattern' => '(:all)',
         'action' => function (string $path) {
-            return blog_route($path) ?? $this->next();
+            return blog_resolve($path) ?? $this->next();
         },
     ],
 ];

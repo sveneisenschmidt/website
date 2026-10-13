@@ -10,17 +10,17 @@
 # 2. Snapshot of the live state on the server (if there is any), newest 30 kept.
 # 3. rsync of www/ and vendor/, with --delete, but state, host config and
 #    generated files are excluded, so rsync neither uploads nor deletes them.
-# 4. Staging password: .htpasswd next to www/, the auth block in www/.htaccess.
-# 5. Host config: env.php and, for a fresh site, .salt. bin/set-env.php
+# 4. Host config: env.php and, for a fresh site, .salt. bin/set-env.php
 #    sets 'url' to SITE_URL and 'assistantKey' to ANTHROPIC_API_KEY, if set.
-# 6. Page cache cleared under the site's cache lock, then a request to the start page.
+# 5. Page cache cleared under the site's cache lock. The start page must
+#    answer 200, then bin/warm.php --pages fills the page cache again.
 #
 # Environment:
 #   DEPLOY_PATH                       required, the site folder on the server
 #   SITE_URL                          required, the canonical URL ('url' in env.php)
 #   DEPLOY_HOST                       required, ssh target (alias or user@host)
 #   DEPLOY_SSH_KEY_FILE               optional, private key file for ssh
-#   STAGING_USER, STAGING_PASSWORD    optional, staging password over the whole site
+#   DEPLOY_KNOWN_HOSTS_FILE           optional, known_hosts file for ssh (the workflow Deploy)
 #   ANTHROPIC_API_KEY                 optional, key of the Panel assistant
 #   REMOTE_PHP                        PHP on the server, default php85 (php in the ssh shell is 8.4)
 set -euo pipefail
@@ -35,6 +35,7 @@ RPHP="${REMOTE_PHP:-php85}"
 
 SSH_OPTS=(-o ConnectTimeout=30 -o ServerAliveInterval=30 -o BatchMode=yes)
 [ -n "${DEPLOY_SSH_KEY_FILE:-}" ] && SSH_OPTS+=(-i "$DEPLOY_SSH_KEY_FILE")
+[ -n "${DEPLOY_KNOWN_HOSTS_FILE:-}" ] && SSH_OPTS+=(-o UserKnownHostsFile="$DEPLOY_KNOWN_HOSTS_FILE" -o StrictHostKeyChecking=yes)
 remote() { ssh "${SSH_OPTS[@]}" "$DEPLOY_HOST" "$@"; }
 DEST="$DEPLOY_HOST:$DEPLOY_PATH"
 RSYNC_SSH=(-e "ssh ${SSH_OPTS[*]}")
@@ -50,8 +51,7 @@ EXCLUDES=(
 )
 
 BUILD="$(mktemp -d)"
-HTACCESS="$(mktemp)"
-trap 'rm -rf "$BUILD" "$HTACCESS"' EXIT
+trap 'rm -rf "$BUILD"' EXIT
 
 echo "== Build"
 # Kirby and the markdown-field plugin come from composer.lock, not from the local copies.
@@ -88,29 +88,8 @@ fi
 echo "== Code"
 remote "mkdir -p '$DEPLOY_PATH/www' '$DEPLOY_PATH/vendor'"
 rsync -rlptz --delete "${RSYNC_SSH[@]}" "$BUILD/vendor/" "$DEST/vendor/"
-# www/.htaccess goes up on its own, after .htpasswd.
-rsync -rlptz --delete "${EXCLUDES[@]}" --exclude '/.htaccess' "${RSYNC_SSH[@]}" "$BUILD/www/" "$DEST/www/"
-
-echo "== Staging password"
-if [ -n "${STAGING_USER:-}" ] && [ -n "${STAGING_PASSWORD:-}" ]; then
-  # The password travels on stdin, never on a command line. Apache checks it
-  # on every request (page, CSS, font, each photo): bcrypt cost 5 takes about
-  # 4 ms per check, the PHP default 12 took 150 ms.
-  printf '%s' "$STAGING_PASSWORD" | remote "$RPHP -r '\$p = stream_get_contents(STDIN); file_put_contents(\$argv[1], \$argv[2] . \":\" . password_hash(\$p, PASSWORD_BCRYPT, [\"cost\" => 5]) . \"\n\");' '$DEPLOY_PATH/.htpasswd' '$STAGING_USER'"
-  # All requests land in www/ (root .htaccess), so the block there covers the whole site.
-  sed -e "s|^#AuthType Basic|AuthType Basic|" \
-      -e "s|^#AuthName |AuthName |" \
-      -e "s|^#AuthUserFile __HTPASSWD__|AuthUserFile $DEPLOY_PATH/.htpasswd|" \
-      -e "s|^#Require valid-user|Require valid-user|" "$BUILD/www/.htaccess" > "$HTACCESS"
-  grep -q "^AuthUserFile $DEPLOY_PATH/.htpasswd" "$HTACCESS" || { echo "Staging block not found in www/.htaccess" >&2; exit 1; }
-else
-  cp "$BUILD/www/.htaccess" "$HTACCESS"
-fi
-# mktemp creates 0600; Apache must be able to read the file.
-chmod 644 "$HTACCESS"
-rsync -tpz "${RSYNC_SSH[@]}" "$HTACCESS" "$DEST/www/.htaccess"
+rsync -rlptz --delete "${EXCLUDES[@]}" "${RSYNC_SSH[@]}" "$BUILD/www/" "$DEST/www/"
 rsync -tpz "${RSYNC_SSH[@]}" server/root.htaccess "$DEST/.htaccess"
-[ -n "${STAGING_USER:-}" ] && [ -n "${STAGING_PASSWORD:-}" ] || remote "rm -f '$DEPLOY_PATH/.htpasswd'"
 # KAS puts a placeholder page into a new domain folder.
 remote "rm -f '$DEPLOY_PATH/index.htm'"
 
@@ -133,8 +112,10 @@ echo "== Cache"
 remote "$RPHP -- '$DEPLOY_PATH/www'" < bin/clear-cache.php
 
 echo "== Check $SITE_URL"
-AUTH=()
-[ -n "${STAGING_USER:-}" ] && AUTH=(-u "$STAGING_USER:$STAGING_PASSWORD")
-code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 60 ${AUTH[@]+"${AUTH[@]}"} "$SITE_URL/" || true)
+code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 60 "$SITE_URL/" || true)
 echo "HTTP $code"
-case "$code" in 200|404) echo "Deploy done" ;; *) echo "Unexpected status" >&2; exit 1 ;; esac
+[ "$code" = 200 ] || { echo "Unexpected status" >&2; exit 1; }
+
+echo "== Page cache"
+php bin/warm.php --pages "$SITE_URL"
+echo "Deploy done"

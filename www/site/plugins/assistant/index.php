@@ -7,8 +7,7 @@ use Kirby\Panel\Ui\Buttons\ViewButton;
 use Kirby\Session\Session;
 
 /**
- * Panel area "Assistent" (docs/superpowers/specs/2026-10-12-assistent-design.md):
- * Sven writes posts with Claude. Claude proposes, Sven's click applies.
+ * Panel area "Assistent": Sven writes posts with Claude. Claude proposes, Sven's click applies.
  * Settings in Website › Assistent: the prompt and the model. The key is
  * host config: 'assistantKey' in env.php. Area and API routes need a
  * login, as all of the Panel.
@@ -18,7 +17,9 @@ require_once __DIR__ . '/claude.php';
 require_once __DIR__ . '/guard.php';
 require_once __DIR__ . '/route.php';
 require_once __DIR__ . '/uploads.php';
+require_once __DIR__ . '/content.php';
 require_once __DIR__ . '/tools.php';
+require_once __DIR__ . '/propose.php';
 require_once __DIR__ . '/chat.php';
 require_once __DIR__ . '/apply.php';
 require_once __DIR__ . '/log.php';
@@ -52,7 +53,7 @@ function blog_assistant_upload(array $files): array
 function blog_assistant_button(Page $page): ?ViewButton
 {
     $template = $page->intendedTemplate()->name();
-    if ($template !== 'about' && !isset(BLOG_ASSISTANT_TYPES[$template])) {
+    if ($template !== 'about' && !isset(BLOG_TYPES[$template])) {
         return null;
     }
     return new ViewButton(icon: 'robot', text: 'Assistent', link: 'assistent?page=' . rawurlencode($page->id()));
@@ -157,7 +158,7 @@ App::plugin('sveneisenschmidt/assistant', [
         // The chat ends with the session: its uploads go at logout.
         'user.logout:before' => function (User $user, ?Session $session = null) {
             try {
-                blog_uploads_remove($session?->get(BLOG_UPLOADS_SESSION)['folder'] ?? null);
+                blog_uploads_remove($session?->get(BLOG_UPLOAD_SESSION)['folder'] ?? null);
             } catch (Throwable $e) {
                 error_log('blog assistant logout: ' . $e->getMessage());
             }

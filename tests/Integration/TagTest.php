@@ -59,6 +59,17 @@ final class TagTest extends IntegrationTestCase
         $this->assertStringContainsString('style="view-transition-name: ' . blog_vt_name($this->post) . '"', $html);
     }
 
+    public function testOnlyTheCoverLoadsAtOnce(): void
+    {
+        $cover = $this->upload($this->jpeg(8, 8), 'c.jpg');
+        $this->upload($this->jpeg(8, 8), 'e.jpg');
+        $this->kirby->impersonate('kirby', fn () => $this->post->update(['cover' => [$cover->uuid()->toString()]]));
+        $post = $this->kirby->page('photos/test-photo');
+
+        $this->assertStringContainsString("loading=\"eager\"\nfetchpriority=\"high\"\ndecoding=\"async\"", blog_html('(image: c.jpg)', $post));
+        $this->assertStringContainsString("loading=\"lazy\"\ndecoding=\"async\"", blog_html('(image: e.jpg)', $post));
+    }
+
     public function testImgclassIsAPlainMarkdownImage(): void
     {
         $file = $this->upload($this->jpeg(8, 8), 'd.jpg');

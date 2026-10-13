@@ -113,12 +113,6 @@ function blog_route_round(array $points): array
     return $out;
 }
 
-/** A coordinate as text: at most 6 decimals, no trailing zeros. */
-function blog_route_num(float $value): string
-{
-    return rtrim(rtrim(number_format($value, 6, '.', ''), '0'), '.');
-}
-
 /** "1 h 52 min", "35 min". */
 function blog_route_duration(int $seconds): string
 {
@@ -171,7 +165,7 @@ function blog_route_cut(array $points, float $head, float $tail): array
  */
 function blog_route_osrm(array $stations, ?Closure $http = null): array
 {
-    $url = BLOG_ROUTE_OSRM . implode(';', array_map(fn (array $p) => blog_route_num((float)$p[0]) . ',' . blog_route_num((float)$p[1]), $stations)) . '?overview=full&geometries=geojson';
+    $url = BLOG_ROUTE_OSRM . implode(';', array_map(fn (array $p) => blog_num((float)$p[0], 6) . ',' . blog_num((float)$p[1], 6), $stations)) . '?overview=full&geometries=geojson';
     try {
         if ($http !== null) {
             [$status, $body] = $http($url, BLOG_ROUTE_AGENT);
@@ -179,7 +173,8 @@ function blog_route_osrm(array $stations, ?Closure $http = null): array
             $remote = Remote::get($url, ['agent' => BLOG_ROUTE_AGENT, 'timeout' => 20]);
             [$status, $body] = [$remote->code(), (string)$remote->content()];
         }
-    } catch (Throwable) {
+    } catch (Throwable $e) {
+        error_log('blog assistant: OSRM ' . $e::class . ': ' . $e->getMessage());
         $status = 0;
     }
     if (!$status) {
@@ -202,7 +197,7 @@ function blog_route_osrm(array $stations, ?Closure $http = null): array
 function blog_gpx_read(string $path): array
 {
     if (!is_file($path) || filesize($path) > BLOG_GPX_MAX_BYTES) {
-        throw new RuntimeException('Die GPX-Datei ist größer als 5 MB.');
+        throw new RuntimeException('Die GPX-Datei ist größer als ' . intdiv(BLOG_GPX_MAX_BYTES, 1024 * 1024) . ' MB.');
     }
     $previous = libxml_use_internal_errors(true);
     libxml_clear_errors();
@@ -223,7 +218,7 @@ function blog_gpx_read(string $path): array
                     throw new RuntimeException('Ein Punkt der GPX-Datei hat keine gültigen Koordinaten.');
                 }
                 if (count($points) === BLOG_GPX_MAX_POINTS) {
-                    throw new RuntimeException('Die GPX-Datei hat mehr als 100.000 Punkte.');
+                    throw new RuntimeException('Die GPX-Datei hat mehr als ' . number_format(BLOG_GPX_MAX_POINTS, 0, ',', '.') . ' Punkte.');
                 }
                 $points[] = [(float)$lon, (float)$lat];
                 $times[] = null;
@@ -273,13 +268,13 @@ function blog_gpx_line(array $points, array $times): array
         }
     }
     if (!$far) {
-        return ['error' => 'The GPX track never gets farther than 1.5 km from its start and end. It gives no route.'];
+        return ['error' => 'The GPX track never gets farther than ' . (BLOG_GPX_NEAR / 1000) . ' km from its start and end. It gives no route.'];
     }
     [$first, $last] = blog_route_cut($points, random_int(BLOG_GPX_TRIM_MIN, BLOG_GPX_TRIM_MAX), random_int(BLOG_GPX_TRIM_MIN, BLOG_GPX_TRIM_MAX));
     $kept = array_slice($points, $first, $last - $first + 1);
     $length = blog_route_length($kept);
     if (count($kept) < 2 || $length < BLOG_GPX_MIN_LENGTH) {
-        return ['error' => 'The GPX track is shorter than 3 km after cutting its ends.'];
+        return ['error' => 'The GPX track is shorter than ' . (BLOG_GPX_MIN_LENGTH / 1000) . ' km after cutting its ends.'];
     }
     return [
         'line' => blog_route_round(blog_route_simplify($kept, BLOG_GPX_EPSILON)),

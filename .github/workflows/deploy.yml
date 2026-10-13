@@ -2,12 +2,15 @@ name: Deploy
 
 # Every push to main deploys the site: lint and tests first, then make deploy.
 # The repository is public and the runner is self-hosted, so no pull
-# request starts this workflow.
+# request starts this workflow (the workflow Test checks pull requests).
 on:
   push:
     branches:
       - main
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 # One deploy at a time; a second push waits for the first.
 concurrency:
@@ -20,13 +23,26 @@ jobs:
     runs-on: self-hosted
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 1
 
-      - uses: shivammathur/setup-php@v2
+      # The runner keeps PHP between jobs. setup-php takes about a minute, so
+      # it runs only when the PHP of .php-version, an extension or Composer
+      # is missing.
+      - name: PHP check
+        id: php
+        run: |
+          if command -v php > /dev/null && command -v composer > /dev/null \
+            && [ "$(php -r 'echo PHP_MAJOR_VERSION, ".", PHP_MINOR_VERSION;')" = "$(cat .php-version)" ] \
+            && php -r 'foreach (["gd", "exif", "intl", "mbstring"] as $e) { if (!extension_loaded($e)) { exit(1); } }'; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        if: steps.php.outputs.ready != 'true'
         with:
-          php-version: "8.5"
+          php-version-file: .php-version
           extensions: gd, exif, intl, mbstring
           tools: composer
         env:
@@ -35,18 +51,19 @@ jobs:
       - name: Install
         run: composer install --no-interaction --no-progress
 
-      # The runner keeps its files between jobs: the key goes to $RUNNER_TEMP,
-      # which the runner empties after each job, and known_hosts is overwritten.
+      # The runner keeps its files between jobs: key and known_hosts go to
+      # $RUNNER_TEMP, which the runner empties after each job. The host key
+      # comes from a secret, so a changed host key stops the deploy.
       - name: SSH key
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
         run: |
-          install -m 700 -d ~/.ssh
+          [ -n "$DEPLOY_KNOWN_HOSTS" ] || { echo "Secret DEPLOY_KNOWN_HOSTS is missing: the output of ssh-keyscan for the deploy host"; exit 1; }
           printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' > "$RUNNER_TEMP/deploy_key"
           chmod 600 "$RUNNER_TEMP/deploy_key"
           ssh-keygen -y -f "$RUNNER_TEMP/deploy_key" > /dev/null || { echo "DEPLOY_SSH_KEY is not a valid private key"; exit 1; }
-          ssh-keyscan -T 30 "$DEPLOY_HOST" > ~/.ssh/known_hosts
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" | tr -d '\r' > "$RUNNER_TEMP/known_hosts"
 
       # Host, user and folder come from secrets, as they name the hosting
       # account. Without an API key the deploy keeps the assistant's key.
@@ -57,4 +74,5 @@ jobs:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         run: |
           export DEPLOY_SSH_KEY_FILE="$RUNNER_TEMP/deploy_key"
+          export DEPLOY_KNOWN_HOSTS_FILE="$RUNNER_TEMP/known_hosts"
           make deploy LIVE_HOST="$DEPLOY_USER@$DEPLOY_HOST" LIVE_PATH="${DEPLOY_PATH%/}"

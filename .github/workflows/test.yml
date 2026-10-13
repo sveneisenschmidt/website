@@ -1,0 +1,31 @@
+name: Test
+
+# Lint and tests for every pull request, on a runner from GitHub. The job
+# gets no secrets and never touches the self-hosted runner of the deploy.
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version-file: .php-version
+          extensions: gd, exif, intl, mbstring
+          tools: composer
+
+      - name: Install
+        run: composer install --no-interaction --no-progress
+
+      - name: Lint
+        run: make lint
+
+      - name: Tests
+        run: make test

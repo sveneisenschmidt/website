@@ -1,19 +1,18 @@
-TONE_OF_VOICE.md
-DESIGN.md
-PRODUCT.md
-.impeccable/
-.design/
-node_modules/
+# macOS
 .DS_Store
-logs/
-
-*.db
-*.sqlite
-*.sqlite3
-data.db*
 
 # Editor
-.zed/
+/.zed/
+
+# Lokale Dateien für Claude
+/.claude/
+
+# Lokale Design-Notizen
+/.design/
+/DESIGN.md
+
+# Lokale Einstellungen für das Makefile, z. B. der Ordner auf dem Server (nennt das Hosting-Konto)
+/.env
 
 # Kirby: Zustand lebt in Backups, nie in Git
 /www/content/
@@ -21,7 +20,6 @@ data.db*
 /www/site/config/env.php
 /www/site/config/.salt
 /www/site/config/.license
-/www/.htpasswd
 
 # Kirby: erzeugt, entsteht aus den Inhalten neu
 /www/media/
@@ -31,25 +29,18 @@ data.db*
 
 # Kirby: von Composer installiert
 /www/kirby/
+/vendor/
 # Plugins aus Composer; nur die eigenen Plugins (blog, changelog, analytics, assistant) liegen in Git.
 /www/site/plugins/*
 !/www/site/plugins/blog/
 !/www/site/plugins/changelog/
 !/www/site/plugins/analytics/
 !/www/site/plugins/assistant/
-/vendor/
-
-# Kirby: lokale Ausgabe
-/backups/
-/.restore-test/
-/.phpunit.cache/
-
-# Lokale Dateien für Claude: nur launch.json liegt in Git.
-/.claude/*
-!/.claude/launch.json
 
 # Assistent: Uploads der Chats, neben www/ und vendor/, nie in Git
 /storage/
 
-# Local settings for the Makefile, e.g. the server folder (names the hosting account)
-/.env
+# Lokale Ausgabe: Backups, Restore-Test, PHPUnit
+/backups/
+/.restore-test/
+/.phpunit.cache/
