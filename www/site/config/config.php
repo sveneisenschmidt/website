@@ -45,6 +45,12 @@ return array_replace_recursive([
     // GD, plus conversion to sRGB for photos with another color profile
     // (plugins/blog/srgb.php).
     'thumbs' => ['driver' => 'blog-gd'],
+    // HTML cache. Kirby clears it on every change in the Panel. The type
+    // clears it under a lock, for parallel uploads (plugins/blog/cache.php).
+    'cache' => [
+        'pages' => ['active' => true, 'type' => 'blog-file'],
+    ],
+    'routes' => require __DIR__ . '/routes.php',
     'panel' => [
         'install' => false,
         'language' => 'de',

@@ -14,6 +14,8 @@ require_once __DIR__ . '/text.php';
 require_once __DIR__ . '/posts.php';
 require_once __DIR__ . '/layout.php';
 require_once __DIR__ . '/tags.php';
+require_once __DIR__ . '/feeds.php';
+require_once __DIR__ . '/cache.php';
 
 Kirby::plugin('sveneisenschmidt/blog', [
     'hooks' => [
@@ -33,4 +35,5 @@ Kirby::plugin('sveneisenschmidt/blog', [
     ],
     // One template for the four post types, as Hugo's page.html.
     'templates' => array_fill_keys(['photo', 'trip', 'note', 'essay'], __DIR__ . '/../../templates/post.php'),
+    'cacheTypes' => ['blog-file' => BlogFileCache::class],
 ]);

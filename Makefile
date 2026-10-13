@@ -83,14 +83,17 @@ kirby-seed:
 # content/ und site/. Anders als Hugos make dev nie an 0.0.0.0 binden.
 # Uploads im Assistenten: bis 60 MB pro Datei, die Vorschau eines Fotos mit
 # 64 Megapixeln braucht rund 320 MB Speicher (plugins/assistant/uploads.php).
+# bin/dev-router.php sperrt wie www/.htaccess content/, site/ und kirby/.
+# Der Seiten-Cache sieht keine Änderung am Code: der Start leert ihn.
 .PHONY: kirby-dev
 kirby-dev:
 	@test -f vendor/autoload.php || { echo "Kirby fehlt. Erst: composer install"; exit 1; }
 	@test -f $(WWW)/site/config/env.php || { echo "Keine Konfiguration. Erst: make kirby-config"; exit 1; }
 	@test -d $(WWW)/content || { echo "Keine Inhalte. Erst: make kirby-seed"; exit 1; }
 	@$(PHP) -r 'if (PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION !== trim(file_get_contents(".php-version"))) fwrite(STDERR, "Hinweis: hier PHP ".PHP_VERSION.", .php-version sagt ".trim(file_get_contents(".php-version"))."\n");'
+	@rm -rf $(WWW)/site/cache/localhost_$(KIRBY_PORT)
 	@echo "Seite: http://localhost:$(KIRBY_PORT)  Panel: http://localhost:$(KIRBY_PORT)/panel  (Ende mit Ctrl+C)"
-	@set -o pipefail; PHP_CLI_SERVER_WORKERS=4 $(PHP) -d upload_max_filesize=64M -d post_max_size=64M -d memory_limit=1024M -S localhost:$(KIRBY_PORT) -t $(WWW) $(WWW)/kirby/router.php 2>&1 | grep --line-buffered -v -E '(Accepted|Closing)$$'
+	@set -o pipefail; PHP_CLI_SERVER_WORKERS=4 $(PHP) -d upload_max_filesize=64M -d post_max_size=64M -d memory_limit=1024M -S localhost:$(KIRBY_PORT) -t $(WWW) bin/dev-router.php 2>&1 | grep --line-buffered -v -E '(Accepted|Closing)$$'
 
 .PHONY: kirby-backup
 kirby-backup:

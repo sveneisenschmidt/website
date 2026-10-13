@@ -49,3 +49,13 @@ columns:
           - about
           - archive
           - search
+  - width: 1/1
+    sections:
+      llms:
+        type: fields
+        fields:
+          llms:
+            label: Einleitung von llms.txt
+            type: textarea
+            buttons: false
+            help: Steht in /llms.txt unter dem Titel, vor den Listen der Essays und Notizen.

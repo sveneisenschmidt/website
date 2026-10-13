@@ -81,3 +81,27 @@ function blog_has_map(Page $page): bool
 {
     return str_contains($page->intro()->value() . $page->text()->value(), '(map:');
 }
+
+/**
+ * Posts that hold every word of $query in title, intro, text or the alt
+ * text of an image, newest first, at most 40. KirbyText tags and link
+ * targets do not count: a file name or URL would match almost anything.
+ */
+function blog_search(string $query): Pages
+{
+    $words = preg_split('/\s+/u', mb_strtolower(trim($query)), -1, PREG_SPLIT_NO_EMPTY);
+    if ($words === []) {
+        return new Pages([]);
+    }
+    return blog_posts()->filter(function (Page $post) use ($words) {
+        $text = $post->title()->value() . ' ' . $post->intro()->value() . ' ' . $post->text()->value();
+        $text = preg_replace(['/\([a-z]+:[^)]*\)/', '/\]\([^)]*\)/'], [' ', ']'], $text);
+        $text = mb_strtolower($text . ' ' . implode(' ', $post->images()->pluck('alt')));
+        foreach ($words as $word) {
+            if (!str_contains($text, $word)) {
+                return false;
+            }
+        }
+        return true;
+    })->limit(40);
+}

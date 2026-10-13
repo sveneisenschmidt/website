@@ -6,7 +6,7 @@ final class AnalyticsTest extends IntegrationTestCase
 {
     private const SAFARI = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15';
 
-    /** The page cache is off in config.php so far. The count must work with it on. */
+    /** The page cache, as config.php turns it on: the count must work with it. */
     protected array $options = ['cache' => ['pages' => ['active' => true]]];
 
     private array $server;

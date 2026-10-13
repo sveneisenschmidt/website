@@ -2,8 +2,9 @@
 
 /**
  * Prints the URL path of every page, one per line: first "/", then every
- * listed and unlisted page except home and error. bin/restore-test.sh
- * fetches each of them from both sites.
+ * listed and unlisted page except home and error, then the routes of
+ * config/routes.php. bin/restore-test.sh fetches each of them from both
+ * sites.
  *
  * Usage: php bin/page-paths.php [www-root]
  */
@@ -19,4 +20,7 @@ foreach ($kirby->site()->index() as $page) {
         continue;
     }
     echo parse_url($page->url(), PHP_URL_PATH), "\n";
+}
+foreach (['/index.xml', '/sitemap.xml', '/robots.txt', '/llms.txt'] as $route) {
+    echo $route, "\n";
 }

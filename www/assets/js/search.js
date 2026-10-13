@@ -1,11 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Die Suche läuft über die Schnittstelle von Pagefind, nicht über dessen
-    // fertiges Suchfeld. Die Treffer stehen im Aufbau des Archivs: Monatszeile
-    // mit Jahr und Anzahl, darunter Zeilen aus Tag, Titel und Vorschaubild.
-    // Dafür sortiert die Seite nach Datum statt nach Trefferqualität. Den Index
-    // legt der Build unter /pagefind/ ab.
-    var LIMIT = 40;
-
+    // Die Treffer kommen beim Tippen von /search.json, schon nach Datum
+    // sortiert. Sie stehen im Aufbau des Archivs: Monatszeile mit Jahr und
+    // Anzahl, darunter Zeilen aus Tag, Titel und Vorschaubild. Mit ?q= in der
+    // Adresse stehen sie schon vom Server in der Seite.
     var MONTHS = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
@@ -22,39 +19,14 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    var engine = null;
-    var facts = null;
-
-    // Ein Fehlschlag bleibt gemerkt: sonst stiege bei jedem getippten Zeichen ein
-    // neuer Ladeversuch auf, der ebenso scheitert.
-    function load() {
-        if (engine) return engine;
-
-        engine = import("/pagefind/pagefind.js")
-            .then(function (module) {
-                module.init();
-                return module;
+    function load(term) {
+        return fetch("/search.json?q=" + encodeURIComponent(term))
+            .then(function (response) {
+                return response.ok ? response.json() : null;
             })
             .catch(function () {
                 return null;
             });
-
-        return engine;
-    }
-
-    // Datum und Vorschaubild stehen neben dem Index, nicht darin.
-    function load_facts() {
-        if (facts) return facts;
-
-        facts = fetch("/search-meta.json")
-            .then(function (response) {
-                return response.ok ? response.json() : {};
-            })
-            .catch(function () {
-                return {};
-            });
-
-        return facts;
     }
 
     function bar(label, count) {
@@ -124,10 +96,6 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        results.sort(function (a, b) {
-            return a.date < b.date ? 1 : a.date > b.date ? -1 : 0;
-        });
-
         var month = "";
         var list = null;
 
@@ -154,20 +122,6 @@ document.addEventListener("DOMContentLoaded", function () {
         output.appendChild(next);
     }
 
-    var DATE = /^\d{4}-\d{2}-\d{2}$/;
-
-    function clean(data, known) {
-        var fact = known[data.url] || {};
-
-        return {
-            url: data.url,
-            title: data.meta.title || data.url,
-            date: DATE.test(fact.date) ? fact.date : "",
-            thumb: fact.thumb || "",
-            thumb2x: fact.thumb2x || ""
-        };
-    }
-
     // Der Suchbegriff steht in der Adresse, damit ein Neuladen ihn behält und
     // ein Treffer sich verlinken lässt. replaceState statt pushState, sonst
     // füllt jede getippte Zeichenfolge den Verlauf.
@@ -189,42 +143,16 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        Promise.all([load(), load_facts()]).then(function (both) {
-            var module = both[0];
-            var known = both[1];
+        load(term).then(function (results) {
+            if (input.value.trim() !== term) return;
 
-            if (!module) {
+            if (!results) {
                 output.textContent = "";
                 output.appendChild(bar("Search unavailable", 0));
                 return;
             }
 
-            module.preload(term);
-
-            return module.debouncedSearch(term).then(function (search) {
-                if (search === null) return;
-                if (input.value.trim() !== term) return;
-
-                // Mehr als eine Bildschirmseite voll Treffer liest niemand, und
-                // jeder geladene Treffer kostet einen eigenen Abruf.
-                return Promise.all(
-                    search.results.slice(0, LIMIT).map(function (result) {
-                        return result.data();
-                    })
-                ).then(function (found) {
-                    if (input.value.trim() !== term) return;
-
-                    render(
-                        found
-                            .map(function (data) {
-                                return clean(data, known);
-                            })
-                            .filter(function (result) {
-                                return result.date;
-                            })
-                    );
-                });
-            });
+            render(results);
         });
     }
 

@@ -99,6 +99,7 @@ final class ImportTest extends TestCase
     public function testAboutArchiveSearchSectionsAndSite(): void
     {
         $this->assertSame('Sven Eisenschmidt - Personal Blog', $this->kirby->site()->title()->value());
+        $this->assertStringStartsWith('> Personal website of Sven Eisenschmidt', $this->kirby->site()->llms()->value());
         $this->assertSame('404 Page not found', $this->kirby->page('error')->title()->value());
 
         $about = $this->kirby->page('about');

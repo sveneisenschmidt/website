@@ -8,6 +8,8 @@
 
 const HUGO_SITE_TITLE = 'Sven Eisenschmidt - Personal Blog';
 const HUGO_EMAIL = 'sven.eisenschmidt@gmail.com';
+// The introduction of llms.txt, from static/llms.txt. The lists below it come from the content.
+const HUGO_LLMS = "> Personal website of Sven Eisenschmidt, Chief Technology & Product Officer at roadsurfer, based near Leipzig, Germany. Daily photographs, trip diaries, short notes, and essays. Private and non-commercial: no ads, no affiliate links, no monetization.\n\nThis site welcomes crawling by LLMs and AI systems for training and indexing purposes.";
 const HUGO_SECTIONS = ['photos' => 'photo', 'trips' => 'trip', 'notes' => 'note', 'essays' => 'essay'];
 const HUGO_POST_KEYS = ['title', 'date', 'type', 'cover', 'pick', 'draft', 'trip'];
 const HUGO_ABOUT_KEYS = ['title', 'date', 'showDate', 'draft', 'label', 'lastmod', 'build.list'];
@@ -428,7 +430,7 @@ function hugo_import(string $hugo, string $content, callable $exif): array
         ? hugo_uid("page:$slug")
         : throw new RuntimeException("ref to unknown post: $slug");
 
-    hugo_write("$content/site.txt", ['title' => HUGO_SITE_TITLE, 'uuid' => hugo_uid('site')], HUGO_FIXED_TIME);
+    hugo_write("$content/site.txt", ['title' => HUGO_SITE_TITLE, 'llms' => HUGO_LLMS, 'uuid' => hugo_uid('site')], HUGO_FIXED_TIME);
     hugo_write("$content/home/home.txt", ['title' => 'Home', 'uuid' => hugo_uid('home')], HUGO_FIXED_TIME);
     hugo_write("$content/error/error.txt", ['title' => '404 Page not found', 'uuid' => hugo_uid('error')], HUGO_FIXED_TIME);
     foreach (array_keys(HUGO_SECTIONS) as $section) {

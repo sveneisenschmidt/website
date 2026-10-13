@@ -45,8 +45,11 @@ echo "OK: state files identical (checksums and file times)"
 for port in "$PORT_A" "$PORT_B"; do
   ! curl -s -o /dev/null "http://localhost:$port/" || { echo "FAIL: port $port is busy"; exit 1; }
 done
-PHP_CLI_SERVER_WORKERS=4 "$PHP" -S "localhost:$PORT_A" -t "$WWW" "$WWW/kirby/router.php" >/dev/null 2>&1 & A=$!
-PHP_CLI_SERVER_WORKERS=4 "$PHP" -S "localhost:$PORT_B" -t "$TEST/www" "$TEST/www/kirby/router.php" >/dev/null 2>&1 & B=$!
+# The page cache is per host name: a cache left from an earlier run would
+# serve old HTML for site A.
+rm -rf "$WWW/site/cache/localhost_$PORT_A"
+PHP_CLI_SERVER_WORKERS=4 "$PHP" -S "localhost:$PORT_A" -t "$WWW" bin/dev-router.php >/dev/null 2>&1 & A=$!
+PHP_CLI_SERVER_WORKERS=4 "$PHP" -S "localhost:$PORT_B" -t "$TEST/www" bin/dev-router.php >/dev/null 2>&1 & B=$!
 trap 'pkill -P $A 2>/dev/null; pkill -P $B 2>/dev/null; kill $A $B 2>/dev/null || true' EXIT
 until curl -s -o /dev/null "http://localhost:$PORT_A/" && curl -s -o /dev/null "http://localhost:$PORT_B/"; do
   kill -0 "$A" "$B" 2>/dev/null || { echo "FAIL: a test server did not start"; exit 1; }
