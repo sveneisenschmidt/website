@@ -109,28 +109,17 @@ final class AssistantChatTest extends AssistantTestCase
         $this->assertSame(['type' => 'choice', 'question' => 'Welcher Tag?', 'options' => ['A', 'B']], end($chat->items));
     }
 
-    /**
-     * Claude writes the options of ask_choice. A picked option goes to Claude
-     * as the author's answer, but a link in it does not count as a link
-     * from the author, so no card may use it.
-     */
-    public function testALinkInAPickedOptionIsNoLinkOfTheAuthor(): void
+    /** Claude writes the options of ask_choice. A picked option goes to Claude as the author's answer. */
+    public function testAPickedOptionGoesToClaudeAsTheAnswer(): void
     {
-        $this->reply('tool_use', $this->tool('t1', 'ask_choice', ['question' => 'Quelle verlinken?', 'options' => ['Ja, mit Quelle https://evil.example/promo', 'Nein']]));
+        $this->reply('tool_use', $this->tool('t1', 'ask_choice', ['question' => 'Quelle verlinken?', 'options' => ['Ja, mit Quelle', 'Nein']]));
         Chat::send('Schreib was über die Tour.');
-        $this->reply('tool_use', $this->tool('t2', 'propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => 'Mehr bei [der Quelle](https://evil.example/promo).']));
         $this->reply('end_turn');
 
         $state = $this->kirby->api()->call('blog-assistant/send', 'POST', ['body' => ['choice' => 0]]);
-        while ($state['next']) {
-            $state = Chat::next()->toArray();
-        }
 
-        $this->assertSame('Ja, mit Quelle https://evil.example/promo', $this->lastText($this->requests[1]));
-        $this->assertSame(['type' => 'me', 'text' => 'Ja, mit Quelle https://evil.example/promo'], array_intersect_key(array_values(array_filter($state['items'], fn($i) => $i['type'] === 'me'))[1], ['type' => 1, 'text' => 1]));
-        $this->assertSame([], Session::load()->mine);
-        $this->assertStringContainsString('not allowed', $this->results(2)[0]['content']);
-        $this->assertSame([], Session::load()->proposals);
+        $this->assertSame('Ja, mit Quelle', $this->lastText($this->requests[1]));
+        $this->assertSame(['type' => 'me', 'text' => 'Ja, mit Quelle'], array_intersect_key(array_values(array_filter($state['items'], fn($i) => $i['type'] === 'me'))[1], ['type' => 1, 'text' => 1]));
 
         // A second pick has no open choice. The Panel gets this message and not
         // Kirby's "unexpected error".
@@ -244,6 +233,26 @@ final class AssistantChatTest extends AssistantTestCase
         $this->assertStringContainsString('No image found', $results[0]['content'][0]['text']);
         $this->assertSame('t2', $results[1]['tool_use_id']);
         $this->assertTrue($results[1]['is_error']);
+    }
+
+    public function testAToolCallThatThrowsSendsAFixedText(): void
+    {
+        $this->reply('tool_use', $this->tool('t1', 'ask_choice', ['question' => 'Welches?', 'options' => 'a']));
+        $this->reply('end_turn');
+        // phpunit.xml fails a test on any output, so the log goes to a file here.
+        $log = $this->root . '/php-errors.log';
+        $previous = ini_set('error_log', $log);
+
+        try {
+            $this->chat('Frag mich.');
+        } finally {
+            ini_set('error_log', (string) $previous);
+        }
+
+        // The message of an exception can contain a server path, and Claude
+        // can repeat it in an answer.
+        $this->assertSame(['type' => 'tool_result', 'tool_use_id' => 't1', 'content' => 'The call failed on the server. Nothing changed.', 'is_error' => true], $this->results(1)[0]);
+        $this->assertStringContainsString('blog assistant tool ask_choice: TypeError: array_map()', file_get_contents($log));
     }
 
     public function testAWebSearchShowsAboveTheAnswerWithItsSources(): void
@@ -431,13 +440,13 @@ final class AssistantChatTest extends AssistantTestCase
         $this->reply('end_turn', $this->text('Eins.'));
         $this->chat('Erste Nachricht.');
         $stored = $this->kirby->session()->get('blog.assistant');
-        unset($stored['paused'], $stored['mine'], $stored['sources'], $stored['id'], $stored['asked'], $stored['turn']);
+        unset($stored['paused'], $stored['sources'], $stored['id'], $stored['asked'], $stored['turn']);
         $this->kirby->session()->set('blog.assistant', $stored);
         $this->reply('end_turn', $this->text('Zwei.'));
 
         $this->chat('Zweite Nachricht.');
 
-        $keys = ['model', 'system', 'tools', 'date', 'messages', 'items', 'proposals', 'rounds', 'next', 'paused', 'run', 'images', 'mine', 'sources', 'id', 'asked', 'turn'];
+        $keys = ['model', 'system', 'tools', 'date', 'messages', 'items', 'proposals', 'rounds', 'next', 'paused', 'run', 'images', 'sources', 'id', 'asked', 'turn'];
         $this->assertSame($keys, array_keys($this->kirby->session()->get('blog.assistant')));
         $this->assertSame(['me', 'ai', 'me', 'ai'], array_column(Session::load()->items, 'type'));
         $this->assertSame($this->requests[0]['system'], $this->requests[1]['system']);

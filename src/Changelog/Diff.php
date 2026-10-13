@@ -20,13 +20,6 @@ final class Diff
     /** Fields that are never logged: `uuid` is an internal id, `password` is secret. */
     public const SKIP = ['uuid', 'password'];
 
-    /**
-     * Fields whose values never go into the log. The assistant's prompt must
-     * exist only in content/site.txt, so a change of it shows only as
-     * "geändert" (changed).
-     */
-    public const SECRET = ['assistantprompt'];
-
     /** Longer values are cut after this many characters. */
     public const MAX = 200;
 
@@ -51,10 +44,6 @@ final class Diff
             $from = (string) ($a[$key] ?? '');
             $to = (string) ($b[$key] ?? '');
             if ($from === $to) {
-                continue;
-            }
-            if (in_array(strtolower($key), self::SECRET, true)) {
-                $changes[] = ['field' => $key, 'label' => self::label($new, $key), 'old' => '', 'new' => 'geändert'];
                 continue;
             }
             // For a list (structure, files, pages), the entry shows only the

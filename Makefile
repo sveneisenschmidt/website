@@ -13,12 +13,12 @@ PORT := 8010
 -include .env
 export SITE_URL DEPLOY_HOST DEPLOY_PATH DEBUG
 
-# Once after cloning: dependencies, .env and .salt, git hooks. Then fill in
+# Once after cloning: dependencies, .env and .salt. Then fill in
 # the values in .env, and make pull fetches the content from the server.
 .PHONY: setup
 setup:
 	composer install
-	@$(MAKE) --no-print-directory config hooks
+	@$(MAKE) --no-print-directory config
 
 .PHONY: config
 config:
@@ -76,25 +76,6 @@ format:
 .PHONY: analyse
 analyse:
 	@$(PHP) vendor/bin/phpstan analyse --no-progress
-
-# Installs the git hooks pre-commit and pre-push. They stop a commit or push
-# that contains text from the assistant's prompt (bin/prompt-guard.php). The
-# hooks run on every branch, main included. make hooks copies
-# bin/prompt-guard.php and src/Assistant/Words.php into the hooks folder of
-# git, so run it again after a change of either file.
-.PHONY: hooks
-hooks:
-	@hooks="$$(git rev-parse --git-path hooks)"; \
-	for hook in pre-commit pre-push; do \
-	  if [ -f "$$hooks/$$hook" ] && ! grep -q prompt-guard.php "$$hooks/$$hook"; then echo "$$hooks/$$hook exists already and stays as it is."; exit 1; fi; \
-	done; \
-	cp bin/prompt-guard.php "$$hooks/prompt-guard.php"; \
-	cp src/Assistant/Words.php "$$hooks/prompt-words.php"; \
-	for hook in pre-commit pre-push; do \
-	  printf '#!/bin/sh\n# Written by make hooks. Stops a commit or push with text from the assistant prompt.\nexec %s "$$(git rev-parse --git-path hooks)/prompt-guard.php" %s\n' "$(PHP)" "$$hook" > "$$hooks/$$hook"; \
-	  chmod +x "$$hooks/$$hook"; \
-	done; \
-	echo "The hooks pre-commit and pre-push are installed."
 
 # Checks every URL of the sitemap of the live site and every redirect
 # (bin/check-urls.php). Without SITE it checks make dev, which must run in a

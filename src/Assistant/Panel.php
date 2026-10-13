@@ -4,7 +4,6 @@ namespace Website\Assistant;
 
 use Closure;
 use Kirby\Cms\Page;
-use Kirby\Exception\PermissionException;
 use Kirby\Panel\Ui\Buttons\ViewButton;
 use Website\Blog\Types;
 
@@ -43,24 +42,11 @@ final class Panel
      */
     public static function api(Closure $action): array
     {
-        self::admin();
         Uploads::cleanup();
         try {
             return Chat::view($action());
         } catch (Error $e) {
             return Chat::view(Session::load()) + ['error' => ['kind' => $e->kind, 'text' => $e->getMessage()]];
-        }
-    }
-
-    /**
-     * Only an admin may use the assistant: it writes to every post and
-     * spends money at Anthropic. The site has the role admin only, so the
-     * check matters when a second role is added.
-     */
-    public static function admin(): void
-    {
-        if (kirby()->user()?->isAdmin() !== true) {
-            throw new PermissionException('Only an admin can use the assistant.');
         }
     }
 

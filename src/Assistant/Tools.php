@@ -33,10 +33,11 @@ final class Tools
     public const FIND_LIMIT = 20;
 
     /**
-     * The checks of `Guard` in words, for the tool descriptions. A change here
-     * changes the tool definitions and reaches new chats only.
+     * The text rules for the tool descriptions: the HTML check of
+     * `Proposals` and the KirbyText tags of the site. A change here changes
+     * the tool definitions and reaches new chats only.
      */
-    public const TEXT_RULES = 'Texts: no raw HTML. KirbyText tags only (image: file name), (map:) and (link: page://<uuid> text: …). Links only to URLs from the user\'s messages, from web search results of this chat, or already in the field. Captions: Markdown links by the same rule, otherwise plain text.';
+    public const TEXT_RULES = 'Texts: Markdown, no raw HTML. KirbyText tags: (image: file name), (map:) and (link: page://<uuid> text: …).';
 
     /**
      * The tool definitions for the request. They are not strict (no

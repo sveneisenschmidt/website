@@ -27,6 +27,26 @@ final class Counter
     /** User agents that are not a person in a browser: crawlers, link preview services, uptime checks, command line tools. */
     public const BOTS = '/bot|crawl|spider|slurp|archiver|facebookexternalhit|embedly|preview|lighthouse|headless|pingdom|uptime|monitor|curl|wget|python|java\/|okhttp|go-http/i';
 
+    /**
+     * The visitors with a hash per day. Requests with a new user agent each
+     * would otherwise add hashes without end, and every later view reads and
+     * writes the file of the day while it holds the lock. A view from a
+     * further visitor counts as a view only.
+     */
+    public const MAX_VISITORS = 50000;
+
+    /**
+     * The referrer hosts per day. The hosts stay in the month file and in
+     * every backup. A visit from a further host counts under `OTHER`, as does
+     * a host longer than `MAX_HOST` characters.
+     */
+    public const MAX_REFERRERS = 200;
+
+    public const MAX_HOST = 100;
+
+    /** The referrer for the hosts beyond the limits. The Panel shows it as it is. */
+    public const OTHER = 'Andere';
+
     /** The folder for the key and the hashes of the current day. */
     private static function cacheDir(): string
     {
@@ -121,11 +141,15 @@ final class Counter
                 }
             }
             $visitor = substr(hash_hmac('sha256', "$ip|$ua", $seen['key']), 0, 16);
-            $newVisit = !isset($seen['visitors'][$visitor]);
-            $seen['visitors'][$visitor] ??= [];
-            $newPageVisit = !in_array($id, $seen['visitors'][$visitor], true);
-            if ($newPageVisit) {
-                $seen['visitors'][$visitor][] = $id;
+            $known = isset($seen['visitors'][$visitor]);
+            $newVisit = !$known && count($seen['visitors']) < self::MAX_VISITORS;
+            $newPageVisit = false;
+            if ($known || $newVisit) {
+                $seen['visitors'][$visitor] ??= [];
+                $newPageVisit = !in_array($id, $seen['visitors'][$visitor], true);
+                if ($newPageVisit) {
+                    $seen['visitors'][$visitor][] = $id;
+                }
             }
 
             // For an unreadable month file, the strict read throws. Without
@@ -137,6 +161,9 @@ final class Counter
                 $day['visits']++;
                 $host = $source ?? self::referrer($referer);
                 if ($host !== null) {
+                    if (strlen($host) > self::MAX_HOST || (!isset($day['referrers'][$host]) && count($day['referrers']) >= self::MAX_REFERRERS)) {
+                        $host = self::OTHER;
+                    }
                     $day['referrers'][$host] = ($day['referrers'][$host] ?? 0) + 1;
                 }
             }

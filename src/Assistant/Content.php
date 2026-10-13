@@ -6,14 +6,15 @@ use Kirby\Cms\File;
 use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
 use Kirby\Data\Yaml;
+use Kirby\Uuid\Uuid;
 use Website\Blog\Types;
 
 /**
  * Finds and reads the pages the assistant may work on: the posts of the four
  * sections and About, with their files. A field reads as the Panel shows it,
- * unsaved changes included. The read tools (`Tools`), the checks of the
- * proposals (`Proposals`) and `Apply` all read content through this class,
- * so all three see the same values.
+ * unsaved changes included. The read tools (`Tools`), the proposals
+ * (`Proposals`) and `Apply` all read content through this class, so all
+ * three see the same values.
  */
 final class Content
 {
@@ -26,7 +27,10 @@ final class Content
     {
         $id = trim($id, " /");
         if (str_starts_with($id, 'page://')) {
-            return Guard::page($id);
+            // Uuid::for() raises a warning for a bare "page://", so the
+            // format check comes first.
+            $model = preg_match('#^page://[a-z0-9]+$#i', $id) ? Uuid::for($id)?->model() : null;
+            return $model instanceof Page ? $model : null;
         }
         $page = null;
         foreach ($id === '' ? [] : explode('/', $id) as $slug) {

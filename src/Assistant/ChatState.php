@@ -92,15 +92,8 @@ final class ChatState
     public int $images = 0;
 
     /**
-     * URLs from the messages of the Panel user. A card may link to them.
-     *
-     * @var array<string, true>
-     */
-    public array $mine = [];
-
-    /**
-     * URLs from the web search results of this chat. A card may link to them,
-     * and they are the only links that the chat view makes clickable.
+     * URLs from the web search results of this chat. They are the only links
+     * that the chat view makes clickable.
      *
      * @var array<string, true>
      */
@@ -138,7 +131,6 @@ final class ChatState
         $chat->paused = $data['paused'] ?? false;
         $chat->run = $data['run'] ?? 0;
         $chat->images = $data['images'] ?? 0;
-        $chat->mine = $data['mine'] ?? [];
         $chat->sources = $data['sources'] ?? [];
         $chat->id = $data['id'] ?? null;
         $chat->asked = $data['asked'] ?? 0;

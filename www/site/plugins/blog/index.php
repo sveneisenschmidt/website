@@ -31,9 +31,16 @@ Kirby::plugin('website/blog', [
     'hooks' => [
         // The EXIF goes into the content file of the image once, on upload.
         // So every backup has it, and a wrong value can be corrected in the
-        // Panel. A replaced photo gets the EXIF of the new file.
-        'file.create:after' => fn(File $file) => Exif::store($file),
-        'file.replace:after' => fn(File $newFile) => Exif::store($newFile, true),
+        // Panel. A replaced photo gets the EXIF of the new file. Then the
+        // metadata leaves the original, the GPS position included.
+        'file.create:after' => function (File $file) {
+            Exif::store($file);
+            Exif::strip($file);
+        },
+        'file.replace:after' => function (File $newFile) {
+            Exif::store($newFile, true);
+            Exif::strip($newFile);
+        },
         // A new slug or date gives a published post a new URL, and
         // Redirects::moved() adds a redirect from the old one. After
         // changeSlug, the old page object finds no content file, so the old
