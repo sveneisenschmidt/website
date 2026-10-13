@@ -9,7 +9,11 @@ use Website\Tests\Support\TestSite;
  */
 final class PagesTest extends IntegrationTestCase
 {
-    /** About must stay out of the page cache, so it is on here. */
+    /**
+     * About must stay out of the page cache, so it is on here.
+     *
+     * @var array<mixed>
+     */
     protected array $options = ['cache' => ['pages' => ['active' => true]]];
 
     protected function setUp(): void

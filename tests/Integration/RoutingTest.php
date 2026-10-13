@@ -11,6 +11,7 @@ use Website\Tests\Support\TestSite;
  */
 final class RoutingTest extends IntegrationTestCase
 {
+    /** @var array<mixed> */
     private array $get;
 
     protected function setUp(): void

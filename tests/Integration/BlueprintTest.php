@@ -110,6 +110,8 @@ final class BlueprintTest extends IntegrationTestCase
     /**
      * What the Panel stores when the form is saved without a change: the form
      * values go back through a fresh form of the same page.
+     *
+     * @return array<mixed>
      */
     private function panelSave(Page $page): array
     {

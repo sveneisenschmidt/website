@@ -2,28 +2,36 @@
 
 namespace Website\Tests\Integration;
 
-use BlogAssistantError;
 use RuntimeException;
+use Website\Assistant\Chat;
+use Website\Assistant\Error;
+use Website\Assistant\Gpx;
+use Website\Assistant\Route;
+use Website\Assistant\Session;
+use Website\Assistant\Uploads;
 use Website\Tests\Support\GpxFixture;
 
 /**
- * uploads.php: what the chat accepts, what it keeps and when it deletes
- *.
+ * Uploads: what the chat accepts, what it keeps and when it deletes.
  */
 final class UploadTest extends AssistantTestCase
 {
     private function refused(string $path, string $name, string $reason): void
     {
         try {
-            blog_uploads_accept($path, $name);
+            Uploads::accept($path, $name);
             $this->fail("Accepted: $name");
-        } catch (BlogAssistantError $e) {
+        } catch (Error $e) {
             $this->assertSame('upload', $e->kind);
             $this->assertStringContainsString($reason, $e->getMessage(), $name);
         }
     }
 
-    /** Files with an upload id in the storage folder. */
+    /**
+     * Files with an upload id in the storage folder.
+     *
+     * @return array<mixed>
+     */
     private function stored(): array
     {
         return glob($this->root . '/storage/assistant/*/u*') ?: [];
@@ -33,9 +41,9 @@ final class UploadTest extends AssistantTestCase
     {
         $this->assertArrayHasKey('GPS', exif_read_data($this->gpsJpeg(6), null, true));
 
-        $upload = blog_uploads_accept($this->gpsJpeg(6), 'IMG_0001.JPG');
+        $upload = Uploads::accept($this->gpsJpeg(6), 'IMG_0001.JPG');
 
-        $meta = blog_uploads_meta($upload['id']);
+        $meta = Uploads::meta($upload['id']);
         $this->assertMatchesRegularExpression('/^u[0-9a-f]{16}$/', $upload['id']);
         $this->assertSame('img_0001.jpg', $meta['name']);
         $this->assertSame(['camera' => 'GPS-CAM'], $meta['exif']);
@@ -46,16 +54,16 @@ final class UploadTest extends AssistantTestCase
         $this->assertArrayNotHasKey('GPS', $exif);
         $this->assertSame(6, $exif['IFD0']['Orientation']);
         $this->assertSame([64, 48], array_slice(getimagesize($meta['path']), 0, 2), 'The image itself is unchanged.');
-        $this->assertSame([['id' => $upload['id'], 'name' => 'img_0001.jpg', 'kind' => 'image']], blog_uploads_pending());
+        $this->assertSame([['id' => $upload['id'], 'name' => 'img_0001.jpg', 'kind' => 'image']], Uploads::pending());
         $preview = dirname($meta['path']) . '/' . $upload['id'] . '.preview.jpg';
         $this->assertSame([48, 64], array_slice(getimagesize($preview), 0, 2));
     }
 
     public function testALargePhotoGetsAScaledPreviewAndThumb(): void
     {
-        $upload = blog_uploads_accept($this->gpsJpeg(1, 'big.jpg', 3200, 2000), 'big.jpg');
+        $upload = Uploads::accept($this->gpsJpeg(1, 'big.jpg', 3200, 2000), 'big.jpg');
 
-        $dir = dirname(blog_uploads_meta($upload['id'])['path']);
+        $dir = dirname(Uploads::meta($upload['id'])['path']);
         $this->assertSame([1568, 980], array_slice(getimagesize("$dir/{$upload['id']}.preview.jpg"), 0, 2));
         $this->assertSame([240, 150], array_slice(getimagesize("$dir/{$upload['id']}.thumb.jpg"), 0, 2));
     }
@@ -64,24 +72,24 @@ final class UploadTest extends AssistantTestCase
     {
         $source = $this->jpeg(40, 30);
         // GD cannot write where a folder stands; imagejpeg() then returns false.
-        mkdir(blog_uploads_dir() . '/v0000000000000000.jpg');
+        mkdir(Uploads::dir() . '/v0000000000000000.jpg');
 
         $this->expectException(RuntimeException::class);
-        blog_uploads_image($source, 1, null, 20, 'v0000000000000000.jpg');
+        Uploads::image($source, 1, null, 20, 'v0000000000000000.jpg');
     }
 
     public function testExpiredUploadsAreNamedToClaude(): void
     {
-        $id = blog_uploads_accept($this->jpeg(8, 8), 'a.jpg')['id'];
-        $dir = dirname(blog_uploads_meta($id)['path']);
+        $id = Uploads::accept($this->jpeg(8, 8), 'a.jpg')['id'];
+        $dir = dirname(Uploads::meta($id)['path']);
         $meta = json_decode(file_get_contents("$dir/$id.json"), true);
         file_put_contents("$dir/$id.json", json_encode(['time' => time() - 8 * 86400] + $meta));
 
-        blog_uploads_cleanup();
+        Uploads::cleanup();
 
-        $this->assertSame([], blog_uploads_pending());
+        $this->assertSame([], Uploads::pending());
         $this->reply('end_turn');
-        blog_assistant_send('Hier ist das Foto.');
+        Chat::send('Hier ist das Foto.');
         $text = $this->lastText($this->requests[0]);
         $this->assertStringContainsString($id, $text);
         $this->assertStringContainsString('7 days', $text);
@@ -92,7 +100,7 @@ final class UploadTest extends AssistantTestCase
     {
         set_time_limit(0);
         try {
-            blog_uploads_accept($this->jpeg(8, 8), 'a.jpg');
+            Uploads::accept($this->jpeg(8, 8), 'a.jpg');
             $this->assertSame('60', ini_get('max_execution_time'));
         } finally {
             set_time_limit(0);
@@ -114,12 +122,12 @@ final class UploadTest extends AssistantTestCase
         $app1 = "Exif\x00\x00" . $tiff;
         file_put_contents($this->root . '/latin1.jpg', "\xFF\xD8\xFF\xE1" . pack('n', strlen($app1) + 2) . $app1 . substr($plain, 2));
 
-        $upload = blog_uploads_accept($this->root . '/latin1.jpg', 'a.jpg');
+        $upload = Uploads::accept($this->root . '/latin1.jpg', 'a.jpg');
 
-        $meta = blog_uploads_meta($upload['id']);
+        $meta = Uploads::meta($upload['id']);
         $this->assertSame("Caf\u{FFFD} Cam", $meta['exif']['camera']);
         $this->assertEqualsCanonicalizing(['.json', '.jpg', '.preview.jpg', '.thumb.jpg'], array_map(fn($f) => substr(basename($f), 17), $this->stored()));
-        $this->assertNotFalse(json_encode(blog_assistant_view(blog_assistant_load())));
+        $this->assertNotFalse(json_encode(Chat::view(Session::load())));
     }
 
     public function testCodeAndOtherTypesAreRefused(): void
@@ -137,7 +145,7 @@ final class UploadTest extends AssistantTestCase
         $this->refused($this->root . '/short.jpg', 'short.jpg', 'Code');
         // The three bytes alone come by chance in large photos, a few times in 20 MB of noise.
         file_put_contents($this->root . '/chance.jpg', "\xFF\xD8" . $this->segment(0xFE, "<?=\x00\xFF\x13") . substr(file_get_contents($this->jpeg(8, 8)), 2));
-        $this->assertSame('image', blog_uploads_accept($this->root . '/chance.jpg', 'chance.jpg')['kind']);
+        $this->assertSame('image', Uploads::accept($this->root . '/chance.jpg', 'chance.jpg')['kind']);
         $this->assertCount(4, $this->stored(), 'Only the upload by chance.');
     }
 
@@ -159,8 +167,8 @@ final class UploadTest extends AssistantTestCase
         file_put_contents($this->root . '/a.png', substr($png, 0, -12) . $chunk . substr($png, -12));
         imagewebp(imagecreatetruecolor(10, 10), $this->root . '/b.webp');
 
-        $png = blog_uploads_meta(blog_uploads_accept($this->root . '/a.png', 'a.png')['id']);
-        $webp = blog_uploads_meta(blog_uploads_accept($this->root . '/b.webp', 'b.webp')['id']);
+        $png = Uploads::meta(Uploads::accept($this->root . '/a.png', 'a.png')['id']);
+        $webp = Uploads::meta(Uploads::accept($this->root . '/b.webp', 'b.webp')['id']);
 
         $this->assertStringNotContainsString('GPS 51.3', file_get_contents($png['path']));
         $this->assertSame('a.png', $png['name']);
@@ -207,7 +215,7 @@ final class UploadTest extends AssistantTestCase
         $stored = [];
         foreach ($cases as $name => $bytes) {
             file_put_contents($this->root . '/' . $name, $bytes);
-            $stored[$name] = file_get_contents(blog_uploads_meta(blog_uploads_accept($this->root . '/' . $name, $name)['id'])['path']);
+            $stored[$name] = file_get_contents(Uploads::meta(Uploads::accept($this->root . '/' . $name, $name)['id'])['path']);
 
             $this->assertStringNotContainsString('GPS-LEAK', $stored[$name], $name);
             $this->assertSame([64, 48], array_slice(getimagesizefromstring($stored[$name]), 0, 2), $name);
@@ -218,36 +226,36 @@ final class UploadTest extends AssistantTestCase
 
     public function testForeignUploadIdsAreRefused(): void
     {
-        $id = blog_uploads_accept($this->jpeg(8, 8), 'a.jpg')['id'];
-        $this->assertNotNull(blog_uploads_meta($id));
-        $this->assertNull(blog_uploads_meta('../../site/config/env'));
-        $this->assertNull(blog_uploads_meta('u0000000000000000'));
-        $this->assertNull(blog_uploads_read('../' . $id . '.jpg'));
+        $id = Uploads::accept($this->jpeg(8, 8), 'a.jpg')['id'];
+        $this->assertNotNull(Uploads::meta($id));
+        $this->assertNull(Uploads::meta('../../site/config/env'));
+        $this->assertNull(Uploads::meta('u0000000000000000'));
+        $this->assertNull(Uploads::read('../' . $id . '.jpg'));
 
-        blog_uploads_reset();
+        Uploads::reset();
 
-        $this->assertNull(blog_uploads_meta($id), 'The id belonged to the chat before.');
+        $this->assertNull(Uploads::meta($id), 'The id belonged to the chat before.');
     }
 
     public function testAGpxIsReadDeletedAndCut(): void
     {
         $path = GpxFixture::write($this->root, GpxFixture::xml(GpxFixture::ride()));
 
-        $upload = blog_uploads_accept($path, 'Morning Ride.gpx');
+        $upload = Uploads::accept($path, 'Morning Ride.gpx');
 
         $this->assertFileDoesNotExist($path);
-        $meta = blog_uploads_meta($upload['id']);
+        $meta = Uploads::meta($upload['id']);
         $this->assertSame('gpx', $meta['kind']);
         $this->assertNull($meta['path']);
         $this->assertEqualsWithDelta(13.8, $meta['km'], 0.6);
         foreach ($meta['line'] as $point) {
-            $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, blog_route_distance(GpxFixture::home(), $point));
+            $this->assertGreaterThanOrEqual(Gpx::TRIM_MIN, Route::distance(GpxFixture::home(), $point));
         }
         $stored = file_get_contents(dirname($this->stored()[0]) . '/' . $upload['id'] . '.json');
         foreach (['Test Device', 'Morning ride', '2026-', '<hr>', 'ele'] as $leak) {
             $this->assertStringNotContainsString($leak, $stored);
         }
-        $text = blog_uploads_blocks($upload['id'])[0]['text'];
+        $text = Uploads::blocks($upload['id'])[0]['text'];
         $this->assertStringContainsString('both ends cut', $text);
         $this->assertStringNotContainsString('morning', strtolower($text), 'A file name can name a place; Claude gets none.');
         $this->assertStringNotContainsString(json_encode(array_map(fn($v) => round($v, 5), GpxFixture::home())), $text);
@@ -259,15 +267,15 @@ final class UploadTest extends AssistantTestCase
         $this->refused($path, 'evil.gpx', 'DOCTYPE');
         $this->assertFileDoesNotExist($path);
 
-        $short = blog_uploads_accept(GpxFixture::write($this->root, GpxFixture::xml(GpxFixture::oneWay(4000))), 'short.gpx');
+        $short = Uploads::accept(GpxFixture::write($this->root, GpxFixture::xml(GpxFixture::oneWay(4000))), 'short.gpx');
 
-        $this->assertStringContainsString('shorter than 3 km', blog_uploads_blocks($short['id'])[0]['text']);
+        $this->assertStringContainsString('shorter than 3 km', Uploads::blocks($short['id'])[0]['text']);
     }
 
     public function testOldFoldersAndUploadsAreCleanedUp(): void
     {
-        $id = blog_uploads_accept($this->jpeg(8, 8), 'a.jpg')['id'];
-        $dir = dirname(blog_uploads_meta($id)['path']);
+        $id = Uploads::accept($this->jpeg(8, 8), 'a.jpg')['id'];
+        $dir = dirname(Uploads::meta($id)['path']);
         $old = $this->root . '/storage/assistant/' . str_repeat('a', 32);
         $recent = $this->root . '/storage/assistant/' . str_repeat('b', 32);
         // Not a folder of a chat: the cleanup leaves it alone, however old.
@@ -277,17 +285,17 @@ final class UploadTest extends AssistantTestCase
             touch($folder . '/.last', time() - $days * 86400);
         }
 
-        blog_uploads_cleanup();
+        Uploads::cleanup();
 
         $this->assertDirectoryDoesNotExist($old);
         $this->assertDirectoryExists($recent);
         $this->assertDirectoryExists($other);
-        $this->assertNotNull(blog_uploads_meta($id)['path']);
+        $this->assertNotNull(Uploads::meta($id)['path']);
 
         $meta = json_decode(file_get_contents("$dir/$id.json"), true);
         file_put_contents("$dir/$id.json", json_encode(['time' => time() - 8 * 86400] + $meta));
 
-        blog_uploads_cleanup();
+        Uploads::cleanup();
 
         $this->assertSame([], glob("$dir/$id.*"));
     }

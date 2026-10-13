@@ -1,6 +1,6 @@
 // Panel area "Assistent" and the section in Website › Assistent. No build
 // step, like "Verlauf" and "Besucher". The browser drives the chat one round
-// at a time (plugins/assistant/chat.php) and uploads one file per request.
+// at a time (src/Assistant/Chat.php) and uploads one file per request.
 // Ported from concertshotsbyluisa.de.
 
 function escape(text) {
@@ -58,7 +58,7 @@ function markdown(text, sources) {
   return html.join("");
 }
 // Texts on a card stay as they are. The server renders each text as the
-// site does and names its links (plugins/assistant/guard.php): exactly
+// site does and names its links (src/Assistant/Guard.php): exactly
 // those are marked, wherever the text writes them.
 function marked(text, links) {
   const found = [...new Set(links || [])].filter((link) => link !== "").sort((a, b) => b.length - a.length);
@@ -186,7 +186,7 @@ panel.plugin("sveneisenschmidt/assistant", {
           });
         },
         // choice: the number of an option in the open choice. It goes as that
-        // number; the server takes the option's text (plugins/assistant/chat.php).
+        // number; the server takes the option's text (src/Assistant/Chat.php).
         async send(text = this.text, choice = null) {
           text = text.trim();
           if (text === "" || this.busy || this.uploading) return;

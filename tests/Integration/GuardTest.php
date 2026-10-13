@@ -2,8 +2,10 @@
 
 namespace Website\Tests\Integration;
 
+use Website\Assistant\Guard;
+
 /**
- * guard.php: every proposed text, before a card exists. The tests check
+ * Guard: every proposed text, before a card exists. The tests check
  * security and content model only, never style.
  */
 final class GuardTest extends IntegrationTestCase
@@ -16,11 +18,15 @@ final class GuardTest extends IntegrationTestCase
         }
     }
 
-    /** A text for the field "text" of the photo with the images a.jpg and b.jpg; without $map, of a note. */
+    /**
+     * A text for the field "text" of the photo with the images a.jpg and b.jpg; without $map, of a note.
+     *
+     * @param array<mixed> $allowed
+     */
     private function markdown(string $text, array $allowed = [], bool $map = true): ?string
     {
         $page = $map ? $this->post : $this->kirby->page('notes/a-note') ?? $this->post('notes', 'note', 'a-note', 'A note');
-        return blog_guard_markdown($text, $allowed, $page);
+        return Guard::markdown($text, $allowed, $page);
     }
 
     public function testPlainMarkdownPasses(): void
@@ -97,8 +103,8 @@ final class GuardTest extends IntegrationTestCase
         foreach ($probes as $text) {
             $this->assertNotNull($this->markdown($text, ['https://ok.example']), $text);
         }
-        $this->assertNotNull(blog_guard_caption('[a [b] c](javascript:alert(1))', []));
-        $this->assertNotNull(blog_guard_caption('x ![a [b] c](//evil.example/p.png)', []));
+        $this->assertNotNull(Guard::caption('[a [b] c](javascript:alert(1))', []));
+        $this->assertNotNull(Guard::caption('x ![a [b] c](//evil.example/p.png)', []));
     }
 
     public function testImagesComeOnlyFromThisPost(): void
@@ -111,25 +117,25 @@ final class GuardTest extends IntegrationTestCase
     {
         $this->assertSame(
             ['https://a.test', 'https://b.test/x', 'https://c.test', 'https://d.test/y'],
-            blog_guard_links("[a](https://a.test) ![b](https://b.test/x \"title\")\n\n[ref]: https://c.test\n\nBare https://d.test/y."),
+            Guard::links("[a](https://a.test) ![b](https://b.test/x \"title\")\n\n[ref]: https://c.test\n\nBare https://d.test/y."),
         );
     }
 
     public function testCaptionsAreTextWithKnownLinks(): void
     {
-        $this->assertNull(blog_guard_caption('Taken on [the roof](https://known.test).', ['https://known.test']));
-        $this->assertNotNull(blog_guard_caption('Taken on [the roof](https://evil.test).', ['https://known.test']));
-        $this->assertNotNull(blog_guard_caption('(image: a.jpg)', []));
-        $this->assertNotNull(blog_guard_caption('![x](https://known.test)', ['https://known.test']));
-        $this->assertNotNull(blog_guard_caption('<b>x</b>', []));
+        $this->assertNull(Guard::caption('Taken on [the roof](https://known.test).', ['https://known.test']));
+        $this->assertNotNull(Guard::caption('Taken on [the roof](https://evil.test).', ['https://known.test']));
+        $this->assertNotNull(Guard::caption('(image: a.jpg)', []));
+        $this->assertNotNull(Guard::caption('![x](https://known.test)', ['https://known.test']));
+        $this->assertNotNull(Guard::caption('<b>x</b>', []));
     }
 
     public function testPlainTextHasNoMarkup(): void
     {
-        $this->assertNull(blog_guard_plain('Summer Vacation, Day 5: Brighton'));
-        $this->assertNotNull(blog_guard_plain("Two\nlines"));
-        $this->assertNotNull(blog_guard_plain('<b>bold</b>'));
-        $this->assertNull(blog_guard_plain(str_repeat('a', 60), 60));
-        $this->assertNotNull(blog_guard_plain(str_repeat('a', 61), 60));
+        $this->assertNull(Guard::plain('Summer Vacation, Day 5: Brighton'));
+        $this->assertNotNull(Guard::plain("Two\nlines"));
+        $this->assertNotNull(Guard::plain('<b>bold</b>'));
+        $this->assertNull(Guard::plain(str_repeat('a', 60), 60));
+        $this->assertNotNull(Guard::plain(str_repeat('a', 61), 60));
     }
 }

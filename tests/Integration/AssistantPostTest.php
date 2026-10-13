@@ -4,6 +4,14 @@ namespace Website\Tests\Integration;
 
 use Kirby\Cms\File;
 use RuntimeException;
+use Website\Assistant\Apply;
+use Website\Assistant\Chat;
+use Website\Assistant\ChatState;
+use Website\Assistant\Content;
+use Website\Assistant\Route;
+use Website\Assistant\Session;
+use Website\Assistant\Tools;
+use Website\Assistant\Uploads;
 use Website\Blog\Exif;
 use Website\Blog\Types;
 
@@ -37,7 +45,12 @@ final class AssistantPostTest extends AssistantTestCase
         parent::setUp();
     }
 
-    /** A complete input of propose_post; $input overrides. */
+    /**
+     * A complete input of propose_post; $input overrides.
+     *
+     * @param array<mixed> $input
+     * @return array<mixed>
+     */
     private function input(array $input = []): array
     {
         return $input + [
@@ -55,7 +68,8 @@ final class AssistantPostTest extends AssistantTestCase
         ];
     }
 
-    private function propose(array $input): array
+    /** @param array<mixed> $input */
+    private function propose(array $input): ChatState
     {
         $this->reply('tool_use', $this->tool('t1', 'propose_post', $input));
         $this->reply('end_turn');
@@ -69,8 +83,8 @@ final class AssistantPostTest extends AssistantTestCase
 
     public function testADraftComesWithPhotosAndRouteInOneClick(): void
     {
-        $a = blog_uploads_accept($this->gpsJpeg(1, 'a.jpg'), 'IMG_1.JPG')['id'];
-        $b = blog_uploads_accept($this->jpeg(40, 30), 'IMG_2.JPG')['id'];
+        $a = Uploads::accept($this->gpsJpeg(1, 'a.jpg'), 'IMG_1.JPG')['id'];
+        $b = Uploads::accept($this->jpeg(40, 30), 'IMG_2.JPG')['id'];
         $this->osrm[] = [200, json_encode(['code' => 'Ok', 'routes' => [['distance' => 1200, 'duration' => 300, 'geometry' => ['coordinates' => [[12.3, 51.3], [12.31, 51.31]]]]]])];
         $chat = $this->propose($this->input([
             'text' => "(image: aika.jpg)\n\n(map:)\n\n(image: dog.jpg)",
@@ -86,11 +100,11 @@ final class AssistantPostTest extends AssistantTestCase
         $this->assertSame('Neuer Entwurf · Foto', $card['title']);
         $this->assertContains(['label' => 'URL-Anhang', 'value' => 'aika'], $card['rows']);
         $this->assertContains(['label' => 'Marker', 'value' => 'Start, End'], $card['rows']);
-        $view = array_values(array_filter(blog_assistant_view(blog_assistant_load())['items'], fn($i) => $i['type'] === 'card'));
+        $view = array_values(array_filter(Chat::view(Session::load())['items'], fn($i) => $i['type'] === 'card'));
         $this->assertStringStartsWith('data:image/jpeg;base64,', $view[0]['proposal']['photos'][0]['thumb']);
-        $this->assertNull(blog_assistant_slug_taken('aika'), 'Nothing exists before the click.');
+        $this->assertNull(Content::slugTaken('aika'), 'Nothing exists before the click.');
 
-        blog_assistant_decide($card['id'], 'apply');
+        Apply::decide($card['id'], 'apply');
 
         $draft = $this->kirby->site()->find('photos')->draft('aika');
         $this->assertSame('draft', $draft->status());
@@ -100,10 +114,10 @@ final class AssistantPostTest extends AssistantTestCase
         $this->assertArrayNotHasKey('GPS', exif_read_data($aika->root(), null, true) ?: []);
         $this->assertSame('dog.jpg', $draft->cover()->toFile()->filename());
         $this->assertSame('route', $draft->route()->toFile()->template());
-        $this->assertSame([[12.3, 51.3], [12.31, 51.31]], blog_route_line(file_get_contents($draft->route()->toFile()->root())));
+        $this->assertSame([[12.3, 51.3], [12.31, 51.31]], Route::line(file_get_contents($draft->route()->toFile()->root())));
         $this->assertSame(2, $draft->mappoints()->toStructure()->count());
         $this->assertSame('true', $draft->mapzoom()->value());
-        $this->assertNull(blog_uploads_meta($a)['path'], 'The uploads go after success.');
+        $this->assertNull(Uploads::meta($a)['path'], 'The uploads go after success.');
         $this->assertStringContainsString('New draft: photos/aika (page://', $this->kirby->session()->get('blog.assistant.notes')[0]);
     }
 
@@ -113,7 +127,7 @@ final class AssistantPostTest extends AssistantTestCase
 
         $chat = $this->propose($this->input(['text' => '']));
 
-        $this->assertSame([], $chat['proposals']);
+        $this->assertSame([], $chat->proposals);
         $this->assertSame('The slug aika is taken by notes/aika. The URL must be unique.', $this->error());
     }
 
@@ -128,7 +142,7 @@ final class AssistantPostTest extends AssistantTestCase
 
     public function testFileNamesAndUploadsAreChecked(): void
     {
-        $id = blog_uploads_accept($this->jpeg(8, 8), 'IMG_1.JPG')['id'];
+        $id = Uploads::accept($this->jpeg(8, 8), 'IMG_1.JPG')['id'];
         $photo = ['upload' => $id, 'filename' => 'IMG 1.JPG', 'alt' => '', 'caption' => '', 'photographer' => ''];
         $this->propose($this->input(['text' => '', 'photos' => [$photo]]));
         $this->assertStringContainsString('as in img_1.jpg', $this->error());
@@ -149,24 +163,24 @@ final class AssistantPostTest extends AssistantTestCase
     public function testAllOrNothing(): void
     {
         $this->expectErrorLog();
-        $ok = blog_uploads_accept($this->jpeg(8, 8, 'ok.jpg'), 'ok.jpg')['id'];
-        $broken = blog_uploads_accept($this->jpeg(8, 8, 'broken.jpg'), 'broken.jpg')['id'];
+        $ok = Uploads::accept($this->jpeg(8, 8, 'ok.jpg'), 'ok.jpg')['id'];
+        $broken = Uploads::accept($this->jpeg(8, 8, 'broken.jpg'), 'broken.jpg')['id'];
         $card = $this->card($this->propose($this->input(['text' => '', 'photos' => [
             ['upload' => $ok, 'filename' => 'ok.jpg', 'alt' => '', 'caption' => '', 'photographer' => ''],
             ['upload' => $broken, 'filename' => 'broken.jpg', 'alt' => '', 'caption' => '', 'photographer' => ''],
         ]])));
 
-        blog_assistant_decide($card['id'], 'apply');
+        Apply::decide($card['id'], 'apply');
 
-        $this->assertSame('failed', blog_assistant_decisions()[$card['id']]['state']);
-        $this->assertNull(blog_assistant_slug_taken('aika'), 'The draft went again.');
-        $this->assertNotNull(blog_uploads_meta($ok)['path'], 'The uploads stay.');
+        $this->assertSame('failed', Session::decisions()[$card['id']]['state']);
+        $this->assertNull(Content::slugTaken('aika'), 'The draft went again.');
+        $this->assertNotNull(Uploads::meta($ok)['path'], 'The uploads stay.');
         $this->assertStringContainsString('failed, nothing changed', $this->kirby->session()->get('blog.assistant.notes')[0]);
 
         $this->breakUploads = false;
-        blog_assistant_decide($card['id'], 'apply');
+        Apply::decide($card['id'], 'apply');
 
-        $this->assertSame('done', blog_assistant_decisions()[$card['id']]['state']);
+        $this->assertSame('done', Session::decisions()[$card['id']]['state']);
         $this->assertCount(2, $this->kirby->site()->find('photos')->draft('aika')->files());
     }
 
@@ -184,6 +198,6 @@ final class AssistantPostTest extends AssistantTestCase
             $this->assertSame([], array_diff(array_keys($page->blueprint()->fields()), array_keys(self::POST_FIELDS)), $type);
         }
         $file = $this->upload(__DIR__ . '/../fixtures/exif.jpg', 'a.jpg');
-        $this->assertEqualsCanonicalizing([...BLOG_ASSISTANT_IMAGE_TEXTS, ...Exif::FIELDS], array_keys($file->blueprint()->fields()));
+        $this->assertEqualsCanonicalizing([...Tools::IMAGE_TEXTS, ...Exif::FIELDS], array_keys($file->blueprint()->fields()));
     }
 }

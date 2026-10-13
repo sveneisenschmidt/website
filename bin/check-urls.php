@@ -14,7 +14,11 @@ $site = rtrim($argv[1] ?? 'http://localhost:8010', '/');
 $sitemap = $argv[2] ?? 'https://sven.eisenschmidt.website/sitemap.xml';
 $www = rtrim($argv[3] ?? 'www', '/');
 
-/** Status and Location of a GET request, without following a redirect. */
+/**
+ * Status and Location of a GET request, without following a redirect.
+ *
+ * @return array<mixed>
+ */
 function check_get(string $url): array
 {
     $context = stream_context_create(['http' => ['follow_location' => 0, 'ignore_errors' => true, 'timeout' => 60]]);

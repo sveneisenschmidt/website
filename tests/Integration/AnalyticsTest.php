@@ -2,13 +2,22 @@
 
 namespace Website\Tests\Integration;
 
+use Website\Analytics\Counter;
+use Website\Analytics\Months;
+use Website\Analytics\Totals;
+
 final class AnalyticsTest extends IntegrationTestCase
 {
     private const SAFARI = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15';
 
-    /** The page cache, as config.php turns it on: the count must work with it. */
+    /**
+     * The page cache, as config.php turns it on: the count must work with it.
+     *
+     * @var array<mixed>
+     */
     protected array $options = ['cache' => ['pages' => ['active' => true]]];
 
+    /** @var array<mixed> */
     private array $server;
 
     protected function setUp(): void
@@ -89,9 +98,9 @@ final class AnalyticsTest extends IntegrationTestCase
         $error = $this->kirby->impersonate('kirby', fn() => $this->kirby->site()->createChild(['slug' => 'error', 'template' => 'error', 'content' => ['title' => 'Error']]));
         $draft = $this->post('photos', 'photo', 'draft-photo', 'Draft', 'draft');
 
-        $this->assertNull(blog_analytics_page_id($draft));
-        $this->assertNull(blog_analytics_page_id($error));
-        $this->assertSame('photos/test-photo', blog_analytics_page_id($this->kirby->page('photos/test-photo')));
+        $this->assertNull(Counter::pageId($draft));
+        $this->assertNull(Counter::pageId($error));
+        $this->assertSame('photos/test-photo', Counter::pageId($this->kirby->page('photos/test-photo')));
     }
 
     public function testUnreadableMonthIsNotOverwritten(): void
@@ -106,7 +115,7 @@ final class AnalyticsTest extends IntegrationTestCase
 
         try {
             $this->visit('photos');
-            $month = blog_analytics_summary(30)['totals']['month'];
+            $month = Totals::summary(30)['totals']['month'];
         } finally {
             ini_set('error_log', (string) $previous);
         }
@@ -146,7 +155,7 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->visit('photos', ip: '203.0.113.3', query: ['source' => 'other']);
 
         $this->assertSame(['RSS' => 2], $this->today()['referrers']);
-        $this->assertSame([['host' => 'RSS', 'visits' => 2]], blog_analytics_summary(30)['referrers']);
+        $this->assertSame([['host' => 'RSS', 'visits' => 2]], Totals::summary(30)['referrers']);
     }
 
     public function testStatsAreStateAndHoldNoIpAddress(): void
@@ -186,7 +195,7 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->visit('photos', ip: '203.0.113.2');
         $this->visit('2026-10-07-test-photo', ip: '203.0.113.2');
 
-        $summary = blog_analytics_summary(30);
+        $summary = Totals::summary(30);
 
         $this->assertCount(30, $summary['days']);
         $this->assertSame(['date' => date('Y-m-d'), 'visits' => 2, 'views' => 3], end($summary['days']));
@@ -208,7 +217,7 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->visit('gone');
         $this->kirby->impersonate('kirby', fn() => $this->kirby->page('gone')->delete(true));
 
-        $titles = array_column(blog_analytics_summary(30)['pages'], 'title', 'id');
+        $titles = array_column(Totals::summary(30)['pages'], 'title', 'id');
 
         $this->assertSame('Renamed Photo', $titles['photos/test-photo']);
         $this->assertSame('Startseite', $titles['home']);
@@ -238,6 +247,7 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->assertSame(['photos' => $workers], $day['pages']);
     }
 
+    /** @param array<mixed> $query */
     private function visit(
         string $path,
         string $ip = '203.0.113.1',
@@ -263,8 +273,9 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->kirby->render($path, $method);
     }
 
+    /** @return array<mixed> */
     private function today(): ?array
     {
-        return blog_analytics_month(date('Y-m'))[date('Y-m-d')] ?? null;
+        return Months::read(date('Y-m'))[date('Y-m-d')] ?? null;
     }
 }

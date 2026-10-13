@@ -14,9 +14,14 @@
  *        php prompt-guard.php pre-push < "<local ref> <local sha> <remote ref> <remote sha>" lines
  */
 
-// The runs of words, shared with the assistant's check of its proposals.
-// The copy in the hooks folder finds them next to itself.
-require_once is_file(__DIR__ . '/prompt-words.php') ? __DIR__ . '/prompt-words.php' : __DIR__ . '/../www/site/plugins/assistant/words.php';
+use Website\Assistant\Words;
+
+// The runs of words, shared with the assistant's check of its proposals
+// (src/Assistant/Words.php). The copy in the hooks folder finds them next
+// to itself, without Composer.
+if (!class_exists(Words::class, false)) {
+    require_once is_file(__DIR__ . '/prompt-words.php') ? __DIR__ . '/prompt-words.php' : __DIR__ . '/../src/Assistant/Words.php';
+}
 
 /** The prompt from a site.txt (Kirby's text format), or "". */
 function prompt_guard_prompt(string $file): string
@@ -32,10 +37,14 @@ function prompt_guard_prompt(string $file): string
     return '';
 }
 
-/** The files of a unified diff whose added lines hold a run of the prompt. */
+/**
+ * The files of a unified diff whose added lines hold a run of the prompt.
+ *
+ * @return array<mixed>
+ */
 function prompt_guard_hits(string $prompt, string $diff): array
 {
-    $runs = prompt_guard_runs($prompt);
+    $runs = Words::runs($prompt);
     if ($runs === []) {
         return [];
     }
@@ -50,7 +59,7 @@ function prompt_guard_hits(string $prompt, string $diff): array
     }
     $hits = [];
     foreach ($added as $name => $lines) {
-        if (array_intersect_key(prompt_guard_runs(implode("\n", $lines)), $runs) !== []) {
+        if (array_intersect_key(Words::runs(implode("\n", $lines)), $runs) !== []) {
             $hits[] = $name;
         }
     }

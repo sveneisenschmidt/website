@@ -26,7 +26,7 @@ test:
 # Nur localhost: der PHP-Server liefert jede Datei unter www/ aus, auch
 # content/ und site/. Nie an 0.0.0.0 binden.
 # Uploads im Assistenten: bis 60 MB pro Datei, die Vorschau eines Fotos mit
-# 64 Megapixeln braucht rund 320 MB Speicher (plugins/assistant/uploads.php).
+# 64 Megapixeln braucht rund 320 MB Speicher (src/Assistant/Uploads.php).
 # bin/dev-router.php sperrt wie www/.htaccess content/, site/ und kirby/.
 # Der Seiten-Cache sieht keine Änderung am Code: der Start leert ihn.
 .PHONY: dev
@@ -76,7 +76,7 @@ hooks:
 	  if [ -f "$$hooks/$$hook" ] && ! grep -q prompt-guard.php "$$hooks/$$hook"; then echo "$$hooks/$$hook gibt es schon, nicht überschrieben"; exit 1; fi; \
 	done; \
 	cp bin/prompt-guard.php "$$hooks/prompt-guard.php"; \
-	cp $(WWW)/site/plugins/assistant/words.php "$$hooks/prompt-words.php"; \
+	cp src/Assistant/Words.php "$$hooks/prompt-words.php"; \
 	for hook in pre-commit pre-push; do \
 	  printf '#!/bin/sh\n# make hooks: no text from the assistant prompt in git.\nexec %s "$$(git rev-parse --git-path hooks)/prompt-guard.php" %s\n' "$(PHP)" "$$hook" > "$$hooks/$$hook"; \
 	  chmod +x "$$hooks/$$hook"; \

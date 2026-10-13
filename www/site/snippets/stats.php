@@ -1,8 +1,10 @@
 <?php
+use Website\Analytics\Totals;
+
 /**
- * The visitor numbers on About, from "Besucher" (plugins/analytics).
+ * The visitor numbers on About, from "Besucher" (Website\Analytics\Totals).
  */
-$totals = blog_analytics_stats();
+$totals = Totals::stats();
 if ($totals === null) {
     return;
 }

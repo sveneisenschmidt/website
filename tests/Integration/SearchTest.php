@@ -11,6 +11,7 @@ use Website\Tests\Support\TestSite;
  */
 final class SearchTest extends IntegrationTestCase
 {
+    /** @var array<mixed> */
     private array $get;
 
     protected function setUp(): void

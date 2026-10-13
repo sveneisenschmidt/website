@@ -24,7 +24,12 @@ if (!preg_match('!^https?://[^/]+$!', $site)) {
 }
 $headers = ['User-Agent: website-warm (bot)'];
 
-/** GETs the URLs, four at a time, and calls $done(url, status, body) for each. */
+/**
+ * GETs the URLs, four at a time, and calls $done(url, status, body) for each.
+ *
+ * @param array<mixed> $headers
+ * @param array<mixed> $urls
+ */
 function warm_get(array $urls, array $headers, Closure $done): void
 {
     $multi = curl_multi_init();
@@ -57,7 +62,11 @@ function warm_get(array $urls, array $headers, Closure $done): void
     curl_multi_close($multi);
 }
 
-/** The paths on this site that the HTML names: [pages, thumbnails]. */
+/**
+ * The paths on this site that the HTML names: [pages, thumbnails].
+ *
+ * @return array<mixed>
+ */
 function warm_links(string $html, string $site): array
 {
     preg_match_all('!(?:href|src|content)="([^"]+)"!', $html, $single);

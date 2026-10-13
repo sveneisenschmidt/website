@@ -8,7 +8,7 @@ use RuntimeException;
 /**
  * JSON into a temporary file first, then renamed: a crash or a full disk
  * never leaves half a file. For the redirects and the visitor numbers
- * (plugins/analytics).
+ * (Website\Analytics).
  */
 final class JsonFile
 {

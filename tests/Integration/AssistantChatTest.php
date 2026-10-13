@@ -2,7 +2,15 @@
 
 namespace Website\Tests\Integration;
 
-use BlogAssistantError;
+use Website\Assistant\Chat;
+use Website\Assistant\ChatState;
+use Website\Assistant\Claude;
+use Website\Assistant\Error;
+use Website\Assistant\Log;
+use Website\Assistant\Panel;
+use Website\Assistant\Session;
+use Website\Assistant\Tools;
+use Website\Assistant\Uploads;
 
 /**
  * The chat of the assistant: rounds, stop, errors, Protokoll, prompt and
@@ -21,7 +29,7 @@ final class AssistantChatTest extends AssistantTestCase
 
         $this->assertSame([$thinking, $find], $this->requests[1]['messages'][1]['content']);
         $this->assertStringContainsString('"total":1', $this->results(1)[0]['content'][0]['text']);
-        $this->assertContains(['type' => 'progress', 'lines' => ['Beiträge gesucht']], $chat['items']);
+        $this->assertContains(['type' => 'progress', 'lines' => ['Beiträge gesucht']], $chat->items);
         $this->assertSame('claude-opus-5-5', $this->requests[0]['model']);
         $this->assertSame(['type' => 'ephemeral', 'ttl' => '1h'], $this->requests[0]['cache_control']);
     }
@@ -46,17 +54,17 @@ final class AssistantChatTest extends AssistantTestCase
     public function testAFailedRequestLeavesTheChatAsItWas(): void
     {
         $this->expectErrorLog();
-        $id = blog_uploads_accept($this->jpeg(8, 8), 'a.jpg')['id'];
+        $id = Uploads::accept($this->jpeg(8, 8), 'a.jpg')['id'];
         $this->replies[] = [529, ['error' => ['message' => 'Overloaded']]];
         try {
-            blog_assistant_send('Hallo');
+            Chat::send('Hallo');
             $this->fail('No error');
-        } catch (BlogAssistantError $e) {
+        } catch (Error $e) {
             $this->assertSame('busy', $e->kind);
         }
-        $this->assertSame([], blog_assistant_load()['messages']);
-        $this->assertSame([], blog_assistant_load()['items']);
-        $this->assertSame([$id], array_column(blog_uploads_pending(), 'id'), 'The upload waits again.');
+        $this->assertSame([], Session::load()->messages);
+        $this->assertSame([], Session::load()->items);
+        $this->assertSame([$id], array_column(Uploads::pending(), 'id'), 'The upload waits again.');
     }
 
     public function testAnAnswerWithoutContentIsNoAnswer(): void
@@ -65,13 +73,13 @@ final class AssistantChatTest extends AssistantTestCase
         foreach ([['stop_reason' => 'end_turn', 'content' => []], ['stop_reason' => 'end_turn'], ['content' => 'text'], ['content' => ['a' => ['type' => 'text', 'text' => 'x']]]] as $body) {
             $this->replies[] = [200, $body];
             try {
-                blog_assistant_send('Hallo');
+                Chat::send('Hallo');
                 $this->fail('No error: ' . json_encode($body));
-            } catch (BlogAssistantError $e) {
+            } catch (Error $e) {
                 $this->assertSame('busy', $e->kind);
             }
-            $this->assertSame([], blog_assistant_load()['messages']);
-            $this->assertSame([], blog_assistant_load()['items']);
+            $this->assertSame([], Session::load()->messages);
+            $this->assertSame([], Session::load()->items);
         }
     }
 
@@ -80,7 +88,7 @@ final class AssistantChatTest extends AssistantTestCase
         $this->expectErrorLog();
         $this->replies[] = [400, ['error' => ['message' => 'Your credit balance is too low.']]];
         $this->expectExceptionMessage('Guthaben');
-        blog_assistant_send('Hallo');
+        Chat::send('Hallo');
     }
 
     public function testARequestThatCannotWorkSuggestsANewChat(): void
@@ -88,17 +96,17 @@ final class AssistantChatTest extends AssistantTestCase
         $this->expectErrorLog();
         $this->replies[] = [404, ['error' => ['message' => 'model not found']]];
         $this->expectExceptionMessage('neuen Chat');
-        blog_assistant_send('Hallo');
+        Chat::send('Hallo');
     }
 
     public function testAChoiceWaitsForSven(): void
     {
         $this->reply('tool_use', $this->tool('t1', 'ask_choice', ['question' => 'Welcher Tag?', 'options' => ['A', 'B']]));
 
-        $chat = blog_assistant_send('Leg den Beitrag an.');
+        $chat = Chat::send('Leg den Beitrag an.');
 
-        $this->assertFalse($chat['next']);
-        $this->assertSame(['type' => 'choice', 'question' => 'Welcher Tag?', 'options' => ['A', 'B']], end($chat['items']));
+        $this->assertFalse($chat->next);
+        $this->assertSame(['type' => 'choice', 'question' => 'Welcher Tag?', 'options' => ['A', 'B']], end($chat->items));
     }
 
     /**
@@ -109,20 +117,20 @@ final class AssistantChatTest extends AssistantTestCase
     public function testAPickedOptionBringsNoLinkOfSvens(): void
     {
         $this->reply('tool_use', $this->tool('t1', 'ask_choice', ['question' => 'Quelle verlinken?', 'options' => ['Ja, mit Quelle https://evil.example/promo', 'Nein']]));
-        blog_assistant_send('Schreib was über die Tour.');
+        Chat::send('Schreib was über die Tour.');
         $this->reply('tool_use', $this->tool('t2', 'propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => 'Mehr bei [der Quelle](https://evil.example/promo).']));
         $this->reply('end_turn');
 
         $state = $this->kirby->api()->call('blog-assistant/send', 'POST', ['body' => ['choice' => 0]]);
         while ($state['next']) {
-            $state = blog_assistant_next();
+            $state = Chat::next()->toArray();
         }
 
         $this->assertSame('Ja, mit Quelle https://evil.example/promo', $this->lastText($this->requests[1]));
         $this->assertSame(['type' => 'me', 'text' => 'Ja, mit Quelle https://evil.example/promo'], array_intersect_key(array_values(array_filter($state['items'], fn($i) => $i['type'] === 'me'))[1], ['type' => 1, 'text' => 1]));
-        $this->assertSame([], blog_assistant_load()['mine']);
+        $this->assertSame([], Session::load()->mine);
         $this->assertStringContainsString('not allowed', $this->results(2)[0]['content']);
-        $this->assertSame([], blog_assistant_load()['proposals']);
+        $this->assertSame([], Session::load()->proposals);
 
         // A second pick finds no open choice: the Panel gets the text, not Kirby's "unexpected error".
         $state = $this->kirby->api()->call('blog-assistant/send', 'POST', ['body' => ['choice' => 1]]);
@@ -133,11 +141,11 @@ final class AssistantChatTest extends AssistantTestCase
     public function testAnswersAfterAStoppedLoopJoinTheToolResults(): void
     {
         $this->reply('tool_use', $this->tool('t1', 'read_post', ['post' => 'photos/test-photo']));
-        blog_assistant_send('Lies das Foto.');
-        blog_assistant_stop();
+        Chat::send('Lies das Foto.');
+        Chat::stop();
         $this->reply('end_turn', $this->text('Okay.'));
 
-        blog_assistant_send('Lass gut sein.');
+        Chat::send('Lass gut sein.');
 
         $messages = end($this->requests)['messages'];
         $this->assertSame(['user', 'assistant', 'user'], array_column($messages, 'role'));
@@ -147,14 +155,14 @@ final class AssistantChatTest extends AssistantTestCase
     public function testStopDuringARoundDropsItsAnswer(): void
     {
         $this->reply('tool_use', $this->tool('t1', 'read_post', ['post' => 'photos/test-photo']));
-        blog_assistant_send('Lies das Foto.');
-        $running = blog_assistant_load();
+        Chat::send('Lies das Foto.');
+        $running = Session::load();
 
-        blog_assistant_stop();
-        $kept = blog_assistant_keep($running);
+        Chat::stop();
+        $kept = Chat::keep($running);
 
-        $this->assertFalse($kept['next']);
-        $this->assertSame(['type' => 'note', 'text' => 'Abgebrochen. Nichts geändert.'], end($kept['items']));
+        $this->assertFalse($kept->next);
+        $this->assertSame(['type' => 'note', 'text' => 'Abgebrochen. Nichts geändert.'], end($kept->items));
     }
 
     /**
@@ -165,7 +173,7 @@ final class AssistantChatTest extends AssistantTestCase
     public function testAStopDuringARoundWinsOverItsAnswer(): void
     {
         $this->reply('tool_use', $this->tool('t1', 'read_post', ['post' => 'photos/test-photo']));
-        blog_assistant_send('Lies das Foto.');
+        Chat::send('Lies das Foto.');
         $session = $this->kirby->session();
         $session->commit();
         // Kirby may hold the lock from earlier in a request, after renewing the session.
@@ -185,7 +193,7 @@ final class AssistantChatTest extends AssistantTestCase
             return [200, ['stop_reason' => 'end_turn', 'content' => [$this->text('Late answer.')]]];
         };
 
-        $chat = blog_assistant_next();
+        $chat = Chat::next()->toArray();
         $session->commit();
 
         $this->assertFalse($locked, 'The session is free while Claude answers.');
@@ -213,7 +221,7 @@ final class AssistantChatTest extends AssistantTestCase
             return [200, ['stop_reason' => 'end_turn', 'content' => [$this->text('Gut.')]]];
         };
 
-        blog_assistant_send('Hallo.');
+        Chat::send('Hallo.');
         $this->kirby->session()->commit();
 
         $this->assertStringStartsWith('(A note from before.)', $this->lastText($this->requests[0]));
@@ -243,11 +251,11 @@ final class AssistantChatTest extends AssistantTestCase
             ['type' => 'text', 'text' => 'Laut camping.test ist es offen.', 'citations' => [['type' => 'web_search_result_location', 'url' => 'https://camping.test/a', 'title' => 'Camping', 'cited_text' => '...']]],
         ]]];
 
-        $chat = blog_assistant_send('Hat der Platz offen?');
+        $chat = Chat::send('Hat der Platz offen?');
 
-        $this->assertSame(['progress', 'ai', 'sources'], array_slice(array_column($chat['items'], 'type'), 1));
-        $this->assertSame([['url' => 'https://camping.test/a', 'title' => 'Camping']], end($chat['items'])['list']);
-        $this->assertSame(['https://camping.test/a'], blog_assistant_view(blog_assistant_load())['sources']);
+        $this->assertSame(['progress', 'ai', 'sources'], array_slice(array_column($chat->items, 'type'), 1));
+        $this->assertSame([['url' => 'https://camping.test/a', 'title' => 'Camping']], end($chat->items)['list']);
+        $this->assertSame(['https://camping.test/a'], Chat::view(Session::load())['sources']);
         $this->assertSame(['type' => 'web_search_20260209', 'name' => 'web_search', 'max_uses' => 5], end($this->requests[0]['tools']));
     }
 
@@ -275,15 +283,15 @@ final class AssistantChatTest extends AssistantTestCase
         $this->assertSame([
             'urls' => ['https://www.camping.test/a', 'https://river.test/b', 'https://cited.test/x'],
             'list' => [['url' => 'https://cited.test/x', 'title' => 'https://cited.test/x']],
-        ], blog_assistant_sources([$search, $cited], 'Offen.'));
+        ], Chat::sources([$search, $cited], 'Offen.'));
         // Without citations: the results whose site the answer names, by host or by name.
-        $this->assertSame([['url' => 'https://www.camping.test/a', 'title' => 'Camping']], blog_assistant_sources([$search], 'Laut camping.test ist es offen.')['list']);
-        $this->assertSame([['url' => 'https://river.test/b', 'title' => 'https://river.test/b']], blog_assistant_sources([$search], 'Der River-Platz.')['list']);
-        $this->assertSame([], blog_assistant_sources([$search], 'Ohne Quelle.')['list']);
+        $this->assertSame([['url' => 'https://www.camping.test/a', 'title' => 'Camping']], Chat::sources([$search], 'Laut camping.test ist es offen.')['list']);
+        $this->assertSame([['url' => 'https://river.test/b', 'title' => 'https://river.test/b']], Chat::sources([$search], 'Der River-Platz.')['list']);
+        $this->assertSame([], Chat::sources([$search], 'Ohne Quelle.')['list']);
         $many = ['type' => 'web_search_tool_result', 'content' => array_map(fn($n) => $result("https://site$n.test/"), range(1, 4))];
-        $this->assertCount(3, blog_assistant_sources([$many], 'site1.test, site2.test, site3.test, site4.test')['list']);
+        $this->assertCount(3, Chat::sources([$many], 'site1.test, site2.test, site3.test, site4.test')['list']);
         // A failed search brings nothing.
-        $this->assertSame(['urls' => [], 'list' => []], blog_assistant_sources([['type' => 'web_search_tool_result', 'content' => ['error_code' => 'max_uses_exceeded']]], 'camping'));
+        $this->assertSame(['urls' => [], 'list' => []], Chat::sources([['type' => 'web_search_tool_result', 'content' => ['error_code' => 'max_uses_exceeded']]], 'camping'));
     }
 
     public function testAPausedTurnGoesOn(): void
@@ -295,17 +303,17 @@ final class AssistantChatTest extends AssistantTestCase
 
         $this->assertCount(2, $this->requests);
         $this->assertSame('assistant', end($this->requests[1]['messages'])['role']);
-        $this->assertSame('Fertig.', end($chat['items'])['text']);
+        $this->assertSame('Fertig.', end($chat->items)['text']);
     }
 
     public function testAStoppedPausedSearchDoesNotBreakTheChat(): void
     {
         $this->replies[] = [200, ['stop_reason' => 'pause_turn', 'content' => [['type' => 'server_tool_use', 'id' => 's1', 'name' => 'web_search', 'input' => ['query' => 'x']]]]];
-        blog_assistant_send('Such das.');
-        blog_assistant_stop();
+        Chat::send('Such das.');
+        Chat::stop();
         $this->reply('end_turn', $this->text('Gut.'));
 
-        blog_assistant_send('Lass gut sein.');
+        Chat::send('Lass gut sein.');
 
         $this->assertSame(['user'], array_column(end($this->requests)['messages'], 'role'));
     }
@@ -318,7 +326,7 @@ final class AssistantChatTest extends AssistantTestCase
 
         $this->chat('Such nach dem Geheimwort.');
 
-        $answer = blog_assistant_log_read()[0];
+        $answer = Log::read()[0];
         $this->assertSame('answer', $answer['type']);
         $this->assertSame(['find_posts' => 1], $answer['tools']);
         $this->assertSame(2, $answer['rounds']);
@@ -328,14 +336,14 @@ final class AssistantChatTest extends AssistantTestCase
         $raw = implode('', array_map('file_get_contents', glob($this->root . '/content/.assistant/*.jsonl')));
         $this->assertStringNotContainsString('Geheimwort', $raw);
         $this->assertStringNotContainsString(self::PROMPT, $raw);
-        $view = blog_assistant_log_view();
+        $view = Log::view();
         $this->assertSame(1, $view['totals']['answers']);
         $this->assertSame('40 %', $view['rows'][0]['cached']);
     }
 
     public function testThereIsNoToolToDeleteOrPublish(): void
     {
-        foreach (blog_assistant_tools() as $tool) {
+        foreach (Tools::definitions() as $tool) {
             $this->assertMatchesRegularExpression('/^(find|read|view|propose|ask)_/', $tool['name']);
             // No strict mode: with all tools strict, the API refuses the request
             // ("compiled grammar is too large"). The server checks every input itself.
@@ -345,11 +353,11 @@ final class AssistantChatTest extends AssistantTestCase
 
     public function testTheModelComesFromTheSettings(): void
     {
-        $this->assertSame('claude-opus-5-5', blog_assistant_model());
+        $this->assertSame('claude-opus-5-5', Claude::model());
         $this->kirby->site()->update(['assistantModel' => 'claude-haiku-5-5']);
-        $this->assertSame('claude-haiku-5-5', blog_assistant_model());
+        $this->assertSame('claude-haiku-5-5', Claude::model());
         $this->kirby->site()->update(['assistantModel' => 'claude-retired-1']);
-        $this->assertSame('claude-opus-5-5', blog_assistant_model());
+        $this->assertSame('claude-opus-5-5', Claude::model());
     }
 
     public function testWithoutPromptTheAssistantIsOff(): void
@@ -357,14 +365,14 @@ final class AssistantChatTest extends AssistantTestCase
         $this->kirby->site()->update(['assistantPrompt' => '']);
 
         try {
-            blog_assistant_send('Hallo');
+            Chat::send('Hallo');
             $this->fail('No error');
-        } catch (BlogAssistantError $e) {
+        } catch (Error $e) {
             $this->assertSame('prompt', $e->kind);
         }
         $this->assertSame([], $this->requests);
-        $this->assertSame([], blog_assistant_load()['items']);
-        $this->assertFalse(blog_assistant_view(blog_assistant_load())['hasPrompt']);
+        $this->assertSame([], Session::load()->items);
+        $this->assertFalse(Chat::view(Session::load())['hasPrompt']);
     }
 
     public function testTheSystemTextIsFrozenForTheChat(): void
@@ -378,14 +386,36 @@ final class AssistantChatTest extends AssistantTestCase
 
         $this->assertSame($this->requests[0]['system'], $this->requests[1]['system']);
         $this->assertSame(json_encode($this->requests[0]['tools']), json_encode($this->requests[1]['tools']));
-        $this->assertSame(BLOG_ASSISTANT_SAFETY . "\n\n" . self::PROMPT, $this->requests[0]['system'][0]['text']);
+        $this->assertSame(Chat::SAFETY . "\n\n" . self::PROMPT, $this->requests[0]['system'][0]['text']);
         $this->assertSame(['type' => 'ephemeral', 'ttl' => '1h'], $this->requests[0]['system'][0]['cache_control']);
 
-        blog_assistant_reset();
+        Chat::reset();
         $this->reply('end_turn');
         $this->chat('Neuer Chat.');
 
         $this->assertStringEndsWith('PROMPT-CANARY-NEW-91c2', $this->requests[2]['system'][0]['text']);
+    }
+
+    /**
+     * The session stores the chat as a plain array in the shape it always
+     * had. A chat stored before a key came goes on, the key with its default.
+     */
+    public function testAChatOfAnOlderSessionGoesOn(): void
+    {
+        $this->reply('end_turn', $this->text('Eins.'));
+        $this->chat('Erste Nachricht.');
+        $stored = $this->kirby->session()->get('blog.assistant');
+        unset($stored['paused'], $stored['mine'], $stored['sources'], $stored['id'], $stored['asked'], $stored['turn']);
+        $this->kirby->session()->set('blog.assistant', $stored);
+        $this->reply('end_turn', $this->text('Zwei.'));
+
+        $this->chat('Zweite Nachricht.');
+
+        $keys = ['model', 'system', 'tools', 'date', 'messages', 'items', 'proposals', 'rounds', 'next', 'paused', 'run', 'images', 'mine', 'sources', 'id', 'asked', 'turn'];
+        $this->assertSame($keys, array_keys($this->kirby->session()->get('blog.assistant')));
+        $this->assertSame(['me', 'ai', 'me', 'ai'], array_column(Session::load()->items, 'type'));
+        $this->assertSame($this->requests[0]['system'], $this->requests[1]['system']);
+        $this->assertSame(1, Log::read()[0]['message']);
     }
 
     public function testTheDateComesAsANoteOncePerDay(): void
@@ -395,7 +425,10 @@ final class AssistantChatTest extends AssistantTestCase
         $this->reply('end_turn');
         $this->chat('Eins.');
         $this->chat('Zwei.');
-        blog_assistant_update(BLOG_ASSISTANT_SESSION, blog_assistant_load(...), fn(array $chat) => ['date' => '2000-01-01'] + $chat);
+        Session::change(function (ChatState $chat): ChatState {
+            $chat->date = '2000-01-01';
+            return $chat;
+        });
 
         $this->chat('Drei.');
 
@@ -407,7 +440,7 @@ final class AssistantChatTest extends AssistantTestCase
 
     public function testUploadsGoWithTheNextMessageOnce(): void
     {
-        $id = blog_uploads_accept($this->gpsJpeg(1, 'a.jpg'), 'IMG_7.JPG')['id'];
+        $id = Uploads::accept($this->gpsJpeg(1, 'a.jpg'), 'IMG_7.JPG')['id'];
         $this->reply('end_turn');
         $this->reply('end_turn');
 
@@ -417,13 +450,17 @@ final class AssistantChatTest extends AssistantTestCase
         $first = $this->requests[0]['messages'][0]['content'];
         $this->assertSame(['image', 'text', 'text'], array_column($first, 'type'));
         $this->assertStringContainsString("Upload $id: file name img_7.jpg, 64 x 48 px, camera GPS-CAM.", $first[1]['text']);
-        $this->assertSame(['img_7.jpg'], $chat['items'][0]['files']);
-        $this->assertSame([], blog_uploads_pending());
+        $this->assertSame(['img_7.jpg'], $chat->items[0]['files']);
+        $this->assertSame([], Uploads::pending());
         $this->assertSame(['text'], array_column($this->requests[1]['messages'][2]['content'], 'type'));
-        $this->assertSame(['type' => 'blog_image', 'file' => "$id.preview.jpg"], blog_assistant_load()['messages'][0]['content'][0], 'The session keeps the name, not the bytes.');
+        $this->assertSame(['type' => 'blog_image', 'file' => "$id.preview.jpg"], Session::load()->messages[0]['content'][0], 'The session keeps the name, not the bytes.');
     }
 
-    /** A crop of an upload: view_photo makes a new image of it. */
+    /**
+     * A crop of an upload: view_photo makes a new image of it.
+     *
+     * @return array<mixed>
+     */
     private function crop(string $id): array
     {
         return ['photo' => $id, 'crop' => ['x' => 0.1, 'y' => 0.1, 'w' => 0.5, 'h' => 0.5]];
@@ -431,16 +468,19 @@ final class AssistantChatTest extends AssistantTestCase
 
     public function testAChatTakesAtMost40Images(): void
     {
-        blog_assistant_update(BLOG_ASSISTANT_SESSION, blog_assistant_load(...), fn(array $chat) => ['images' => 38] + $chat);
-        $first = blog_uploads_accept($this->jpeg(40, 30, 'a.jpg'), 'a.jpg')['id'];
-        blog_uploads_accept($this->jpeg(40, 30, 'b.jpg'), 'b.jpg');
+        Session::change(function (ChatState $chat): ChatState {
+            $chat->images = 38;
+            return $chat;
+        });
+        $first = Uploads::accept($this->jpeg(40, 30, 'a.jpg'), 'a.jpg')['id'];
+        Uploads::accept($this->jpeg(40, 30, 'b.jpg'), 'b.jpg');
         try {
-            blog_uploads_accept($this->jpeg(40, 30, 'c.jpg'), 'c.jpg');
+            Uploads::accept($this->jpeg(40, 30, 'c.jpg'), 'c.jpg');
             $this->fail('A 41st image');
-        } catch (BlogAssistantError $e) {
+        } catch (Error $e) {
             $this->assertStringContainsString('40 Bilder', $e->getMessage());
         }
-        $this->assertCount(2, blog_uploads_pending());
+        $this->assertCount(2, Uploads::pending());
 
         $this->reply('tool_use', $this->tool('t1', 'view_photo', $this->crop($first)));
         $this->reply('end_turn');
@@ -455,25 +495,25 @@ final class AssistantChatTest extends AssistantTestCase
     {
         // An image of the chat as large as a request can carry, as base64.
         $big = 'v' . str_repeat('0', 16) . '.jpg';
-        file_put_contents(blog_uploads_dir() . '/' . $big, str_repeat("\x00", 23 * 1024 * 1024));
-        blog_assistant_update(BLOG_ASSISTANT_SESSION, blog_assistant_load(...), function (array $chat) use ($big): array {
-            $chat['messages'][] = ['role' => 'user', 'content' => [['type' => 'blog_image', 'file' => $big], ['type' => 'text', 'text' => 'x']]];
-            $chat['messages'][] = ['role' => 'assistant', 'content' => [['type' => 'text', 'text' => 'y']]];
+        file_put_contents(Uploads::dir() . '/' . $big, str_repeat("\x00", 23 * 1024 * 1024));
+        Session::change(function (ChatState $chat) use ($big): ChatState {
+            $chat->messages[] = ['role' => 'user', 'content' => [['type' => 'blog_image', 'file' => $big], ['type' => 'text', 'text' => 'x']]];
+            $chat->messages[] = ['role' => 'assistant', 'content' => [['type' => 'text', 'text' => 'y']]];
             return $chat;
         });
 
         try {
-            blog_uploads_accept($this->jpeg(40, 30), 'a.jpg');
+            Uploads::accept($this->jpeg(40, 30), 'a.jpg');
             $this->fail('Too much for a request');
-        } catch (BlogAssistantError $e) {
+        } catch (Error $e) {
             $this->assertStringContainsString('zu groß', $e->getMessage());
         }
-        $this->assertSame([], glob(dirname(blog_uploads_dir()) . '/*/u*') ?: [], 'Nothing stays behind.');
+        $this->assertSame([], glob(dirname(Uploads::dir()) . '/*/u*') ?: [], 'Nothing stays behind.');
     }
 
     public function testARoundViewsAtMostFivePhotos(): void
     {
-        $id = blog_uploads_accept($this->jpeg(40, 30), 'a.jpg')['id'];
+        $id = Uploads::accept($this->jpeg(40, 30), 'a.jpg')['id'];
         $this->reply('end_turn');
         $this->chat('Hier.');
         $this->reply('tool_use', ...array_map(fn($i) => $this->tool("t$i", 'view_photo', $this->crop($id)), range(1, 6)));
@@ -495,19 +535,19 @@ final class AssistantChatTest extends AssistantTestCase
         $file = ['name' => 'a.jpg', 'tmp_name' => $this->jpeg(8, 8), 'error' => UPLOAD_ERR_OK, 'size' => 100];
         foreach ([[], ['a' => $file, 'b' => $file], ['file' => $file]] as $files) {
             try {
-                blog_assistant_upload($files);
+                Panel::upload($files);
                 $this->fail('Accepted');
-            } catch (BlogAssistantError $e) {
+            } catch (Error $e) {
                 $this->assertSame('upload', $e->kind);
             }
         }
-        $this->assertSame([], blog_uploads_pending(), 'A file that did not come through PHP\'s upload is refused too.');
+        $this->assertSame([], Uploads::pending(), 'A file that did not come through PHP\'s upload is refused too.');
     }
 
     public function testLogoutTakesTheUploadsAlong(): void
     {
-        $id = blog_uploads_accept($this->jpeg(8, 8), 'a.jpg')['id'];
-        $folder = dirname(blog_uploads_meta($id)['path']);
+        $id = Uploads::accept($this->jpeg(8, 8), 'a.jpg')['id'];
+        $folder = dirname(Uploads::meta($id)['path']);
 
         $this->kirby->trigger('user.logout:before', ['user' => $this->kirby->user(), 'session' => $this->kirby->session()]);
 
