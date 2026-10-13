@@ -37,7 +37,11 @@ function prompt_guard_prompt(string $file): string
     return '';
 }
 
-/** The files of a unified diff whose added lines hold a run of the prompt. */
+/**
+ * The files of a unified diff whose added lines hold a run of the prompt.
+ *
+ * @return array<mixed>
+ */
 function prompt_guard_hits(string $prompt, string $diff): array
 {
     $runs = Words::runs($prompt);

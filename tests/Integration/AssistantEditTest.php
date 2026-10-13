@@ -16,7 +16,12 @@ use Website\Assistant\Session;
  */
 final class AssistantEditTest extends AssistantTestCase
 {
-    /** One round with one propose call, then the end; returns the card. */
+    /**
+     * One round with one propose call, then the end; returns the card.
+     *
+     * @param array<mixed> $input
+     * @return array<mixed>
+     */
     private function propose(string $tool, array $input): array
     {
         $this->reply('tool_use', $this->tool('t1', $tool, $input));
@@ -24,7 +29,11 @@ final class AssistantEditTest extends AssistantTestCase
         return $this->card($this->chat('Bitte.'));
     }
 
-    /** The error Claude got back for the last propose call. */
+    /**
+     * The error Claude got back for the last propose call.
+     *
+     * @param array<mixed> $input
+     */
     private function refusal(string $tool, array $input): string
     {
         $this->reply('tool_use', $this->tool('t1', $tool, $input));

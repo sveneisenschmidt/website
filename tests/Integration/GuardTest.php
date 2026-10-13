@@ -18,7 +18,11 @@ final class GuardTest extends IntegrationTestCase
         }
     }
 
-    /** A text for the field "text" of the photo with the images a.jpg and b.jpg; without $map, of a note. */
+    /**
+     * A text for the field "text" of the photo with the images a.jpg and b.jpg; without $map, of a note.
+     *
+     * @param array<mixed> $allowed
+     */
     private function markdown(string $text, array $allowed = [], bool $map = true): ?string
     {
         $page = $map ? $this->post : $this->kirby->page('notes/a-note') ?? $this->post('notes', 'note', 'a-note', 'A note');

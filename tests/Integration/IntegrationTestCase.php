@@ -14,9 +14,17 @@ abstract class IntegrationTestCase extends TestCase
     protected App $kirby;
     /** A listed photo under the unlisted section page "photos". */
     protected Page $post;
-    /** Options for the test site, on top of config.php. */
+    /**
+     * Options for the test site, on top of config.php.
+     *
+     * @var array<mixed>
+     */
     protected array $options = [];
-    /** Further App props for the test site, such as hooks. */
+    /**
+     * Further App props for the test site, such as hooks.
+     *
+     * @var array<mixed>
+     */
     protected array $props = [];
 
     protected function setUp(): void

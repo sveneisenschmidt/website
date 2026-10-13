@@ -10,9 +10,14 @@ final class AnalyticsTest extends IntegrationTestCase
 {
     private const SAFARI = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15';
 
-    /** The page cache, as config.php turns it on: the count must work with it. */
+    /**
+     * The page cache, as config.php turns it on: the count must work with it.
+     *
+     * @var array<mixed>
+     */
     protected array $options = ['cache' => ['pages' => ['active' => true]]];
 
+    /** @var array<mixed> */
     private array $server;
 
     protected function setUp(): void
@@ -242,6 +247,7 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->assertSame(['photos' => $workers], $day['pages']);
     }
 
+    /** @param array<mixed> $query */
     private function visit(
         string $path,
         string $ip = '203.0.113.1',
@@ -267,6 +273,7 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->kirby->render($path, $method);
     }
 
+    /** @return array<mixed> */
     private function today(): ?array
     {
         return Months::read(date('Y-m'))[date('Y-m-d')] ?? null;

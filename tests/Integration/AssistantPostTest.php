@@ -45,7 +45,12 @@ final class AssistantPostTest extends AssistantTestCase
         parent::setUp();
     }
 
-    /** A complete input of propose_post; $input overrides. */
+    /**
+     * A complete input of propose_post; $input overrides.
+     *
+     * @param array<mixed> $input
+     * @return array<mixed>
+     */
     private function input(array $input = []): array
     {
         return $input + [
@@ -63,6 +68,7 @@ final class AssistantPostTest extends AssistantTestCase
         ];
     }
 
+    /** @param array<mixed> $input */
     private function propose(array $input): ChatState
     {
         $this->reply('tool_use', $this->tool('t1', 'propose_post', $input));

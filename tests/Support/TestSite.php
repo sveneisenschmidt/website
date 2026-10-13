@@ -31,7 +31,12 @@ final class TestSite
         return $root;
     }
 
-    /** $props: further App props, such as hooks. */
+    /**
+     * $props: further App props, such as hooks.
+     *
+     * @param array<mixed> $options
+     * @param array<mixed> $props
+     */
     public static function app(string $root, array $options = [], array $props = []): App
     {
         return new App([

@@ -27,7 +27,11 @@ final class UploadTest extends AssistantTestCase
         }
     }
 
-    /** Files with an upload id in the storage folder. */
+    /**
+     * Files with an upload id in the storage folder.
+     *
+     * @return array<mixed>
+     */
     private function stored(): array
     {
         return glob($this->root . '/storage/assistant/*/u*') ?: [];

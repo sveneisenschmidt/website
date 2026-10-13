@@ -21,12 +21,20 @@ abstract class AssistantTestCase extends IntegrationTestCase
     /**
      * Scripted answers of Claude, one per request, and the request bodies
      * sent. An answer may be a closure: it runs while Claude "answers".
+     *
+     * @var array<mixed>
      */
     protected array $replies = [];
+    /** @var array<mixed> */
     protected array $requests = [];
 
-    /** Scripted OSRM answers, one per request, and the URLs asked. */
+    /**
+     * Scripted OSRM answers, one per request, and the URLs asked.
+     *
+     * @var array<mixed>
+     */
     protected array $osrm = [];
+    /** @var array<mixed> */
     protected array $osrmCalls = [];
 
     protected function setUp(): void
@@ -58,17 +66,26 @@ abstract class AssistantTestCase extends IntegrationTestCase
         parent::tearDown();
     }
 
-    /** A scripted answer; without blocks it says "Ok.": an answer without content is an error. */
+    /**
+     * A scripted answer; without blocks it says "Ok.": an answer without content is an error.
+     *
+     * @param array<mixed> $content
+     */
     protected function reply(string $stop, array ...$content): void
     {
         $this->replies[] = [200, ['stop_reason' => $stop, 'content' => $content === [] ? [$this->text('Ok.')] : $content]];
     }
 
+    /**
+     * @param array<mixed> $input
+     * @return array<mixed>
+     */
     protected function tool(string $id, string $name, array $input): array
     {
         return ['type' => 'tool_use', 'id' => $id, 'name' => $name, 'input' => $input];
     }
 
+    /** @return array<mixed> */
     protected function text(string $text): array
     {
         return ['type' => 'text', 'text' => $text];
@@ -106,21 +123,33 @@ abstract class AssistantTestCase extends IntegrationTestCase
         return !$free;
     }
 
-    /** The newest card of a chat. */
+    /**
+     * The newest card of a chat.
+     *
+     * @return array<mixed>
+     */
     protected function card(ChatState $chat): array
     {
         $cards = array_values(array_filter($chat->items, fn($i) => $i['type'] === 'card'));
         return $chat->proposals[end($cards)['id']];
     }
 
-    /** The tool results Claude got with request $n. */
+    /**
+     * The tool results Claude got with request $n.
+     *
+     * @return array<mixed>
+     */
     protected function results(int $n): array
     {
         $messages = $this->requests[$n]['messages'];
         return array_values(array_filter($messages[array_key_last($messages)]['content'], fn($b) => $b['type'] === 'tool_result'));
     }
 
-    /** The text of the last block of the last message of a request. */
+    /**
+     * The text of the last block of the last message of a request.
+     *
+     * @param array<mixed> $request
+     */
     protected function lastText(array $request): string
     {
         $content = $request['messages'][array_key_last($request['messages'])]['content'];

@@ -456,7 +456,11 @@ final class AssistantChatTest extends AssistantTestCase
         $this->assertSame(['type' => 'blog_image', 'file' => "$id.preview.jpg"], Session::load()->messages[0]['content'][0], 'The session keeps the name, not the bytes.');
     }
 
-    /** A crop of an upload: view_photo makes a new image of it. */
+    /**
+     * A crop of an upload: view_photo makes a new image of it.
+     *
+     * @return array<mixed>
+     */
     private function crop(string $id): array
     {
         return ['photo' => $id, 'crop' => ['x' => 0.1, 'y' => 0.1, 'w' => 0.5, 'h' => 0.5]];

@@ -20,6 +20,7 @@ final class AssistantRouteTest extends AssistantTestCase
 {
     private const OSRM = ['code' => 'Ok', 'routes' => [['distance' => 513400, 'duration' => 21600, 'geometry' => ['type' => 'LineString', 'coordinates' => [[12.2823, 51.1547], [9.4797, 51.3127], [6.1724, 51.3704]]]]]];
 
+    /** @return array<mixed> */
     private function stations(): array
     {
         return [
@@ -41,6 +42,7 @@ final class AssistantRouteTest extends AssistantTestCase
         return $this->kirby->site()->find('trips')->findPageOrDraft('day-1');
     }
 
+    /** @param array<mixed> $route */
     private function propose(array $route, string $post = 'trips/day-1'): ChatState
     {
         $this->reply('tool_use', $this->tool('t1', 'propose_route', ['post' => $post, 'route' => $route + ['stations' => [], 'gpx' => '', 'markers' => [], 'zoom' => false]]));
