@@ -217,6 +217,29 @@ function blog_analytics_summary(int $days = 30): array
     ];
 }
 
+/**
+ * All counted days together, for the block on About: visits, views, the
+ * number of pages and the five posts with the most visits (id => visits).
+ */
+function blog_analytics_totals(): array
+{
+    $totals = ['visits' => 0, 'views' => 0, 'pages' => [], 'top' => []];
+    foreach (glob(blog_analytics_dir() . '/*.json') ?: [] as $file) {
+        foreach (blog_analytics_month(basename($file, '.json')) as $day) {
+            $totals['visits'] += $day['visits'] ?? 0;
+            $totals['views'] += $day['views'] ?? 0;
+            foreach ($day['pages'] ?? [] as $id => $n) {
+                $totals['pages'][$id] = ($totals['pages'][$id] ?? 0) + $n;
+            }
+        }
+    }
+    $posts = array_filter($totals['pages'], fn ($id) => ($page = page($id)) !== null && blog_is_post($page), ARRAY_FILTER_USE_KEY);
+    arsort($posts);
+    $totals['top'] = array_slice($posts, 0, 5, true);
+    $totals['pages'] = count($totals['pages']);
+    return $totals;
+}
+
 /** Title and public URL of a counted page, also for deleted pages. */
 function blog_analytics_page(string $id): array
 {

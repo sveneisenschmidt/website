@@ -87,6 +87,13 @@ build.list = 'never'
 <li>Hypo</li>
 </ul>
 {{< /rawhtml >}}
+
+{{< rawhtml >}}
+<div id="site-stats"></div>
+<script defer>
+fetch("https://pop.eisenschmidt.website/api/stats");
+</script>
+{{< /rawhtml >}}
 MD);
         self::jpeg("$c/about/sven.jpg");
 

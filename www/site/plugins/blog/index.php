@@ -2,6 +2,7 @@
 
 use Kirby\Cms\App as Kirby;
 use Kirby\Cms\File;
+use Kirby\Text\KirbyTag;
 
 /**
  * The blog: posts in the sections photos, trips, notes and essays.
@@ -12,6 +13,7 @@ require_once __DIR__ . '/srgb.php';
 require_once __DIR__ . '/text.php';
 require_once __DIR__ . '/posts.php';
 require_once __DIR__ . '/layout.php';
+require_once __DIR__ . '/tags.php';
 
 Kirby::plugin('sveneisenschmidt/blog', [
     'hooks' => [
@@ -21,10 +23,12 @@ Kirby::plugin('sveneisenschmidt/blog', [
         'file.replace:after' => fn (File $newFile) => blog_store_exif($newFile, true),
     ],
     'tags' => [
-        // Where the map of a post sits in its text. Route and points are
-        // page fields; phase 3 draws the map.
+        'image' => [
+            'attr' => ['imgclass'],
+            'html' => fn (KirbyTag $tag) => blog_image_tag($tag),
+        ],
         'map' => [
-            'html' => fn () => '<div class="map"></div>',
+            'html' => fn (KirbyTag $tag) => blog_map_tag($tag),
         ],
     ],
     // One template for the four post types, as Hugo's page.html.

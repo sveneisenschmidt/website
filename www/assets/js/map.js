@@ -71,7 +71,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             function bind(m, direction) {
                 m.marker.unbindTooltip();
-                m.marker.bindTooltip(m.point.label, {
+                // A text node: Leaflet would read a string as HTML.
+                m.marker.bindTooltip(document.createTextNode(m.point.label), {
                     permanent: true,
                     direction: direction,
                     offset: offsets[direction],

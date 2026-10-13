@@ -1,0 +1,1 @@
+<svg class="icon-heart" viewBox="0 0 24 21" role="img" aria-hidden="true" focusable="false"><path d="M12 20.4C12 20.4 1.2 13.7 1.2 7.3 1.2 3.8 4 1 7.5 1c1.9 0 3.6.9 4.5 2.3C12.9 1.9 14.6 1 16.5 1 20 1 22.8 3.8 22.8 7.3 22.8 13.7 12 20.4 12 20.4Z"/></svg>

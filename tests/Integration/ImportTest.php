@@ -99,10 +99,12 @@ final class ImportTest extends TestCase
     public function testAboutArchiveSearchSectionsAndSite(): void
     {
         $this->assertSame('Sven Eisenschmidt - Personal Blog', $this->kirby->site()->title()->value());
+        $this->assertSame('404 Page not found', $this->kirby->page('error')->title()->value());
 
         $about = $this->kirby->page('about');
         $this->assertSame('Personal blog', $about->label()->value());
         $this->assertSame('2026-09-12', $about->lastmod()->value());
+        // The block with Pop's numbers is gone: snippets/stats.php renders them.
         $this->assertSame("(image: sven.jpg imgclass: inline)\n\n<ul class=\"built\">\n<li>Reader</li>\n<li>Hypo</li>\n</ul>", $about->text()->value());
         $this->assertSame('A picture of Sven', $about->file('sven.jpg')->alt()->value());
 

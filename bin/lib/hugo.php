@@ -365,6 +365,8 @@ function hugo_import_about(string $hugo, string $content, callable $pageUuid, ca
     if (($fm['draft'] ?? false) === true) {
         throw new RuntimeException("$md: about is a draft");
     }
+    // The visitor numbers came from Pop by script; Kirby renders them (snippets/stats.php).
+    $body = preg_replace('/\{\{<\s*rawhtml\s*>\}\}\s*<div id="site-stats">.*?\{\{<\s*\/rawhtml\s*>\}\}\s*/s', '', $body);
     [$text, $images, $map] = hugo_convert($body, $pageUuid);
     if ($map !== null) {
         throw new RuntimeException("$md: map on the about page");
@@ -428,7 +430,7 @@ function hugo_import(string $hugo, string $content, callable $exif): array
 
     hugo_write("$content/site.txt", ['title' => HUGO_SITE_TITLE, 'uuid' => hugo_uid('site')], HUGO_FIXED_TIME);
     hugo_write("$content/home/home.txt", ['title' => 'Home', 'uuid' => hugo_uid('home')], HUGO_FIXED_TIME);
-    hugo_write("$content/error/error.txt", ['title' => 'Page not found', 'uuid' => hugo_uid('error')], HUGO_FIXED_TIME);
+    hugo_write("$content/error/error.txt", ['title' => '404 Page not found', 'uuid' => hugo_uid('error')], HUGO_FIXED_TIME);
     foreach (array_keys(HUGO_SECTIONS) as $section) {
         $md = "$hugo/$section/_index.md";
         [$fm] = hugo_front_matter(file_get_contents($md));

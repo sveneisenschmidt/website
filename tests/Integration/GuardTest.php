@@ -43,7 +43,8 @@ final class GuardTest extends IntegrationTestCase
             $this->assertStringContainsString('not allowed', (string)$this->markdown($text), $text);
         }
         $this->assertStringContainsString('names no image', (string)$this->markdown('(image: c.jpg)'));
-        $this->assertStringContainsString('imgclass', (string)$this->markdown('(image: a.jpg link: https://x.test)'));
+        // (image:) knows only imgclass: anything else is part of the file name.
+        $this->assertStringContainsString('names no image', (string)$this->markdown('(image: a.jpg link: https://x.test)'));
         $this->assertStringContainsString('photo and trip', (string)$this->markdown('(map:)', [], false));
         $this->assertStringContainsString('page://', (string)$this->markdown('(link: https://x.test text: X)'));
         $this->assertStringContainsString('page://', (string)$this->markdown('(link: page:// text: X)'));

@@ -49,13 +49,6 @@ const BLOG_GUARD_ELEMENTS = [
 /** The elements of a caption: Markdown inline, as (image:) renders it. */
 const BLOG_GUARD_INLINE = ['br', 'em', 'strong', 'code', 'a'];
 
-/**
- * What (image:) puts on an img besides src: alt and title of the file,
- * the class of imgclass, and width and height when the site sets
- * kirbytext.image.width or .height.
- */
-const BLOG_GUARD_IMAGE = ['alt' => null, 'title' => null, 'class' => null, 'width' => '/^\d+$/', 'height' => '/^\d+$/'];
-
 /** The link targets a text may hold at all: http and https, mailto, and paths of this site. */
 const BLOG_GUARD_SCHEMES = '#^(?:https?://[^/\\\\]|mailto:|/(?![/\\\\]))#i';
 
@@ -202,23 +195,24 @@ function blog_guard_page_links(string $text): array
  * The rules for the rendered HTML of a field of $page. $text and $before
  * are the field's new value and its value now. A link may go to a URL of
  * $allowed or of the field now, if it is http, https, mailto or a path of
- * this site, and to a page of a (link:) tag. Each image of the page may
- * hold the links of its own caption, which (image:) renders.
+ * this site, and to a page of a (link:) tag. An (image:) or (map:) tag of
+ * the text renders as the site renders it: figure, EXIF rows and caption,
+ * or the map. blog_guard_tag() has checked the tag itself.
  */
 function blog_guard_rules(string $text, array $allowed, ?Page $page, string $before, bool $caption = false): array
 {
     $old = $before === '' ? [] : blog_guard_hrefs(blog_guard_render($before, $page, $caption));
     $known = array_flip([...$allowed, ...$old]);
     $produced = array_flip(blog_guard_page_links($text));
-    $images = [];
-    $map = null;
+    $tags = [];
     if (!$caption && $page !== null) {
-        foreach ($page->files()->template('image') as $file) {
-            $images[$file->url()] = blog_guard_hrefs(blog_guard_render((string)$file->content()->get('caption')->value(), null, true));
-        }
-        if (in_array($page->intendedTemplate()->name(), BLOG_ASSISTANT_MAP_TYPES, true)) {
-            $body = blog_guard_body(blog_guard_render('(map:)', $page));
-            $map = $body->firstElementChild === null ? null : $body->ownerDocument->saveHtml($body->firstElementChild);
+        preg_match_all(BLOG_GUARD_TAG, $text, $m);
+        foreach ($m[1] as $tag) {
+            if (in_array(blog_guard_tag_type($tag), ['image', 'map'], true)) {
+                foreach (blog_guard_body(blog_guard_render($tag, $page))->children as $element) {
+                    $tags[$element->ownerDocument->saveHtml($element)] = true;
+                }
+            }
         }
     }
     return [
@@ -226,8 +220,7 @@ function blog_guard_rules(string $text, array $allowed, ?Page $page, string $bef
         'link' => fn (string $url) => isset($produced[$url])
             || (isset($known[$url]) && preg_match(BLOG_GUARD_SCHEMES, $url) && !preg_match('/[\x00-\x20\x7F]/', $url)),
         'produced' => $produced,
-        'images' => $images,
-        'map' => $map,
+        'tags' => $tags,
         'source' => $text,
     ];
 }
@@ -264,11 +257,7 @@ function blog_guard_walk(Dom\Node $parent, array $rules, array &$problems): void
             continue;
         }
         $name = $node->localName;
-        if ($markup === $rules['map']) {
-            continue;
-        }
-        if ($name === 'figure' && $rules['images'] !== []) {
-            blog_guard_figure($node, $rules, $problems);
+        if (isset($rules['tags'][$markup])) {
             continue;
         }
         if (!isset($rules['elements'][$name])) {
@@ -293,36 +282,6 @@ function blog_guard_walk(Dom\Node $parent, array $rules, array &$problems): void
             }
         }
         blog_guard_walk($node, $rules, $problems);
-    }
-}
-
-/**
- * A figure as (image:) renders an image of this page: an img, after it
- * perhaps a figcaption with the file's caption, whose links are the
- * caption's own.
- */
-function blog_guard_figure(Dom\Element $figure, array $rules, array &$problems): void
-{
-    $children = array_values(array_filter(iterator_to_array($figure->childNodes), fn ($n) => !($n instanceof Dom\Text && trim($n->textContent) === '')));
-    [$img, $caption] = $children + [null, null];
-    $src = $img instanceof Dom\Element ? (string)$img->getAttribute('src') : '';
-    $fits = $figure->attributes->length === 0 && count($children) <= 2
-        && $img instanceof Dom\Element && $img->localName === 'img' && isset($rules['images'][$src])
-        && blog_guard_attributes($img, ['src' => null, ...BLOG_GUARD_IMAGE])
-        && ($caption === null || ($caption instanceof Dom\Element && $caption->localName === 'figcaption' && $caption->attributes->length === 0));
-    if (!$fits) {
-        $problems[] = ['Images go in as (image: file name) of this post, captions in its caption field.', $figure->ownerDocument->saveHtml($figure)];
-        return;
-    }
-    if ($caption !== null) {
-        $own = array_flip($rules['images'][$src]);
-        blog_guard_walk($caption, [
-            ...$rules,
-            'elements' => array_intersect_key(BLOG_GUARD_ELEMENTS, array_flip(BLOG_GUARD_INLINE)),
-            'link' => fn (string $url) => isset($own[$url]) || $rules['link']($url),
-            'images' => [],
-            'source' => null,
-        ], $problems);
     }
 }
 
