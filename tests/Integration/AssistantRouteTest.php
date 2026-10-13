@@ -169,17 +169,18 @@ final class AssistantRouteTest extends AssistantTestCase
         $this->assertSame([], $refused->proposals);
         $this->assertStringContainsString('closer than 1200 m', $this->results(1)[0]['content']);
         $this->assertSame([], $this->osrmCalls);
-        // Every coordinate pair in every request to Claude is at least
-        // Gpx::TRIM_MIN from home, so Claude never sees the cut ends.
+        // Every coordinate pair in every request to Claude lies at least one
+        // cell of the grid from home, about 1.1 km. Claude never sees the cut
+        // ends, and the stored route has none either.
         preg_match_all('/\[(-?\d+\.\d+),(-?\d+\.\d+)\]/', json_encode($this->requests), $pairs, PREG_SET_ORDER);
         $this->assertGreaterThan(30, count($pairs));
         foreach ($pairs as [, $lon, $lat]) {
-            $this->assertGreaterThanOrEqual(Gpx::TRIM_MIN, Route::distance($home, [(float) $lon, (float) $lat]));
+            $this->assertGreaterThanOrEqual(1100, Route::distance($home, [(float) $lon, (float) $lat]));
         }
         $trip = $this->kirby->site()->find('trips')->findPageOrDraft('day-1');
         $file = Content::fileRef($trip, Content::list($trip->version('changes')->read()['route'])[0]);
         foreach (Route::line(file_get_contents($file->root())) as $point) {
-            $this->assertGreaterThanOrEqual(Gpx::TRIM_MIN, Route::distance($home, $point));
+            $this->assertGreaterThanOrEqual(1100, Route::distance($home, $point));
         }
         $this->assertNull(Uploads::meta($id), 'The click deletes the GPX upload.');
     }

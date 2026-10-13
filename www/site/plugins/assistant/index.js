@@ -90,7 +90,7 @@ const ABOUT = `
   <div><h3>Darf nicht</h3><ul>
     <li>Löschen</li><li>Veröffentlichen</li><li>Kameradaten schreiben</li>
   </ul></div>
-  <p class="blog-ai-note">Bei veröffentlichten Beiträgen und About schreibt ein Klick in die Änderungen. Live geht es erst mit deinem Speichern. Was du schickst, auch Fotos, geht an Anthropic. Orte einer Route gehen an OSRM. Von einer GPX-Datei sieht Claude nur die Linie ohne ihre Enden.</p>
+  <p class="blog-ai-note">Bei veröffentlichten Beiträgen und About schreibt ein Klick in die Änderungen. Live geht es erst mit deinem Speichern. Was du schickst, auch Fotos, geht an Anthropic. Orte einer Route gehen an OSRM. Von einer GPX-Datei sieht Claude nur die Linie ohne ihre Enden, gut 1 km um Start und Ziel. Ein Halt unterwegs bleibt sichtbar.</p>
 `;
 
 panel.plugin("website/assistant", {

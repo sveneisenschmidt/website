@@ -20,9 +20,12 @@ final class Gpx
     public const MAX_BYTES = 5 * 1024 * 1024;
     public const MAX_POINTS = 100000;
 
-    /** Each end of a ride loses a random length between these, in meters. */
-    public const TRIM_MIN = 700;
-    public const TRIM_MAX = 1200;
+    /**
+     * The grid of the cut at both ends, in degrees of latitude: about
+     * 1.1 km. `Route::cut()` removes the 3 × 3 cells around each end, so
+     * every kept point lies at least 1.1 km from home.
+     */
+    public const CELL = 0.01;
 
     /** No marker may lie closer than this to an uncut end of the ride, in meters. */
     public const ZONE = 1200;
@@ -102,11 +105,10 @@ final class Gpx
     }
 
     /**
-     * The line of a ride that Claude may see: both ends cut by their own
-     * random length, then simplified. Rides start and end at home. A fixed
-     * length would put all cut ends on a circle, and its center would show
-     * where home is. The cut lengths are not stored. "ends" holds the uncut ends, rounded, for the
-     * marker check; it stays on the server. A track without points, one that
+     * The line of a ride that Claude may see: both ends cut on a fixed grid
+     * (`Route::cut()`), then simplified. Rides start and end at home. "ends"
+     * holds the uncut ends, rounded, for the marker check; it stays on the
+     * server. A track without points, one that
      * never gets farther than `NEAR` from its ends, or one shorter than
      * `MIN_LENGTH` after the cut gives "error" instead, the message that
      * Claude gets.
@@ -133,7 +135,7 @@ final class Gpx
         if (!$far) {
             return ['error' => 'The GPX track never gets farther than ' . (self::NEAR / 1000) . ' km from its start and end. It gives no route.'];
         }
-        [$first, $last] = Route::cut($points, random_int(self::TRIM_MIN, self::TRIM_MAX), random_int(self::TRIM_MIN, self::TRIM_MAX));
+        [$first, $last] = Route::cut($points, self::CELL);
         $kept = array_slice($points, $first, $last - $first + 1);
         $length = Route::length($kept);
         if (count($kept) < 2 || $length < self::MIN_LENGTH) {
