@@ -13,9 +13,11 @@ use RuntimeException;
 use Website\Blog\Types;
 
 /**
- * The propose tools: each turns a tool call into a card, or into the error
- * Claude gets back. They change nothing; only Sven's click applies a card
- * (Apply).
+ * Runs the propose tools, the tools whose names start with `propose_`. Each
+ * turns a tool call into a card, or into an error message that Claude gets
+ * back. A card is a change that Claude proposed; the chat shows it with
+ * buttons to apply or discard it. This class changes no content; only a
+ * click of the Panel user on a card does (`Apply`).
  */
 final class Proposals
 {
@@ -28,7 +30,8 @@ final class Proposals
      */
     public static function propose(ChatState $chat, string $name, array $input): array|string
     {
-        // Every value of the input, each on its own: texts, captions, labels, slug, file names.
+        // Check every string of the input on its own for runs of the prompt:
+        // texts, captions, labels, slug, file names.
         $runs = Words::runs(Chat::frozenPrompt($chat));
         $error = null;
         array_walk_recursive($input, function ($value) use ($runs, &$error) {
@@ -68,8 +71,6 @@ final class Proposals
     }
 
     /**
-     * A new card with its id, open.
-     *
      * @param array<string, mixed> $data
      * @return array<string, mixed>
      */
@@ -79,7 +80,9 @@ final class Proposals
     }
 
     /**
-     * The links a text may hold besides those of its field: from Sven's messages and the web search of the chat.
+     * The URLs a proposed text may link to besides the links already in its
+     * field: those from the messages of the Panel user and from the web
+     * search of the chat.
      *
      * @return list<string>
      */
@@ -89,7 +92,8 @@ final class Proposals
     }
 
     /**
-     * Upload ids the open cards of the chat still need.
+     * Upload ids that the open cards of the chat still use. An upload can be
+     * in one open card only, because `Apply` deletes it after the click.
      *
      * @return list<string>
      */
@@ -106,7 +110,8 @@ final class Proposals
     }
 
     /**
-     * The field name as the blueprint has it, whatever its case, or null.
+     * The field name in lowercase when $fields has it, else null. Claude may
+     * write a field name in any case.
      *
      * @param array<string, mixed> $fields
      */
@@ -117,9 +122,9 @@ final class Proposals
     }
 
     /**
-     * Checks a text for a field of a page by its type. Null when it passes.
-     * $before: the field now. $new: what Claude wrote, when $text is the field
-     * with a passage replaced.
+     * Checks a text for a field of a page by the field type; null when it
+     * passes. $before is the current value of the field. $new is the part
+     * that Claude wrote when $text is the field with a passage replaced.
      *
      * @param list<string> $allowed
      */
@@ -137,7 +142,7 @@ final class Proposals
     }
 
     /**
-     * The links a card marks in a text of a field of $page.
+     * The links that a card highlights in a text of a field of $page.
      *
      * @return list<string>
      */
@@ -147,8 +152,9 @@ final class Proposals
     }
 
     /**
-     * The error for a date, or null: format YYYY-MM-DD HH:MM:SS (or YYYY-MM-DD
-     * without time), Europe/Berlin, not in the future. Posts are not scheduled.
+     * Checks a date: YYYY-MM-DD HH:MM:SS, or YYYY-MM-DD for a field without
+     * time, in Europe/Berlin, not in the future. The site does not schedule
+     * posts, so a date in the future is an error.
      */
     private static function dateError(string $value, bool $time = true): ?string
     {
@@ -219,7 +225,8 @@ final class Proposals
         return self::card('field', 'Feld · ' . self::name($page), [
             'where' => self::where($page),
             'unsaved' => Content::unsaved($page, $name),
-            // marksBefore, marksAfter: the links the card marks in each.
+            // marksBefore, marksAfter: the links that the card highlights in
+            // the old and in the new value.
             'diff' => [[
                 'label' => $fields[$name]['label'],
                 'before' => self::shown($page, $type, $before),
@@ -263,7 +270,8 @@ final class Proposals
         $type = $fields[$name]['type'];
         $marks = [];
         foreach ($versions as $i => $version) {
-            // A version is checked in its field: Markdown links a passage with the text around it.
+            // Each version is checked inside the whole field, because Markdown
+            // can make a link from a passage together with the text around it.
             $after = str_replace($passage, $version, $current);
             $error = self::checkText($page, $type, $after, self::links($chat), $current, $version);
             if ($error !== null) {
@@ -277,7 +285,7 @@ final class Proposals
             'field' => $fields[$name]['label'],
             'passage' => $passage,
             'versions' => $versions,
-            // The links the card marks in the passage and in each version.
+            // The links that the card highlights in the passage and in each version.
             'passageMarks' => array_values(array_filter(self::marks($page, $type, $current), fn($mark) => str_contains($passage, $mark))),
             'versionMarks' => $marks,
             'input' => ['page' => $page->id(), 'field' => $name, 'passage' => $passage, 'versions' => $versions],
@@ -324,7 +332,8 @@ final class Proposals
     }
 
     /**
-     * A point of a route input as [lon, lat], or null when it lies outside the map.
+     * A point of a route input as [lon, lat], or null when its coordinates
+     * are out of range.
      *
      * @param array<string, mixed> $point
      * @return ?array{float, float}
@@ -337,8 +346,10 @@ final class Proposals
     }
 
     /**
-     * The route of a card: stations through OSRM, or a GPX upload of this
-     * chat, plus markers and zoom. Returns the route, or the error for Claude.
+     * Builds the route of a card, plus markers and zoom. The line comes from
+     * stations, routed by car through OSRM (a public routing service), or
+     * from a GPX upload of this chat. Returns the route, or the error message
+     * for Claude.
      *
      * @param array<string, mixed> $route
      * @return array<string, mixed>|string
@@ -370,8 +381,9 @@ final class Proposals
             if (isset($meta['error'])) {
                 return $meta['error'];
             }
-            // Rides start and end at home: no marker near the uncut ends. They
-            // are stored rounded; the zone grows by what rounding moves them.
+            // Rides start and end at home, so no marker may lie near the
+            // uncut ends. They are stored rounded to 3 decimals, and
+            // `Gpx::ZONE_SLACK` adds the distance that rounding can move them.
             foreach ($markers as $marker) {
                 foreach ($meta['ends'] as $end) {
                     if (Route::distance([$marker['lon'], $marker['lat']], $end) < Gpx::ZONE + Gpx::ZONE_SLACK) {
@@ -445,8 +457,9 @@ final class Proposals
     }
 
     /**
-     * The new draft as a page in memory only, with its photos as files: the
-     * texts render in it as they will in the draft.
+     * The new draft as a page that exists only in memory, with its photos as
+     * files. Its texts then render as they will in the real draft, and
+     * (image:) finds the photos.
      *
      * @param list<array<string, mixed>> $photos
      */
@@ -527,7 +540,6 @@ final class Proposals
             return 'cover is one of the file names: ' . implode(', ', $names) . '.';
         }
         $map = Types::hasMap($type);
-        // The texts render in the draft as it will be: its images, its map.
         $draft = self::draft(site()->find(Types::ALL[$type]['section']), $type, $slug, $photos);
         foreach (['intro', 'text'] as $key) {
             if (($error = Guard::markdown((string) $input[$key], $allowed, $draft)) !== null) {

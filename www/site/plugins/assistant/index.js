@@ -1,7 +1,8 @@
-// Panel area "Assistent" and the section in Website › Assistent. No build
-// step, like "Verlauf" and "Besucher". The browser drives the chat one round
-// at a time (src/Assistant/Chat.php) and uploads one file per request.
-// Ported from concertshotsbyluisa.de.
+// The Vue components of the Panel area "Assistent" and of the section on
+// Website › Assistent. Kirby loads this file as it is, without a build step,
+// like the plugins of "Verlauf" and "Besucher". The browser drives the chat
+// one round at a time (src/Assistant/Chat.php) and uploads one file per
+// request.
 
 function escape(text) {
   return String(text).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -16,9 +17,10 @@ function hostOf(url) {
     return "";
   }
 }
-// A small, safe Markdown subset for the answers: the text is escaped first.
-// Only links from the web search of this chat are clickable, with their host
-// in view; any other link stays text.
+// Renders a small Markdown subset of Claude's answers. The text is escaped
+// first, so an answer cannot add its own HTML. Only links from the web search
+// of this chat become clickable, each with its host next to it; any other
+// link stays text.
 function inline(text, sources) {
   return escape(text)
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
@@ -34,7 +36,7 @@ function inline(text, sources) {
 function markdown(text, sources) {
   const html = [];
   for (const block of text.trim().split(/\n{2,}/)) {
-    // Runs of list lines become lists, the other lines a paragraph.
+    // Consecutive list lines become one list; other lines become a paragraph.
     let run = null;
     const flush = () => {
       if (!run) return;
@@ -57,9 +59,10 @@ function markdown(text, sources) {
   }
   return html.join("");
 }
-// Texts on a card stay as they are. The server renders each text as the
-// site does and names its links (src/Assistant/Guard.php): exactly
-// those are marked, wherever the text writes them.
+// Shows a text on a card as plain text and highlights its links. The server
+// renders each text as the site does and returns its links (`Guard::marks()`
+// in src/Assistant/Guard.php). Exactly these strings are highlighted,
+// wherever they occur in the text.
 function marked(text, links) {
   const found = [...new Set(links || [])].filter((link) => link !== "").sort((a, b) => b.length - a.length);
   if (found.length === 0) return escape(text);
@@ -73,7 +76,8 @@ function marked(text, links) {
   return html + escape(text.slice(last));
 }
 
-// "So arbeitet der Assistent": beside the chat, behind the info button on phones.
+// The help text "So arbeitet der Assistent". It shows beside the chat; in a
+// narrow window the info button opens it in a dialog (index.css).
 const ABOUT = `
   <h2>So arbeitet der Assistent</h2>
   <p>Er schlägt vor, du entscheidest. Ohne deinen Klick ändert sich nichts.</p>
@@ -86,7 +90,7 @@ const ABOUT = `
   <div><h3>Darf nicht</h3><ul>
     <li>Löschen</li><li>Veröffentlichen</li><li>Kameradaten schreiben</li>
   </ul></div>
-  <p class="blog-ai-note">Bei veröffentlichten Beiträgen und About landet ein Klick in den Änderungen. Live geht es erst mit deinem Speichern. Was du schickst, auch Fotos, geht an Anthropic. Orte einer Route gehen an OSRM. Von einer GPX-Datei sieht Claude nur die Linie ohne ihre Enden.</p>
+  <p class="blog-ai-note">Bei veröffentlichten Beiträgen und About schreibt ein Klick in die Änderungen. Live geht es erst mit deinem Speichern. Was du schickst, auch Fotos, geht an Anthropic. Orte einer Route gehen an OSRM. Von einer GPX-Datei sieht Claude nur die Linie ohne ihre Enden.</p>
 `;
 
 panel.plugin("sveneisenschmidt/assistant", {
@@ -123,7 +127,8 @@ panel.plugin("sveneisenschmidt/assistant", {
         about() {
           return ABOUT;
         },
-        // No key, Anthropic refused it, or no prompt: the assistant is off.
+        // The assistant is off without a key, after Anthropic refused the key,
+        // or without a prompt.
         off() {
           return !this.chat.hasKey || !this.chat.hasPrompt || this.accessError;
         },
@@ -138,11 +143,11 @@ panel.plugin("sveneisenschmidt/assistant", {
         window.addEventListener("beforeunload", this.guardUnload);
         window.addEventListener("resize", this.fit);
         this.fit();
-        // A chat left in the middle of a tool loop goes on where it stopped.
+        // A chat that was left during a tool loop continues with the next round.
         if (this.next) {
           this.loop();
         }
-        // Opened from a page while a chat runs: offer a new one.
+        // Opened with the button of a page while a chat exists: offer a new chat.
         if (this.page && this.chat.items.length > 0) {
           this.chat.items.push({ type: "offer" });
         }
@@ -157,7 +162,8 @@ panel.plugin("sveneisenschmidt/assistant", {
         apply(state) {
           const grew = state.items.length > this.chat.items.length;
           this.chat = { items: state.items, long: state.long, open: state.open, pending: state.pending, sources: state.sources, hasKey: state.hasKey, hasPrompt: state.hasPrompt };
-          // A click on an older card keeps its place; new messages show at the bottom.
+          // Scroll only when items were added, so a click on an older card
+          // keeps the scroll position.
           if (grew) this.scroll();
           return state;
         },
@@ -185,15 +191,16 @@ panel.plugin("sveneisenschmidt/assistant", {
             props: { text: ABOUT, cancelButton: false, submitButton: "Schließen" },
           });
         },
-        // choice: the number of an option in the open choice. It goes as that
-        // number; the server takes the option's text (src/Assistant/Chat.php).
+        // choice is the index of an option in the open choice. Only the index
+        // goes to the server, which takes the option text from the stored
+        // chat (`Chat::choose()` in src/Assistant/Chat.php).
         async send(text = this.text, choice = null) {
           text = text.trim();
           if (text === "" || this.busy || this.uploading) return;
           this.error = null;
           this.busy = true;
           if (choice === null) this.text = "";
-          // His message shows at once, before the first round answers.
+          // The message shows at once, before the first round answers.
           this.chat.items.push({ type: "me", text, ts: Math.floor(Date.now() / 1000), files: this.chat.pending.map((file) => file.name) });
           this.grow();
           this.scroll();
@@ -205,7 +212,7 @@ panel.plugin("sveneisenschmidt/assistant", {
               if (choice === null) this.text = text;
               return;
             }
-            // The page counts for this one message.
+            // The page from the button "Assistent" goes with one message only.
             this.context = null;
             if (state.next) {
               await this.loop();
@@ -223,7 +230,8 @@ panel.plugin("sveneisenschmidt/assistant", {
             let state = { next: true };
             while (state.next && this.busy) {
               state = await this.post("next");
-              // A later round's error is a chat item; his text stays sent.
+              // The server adds the error of a later round to the chat items;
+              // the message stays sent.
               if (state.error) {
                 this.accessError = state.error.kind === "access";
                 break;
@@ -235,7 +243,7 @@ panel.plugin("sveneisenschmidt/assistant", {
             this.busy = false;
           }
         },
-        // Files picked or dropped: one request each, in turn.
+        // Uploads picked or dropped files one after the other, one request per file.
         pick(event) {
           this.upload([...event.target.files]);
           event.target.value = "";
@@ -275,7 +283,7 @@ panel.plugin("sveneisenschmidt/assistant", {
           const next = this.chat.items[index + 1];
           return next !== undefined && (next.type === type || next.type === "error");
         },
-        // A choice counts until Sven writes again.
+        // A choice is open until the Panel user sends the next message.
         answered(index) {
           return this.chat.items.slice(index + 1).some((item) => item.type === "me");
         },
@@ -284,7 +292,8 @@ panel.plugin("sveneisenschmidt/assistant", {
           await this.post("stop");
         },
         async decide(id, action, version = null) {
-          // A card that is gone, such as after "Neuer Chat" in another tab, comes back as {error}.
+          // A card that is gone, for example after "Neuer Chat" in another tab,
+          // comes back with the key error.
           const state = await this.post("decide", { id, action, version });
           this.error = state.error ?? null;
         },
@@ -319,7 +328,7 @@ panel.plugin("sveneisenschmidt/assistant", {
         names(files) {
           return files.map((file) => file.name).join(", ");
         },
-        // The browser shows the time in Sven's own timezone.
+        // The time shows in the timezone of the browser.
         time(ts) {
           if (!ts) return "";
           const d = new Date(ts * 1000);
@@ -340,7 +349,8 @@ panel.plugin("sveneisenschmidt/assistant", {
           event.preventDefault();
           this.send();
         },
-        // Leaving while the assistant works: a Panel link asks first.
+        // While the assistant works, a click on a Panel link asks before the
+        // page is left.
         guardLinks(event) {
           if (!this.busy) return;
           const link = event.target.closest("a[href]");
@@ -364,7 +374,8 @@ panel.plugin("sveneisenschmidt/assistant", {
             },
           });
         },
-        // Reload or closing the tab: only the browser's own prompt is possible.
+        // For a reload or a closed tab, browsers allow only their own
+        // confirmation dialog.
         guardUnload(event) {
           if (this.busy || this.uploading) {
             event.preventDefault();
@@ -536,7 +547,7 @@ panel.plugin("sveneisenschmidt/assistant", {
         </k-panel-inside>
       `,
     },
-    // Protokoll: one row per answer, without content.
+    // The page "Protokoll": one row per answer, without the text of any message.
     "k-blog-assistant-log-view": {
       props: { rows: Array, totals: Object },
       template: `

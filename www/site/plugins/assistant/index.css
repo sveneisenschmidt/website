@@ -1,10 +1,11 @@
 /* Panel page "Assistent": a chat window that scrolls, the input fixed below it.
-   Kirby's own tokens and buttons, so light and dark both work. */
+   The styles use Kirby's own CSS variables and buttons, so the light and the
+   dark theme of the Panel both work. */
 .blog-ai-body {
   display: flex;
   gap: var(--spacing-8);
   align-items: stretch;
-  /* The page shows the chat in full: the window scrolls, not the page.
+  /* The page shows the chat in full: the chat window scrolls, not the page.
      index.js sets the exact height below the header. */
   height: calc(100dvh - 12rem);
   min-height: 24rem;
@@ -19,11 +20,12 @@
   background: var(--color-background);
   overflow: hidden;
 }
-/* No page scroll below the chat: Kirby's bottom padding would push the input out. */
+/* Less bottom padding than Kirby's default, which would push the input below the window. */
 .k-blog-assistant-view .k-panel-main {
   padding-bottom: var(--spacing-4);
 }
-/* A reversed column starts at the newest message and stays there. */
+/* With column-reverse the scroll position starts at the newest message and
+   stays there when new messages come. */
 .blog-ai-scroll {
   flex: 1 1 auto;
   min-height: 0;
@@ -51,7 +53,7 @@
   margin-inline-start: var(--spacing-1);
 }
 
-/* Sven: right, in blue. */
+/* Messages of the Panel user: right, in blue. */
 .blog-ai-me {
   align-self: flex-end;
   max-width: 72%;
@@ -68,7 +70,8 @@
   line-height: 1.5;
 }
 
-/* The assistant: left, with the robot. Cards and lines below it share its indent. */
+/* Claude's answers: left, with the robot icon. Cards and lines below an answer
+   use the same indent. */
 .blog-ai-ai {
   display: grid;
   grid-template-columns: 2rem minmax(0, 1fr);
@@ -298,7 +301,8 @@
 .blog-ai-inrow textarea {
   flex: 1 1 auto;
   min-width: 0;
-  /* Clearly an input: two lines high, its own background and a visible border. */
+  /* Two lines high, with its own background and a visible border, so it reads
+     as an input field. */
   min-height: 3.5rem;
   max-height: 10rem;
   font: inherit;
@@ -341,7 +345,8 @@
   white-space: nowrap;
 }
 
-/* Beside the chat; on phones behind the info button. */
+/* The help text beside the chat. In a window narrower than 60rem it is hidden,
+   and the info button opens it in a dialog. */
 .blog-ai-aside {
   flex: 0 0 18rem;
   align-self: flex-start;
@@ -368,7 +373,7 @@
   display: none;
 }
 
-/* Website › Assistent */
+/* The section on Website › Assistent */
 .blog-ai-access {
   display: flex;
   flex-direction: column;
@@ -432,7 +437,7 @@
   }
 }
 
-/* Protokoll: the table style of "Verlauf". */
+/* The page "Protokoll" uses the table style of "Verlauf". */
 .blog-ai-log-intro {
   margin-bottom: var(--spacing-6);
 }
@@ -483,7 +488,7 @@
   font-size: var(--text-xs);
 }
 
-/* Cards of the blog: rows keep their line breaks, every link is marked. */
+/* Texts on cards keep their line breaks, and every link gets a highlight. */
 .blog-ai-rows dd,
 .blog-ai-diff p,
 .blog-ai-version p {

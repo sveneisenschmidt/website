@@ -8,15 +8,18 @@ use Kirby\Panel\Ui\Buttons\ViewButton;
 use Website\Blog\Types;
 
 /**
- * What the plugin assistant registers with the Panel calls here: the view
- * "Assistent", its API actions and the button on posts and About. Area and
- * API routes need a login, as all of the Panel.
+ * The Panel side of the assistant. The plugin
+ * www/site/plugins/assistant/index.php registers the view "Assistent", its
+ * API routes and the button "Assistent" on posts and About, and each of them
+ * calls a method here. Kirby lets only a logged-in Panel user reach the view
+ * and the API routes.
  */
 final class Panel
 {
     /**
-     * The props of the view "Assistent": the chat, the page it was opened
-     * from, and the link to Website › Assistent.
+     * The props of the Vue component `k-blog-assistant-view` in index.js: the
+     * chat, the page whose button opened the view, and the link to the
+     * settings under Website › Assistent.
      *
      * @return array<string, mixed>
      */
@@ -30,8 +33,10 @@ final class Panel
     }
 
     /**
-     * Runs an API action after the uploads are cleaned up. A failed request
-     * comes back as {error} for the view.
+     * Runs one API action and returns the chat for the view. Every request
+     * first deletes old uploads and chat folders (`Uploads::cleanup()`). An
+     * `Error` comes back as the key "error" next to the stored chat, so the
+     * view can show the error and keep the chat.
      *
      * @return array<string, mixed>
      */
@@ -46,7 +51,8 @@ final class Panel
     }
 
     /**
-     * One uploaded file of the Panel: exactly one per request.
+     * Accepts the file of one upload request. index.js sends one request per
+     * file, so a request with no file or with several files is refused.
      *
      * @param array<mixed> $files
      */
@@ -60,7 +66,11 @@ final class Panel
         return Session::load();
     }
 
-    /** The button "Assistent" on posts and About: opens the assistant with the page. */
+    /**
+     * The button "Assistent" in the header of a post or of About; other pages
+     * get none. It opens the assistant, and the next message tells Claude
+     * which page it came from.
+     */
     public static function button(Page $page): ?ViewButton
     {
         $template = $page->intendedTemplate()->name();

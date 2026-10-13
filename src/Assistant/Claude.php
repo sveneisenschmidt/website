@@ -7,16 +7,22 @@ use Kirby\Http\Remote;
 use Throwable;
 
 /**
- * One request to the Claude Messages API. Raw HTTP through Kirby's Remote,
- * as on concertshotsbyluisa.de: the deploy installs no SDK.
- * The key lives in env.php ('assistantKey'), set by the deploy.
- * Tests swap the transport with the option 'blog.assistant.transport':
- * a closure that takes the request body and returns [status, body].
+ * Sends one request to the Anthropic Messages API and turns every failure
+ * into an `Error` for the Panel. The request is plain HTTP through Kirby's
+ * `Remote`, so the site needs no Anthropic SDK in composer.json. The API key
+ * is the option `assistantKey` in www/site/config/env.php; bin/deploy.sh
+ * writes it from the secret ANTHROPIC_API_KEY. Tests replace the HTTP request
+ * with the option `blog.assistant.transport`: a closure that takes the
+ * request body and returns [HTTP status, decoded response].
  */
 final class Claude
 {
     public const API = 'https://api.anthropic.com/v1/messages';
 
+    /**
+     * The models the settings offer. The field `assistantModel` in
+     * www/site/blueprints/tabs/assistant.yml lists the same ids.
+     */
     public const MODELS = [
         'claude-opus-5-5' => 'Claude Opus 5.5',
         'claude-sonnet-5-5' => 'Claude Sonnet 5.5',
@@ -26,8 +32,9 @@ final class Claude
     public const DEFAULT_MODEL = 'claude-opus-5-5';
 
     /**
-     * Opus and Sonnet: the server-side fallback and the web search with
-     * dynamic filtering. Haiku has neither.
+     * True for Opus and Sonnet. Only these models support the server-side
+     * fallback after a refusal and the web search with dynamic filtering
+     * (`web_search_20260209`). Haiku supports neither.
      */
     public static function fullModel(string $model): bool
     {
@@ -40,7 +47,7 @@ final class Claude
         return $key === '' ? null : $key;
     }
 
-    /** The model from Website › Assistent, or the default when the saved one is gone. */
+    /** The model chosen under Website › Assistent. A saved id that is not in `MODELS` gives the default. */
     public static function model(): string
     {
         $model = (string) site()->content()->get('assistantModel');
@@ -48,8 +55,8 @@ final class Claude
     }
 
     /**
-     * Sends one request body, returns the decoded response.
-     * Throws Error with the kind the Panel needs.
+     * Sends one request body and returns the decoded response. Every failure
+     * throws an `Error` whose kind tells the Panel what to show.
      *
      * @param array<string, mixed> $body
      * @return array<string, mixed>
@@ -66,13 +73,15 @@ final class Claude
                 'anthropic-version: 2023-06-01',
                 'content-type: application/json',
             ];
-            // A refused request falls back server-side.
+            // When the model refuses the request, the API retries it on a
+            // fallback model of its own choice.
             if (self::fullModel($body['model'])) {
                 $headers[] = 'anthropic-beta: server-side-fallback-2026-07-01';
                 $body['fallbacks'] = 'default';
             }
-            // One round can take longer than PHP's default 30 s (Opus, a web search).
-            // set_time_limit may be disabled on a host; then its limit stays.
+            // One round can take longer than PHP's default limit of 30 s, with
+            // Opus or with a web search. A host can disable set_time_limit();
+            // the @ hides the warning, and the limit of the host applies.
             @set_time_limit(180);
             try {
                 $remote = Remote::request(self::API, [
@@ -93,7 +102,8 @@ final class Claude
             if (($response['stop_reason'] ?? null) === 'refusal') {
                 throw new Error('refusal');
             }
-            // An answer without a list of blocks is no answer: nothing goes into the chat.
+            // A response without a list of typed content blocks cannot go into
+            // the history. It counts as "busy", and nothing changes.
             $content = $response['content'] ?? null;
             if (!is_array($content) || $content === [] || !array_is_list($content) || array_filter($content, fn($block) => !is_string($block['type'] ?? null)) !== []) {
                 error_log('blog assistant: Anthropic 200 without content');
@@ -106,20 +116,23 @@ final class Claude
         throw new Error(match (true) {
             $status === 401, $status === 403 => 'access',
             $status === 402, $status === 400 && stripos($message, 'credit') !== false => 'credit',
-            // A request that will never work: invalid history, retired model, chat too big.
+            // These requests fail again on every retry: an invalid history, a
+            // retired model, a chat that is too big. The Panel suggests a new chat.
             in_array($status, [400, 404, 413], true) => 'chat',
             default => 'busy',
         });
     }
 
     /**
-     * A short request to see that key, credit and model work.
+     * A short request for the button "Verbindung prüfen" under Website ›
+     * Assistent. It shows whether the key, the credit and the model work.
      *
      * @return array{ok: bool, text: string}
      */
     public static function check(): array
     {
-        // Kirby may lock the session to renew it; other requests must not wait for Claude.
+        // Kirby can lock the session to renew it during this request. Unlock
+        // it first, so other requests of the browser do not wait for Claude.
         Session::unlock();
         try {
             self::request([
