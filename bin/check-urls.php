@@ -5,7 +5,8 @@
  * 200 at exactly its address, slash at the end included; every redirect
  * of content/.redirects.json answers 301 to its target, and the target
  * answers 200. Takes the place of scripts/check-urls.sh, without Pop.
- * Runs against the local server (make kirby-dev).
+ * Runs against the local server (make kirby-dev) or staging; the staging
+ * password comes from STAGING_USER and STAGING_PASSWORD in the environment.
  *
  * Usage: php bin/check-urls.php [site-url] [sitemap-url-or-file] [www-root]
  */
@@ -17,7 +18,10 @@ $www = rtrim($argv[3] ?? 'www', '/');
 /** Status and Location of a GET request, without following a redirect. */
 function check_get(string $url): array
 {
-    $context = stream_context_create(['http' => ['follow_location' => 0, 'ignore_errors' => true, 'timeout' => 60]]);
+    $auth = getenv('STAGING_USER') && getenv('STAGING_PASSWORD')
+        ? 'Authorization: Basic ' . base64_encode(getenv('STAGING_USER') . ':' . getenv('STAGING_PASSWORD'))
+        : '';
+    $context = stream_context_create(['http' => ['follow_location' => 0, 'ignore_errors' => true, 'timeout' => 60, 'header' => $auth]]);
     @file_get_contents($url, false, $context);
     $headers = http_get_last_response_headers() ?? [];
     $location = null;

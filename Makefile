@@ -130,10 +130,13 @@ kirby-hooks:
 	echo "Hooks eingerichtet: pre-commit, pre-push"
 
 # Phase 4: die URLs der Live-Seite gegen Kirby (bin/check-urls.php). Läuft
-# gegen make kirby-dev in einem zweiten Terminal.
+# gegen make kirby-dev in einem zweiten Terminal. Gegen Staging:
+# make kirby-check-urls SITE=$(KIRBY_SITE_URL), das Passwort aus STAGING_USER
+# und STAGING_PASSWORD.
+SITE ?= http://localhost:$(KIRBY_PORT)
 .PHONY: kirby-check-urls
 kirby-check-urls:
-	@$(PHP) bin/check-urls.php http://localhost:$(KIRBY_PORT)
+	@$(PHP) bin/check-urls.php $(SITE)
 
 # Jede Seite von Kirby gegen Hugos Build in public/ (bin/parity.php). Braucht
 # einen Hugo-Build: hugo, oder make build.
@@ -141,3 +144,31 @@ kirby-check-urls:
 kirby-parity:
 	@test -f public/index.html || { echo "Kein Hugo-Build in public/. Erst: hugo"; exit 1; }
 	@$(PHP) bin/parity.php $(WWW) public
+
+# Phase 5a: Staging (Plan: docs/superpowers/plans/2026-10-13-kirby-phase-5a-staging.md).
+# Host und Pfad sind nicht geheim, es gilt der SSH-Alias website.
+# Staging-Passwort und API-Schlüssel kommen aus der Umgebung:
+# STAGING_USER, STAGING_PASSWORD, ANTHROPIC_API_KEY. Lint und Tests laufen vorher.
+KIRBY_DEPLOY_HOST ?= website
+KIRBY_DEPLOY_PATH ?= /www/htdocs/w00611ad/kirby.eisenschmidt.website
+KIRBY_SITE_URL ?= https://kirby.eisenschmidt.website
+
+.PHONY: kirby-deploy
+kirby-deploy: kirby-lint kirby-test
+	DEPLOY_HOST=$(KIRBY_DEPLOY_HOST) DEPLOY_PATH=$(KIRBY_DEPLOY_PATH) SITE_URL=$(KIRBY_SITE_URL) bin/deploy.sh
+
+# Ersetzt Inhalte und Konten in www/ durch den Stand des Servers.
+.PHONY: kirby-pull
+kirby-pull:
+	DEPLOY_HOST=$(KIRBY_DEPLOY_HOST) DEPLOY_PATH=$(KIRBY_DEPLOY_PATH) bin/pull.sh
+
+# Ersetzt die Inhalte auf dem Server durch einen lokalen Snapshot ohne Konten.
+.PHONY: kirby-upload-state
+kirby-upload-state:
+	@test -n "$(SNAPSHOT)" || { echo "Aufruf: make kirby-upload-state SNAPSHOT=backups/website-..."; exit 1; }
+	DEPLOY_HOST=$(KIRBY_DEPLOY_HOST) DEPLOY_PATH=$(KIRBY_DEPLOY_PATH) bin/upload-state.sh $(SNAPSHOT)
+
+# Ruft jede Seite und jedes Bild unter /media/ einmal ab (bin/warm.php).
+.PHONY: kirby-warm
+kirby-warm:
+	@$(PHP) bin/warm.php $(KIRBY_SITE_URL)
