@@ -6,7 +6,7 @@
 # into the www/ of the live release):
 #   .htaccess                  names the live release
 #   current -> releases/<id>   the live release, for the scripts
-#   releases/<id>/             code only: www/, vendor/, a link storage
+#   releases/<id>/             code only: www/, src/, vendor/, a link storage
 #   shared/                    state and host config, one copy for every
 #                              release: content, media, site/accounts,
 #                              site/cache, site/sessions, site/config/env.php,
@@ -79,7 +79,9 @@ rsync -a --exclude '/content/' --exclude '/media/' \
   --exclude '/site/config/env.php' --exclude '/site/config/.salt' --exclude '/site/config/.license' \
   --exclude '/kirby/' --exclude '/site/plugins/markdown-field/' --exclude '.DS_Store' \
   www/ "$BUILD/www/"
-[ ! -d src ] || cp -R src "$BUILD/src"
+# The classes of the site (Website\ in composer.json), before composer
+# install: the optimized autoloader lists only the classes it finds.
+rsync -a --exclude '.DS_Store' src/ "$BUILD/src/"
 cp composer.json composer.lock "$BUILD/"
 composer validate --no-check-publish --strict --working-dir="$BUILD"
 composer install --no-dev --no-interaction --no-progress --optimize-autoloader --working-dir="$BUILD"
@@ -89,7 +91,7 @@ rm "$BUILD/composer.json" "$BUILD/composer.lock"
 for f in www/kirby/bootstrap.php www/site/plugins/markdown-field/index.php vendor/autoload.php; do
   [ -f "$BUILD/$f" ] || { echo "Build has no $f" >&2; exit 1; }
 done
-find "$BUILD/www/site" "$BUILD/www/index.php" -name '*.php' -print0 | xargs -0 -n1 php -l >/dev/null
+find "$BUILD/src" "$BUILD/www/site" "$BUILD/www/index.php" -name '*.php' -print0 | xargs -0 -n1 php -l >/dev/null
 # The links to shared/ are relative: a release works in any site folder.
 ln -s ../../../shared/content "$BUILD/www/content"
 ln -s ../../../shared/media "$BUILD/www/media"
