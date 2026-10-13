@@ -10,7 +10,7 @@ parameters:
         - bin
         - tests
     excludePaths:
-        - www/site/config/env.php
+        - www/site/config/env.php (?)
     bootstrapFiles:
         - vendor/autoload.php
         - www/kirby/bootstrap.php
