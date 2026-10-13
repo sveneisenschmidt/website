@@ -39,8 +39,9 @@
 # 5. Switch: .htaccess and `current` point to the new release. One rename
 #    replaces each of them. Then clear the page cache.
 #    The page cache holds the HTML of every page that Kirby rendered.
-# 6. Health check: the start page must answer HTTP 200. Otherwise switch back
-#    to the previous release and exit with 1.
+# 6. Health check: the start page, the RSS feed and the newest post of the
+#    feed must answer HTTP 200. Otherwise switch back to the previous
+#    release, check it the same way and exit with 1.
 # 7. Delete all releases except the newest 5. Fill the page cache again
 #    with bin/warm.php --pages.
 #
@@ -205,14 +206,37 @@ clear_cache() {
 }
 clear_cache
 
+# Prints the HTTP status of a GET request to $1 and writes the body to $2.
+http_status() { curl -sS -o "${2:-/dev/null}" -w '%{http_code}' --max-time 60 "$1" || true; }
+
+# Requests the start page, the RSS feed and the newest post of the feed.
+# The start page alone does not show that a post renders. Returns 1 when
+# one of them does not answer HTTP 200.
+check_site() {
+  local code post
+  code=$(http_status "$SITE_URL/")
+  echo "HTTP $code /"
+  [ "$code" = 200 ] || return 1
+  code=$(http_status "$SITE_URL/index.xml" "$BUILD/feed.xml")
+  echo "HTTP $code /index.xml"
+  [ "$code" = 200 ] || return 1
+  # The first <link> inside an <item> is the newest post. The check leaves
+  # out the ?source=rss that the feed adds to it.
+  post=$(sed -n '/<item>/,/<\/item>/s:.*<link>\([^<?]*\).*</link>.*:\1:p' "$BUILD/feed.xml" | head -1)
+  [ -n "$post" ] || { echo "The feed lists no post."; return 1; }
+  code=$(http_status "$post")
+  echo "HTTP $code ${post#"$SITE_URL"}"
+  [ "$code" = 200 ]
+}
+
 echo "== Health check of $SITE_URL"
-code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 60 "$SITE_URL/" || true)
-echo "HTTP $code"
-if [ "$code" != 200 ]; then
+if ! check_site; then
   if [ -n "$previous" ]; then
     echo "Switching back to $previous" >&2
     switch_to "$previous"
     clear_cache
+    echo "== Health check of $previous"
+    check_site || echo "The previous release $previous fails the health check too." >&2
   fi
   exit 1
 fi
