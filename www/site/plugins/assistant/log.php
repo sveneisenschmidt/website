@@ -48,16 +48,16 @@ function blog_assistant_turn_round(array $chat, array $response): array
     $chat['turn']['rounds']++;
     foreach ($response['content'] ?? [] as $block) {
         if (in_array($block['type'] ?? '', ['tool_use', 'server_tool_use'], true)) {
-            $name = (string)($block['name'] ?? '?');
+            $name = (string) ($block['name'] ?? '?');
             $chat['turn']['tools'][$name] = ($chat['turn']['tools'][$name] ?? 0) + 1;
             $chat['turn']['cards'] += str_starts_with($name, 'propose_') ? 1 : 0;
         }
     }
     $usage = $response['usage'] ?? [];
-    $chat['turn']['in'] += (int)($usage['input_tokens'] ?? 0) + (int)($usage['cache_read_input_tokens'] ?? 0) + (int)($usage['cache_creation_input_tokens'] ?? 0);
-    $chat['turn']['out'] += (int)($usage['output_tokens'] ?? 0);
+    $chat['turn']['in'] += (int) ($usage['input_tokens'] ?? 0) + (int) ($usage['cache_read_input_tokens'] ?? 0) + (int) ($usage['cache_creation_input_tokens'] ?? 0);
+    $chat['turn']['out'] += (int) ($usage['output_tokens'] ?? 0);
     // Read from the prompt cache: the fixed rules, the tools and the chat so far.
-    $chat['turn']['cached'] += (int)($usage['cache_read_input_tokens'] ?? 0);
+    $chat['turn']['cached'] += (int) ($usage['cache_read_input_tokens'] ?? 0);
     return $chat;
 }
 
@@ -90,23 +90,23 @@ function blog_assistant_turn_end(array $chat, string $outcome): array
 function blog_assistant_log_view(): array
 {
     $entries = blog_assistant_log_read();
-    $answers = array_values(array_filter($entries, fn ($e) => ($e['type'] ?? '') === 'answer'));
-    $decisions = array_values(array_filter($entries, fn ($e) => ($e['type'] ?? '') === 'decision'));
+    $answers = array_values(array_filter($entries, fn($e) => ($e['type'] ?? '') === 'answer'));
+    $decisions = array_values(array_filter($entries, fn($e) => ($e['type'] ?? '') === 'decision'));
     $seconds = array_column($answers, 'seconds');
-    $rows = array_map(fn ($e) => [
+    $rows = array_map(fn($e) => [
         'time' => date('d.m.Y H:i', strtotime($e['time'])),
         'name' => $e['name'] ?? $e['user'] ?? '',
         'chat' => ($e['chat'] ?? '?') . ' · ' . ($e['message'] ?? '?'),
-        'seconds' => number_format((float)($e['seconds'] ?? 0), 1, ',', '') . ' s',
-        'rounds' => (int)($e['rounds'] ?? 0),
-        'tools' => implode(', ', array_map(fn ($name, $n) => $n > 1 ? "$name × $n" : $name, array_keys($e['tools'] ?? []), $e['tools'] ?? [])),
+        'seconds' => number_format((float) ($e['seconds'] ?? 0), 1, ',', '') . ' s',
+        'rounds' => (int) ($e['rounds'] ?? 0),
+        'tools' => implode(', ', array_map(fn($name, $n) => $n > 1 ? "$name × $n" : $name, array_keys($e['tools'] ?? []), $e['tools'] ?? [])),
         'outcome' => match ($e['outcome'] ?? '') {
             'ok' => 'Fertig',
             'stopped' => 'Abgebrochen',
             default => 'Fehler: ' . ($e['outcome'] ?? '?'),
         },
-        'model' => BLOG_ASSISTANT_MODELS[$e['model'] ?? ''] ?? (string)($e['model'] ?? ''),
-        'tokens' => number_format((int)($e['tokensIn'] ?? 0), 0, ',', '.') . ' / ' . number_format((int)($e['tokensOut'] ?? 0), 0, ',', '.'),
+        'model' => BLOG_ASSISTANT_MODELS[$e['model'] ?? ''] ?? (string) ($e['model'] ?? ''),
+        'tokens' => number_format((int) ($e['tokensIn'] ?? 0), 0, ',', '.') . ' / ' . number_format((int) ($e['tokensOut'] ?? 0), 0, ',', '.'),
         'cached' => ($e['tokensIn'] ?? 0) > 0 ? round(100 * ($e['tokensCached'] ?? 0) / $e['tokensIn']) . ' %' : '',
     ], $answers);
     return [
@@ -115,8 +115,8 @@ function blog_assistant_log_view(): array
             'chats' => count(array_unique(array_filter(array_column($answers, 'chat')))),
             'answers' => count($answers),
             'seconds' => $seconds === [] ? '0' : number_format(array_sum($seconds) / count($seconds), 1, ',', ''),
-            'accepted' => count(array_filter($decisions, fn ($d) => ($d['decision'] ?? '') === 'done')),
-            'discarded' => count(array_filter($decisions, fn ($d) => ($d['decision'] ?? '') === 'discarded')),
+            'accepted' => count(array_filter($decisions, fn($d) => ($d['decision'] ?? '') === 'done')),
+            'discarded' => count(array_filter($decisions, fn($d) => ($d['decision'] ?? '') === 'discarded')),
         ],
     ];
 }

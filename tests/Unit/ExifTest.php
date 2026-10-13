@@ -44,7 +44,7 @@ final class ExifTest extends TestCase
             blog_exif_fields([
                 'IFD0' => ['Make' => 'Canon', 'Model' => 'Canon EOS R5'],
                 'EXIF' => ['FocalLength' => '35/1', 'FNumber' => '9/5', 'ExposureTime' => '1/100', 'UndefinedTag:0x8832' => 12800],
-            ])
+            ]),
         );
     }
 

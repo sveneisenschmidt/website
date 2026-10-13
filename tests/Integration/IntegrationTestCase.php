@@ -64,7 +64,7 @@ abstract class IntegrationTestCase extends TestCase
      */
     protected function upload(string $source, string $filename, ?Page $page = null): File
     {
-        return $this->kirby->impersonate('kirby', fn () => ($page ?? $this->post)->createFile([
+        return $this->kirby->impersonate('kirby', fn() => ($page ?? $this->post)->createFile([
             'source' => $source,
             'filename' => $filename,
             'template' => 'image',

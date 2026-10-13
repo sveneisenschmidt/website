@@ -9,7 +9,7 @@ final class ChangelogTest extends IntegrationTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->kirby->impersonate('kirby', fn () => $this->kirby->users()->create([
+        $this->kirby->impersonate('kirby', fn() => $this->kirby->users()->create([
             'email' => self::EMAIL,
             'name' => 'Sven',
             'role' => 'admin',
@@ -20,7 +20,7 @@ final class ChangelogTest extends IntegrationTestCase
     public function testSaveAsUserLogsWhoWhatWhere(): void
     {
         $photo = $this->kirby->page('photos/test-photo');
-        $this->kirby->impersonate(self::EMAIL, fn () => $photo->update(['intro' => 'A new intro']));
+        $this->kirby->impersonate(self::EMAIL, fn() => $photo->update(['intro' => 'A new intro']));
 
         $entry = blog_changelog_entries()[0];
         $this->assertSame('page.update', $entry['action']);
@@ -56,14 +56,14 @@ final class ChangelogTest extends IntegrationTestCase
 
     public function testUploadLogsUserAndAutomaticExif(): void
     {
-        $this->kirby->impersonate(self::EMAIL, fn () => $this->post->createFile([
+        $this->kirby->impersonate(self::EMAIL, fn() => $this->post->createFile([
             'source' => __DIR__ . '/../fixtures/exif.jpg',
             'filename' => '01.jpg',
             'template' => 'image',
         ]));
 
         $entries = array_reverse(blog_changelog_entries());
-        $actions = array_map(fn ($e) => [$e['action'], $e['name']], $entries);
+        $actions = array_map(fn($e) => [$e['action'], $e['name']], $entries);
         $this->assertContains(['file.create', 'Sven'], $actions);
         // Our EXIF hook writes as the kirby user: shown as "Automatisch".
         $this->assertContains(['file.update', null], $actions);
@@ -71,7 +71,7 @@ final class ChangelogTest extends IntegrationTestCase
 
     public function testDeleteIsLoggedWithoutLink(): void
     {
-        $this->kirby->impersonate(self::EMAIL, fn () => $this->kirby->page('photos/test-photo')->delete(true));
+        $this->kirby->impersonate(self::EMAIL, fn() => $this->kirby->page('photos/test-photo')->delete(true));
 
         $entry = blog_changelog_entries()[0];
         $this->assertSame('page.delete', $entry['action']);
@@ -82,7 +82,7 @@ final class ChangelogTest extends IntegrationTestCase
     public function testPasswordIsNeverLogged(): void
     {
         $user = $this->kirby->user(self::EMAIL);
-        $this->kirby->impersonate('kirby', fn () => $user->changePassword('another-password-456'));
+        $this->kirby->impersonate('kirby', fn() => $user->changePassword('another-password-456'));
 
         $entry = blog_changelog_entries()[0];
         $this->assertSame('user.changePassword', $entry['action']);
@@ -94,7 +94,7 @@ final class ChangelogTest extends IntegrationTestCase
 
     public function testLogIsStateInContentAndNoPage(): void
     {
-        $this->kirby->impersonate(self::EMAIL, fn () => $this->kirby->page('photos/test-photo')->update(['text' => 'Dusk.']));
+        $this->kirby->impersonate(self::EMAIL, fn() => $this->kirby->page('photos/test-photo')->update(['text' => 'Dusk.']));
 
         $this->assertFileExists($this->root . '/content/.changelog/' . date('Y-m') . '.jsonl');
         $this->assertSame(['photos'], $this->kirby->site()->childrenAndDrafts()->pluck('slug'));
@@ -104,7 +104,7 @@ final class ChangelogTest extends IntegrationTestCase
     {
         $photo = $this->kirby->page('photos/test-photo');
         foreach (['A', 'B', 'C'] as $text) {
-            $photo = $this->kirby->impersonate(self::EMAIL, fn () => $photo->update(['text' => $text]));
+            $photo = $this->kirby->impersonate(self::EMAIL, fn() => $photo->update(['text' => $text]));
         }
 
         $entries = blog_changelog_entries(2);
@@ -117,16 +117,16 @@ final class ChangelogTest extends IntegrationTestCase
     {
         $photo = $this->kirby->page('photos/test-photo');
         $before = count(blog_changelog_entries());
-        $this->kirby->impersonate(self::EMAIL, fn () => $photo->update(['intro' => 'Test intro']));
+        $this->kirby->impersonate(self::EMAIL, fn() => $photo->update(['intro' => 'Test intro']));
         $this->assertCount($before, blog_changelog_entries());
     }
 
     public function testListFieldsShowAddedAndRemovedRows(): void
     {
         $trip = $this->post('trips', 'trip', 'test-trip', 'Test Trip');
-        $point = fn (string $lat, string $label) => ['label' => $label, 'lat' => $lat, 'lon' => '0.39'];
+        $point = fn(string $lat, string $label) => ['label' => $label, 'lat' => $lat, 'lon' => '0.39'];
 
-        $trip = $this->kirby->impersonate(self::EMAIL, fn () => $trip->update(['mappoints' => [$point('50.82', 'Brighton')]]));
+        $trip = $this->kirby->impersonate(self::EMAIL, fn() => $trip->update(['mappoints' => [$point('50.82', 'Brighton')]]));
         $entry = blog_changelog_entries(1)[0];
         $this->assertSame([[
             'field' => 'mappoints',
@@ -135,7 +135,7 @@ final class ChangelogTest extends IntegrationTestCase
             'new' => 'Brighton',
         ]], $entry['changes']);
 
-        $this->kirby->impersonate(self::EMAIL, fn () => $trip->update(['mappoints' => [$point('50.83', 'Hove')]]));
+        $this->kirby->impersonate(self::EMAIL, fn() => $trip->update(['mappoints' => [$point('50.83', 'Hove')]]));
         $entry = blog_changelog_entries(1)[0];
         $this->assertSame([['field' => 'mappoints', 'label' => 'Kartenpunkte', 'old' => 'Brighton', 'new' => 'Hove']], $entry['changes']);
     }
@@ -143,10 +143,10 @@ final class ChangelogTest extends IntegrationTestCase
     public function testFileReferenceAsIdOrUuidIsNoChange(): void
     {
         $file = $this->upload($this->jpeg(100, 100), '01.jpg');
-        $this->kirby->impersonate('kirby', fn () => $this->post->version('latest')->update(['cover' => '- ' . $file->id()]));
+        $this->kirby->impersonate('kirby', fn() => $this->post->version('latest')->update(['cover' => '- ' . $file->id()]));
         $before = count(blog_changelog_entries());
 
-        $this->kirby->impersonate(self::EMAIL, fn () => $this->kirby->page('photos/test-photo')->update(['cover' => [$file->uuid()->toString()]]));
+        $this->kirby->impersonate(self::EMAIL, fn() => $this->kirby->page('photos/test-photo')->update(['cover' => [$file->uuid()->toString()]]));
 
         $this->assertCount($before, blog_changelog_entries());
     }
@@ -154,7 +154,7 @@ final class ChangelogTest extends IntegrationTestCase
     public function testFileReferenceShowsItsName(): void
     {
         $file = $this->upload($this->jpeg(100, 100), '01.jpg');
-        $this->kirby->impersonate(self::EMAIL, fn () => $this->kirby->page('photos/test-photo')->update(['cover' => [$file->uuid()->toString()]]));
+        $this->kirby->impersonate(self::EMAIL, fn() => $this->kirby->page('photos/test-photo')->update(['cover' => [$file->uuid()->toString()]]));
 
         $entry = blog_changelog_entries()[0];
         $this->assertSame('Titelbild', $entry['changes'][0]['label']);
@@ -164,7 +164,7 @@ final class ChangelogTest extends IntegrationTestCase
     public function testStatusAndKindAsThePanelNamesThem(): void
     {
         $photo = $this->kirby->page('photos/test-photo');
-        $this->kirby->impersonate(self::EMAIL, fn () => $photo->changeStatus('draft'));
+        $this->kirby->impersonate(self::EMAIL, fn() => $photo->changeStatus('draft'));
 
         $entry = blog_changelog_entries(1)[0];
         $this->assertSame('Foto', $entry['kind']);
@@ -178,7 +178,7 @@ final class ChangelogTest extends IntegrationTestCase
 
     public function testEveryPostTypeHasItsKindAndOtherPagesHaveNone(): void
     {
-        $about = $this->kirby->impersonate('kirby', fn () => $this->kirby->site()->createChild([
+        $about = $this->kirby->impersonate('kirby', fn() => $this->kirby->site()->createChild([
             'slug' => 'about',
             'template' => 'about',
             'content' => ['title' => 'About'],
@@ -192,7 +192,7 @@ final class ChangelogTest extends IntegrationTestCase
         ];
 
         foreach ($pages as [$page, $kind]) {
-            $this->kirby->impersonate(self::EMAIL, fn () => $page->update(['text' => 'Changed.']));
+            $this->kirby->impersonate(self::EMAIL, fn() => $page->update(['text' => 'Changed.']));
             $entry = blog_changelog_entries(1)[0];
             $this->assertSame($page->id(), $entry['id']);
             $this->assertSame($kind, $entry['kind'], $page->id());
@@ -206,7 +206,7 @@ final class ChangelogTest extends IntegrationTestCase
         $photo = $this->kirby->page('photos/test-photo');
         $before = count(blog_changelog_entries());
 
-        $this->kirby->impersonate(self::EMAIL, fn () => $photo->update(['date' => '2026-11-09 10:00:00']));
+        $this->kirby->impersonate(self::EMAIL, fn() => $photo->update(['date' => '2026-11-09 10:00:00']));
 
         $new = array_slice(blog_changelog_entries(), 0, count(blog_changelog_entries()) - $before);
         $this->assertSame(['page.update'], array_column($new, 'action'));
@@ -215,16 +215,16 @@ final class ChangelogTest extends IntegrationTestCase
 
     public function testSortingPagesWithoutDateNumberIsLogged(): void
     {
-        $this->kirby->impersonate('kirby', fn () => $this->kirby->site()->createChild(['slug' => 'first', 'template' => 'default', 'content' => ['title' => 'First']])->changeStatus('listed'));
-        $second = $this->kirby->impersonate('kirby', fn () => $this->kirby->site()->createChild(['slug' => 'second', 'template' => 'default', 'content' => ['title' => 'Second']])->changeStatus('listed'));
+        $this->kirby->impersonate('kirby', fn() => $this->kirby->site()->createChild(['slug' => 'first', 'template' => 'default', 'content' => ['title' => 'First']])->changeStatus('listed'));
+        $second = $this->kirby->impersonate('kirby', fn() => $this->kirby->site()->createChild(['slug' => 'second', 'template' => 'default', 'content' => ['title' => 'Second']])->changeStatus('listed'));
         $before = count(blog_changelog_entries());
 
-        $this->kirby->impersonate(self::EMAIL, fn () => $second->changeSort(1));
+        $this->kirby->impersonate(self::EMAIL, fn() => $second->changeSort(1));
 
         // The sibling that moves down is logged too.
         $new = array_slice(blog_changelog_entries(), 0, count(blog_changelog_entries()) - $before);
         $this->assertSame('page.changeNum', $new[0]['action']);
-        $moved = array_values(array_filter($new, fn ($e) => $e['action'] === 'page.changeNum' && $e['id'] === 'second'));
+        $moved = array_values(array_filter($new, fn($e) => $e['action'] === 'page.changeNum' && $e['id'] === 'second'));
         $this->assertCount(1, $moved);
         $this->assertSame(self::EMAIL, $moved[0]['user']);
         $this->assertSame([['field' => 'num', 'label' => 'Reihenfolge', 'old' => '2', 'new' => '1']], $moved[0]['changes']);
@@ -232,10 +232,10 @@ final class ChangelogTest extends IntegrationTestCase
 
     public function testPublishingIsOneEntry(): void
     {
-        $photo = $this->kirby->impersonate('kirby', fn () => $this->kirby->page('photos/test-photo')->changeStatus('draft'));
+        $photo = $this->kirby->impersonate('kirby', fn() => $this->kirby->page('photos/test-photo')->changeStatus('draft'));
         $before = count(blog_changelog_entries());
 
-        $this->kirby->impersonate(self::EMAIL, fn () => $photo->changeStatus('listed'));
+        $this->kirby->impersonate(self::EMAIL, fn() => $photo->changeStatus('listed'));
 
         $new = array_slice(blog_changelog_entries(), 0, count(blog_changelog_entries()) - $before);
         $this->assertSame(['page.changeStatus'], array_column($new, 'action'));
@@ -244,7 +244,7 @@ final class ChangelogTest extends IntegrationTestCase
 
     public function testThePromptIsLoggedWithoutItsText(): void
     {
-        $this->kirby->impersonate(self::EMAIL, fn () => $this->kirby->site()->update(['assistantPrompt' => 'PROMPT-CANARY-7f3a']));
+        $this->kirby->impersonate(self::EMAIL, fn() => $this->kirby->site()->update(['assistantPrompt' => 'PROMPT-CANARY-7f3a']));
 
         $entry = blog_changelog_entries()[0];
         $this->assertSame('site.update', $entry['action']);

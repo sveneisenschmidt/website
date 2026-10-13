@@ -108,7 +108,7 @@ final class UploadTest extends AssistantTestCase
     {
         ob_start();
         imagejpeg(imagecreatetruecolor(64, 48), null, 90);
-        $plain = (string)ob_get_clean();
+        $plain = (string) ob_get_clean();
         $model = "Caf\xE9 Cam\x00";
         $tiff = "MM\x00\x2A" . pack('N', 8) . pack('n', 1) . pack('nnNN', 0x0110, 2, strlen($model), 26) . pack('N', 0) . $model;
         $app1 = "Exif\x00\x00" . $tiff;
@@ -118,7 +118,7 @@ final class UploadTest extends AssistantTestCase
 
         $meta = blog_uploads_meta($upload['id']);
         $this->assertSame("Caf\u{FFFD} Cam", $meta['exif']['camera']);
-        $this->assertEqualsCanonicalizing(['.json', '.jpg', '.preview.jpg', '.thumb.jpg'], array_map(fn ($f) => substr(basename($f), 17), $this->stored()));
+        $this->assertEqualsCanonicalizing(['.json', '.jpg', '.preview.jpg', '.thumb.jpg'], array_map(fn($f) => substr(basename($f), 17), $this->stored()));
         $this->assertNotFalse(json_encode(blog_assistant_view(blog_assistant_load())));
     }
 
@@ -153,7 +153,7 @@ final class UploadTest extends AssistantTestCase
     {
         ob_start();
         imagepng(imagecreatetruecolor(10, 10));
-        $png = (string)ob_get_clean();
+        $png = (string) ob_get_clean();
         $text = "Comment\x00GPS 51.3";
         $chunk = pack('N', strlen($text)) . 'tEXt' . $text . pack('N', crc32('tEXt' . $text));
         file_put_contents($this->root . '/a.png', substr($png, 0, -12) . $chunk . substr($png, -12));
@@ -185,13 +185,13 @@ final class UploadTest extends AssistantTestCase
         $encode = function (callable $write) use ($image): string {
             ob_start();
             $write($image);
-            return (string)ob_get_clean();
+            return (string) ob_get_clean();
         };
-        $plain = $encode(fn ($i) => imagejpeg($i, null, 90));
-        $png = $encode(fn ($i) => imagepng($i));
-        $webp = $encode(fn ($i) => imagewebp($i));
+        $plain = $encode(fn($i) => imagejpeg($i, null, 90));
+        $png = $encode(fn($i) => imagepng($i));
+        $webp = $encode(fn($i) => imagewebp($i));
         imageinterlace($image, true);
-        $progressive = $encode(fn ($i) => imagejpeg($i, null, 90));
+        $progressive = $encode(fn($i) => imagejpeg($i, null, 90));
         $second = strpos($progressive, "\xFF\xDA", strpos($progressive, "\xFF\xDA") + 2);
         $this->assertNotFalse($second, 'A progressive JPEG has more than one scan.');
         $chunk = 'GPS-LEAK c2pa jumb';
@@ -250,7 +250,7 @@ final class UploadTest extends AssistantTestCase
         $text = blog_uploads_blocks($upload['id'])[0]['text'];
         $this->assertStringContainsString('both ends cut', $text);
         $this->assertStringNotContainsString('morning', strtolower($text), 'A file name can name a place; Claude gets none.');
-        $this->assertStringNotContainsString(json_encode(array_map(fn ($v) => round($v, 5), GpxFixture::home())), $text);
+        $this->assertStringNotContainsString(json_encode(array_map(fn($v) => round($v, 5), GpxFixture::home())), $text);
     }
 
     public function testAGpxWithADoctypeIsRefusedAndAShortOneExplained(): void

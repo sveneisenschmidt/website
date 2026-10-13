@@ -86,7 +86,7 @@ final class AnalyticsTest extends IntegrationTestCase
 
     public function testDraftAndErrorPageDoNotCount(): void
     {
-        $error = $this->kirby->impersonate('kirby', fn () => $this->kirby->site()->createChild(['slug' => 'error', 'template' => 'error', 'content' => ['title' => 'Error']]));
+        $error = $this->kirby->impersonate('kirby', fn() => $this->kirby->site()->createChild(['slug' => 'error', 'template' => 'error', 'content' => ['title' => 'Error']]));
         $draft = $this->post('photos', 'photo', 'draft-photo', 'Draft', 'draft');
 
         $this->assertNull(blog_analytics_page_id($draft));
@@ -108,7 +108,7 @@ final class AnalyticsTest extends IntegrationTestCase
             $this->visit('photos');
             $month = blog_analytics_summary(30)['totals']['month'];
         } finally {
-            ini_set('error_log', (string)$previous);
+            ini_set('error_log', (string) $previous);
         }
 
         $this->assertSame('{"broken', file_get_contents($file));
@@ -203,10 +203,10 @@ final class AnalyticsTest extends IntegrationTestCase
     {
         $this->visit('2026-10-07-test-photo');
         $this->visit('');
-        $this->kirby->impersonate('kirby', fn () => $this->kirby->page('photos/test-photo')->changeTitle('Renamed Photo'));
-        $this->kirby->impersonate('kirby', fn () => $this->kirby->site()->createChild(['slug' => 'gone', 'template' => 'default', 'content' => ['title' => 'Gone']])->changeStatus('listed'));
+        $this->kirby->impersonate('kirby', fn() => $this->kirby->page('photos/test-photo')->changeTitle('Renamed Photo'));
+        $this->kirby->impersonate('kirby', fn() => $this->kirby->site()->createChild(['slug' => 'gone', 'template' => 'default', 'content' => ['title' => 'Gone']])->changeStatus('listed'));
         $this->visit('gone');
-        $this->kirby->impersonate('kirby', fn () => $this->kirby->page('gone')->delete(true));
+        $this->kirby->impersonate('kirby', fn() => $this->kirby->page('gone')->delete(true));
 
         $titles = array_column(blog_analytics_summary(30)['pages'], 'title', 'id');
 
@@ -222,7 +222,7 @@ final class AnalyticsTest extends IntegrationTestCase
         $procs = [];
         $pipes = [];
         for ($i = 1; $i <= $workers; $i++) {
-            $cmd = [PHP_BINARY, __DIR__ . '/../Support/visit-worker.php', $this->root, "203.0.113.$i", (string)$views];
+            $cmd = [PHP_BINARY, __DIR__ . '/../Support/visit-worker.php', $this->root, "203.0.113.$i", (string) $views];
             $procs[$i] = proc_open($cmd, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes[$i]);
         }
         $results = [];

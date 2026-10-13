@@ -94,7 +94,7 @@ abstract class AssistantTestCase extends IntegrationTestCase
     /** True when a request holds the lock on this test's session file. */
     protected function sessionLocked(): bool
     {
-        [$expiry, $id] = explode('.', (string)$this->kirby->session()->token());
+        [$expiry, $id] = explode('.', (string) $this->kirby->session()->token());
         $handle = fopen($this->root . "/sessions/$expiry.$id.sess", 'r+');
         $free = flock($handle, LOCK_EX | LOCK_NB);
         if ($free) {
@@ -107,7 +107,7 @@ abstract class AssistantTestCase extends IntegrationTestCase
     /** The newest card of a chat. */
     protected function card(array $chat): array
     {
-        $cards = array_values(array_filter($chat['items'], fn ($i) => $i['type'] === 'card'));
+        $cards = array_values(array_filter($chat['items'], fn($i) => $i['type'] === 'card'));
         return $chat['proposals'][end($cards)['id']];
     }
 
@@ -115,7 +115,7 @@ abstract class AssistantTestCase extends IntegrationTestCase
     protected function results(int $n): array
     {
         $messages = $this->requests[$n]['messages'];
-        return array_values(array_filter($messages[array_key_last($messages)]['content'], fn ($b) => $b['type'] === 'tool_result'));
+        return array_values(array_filter($messages[array_key_last($messages)]['content'], fn($b) => $b['type'] === 'tool_result'));
     }
 
     /** The text of the last block of the last message of a request. */
@@ -135,7 +135,7 @@ abstract class AssistantTestCase extends IntegrationTestCase
         imagefilledrectangle($image, 0, 0, intdiv($width, 2), $height, imagecolorallocate($image, 255, 0, 0));
         ob_start();
         imagejpeg($image, null, 90);
-        $plain = (string)ob_get_clean();
+        $plain = (string) ob_get_clean();
         // TIFF, big endian: IFD0 with Model, Orientation and the GPS pointer; a GPS IFD with latitude.
         $model = "GPS-CAM\x00";
         $modelAt = 8 + 2 + 3 * 12 + 4;

@@ -23,7 +23,7 @@ function blog_rational($v): ?float
         [$a, $b] = array_map('floatval', explode('/', $v, 2));
         return $b != 0.0 ? $a / $b : null;
     }
-    return is_numeric($v) ? (float)$v : null;
+    return is_numeric($v) ? (float) $v : null;
 }
 
 /** A number with at most $decimals decimals, without trailing zeros: 2.80 -> "2.8", 45.0 -> "45". */
@@ -49,7 +49,7 @@ function blog_shutter(float $t): string
     if ($t < 1) {
         $n = 1 / $t;
         if (abs($n - round($n)) < 0.05) {
-            return '1/' . (int)round($n);
+            return '1/' . (int) round($n);
         }
     }
     return blog_num($t);
@@ -62,7 +62,7 @@ function blog_exif_fields(array $d): array
     $ifd0 = $d['IFD0'] ?? [];
     $out = [];
 
-    $camera = blog_camera((string)($ifd0['Make'] ?? ''), (string)($ifd0['Model'] ?? ''));
+    $camera = blog_camera((string) ($ifd0['Make'] ?? ''), (string) ($ifd0['Model'] ?? ''));
     if ($camera !== '') {
         $out['camera'] = $camera;
     }
@@ -95,8 +95,8 @@ function blog_exif_fields(array $d): array
     if (is_array($iso)) {
         $iso = reset($iso);
     }
-    if (is_numeric($iso) && (int)$iso > 0) {
-        $out['iso'] = (string)(int)$iso;
+    if (is_numeric($iso) && (int) $iso > 0) {
+        $out['iso'] = (string) (int) $iso;
     }
 
     return $out;
@@ -135,7 +135,7 @@ function blog_store_exif(File $file, bool $replace = false): void
         return;
     }
     try {
-        $file->kirby()->impersonate('kirby', fn () => $file->update($update));
+        $file->kirby()->impersonate('kirby', fn() => $file->update($update));
     } catch (Throwable $e) {
         // The upload itself worked; the fields can be filled in in the Panel.
         error_log('blog_store_exif: ' . $e->getMessage());

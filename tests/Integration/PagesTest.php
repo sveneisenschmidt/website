@@ -24,18 +24,18 @@ final class PagesTest extends IntegrationTestCase
             $archive->createChild(['slug' => 'photos', 'template' => 'archive', 'draft' => false, 'content' => ['title' => 'Archive · Photos', 'stream' => 'photos']]);
         });
         $cover = $this->upload($this->jpeg(8, 8), 'cover.jpg');
-        $this->post = $this->kirby->impersonate('kirby', fn () => $this->post->update(['cover' => [$cover->uuid()->toString()], 'pick' => 'true']));
+        $this->post = $this->kirby->impersonate('kirby', fn() => $this->post->update(['cover' => [$cover->uuid()->toString()], 'pick' => 'true']));
     }
 
     /** Job title and employer come from About; an empty field leaves its key out. */
     public function testThePersonOnTheHomePageTakesTheJobFromAbout(): void
     {
-        $person = fn () => json_decode(preg_match('!<script type="application/ld\+json">(.*?)</script>!s', $this->kirby->site()->homePage()->render(), $m) ? $m[1] : 'null', true);
+        $person = fn() => json_decode(preg_match('!<script type="application/ld\+json">(.*?)</script>!s', $this->kirby->site()->homePage()->render(), $m) ? $m[1] : 'null', true);
 
         $this->assertArrayNotHasKey('jobTitle', $person());
         $this->assertArrayNotHasKey('worksFor', $person());
 
-        $this->kirby->impersonate('kirby', fn () => $this->kirby->page('about')->update(['jobtitle' => 'CTO', 'employer' => 'roadsurfer', 'employerurl' => 'https://roadsurfer.com']));
+        $this->kirby->impersonate('kirby', fn() => $this->kirby->page('about')->update(['jobtitle' => 'CTO', 'employer' => 'roadsurfer', 'employerurl' => 'https://roadsurfer.com']));
         $this->kirby->cache('pages')->flush();
 
         $this->assertSame('CTO', $person()['jobTitle']);

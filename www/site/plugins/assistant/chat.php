@@ -49,7 +49,7 @@ TXT;
 /** The prompt from Website › Assistent, or null: then the assistant is off. */
 function blog_assistant_prompt(): ?string
 {
-    $prompt = trim((string)site()->content()->get('assistantPrompt')->value());
+    $prompt = trim((string) site()->content()->get('assistantPrompt')->value());
     return $prompt === '' ? null : $prompt;
 }
 
@@ -64,7 +64,7 @@ function blog_assistant_system(string $prompt): array
 /** The prompt the chat was started with: its frozen system text without the fixed rules. */
 function blog_assistant_frozen_prompt(array $chat): string
 {
-    $text = (string)($chat['system'][0]['text'] ?? '');
+    $text = (string) ($chat['system'][0]['text'] ?? '');
     return str_starts_with($text, BLOG_ASSISTANT_SAFETY . "\n\n") ? substr($text, strlen(BLOG_ASSISTANT_SAFETY) + 2) : $text;
 }
 
@@ -145,7 +145,7 @@ function blog_assistant_notes(): array
 /** A line Claude gets with Sven's next message, such as a decision on a card. */
 function blog_assistant_note(string $note): void
 {
-    blog_assistant_update(BLOG_ASSISTANT_SESSION . '.notes', blog_assistant_notes(...), fn (array $notes) => [...$notes, $note]);
+    blog_assistant_update(BLOG_ASSISTANT_SESSION . '.notes', blog_assistant_notes(...), fn(array $notes) => [...$notes, $note]);
 }
 
 /**
@@ -159,7 +159,7 @@ function blog_assistant_image_load(array $chat): array
     $walk = function (array $blocks) use (&$walk, &$files): void {
         foreach ($blocks as $block) {
             if (($block['type'] ?? '') === 'blog_image') {
-                $files[] = (string)$block['file'];
+                $files[] = (string) $block['file'];
             } elseif (($block['type'] ?? '') === 'tool_result' && is_array($block['content'] ?? null)) {
                 $walk($block['content']);
             }
@@ -177,7 +177,7 @@ function blog_assistant_image_load(array $chat): array
             $count++;
         }
     }
-    $bytes = array_sum(array_map(fn ($file) => blog_uploads_base64(blog_uploads_size($file)), $files));
+    $bytes = array_sum(array_map(fn($file) => blog_uploads_base64(blog_uploads_size($file)), $files));
     return ['count' => $count, 'bytes' => $bytes];
 }
 
@@ -308,7 +308,7 @@ function blog_assistant_send(string $text, ?string $context = null, bool $mine =
         $chat = blog_assistant_turn_end($chat, 'ok');
     }
     // The notes that went with the message; a click during the round added its own after them.
-    blog_assistant_update(BLOG_ASSISTANT_SESSION . '.notes', blog_assistant_notes(...), fn (array $now) => array_slice($now, array_slice($now, 0, count($notes)) === $notes ? count($notes) : 0));
+    blog_assistant_update(BLOG_ASSISTANT_SESSION . '.notes', blog_assistant_notes(...), fn(array $now) => array_slice($now, array_slice($now, 0, count($notes)) === $notes ? count($notes) : 0));
     return blog_assistant_keep($chat);
 }
 
@@ -347,7 +347,7 @@ function blog_assistant_error(Throwable $e): BlogAssistantError
  */
 function blog_assistant_keep(array $chat): array
 {
-    return blog_assistant_update(BLOG_ASSISTANT_SESSION, blog_assistant_load(...), fn (array $current) => $current['run'] === $chat['run'] ? $chat : $current);
+    return blog_assistant_update(BLOG_ASSISTANT_SESSION, blog_assistant_load(...), fn(array $current) => $current['run'] === $chat['run'] ? $chat : $current);
 }
 
 /** Runs the next round of a tool loop. */
@@ -420,7 +420,7 @@ function blog_assistant_round(array $chat): array
     $content = $response['content'] ?? [];
     $chat['messages'][] = ['role' => 'assistant', 'content' => $content];
     // Before the tools run: a card of this round may link to a source of it.
-    $answer = implode(' ', array_column(array_filter($content, fn ($block) => $block['type'] === 'text'), 'text'));
+    $answer = implode(' ', array_column(array_filter($content, fn($block) => $block['type'] === 'text'), 'text'));
     $sources = blog_assistant_sources($content, $answer);
     foreach ($sources['urls'] as $url) {
         $chat['sources'][$url] = true;
@@ -499,7 +499,7 @@ function blog_assistant_sources(array $content, string $answer): array
         if ($block['type'] === 'web_search_tool_result' && is_array($block['content']) && !isset($block['content']['error_code'])) {
             foreach ($block['content'] as $result) {
                 if (isset($result['url']) && preg_match('#^https?://#i', $result['url'])) {
-                    $found[$result['url']] ??= ['url' => $result['url'], 'title' => trim((string)($result['title'] ?? '')) ?: $result['url']];
+                    $found[$result['url']] ??= ['url' => $result['url'], 'title' => trim((string) ($result['title'] ?? '')) ?: $result['url']];
                     $urls[$result['url']] = true;
                 }
             }
@@ -507,7 +507,7 @@ function blog_assistant_sources(array $content, string $answer): array
         // Sources of a web search come as citations on the text blocks.
         foreach ($block['citations'] ?? [] as $cite) {
             if (isset($cite['url']) && preg_match('#^https?://#i', $cite['url'])) {
-                $title = trim((string)($cite['title'] ?? ''));
+                $title = trim((string) ($cite['title'] ?? ''));
                 $shown[$cite['url']] = ['url' => $cite['url'], 'title' => $title === '' ? $cite['url'] : $title];
                 $urls[$cite['url']] = true;
             }
@@ -515,7 +515,7 @@ function blog_assistant_sources(array $content, string $answer): array
     }
     if ($shown === []) {
         foreach ($found as $url => $result) {
-            $host = preg_replace('/^www\./', '', (string)parse_url($url, PHP_URL_HOST));
+            $host = preg_replace('/^www\./', '', (string) parse_url($url, PHP_URL_HOST));
             $name = explode('.', $host)[0];
             if ($host !== '' && (stripos($answer, $host) !== false || ($name !== '' && strlen($name) > 3 && stripos($answer, $name) !== false))) {
                 $shown[$url] = $result;
@@ -538,7 +538,7 @@ function blog_assistant_tool(array $chat, array $block, array $results = []): ar
 {
     $name = $block['name'];
     $input = $block['input'] ?? [];
-    $result = fn ($content, bool $error = false) => ['type' => 'tool_result', 'tool_use_id' => $block['id'], 'content' => $content] + ($error ? ['is_error' => true] : []);
+    $result = fn($content, bool $error = false) => ['type' => 'tool_result', 'tool_use_id' => $block['id'], 'content' => $content] + ($error ? ['is_error' => true] : []);
 
     if (str_starts_with($name, 'propose_')) {
         $proposal = blog_assistant_propose($chat, $name, $input);
@@ -550,11 +550,11 @@ function blog_assistant_tool(array $chat, array $block, array $results = []): ar
         return ['chat' => $chat, 'result' => $result('The proposal is shown to the user as a card. The user decides.'), 'progress' => null, 'choice' => false];
     }
     if ($name === 'ask_choice') {
-        $chat['items'][] = ['type' => 'choice', 'question' => (string)$input['question'], 'options' => array_values(array_map('strval', $input['options']))];
+        $chat['items'][] = ['type' => 'choice', 'question' => (string) $input['question'], 'options' => array_values(array_map('strval', $input['options']))];
         return ['chat' => $chat, 'result' => $result('The options are shown to the user. The pick comes as the next message.'), 'progress' => null, 'choice' => true];
     }
     $read = blog_assistant_read($name, $input, blog_assistant_image_load(['messages' => [...$chat['messages'], ['role' => 'user', 'content' => $results]]] + $chat));
-    $chat['images'] += count(array_filter($read, fn ($c) => $c['type'] === 'blog_image'));
+    $chat['images'] += count(array_filter($read, fn($c) => $c['type'] === 'blog_image'));
     return ['chat' => $chat, 'result' => $result($read), 'progress' => blog_assistant_progress($name), 'choice' => false];
 }
 

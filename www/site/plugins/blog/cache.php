@@ -16,12 +16,12 @@ class BlogFileCache extends FileCache
 {
     public function set(string $key, $value, int $minutes = 0): bool
     {
-        return $this->locked(LOCK_SH, fn () => parent::set($key, $value, $minutes));
+        return $this->locked(LOCK_SH, fn() => parent::set($key, $value, $minutes));
     }
 
     public function flush(): bool
     {
-        return $this->locked(LOCK_EX, fn () => parent::flush());
+        return $this->locked(LOCK_EX, fn() => parent::flush());
     }
 
     private function locked(int $mode, Closure $action): bool

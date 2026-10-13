@@ -88,8 +88,8 @@ function blog_canonical(Page $page, string $path): Page|Response
 {
     $kirby = $page->kirby();
     $url = $page->url();
-    $own = (string)parse_url($url, PHP_URL_PATH);
-    $request = (string)parse_url((string)$kirby->environment()->get('REQUEST_URI'), PHP_URL_PATH);
+    $own = (string) parse_url($url, PHP_URL_PATH);
+    $request = (string) parse_url((string) $kirby->environment()->get('REQUEST_URI'), PHP_URL_PATH);
     if (trim($own, '/') === $path && ($request === '' || $request === $own)) {
         return $page;
     }

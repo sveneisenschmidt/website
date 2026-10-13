@@ -43,6 +43,6 @@ final class RedirectTest extends IntegrationTestCase
         $response = TestSite::app($this->root, $this->options, ['server' => ['REQUEST_URI' => $uri]])->render();
         $this->assertInstanceOf(Response::class, $response);
         $this->assertSame(301, $response->code(), "$uri $message");
-        $this->assertSame($location, (string)$response->header('Location'), "$uri $message");
+        $this->assertSame($location, (string) $response->header('Location'), "$uri $message");
     }
 }

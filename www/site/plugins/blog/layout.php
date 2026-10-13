@@ -37,14 +37,14 @@ function blog_jsonld(Page $page, array $meta): ?array
     $home = $page->site()->url() . '/';
     if ($page->isHomePage()) {
         $about = page('about');
-        $employer = (string)$about?->employer()->value();
+        $employer = (string) $about?->employer()->value();
         return array_filter([
             '@context' => 'https://schema.org',
             '@type' => 'Person',
             'name' => BLOG_SITE['author'],
             'url' => $home,
-            'jobTitle' => (string)$about?->jobtitle()->value(),
-            'worksFor' => $employer === '' ? null : array_filter(['@type' => 'Organization', 'name' => $employer, 'url' => (string)$about->employerurl()->value()]),
+            'jobTitle' => (string) $about?->jobtitle()->value(),
+            'worksFor' => $employer === '' ? null : array_filter(['@type' => 'Organization', 'name' => $employer, 'url' => (string) $about->employerurl()->value()]),
             'sameAs' => [BLOG_SITE['githubUrl'], BLOG_SITE['linkedinUrl'], BLOG_SITE['stravaUrl']],
         ]);
     }
@@ -105,7 +105,7 @@ function blog_css(): string
     // none around { } ; and ",". Other spaces stay: one before ":" can be
     // a descendant selector, calc() needs the ones around + and -.
     $string = '"(?:[^"\\\\]|\\\\.)*"|\'(?:[^\'\\\\]|\\\\.)*\'';
-    $css = preg_replace_callback("!($string)|/\*.*?\*/!s", fn (array $m) => $m[1] ?? '', $css);
+    $css = preg_replace_callback("!($string)|/\*.*?\*/!s", fn(array $m) => $m[1] ?? '', $css);
     $parts = preg_split("!($string)!s", $css, -1, PREG_SPLIT_DELIM_CAPTURE);
     foreach ($parts as $i => $part) {
         if ($i % 2 === 0) {
@@ -137,7 +137,7 @@ function blog_scripts(Page $page): array
 /** A script under assets/js, for a script tag. */
 function blog_js(string $name): string
 {
-    return (string)F::read(kirby()->root('assets') . "/js/$name.js");
+    return (string) F::read(kirby()->root('assets') . "/js/$name.js");
 }
 
 /** URL of a file under assets/ with its time: a changed file gets a new URL. */
@@ -149,7 +149,7 @@ function blog_asset(string $path): string
 /** The name under which a cover moves between pages (view transition). */
 function blog_vt_name(Page $post): string
 {
-    return 'post-' . preg_replace('/[^a-zA-Z0-9-]/', '-', trim((string)parse_url($post->url(), PHP_URL_PATH), '/'));
+    return 'post-' . preg_replace('/[^a-zA-Z0-9-]/', '-', trim((string) parse_url($post->url(), PHP_URL_PATH), '/'));
 }
 
 /**
@@ -158,7 +158,7 @@ function blog_vt_name(Page $post): string
  */
 function blog_picture(File $file): array
 {
-    $srcset = array_map(fn (int $width) => blog_wide($file, $width)->url() . " {$width}w", [600, 1000, 1600]);
+    $srcset = array_map(fn(int $width) => blog_wide($file, $width)->url() . " {$width}w", [600, 1000, 1600]);
     // fitWidth() changes its object: a copy, so the file keeps its own size.
     $size = (clone $file->dimensions())->fitWidth(1600);
     return ['src' => blog_wide($file, 1600)->url(), 'srcset' => implode(', ', $srcset), 'width' => $size->width(), 'height' => $size->height()];

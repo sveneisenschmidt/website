@@ -47,6 +47,6 @@ $context = stream_context_create(['http' => [
     'timeout' => 60,
 ]]);
 @file_get_contents('https://api.indexnow.org/indexnow', false, $context);
-$status = (int)(explode(' ', (http_get_last_response_headers() ?? [''])[0])[1] ?? 0);
+$status = (int) (explode(' ', (http_get_last_response_headers() ?? [''])[0])[1] ?? 0);
 echo "IndexNow: HTTP $status\n";
 exit($status >= 200 && $status < 300 ? 0 : 1);

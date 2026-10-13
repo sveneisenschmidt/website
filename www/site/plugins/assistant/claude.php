@@ -51,14 +51,14 @@ final class BlogAssistantError extends RuntimeException
 
 function blog_assistant_key(): ?string
 {
-    $key = trim((string)option('assistantKey', ''));
+    $key = trim((string) option('assistantKey', ''));
     return $key === '' ? null : $key;
 }
 
 /** The model from Website › Assistent, or the default when the saved one is gone. */
 function blog_assistant_model(): string
 {
-    $model = (string)site()->content()->get('assistantModel');
+    $model = (string) site()->content()->get('assistantModel');
     return array_key_exists($model, BLOG_ASSISTANT_MODELS) ? $model : BLOG_ASSISTANT_DEFAULT_MODEL;
 }
 
@@ -98,7 +98,7 @@ function blog_assistant_http(array $body): array
             throw new BlogAssistantError('busy');
         }
         $status = $remote->code();
-        $response = json_decode((string)$remote->content(), true) ?? [];
+        $response = json_decode((string) $remote->content(), true) ?? [];
     }
 
     if ($status === 200) {
@@ -107,13 +107,13 @@ function blog_assistant_http(array $body): array
         }
         // An answer without a list of blocks is no answer: nothing goes into the chat.
         $content = $response['content'] ?? null;
-        if (!is_array($content) || $content === [] || !array_is_list($content) || array_filter($content, fn ($block) => !is_string($block['type'] ?? null)) !== []) {
+        if (!is_array($content) || $content === [] || !array_is_list($content) || array_filter($content, fn($block) => !is_string($block['type'] ?? null)) !== []) {
             error_log('blog assistant: Anthropic 200 without content');
             throw new BlogAssistantError('busy');
         }
         return $response;
     }
-    $message = (string)($response['error']['message'] ?? '');
+    $message = (string) ($response['error']['message'] ?? '');
     error_log('blog assistant: Anthropic ' . $status . ' ' . $message);
     throw new BlogAssistantError(match (true) {
         $status === 401, $status === 403 => 'access',

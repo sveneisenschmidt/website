@@ -6,7 +6,7 @@ $totals = blog_analytics_stats();
 if ($totals === null) {
     return;
 }
-$plural = fn (int $n, string $word) => $n . ' ' . $word . ($n === 1 ? '' : 's');
+$plural = fn(int $n, string $word) => $n . ' ' . $word . ($n === 1 ? '' : 's');
 ?>
 <div id="site-stats">
 <h4>Statistics</h4>

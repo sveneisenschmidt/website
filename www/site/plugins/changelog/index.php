@@ -135,8 +135,8 @@ function blog_changelog_diff(ModelWithContent $old, ModelWithContent $new): arra
         if (in_array($key, BLOG_CHANGELOG_SKIP, true)) {
             continue;
         }
-        $from = (string)($a[$key] ?? '');
-        $to = (string)($b[$key] ?? '');
+        $from = (string) ($a[$key] ?? '');
+        $to = (string) ($b[$key] ?? '');
         if ($from === $to) {
             continue;
         }
@@ -176,7 +176,7 @@ function blog_changelog_diff(ModelWithContent $old, ModelWithContent $new): arra
         }
         // A status change sets or clears the number itself: not a second change.
         if ($old->num() !== $new->num() && $old->status() === $new->status()) {
-            $changes[] = ['field' => 'num', 'label' => 'Reihenfolge', 'old' => (string)$old->num(), 'new' => (string)$new->num()];
+            $changes[] = ['field' => 'num', 'label' => 'Reihenfolge', 'old' => (string) $old->num(), 'new' => (string) $new->num()];
         }
     }
     if ($old instanceof File && $new instanceof File && $old->filename() !== $new->filename()) {
@@ -205,10 +205,10 @@ function blog_changelog_list(string $value): ?array
     }
     return array_map(function ($item) {
         if (is_array($item)) {
-            $first = array_filter($item, fn ($v) => is_scalar($v) && (string)$v !== '');
-            return (string)(reset($first) ?: '');
+            $first = array_filter($item, fn($v) => is_scalar($v) && (string) $v !== '');
+            return (string) (reset($first) ?: '');
         }
-        $item = (string)$item;
+        $item = (string) $item;
         $model = Uuid::is($item) ? Uuid::for($item)?->model() : (kirby()->file($item) ?? kirby()->page($item));
         return match (true) {
             $model instanceof File => blog_changelog_title($model),
@@ -236,20 +236,20 @@ function blog_changelog_entries(int $limit = 500): array
 
 App::plugin('sveneisenschmidt/changelog', [
     'hooks' => [
-        'page.*:after' => fn (Event $event) => blog_changelog_event($event),
-        'file.*:after' => fn (Event $event) => blog_changelog_event($event),
-        'site.*:after' => fn (Event $event) => blog_changelog_event($event),
-        'user.*:after' => fn (Event $event) => blog_changelog_event($event),
+        'page.*:after' => fn(Event $event) => blog_changelog_event($event),
+        'file.*:after' => fn(Event $event) => blog_changelog_event($event),
+        'site.*:after' => fn(Event $event) => blog_changelog_event($event),
+        'user.*:after' => fn(Event $event) => blog_changelog_event($event),
     ],
     'areas' => [
-        'verlauf' => fn () => [
+        'verlauf' => fn() => [
             'label' => 'Verlauf',
             'icon' => 'clock',
             'menu' => true,
             'link' => 'verlauf',
             'views' => [[
                 'pattern' => 'verlauf',
-                'action' => fn () => [
+                'action' => fn() => [
                     'component' => 'k-blog-changelog-view',
                     'title' => 'Verlauf',
                     'props' => ['entries' => blog_changelog_entries()],

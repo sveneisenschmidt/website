@@ -39,13 +39,13 @@ function blog_assistant_tools(): array
     $str = ['type' => 'string'];
     $num = ['type' => 'number'];
     $bool = ['type' => 'boolean'];
-    $object = fn (array $properties) => [
+    $object = fn(array $properties) => [
         'type' => 'object',
         'properties' => $properties,
         'required' => array_keys($properties),
         'additionalProperties' => false,
     ];
-    $tool = fn (string $name, string $description, array $properties) => [
+    $tool = fn(string $name, string $description, array $properties) => [
         'name' => $name,
         'description' => $description,
         'input_schema' => $object($properties),
@@ -132,10 +132,10 @@ function blog_assistant_progress(string $tool): ?string
 /** Posts by type, text and date (find_posts). */
 function blog_assistant_find_posts(array $input): array
 {
-    $type = (string)$input['type'];
-    $query = mb_strtolower(trim((string)$input['query']));
-    $from = trim((string)$input['from']);
-    $to = trim((string)$input['to']);
+    $type = (string) $input['type'];
+    $query = mb_strtolower(trim((string) $input['query']));
+    $from = trim((string) $input['from']);
+    $to = trim((string) $input['to']);
     $found = [];
     foreach (BLOG_TYPES as $template => $info) {
         if ($type !== '' && $type !== $template) {
@@ -150,7 +150,7 @@ function blog_assistant_find_posts(array $input): array
             if (($from !== '' && $day < $from) || ($to !== '' && $day > $to)) {
                 continue;
             }
-            $text = implode("\n", [$page->slug(), ...array_map(fn ($f) => blog_assistant_current($page, $f), ['title', 'intro', 'text'])]);
+            $text = implode("\n", [$page->slug(), ...array_map(fn($f) => blog_assistant_current($page, $f), ['title', 'intro', 'text'])]);
             if ($query !== '' && !str_contains(mb_strtolower($text), $query)) {
                 continue;
             }
@@ -164,7 +164,7 @@ function blog_assistant_find_posts(array $input): array
             ];
         }
     }
-    usort($found, fn ($a, $b) => strcmp($b['date'], $a['date']));
+    usort($found, fn($a, $b) => strcmp($b['date'], $a['date']));
     return ['total' => count($found), 'posts' => array_slice($found, 0, BLOG_ASSISTANT_FIND_LIMIT)];
 }
 
@@ -178,7 +178,7 @@ function blog_assistant_post_data(Page $page): array
         }
         $value = blog_assistant_current($page, $name);
         if ($field['type'] === 'files') {
-            $value = array_map(fn ($ref) => blog_assistant_file_ref($page, (string)$ref)?->filename() ?? (string)$ref, blog_assistant_list($value));
+            $value = array_map(fn($ref) => blog_assistant_file_ref($page, (string) $ref)?->filename() ?? (string) $ref, blog_assistant_list($value));
         }
         $fields[$name] = ['label' => $field['label'], 'type' => $field['type'], 'value' => $value];
     }
@@ -190,7 +190,7 @@ function blog_assistant_post_data(Page $page): array
         }
         $camera = [];
         foreach (BLOG_EXIF_FIELDS as $key) {
-            $value = (string)$file->content()->get($key)->value();
+            $value = (string) $file->content()->get($key)->value();
             if ($value !== '') {
                 $camera[$key] = $value;
             }
@@ -221,10 +221,10 @@ function blog_assistant_post_data(Page $page): array
  */
 function blog_assistant_view_photo(array $input, array $load): array
 {
-    $ref = trim((string)$input['photo']);
+    $ref = trim((string) $input['photo']);
     $crop = $input['crop'];
-    $whole = (float)$crop['x'] <= 0 && (float)$crop['y'] <= 0 && (float)$crop['w'] >= 1 && (float)$crop['h'] >= 1;
-    $text = fn (array $data) => ['type' => 'text', 'text' => json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)];
+    $whole = (float) $crop['x'] <= 0 && (float) $crop['y'] <= 0 && (float) $crop['w'] >= 1 && (float) $crop['h'] >= 1;
+    $text = fn(array $data) => ['type' => 'text', 'text' => json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)];
     $full = ['error' => 'This chat holds ' . BLOG_ASSISTANT_IMAGES . ' images, as many as it takes. view_photo shows no more; the user can start a new chat.'];
     $heavy = ['error' => 'The images of this chat would make a request to Claude too large. view_photo shows no more; the user can start a new chat.'];
     if ($load['count'] >= BLOG_ASSISTANT_IMAGES) {
@@ -253,7 +253,7 @@ function blog_assistant_view_photo(array $input, array $load): array
     if ($file === null || $file->template() !== 'image') {
         return [$text(['error' => 'No image found. read_post lists the file ids.'])];
     }
-    $orientation = $file->extension() === 'jpg' || $file->extension() === 'jpeg' ? (int)((@exif_read_data($file->root()) ?: [])['Orientation'] ?? 1) : 1;
+    $orientation = $file->extension() === 'jpg' || $file->extension() === 'jpeg' ? (int) ((@exif_read_data($file->root()) ?: [])['Orientation'] ?? 1) : 1;
     $name = blog_uploads_image($file->root(), $orientation, $whole ? null : $crop);
     return $fits($name) ? [
         ['type' => 'blog_image', 'file' => $name],
@@ -267,12 +267,12 @@ function blog_assistant_view_photo(array $input, array $load): array
  */
 function blog_assistant_read(string $name, array $input, array $load = ['count' => 0, 'bytes' => 0]): array
 {
-    $json = fn ($data) => [['type' => 'text', 'text' => json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE)]];
+    $json = fn($data) => [['type' => 'text', 'text' => json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE)]];
     switch ($name) {
         case 'find_posts':
             return $json(blog_assistant_find_posts($input));
         case 'read_post':
-            $page = blog_assistant_find((string)$input['post']);
+            $page = blog_assistant_find((string) $input['post']);
             return $json($page === null ? ['error' => BLOG_ASSISTANT_NO_POST] : blog_assistant_post_data($page));
         case 'view_photo':
             return blog_assistant_view_photo($input, $load);

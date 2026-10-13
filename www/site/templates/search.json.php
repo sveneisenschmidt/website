@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The results of /search.json?q= for search.js: the result list of the
  * search page as HTML (snippets/search-results.php).

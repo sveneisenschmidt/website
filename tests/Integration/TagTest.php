@@ -10,7 +10,7 @@ final class TagTest extends IntegrationTestCase
     public function testImageIsAFigureWithExifRows(): void
     {
         $file = $this->upload(__DIR__ . '/../fixtures/exif.jpg', 'a.jpg');
-        $file = $this->kirby->impersonate('kirby', fn () => $file->update([
+        $file = $this->kirby->impersonate('kirby', fn() => $file->update([
             'alt' => 'Fox & wagtail',
             'caption' => 'Taken on [the roof](https://example.com) of the old mill',
             'photographer' => 'Nadine',
@@ -36,13 +36,13 @@ final class TagTest extends IntegrationTestCase
     {
         $file = $this->upload($this->jpeg(8, 8), 'b.jpg');
         $exif = function (array $values) use (&$file) {
-            $file = $this->kirby->impersonate('kirby', fn () => $file->update($values));
+            $file = $this->kirby->impersonate('kirby', fn() => $file->update($values));
             return blog_exif_rows($file);
         };
 
         $this->assertSame(
             ['Camera' => 'Canon EOS R5', 'Lens' => 'RF100-500mm', 'Focal length' => '35mm', 'Aperture' => 'ƒ/8', 'Exposure' => '1/1000s · ISO 800'],
-            $exif(['camera' => 'Canon EOS R5', 'lens' => 'RF100-500mm', 'focal' => '35.4', 'aperture' => '8', 'shutter' => '1/1000', 'iso' => '800'])
+            $exif(['camera' => 'Canon EOS R5', 'lens' => 'RF100-500mm', 'focal' => '35.4', 'aperture' => '8', 'shutter' => '1/1000', 'iso' => '800']),
         );
         $this->assertSame(['Aperture' => 'ƒ/7.1', 'Exposure' => '0.8s'], $exif(['camera' => '', 'lens' => '', 'focal' => '', 'aperture' => '7.1', 'shutter' => '0.8', 'iso' => '']));
         $this->assertSame(['Exposure' => '30.0s'], $exif(['aperture' => '', 'shutter' => '30']));
@@ -52,7 +52,7 @@ final class TagTest extends IntegrationTestCase
     public function testTheCoverMovesBetweenPages(): void
     {
         $file = $this->upload($this->jpeg(8, 8), 'c.jpg');
-        $this->kirby->impersonate('kirby', fn () => $this->post->update(['cover' => [$file->uuid()->toString()]]));
+        $this->kirby->impersonate('kirby', fn() => $this->post->update(['cover' => [$file->uuid()->toString()]]));
 
         $html = blog_html('(image: c.jpg)', $this->kirby->page('photos/test-photo'));
 
@@ -63,7 +63,7 @@ final class TagTest extends IntegrationTestCase
     {
         $cover = $this->upload($this->jpeg(8, 8), 'c.jpg');
         $this->upload($this->jpeg(8, 8), 'e.jpg');
-        $this->kirby->impersonate('kirby', fn () => $this->post->update(['cover' => [$cover->uuid()->toString()]]));
+        $this->kirby->impersonate('kirby', fn() => $this->post->update(['cover' => [$cover->uuid()->toString()]]));
         $post = $this->kirby->page('photos/test-photo');
 
         $this->assertStringContainsString("loading=\"eager\"\nfetchpriority=\"high\"\ndecoding=\"async\"", blog_html('(image: c.jpg)', $post));
@@ -73,7 +73,7 @@ final class TagTest extends IntegrationTestCase
     public function testImgclassIsAPlainMarkdownImage(): void
     {
         $file = $this->upload($this->jpeg(8, 8), 'd.jpg');
-        $this->kirby->impersonate('kirby', fn () => $file->update(['alt' => 'Sven']));
+        $this->kirby->impersonate('kirby', fn() => $file->update(['alt' => 'Sven']));
 
         $html = blog_html("(image: d.jpg imgclass: inline)\n\nHello", $this->post);
 
@@ -83,12 +83,12 @@ final class TagTest extends IntegrationTestCase
     public function testMapWithPointsAndRoute(): void
     {
         $trip = $this->post('trips', 'trip', 'a-trip', 'A Trip');
-        $route = $this->kirby->impersonate('kirby', fn () => $trip->createFile([
+        $route = $this->kirby->impersonate('kirby', fn() => $trip->createFile([
             'source' => $this->write('route.json', '{"type":"LineString","coordinates":[[12.24,51.12],[12.25,51.13]]}'),
             'filename' => 'route.json',
             'template' => 'route',
         ]));
-        $trip = $this->kirby->impersonate('kirby', fn () => $trip->update([
+        $trip = $this->kirby->impersonate('kirby', fn() => $trip->update([
             'route' => [$route->uuid()->toString()],
             'mappoints' => [['label' => 'Pegau', 'lat' => '51.1660', 'lon' => '12.2480'], ['label' => "St Michael's <b>Mount</b>", 'lat' => '50.1', 'lon' => '-5.47']],
             'mapzoom' => 'true',

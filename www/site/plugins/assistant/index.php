@@ -42,10 +42,10 @@ function blog_assistant_api(Closure $action): array
 function blog_assistant_upload(array $files): array
 {
     $file = count($files) === 1 ? reset($files) : null;
-    if (!is_array($file) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_file((string)$file['tmp_name'])) {
+    if (!is_array($file) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_file((string) $file['tmp_name'])) {
         throw new BlogAssistantError('upload', 'Eine Datei pro Anfrage, und sie kam nicht an. Nichts geändert.');
     }
-    blog_uploads_accept((string)$file['tmp_name'], (string)$file['name']);
+    blog_uploads_accept((string) $file['tmp_name'], (string) $file['name']);
     return blog_assistant_load();
 }
 
@@ -70,7 +70,7 @@ App::plugin('sveneisenschmidt/assistant', [
                 'views' => [[
                     'pattern' => 'assistent',
                     'action' => function () {
-                        $page = blog_assistant_find((string)get('page', ''));
+                        $page = blog_assistant_find((string) get('page', ''));
                         return [
                             'component' => 'k-blog-assistant-view',
                             'title' => 'Assistent',
@@ -83,14 +83,14 @@ App::plugin('sveneisenschmidt/assistant', [
                 ], [
                     // Protokoll: who asked when, how long, which tools; no content.
                     'pattern' => 'assistent/protokoll',
-                    'action' => fn () => [
+                    'action' => fn() => [
                         'component' => 'k-blog-assistant-log-view',
                         'title' => 'Protokoll · Assistent',
                         'breadcrumb' => [['label' => 'Protokoll', 'link' => 'assistent/protokoll']],
                         'props' => blog_assistant_log_view(),
                     ],
                 ]],
-                'buttons' => ['page.assistant' => fn (Page $page) => blog_assistant_button($page)],
+                'buttons' => ['page.assistant' => fn(Page $page) => blog_assistant_button($page)],
             ];
         },
     ],
@@ -102,33 +102,33 @@ App::plugin('sveneisenschmidt/assistant', [
                 'action' => function () {
                     $body = $this->requestBody();
                     // A pick in a choice comes as its number, never as text.
-                    return blog_assistant_api(fn () => isset($body['choice'])
-                        ? blog_assistant_choose((int)$body['choice'], $body['page'] ?? null)
-                        : blog_assistant_send((string)($body['text'] ?? ''), $body['page'] ?? null));
+                    return blog_assistant_api(fn() => isset($body['choice'])
+                        ? blog_assistant_choose((int) $body['choice'], $body['page'] ?? null)
+                        : blog_assistant_send((string) ($body['text'] ?? ''), $body['page'] ?? null));
                 },
             ],
             [
                 'pattern' => 'blog-assistant/next',
                 'method' => 'POST',
-                'action' => fn () => blog_assistant_api(fn () => blog_assistant_next()),
+                'action' => fn() => blog_assistant_api(fn() => blog_assistant_next()),
             ],
             [
                 'pattern' => 'blog-assistant/stop',
                 'method' => 'POST',
-                'action' => fn () => blog_assistant_api(fn () => blog_assistant_stop()),
+                'action' => fn() => blog_assistant_api(fn() => blog_assistant_stop()),
             ],
             [
                 'pattern' => 'blog-assistant/reset',
                 'method' => 'POST',
-                'action' => fn () => blog_assistant_api(fn () => blog_assistant_reset()),
+                'action' => fn() => blog_assistant_api(fn() => blog_assistant_reset()),
             ],
             [
                 'pattern' => 'blog-assistant/decide',
                 'method' => 'POST',
                 'action' => function () {
                     $body = $this->requestBody();
-                    $version = isset($body['version']) ? (int)$body['version'] : null;
-                    return blog_assistant_api(fn () => blog_assistant_decide((string)($body['id'] ?? ''), (string)($body['action'] ?? ''), $version));
+                    $version = isset($body['version']) ? (int) $body['version'] : null;
+                    return blog_assistant_api(fn() => blog_assistant_decide((string) ($body['id'] ?? ''), (string) ($body['action'] ?? ''), $version));
                 },
             ],
             [
@@ -136,13 +136,13 @@ App::plugin('sveneisenschmidt/assistant', [
                 'method' => 'POST',
                 'action' => function () {
                     $files = $this->requestFiles() ?? [];
-                    return blog_assistant_api(fn () => blog_assistant_upload($files));
+                    return blog_assistant_api(fn() => blog_assistant_upload($files));
                 },
             ],
             [
                 'pattern' => 'blog-assistant/check',
                 'method' => 'POST',
-                'action' => fn () => blog_assistant_check(),
+                'action' => fn() => blog_assistant_check(),
             ],
         ],
     ],
@@ -150,7 +150,7 @@ App::plugin('sveneisenschmidt/assistant', [
         // Website › Assistent: is the key there, and does Claude answer?
         'assistant-access' => [
             'computed' => [
-                'hasKey' => fn () => blog_assistant_key() !== null,
+                'hasKey' => fn() => blog_assistant_key() !== null,
             ],
         ],
     ],

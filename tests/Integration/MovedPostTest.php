@@ -17,7 +17,7 @@ final class MovedPostTest extends IntegrationTestCase
 
     public function testANewDateLeavesARedirect(): void
     {
-        $this->kirby->impersonate('kirby', fn () => $this->post->update(['date' => '2026-10-08 08:00:00']));
+        $this->kirby->impersonate('kirby', fn() => $this->post->update(['date' => '2026-10-08 08:00:00']));
 
         $this->assertSame([['from' => '/2026-10-07-test-photo/', 'to' => '/2026-10-08-test-photo/', 'rss' => 'keep']], blog_redirects());
     }
@@ -57,14 +57,14 @@ final class MovedPostTest extends IntegrationTestCase
     public function testDraftsAndOtherChangesLeaveNone(): void
     {
         $draft = $this->post('notes', 'note', 'a-draft', 'A Draft', 'draft');
-        $this->kirby->impersonate('kirby', fn () => $draft->changeSlug('still-a-draft'));
-        $this->kirby->impersonate('kirby', fn () => $this->post->update(['title' => 'New Title']));
+        $this->kirby->impersonate('kirby', fn() => $draft->changeSlug('still-a-draft'));
+        $this->kirby->impersonate('kirby', fn() => $this->post->update(['title' => 'New Title']));
 
         $this->assertSame([], blog_redirects());
     }
 
     private function rename(string $slug): void
     {
-        $this->post = $this->kirby->impersonate('kirby', fn () => $this->kirby->page($this->post->id())->changeSlug($slug));
+        $this->post = $this->kirby->impersonate('kirby', fn() => $this->kirby->page($this->post->id())->changeSlug($slug));
     }
 }

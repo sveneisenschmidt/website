@@ -8,7 +8,7 @@
 if ($cover = $post->cover()->toFile()):
     $one = blog_square($cover, 48, 80);
     $two = blog_square($cover, 96, 80);
-?>
+    ?>
 <span class="thumb">
 <img src="<?= $one->url() ?>" srcset="<?= $one->url() ?> 1x, <?= $two->url() ?> 2x" width="48" height="48" alt="" loading="lazy" decoding="async">
 </span>

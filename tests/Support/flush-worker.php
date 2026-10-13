@@ -18,7 +18,7 @@ set_error_handler(function (int $severity, string $message, string $file, int $l
 
 try {
     $cache = TestSite::app($root)->cache('pages');
-    for ($i = 0; $i < (int)$rounds; $i++) {
+    for ($i = 0; $i < (int) $rounds; $i++) {
         $cache->set('page-' . getmypid() . '-' . $i, ['html' => 'x']);
         $cache->flush();
     }

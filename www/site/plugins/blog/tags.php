@@ -13,26 +13,26 @@ use Kirby\Text\KirbyTag;
 /** The EXIF rows of an image: label => value, only the values the file has. */
 function blog_exif_rows(File $file): array
 {
-    $value = fn (string $key) => trim((string)$file->content()->get($key)->value());
+    $value = fn(string $key) => trim((string) $file->content()->get($key)->value());
     $exposure = '';
     if (($shutter = $value('shutter')) !== '') {
-        $exposure = str_starts_with($shutter, '1/') ? $shutter . 's' : sprintf('%.1fs', (float)$shutter);
+        $exposure = str_starts_with($shutter, '1/') ? $shutter . 's' : sprintf('%.1fs', (float) $shutter);
     }
     if (($iso = $value('iso')) !== '') {
         $exposure = $exposure === '' ? "ISO $iso" : "$exposure · ISO $iso";
     }
     $aperture = $value('aperture');
     if ($aperture !== '') {
-        $f = (float)$aperture;
+        $f = (float) $aperture;
         $aperture = floor($f) === $f ? sprintf('ƒ/%.0f', $f) : sprintf('ƒ/%.1f', $f);
     }
     return array_filter([
         'Camera' => $value('camera'),
         'Lens' => $value('lens'),
-        'Focal length' => $value('focal') === '' ? '' : sprintf('%.0fmm', (float)$value('focal')),
+        'Focal length' => $value('focal') === '' ? '' : sprintf('%.0fmm', (float) $value('focal')),
         'Aperture' => $aperture,
         'Exposure' => $exposure,
-    ], fn ($v) => $v !== '');
+    ], fn($v) => $v !== '');
 }
 
 /** The (image:) tag. With imgclass it is a plain image with that class, without figure and EXIF. */
@@ -57,7 +57,7 @@ function blog_map_tag(KirbyTag $tag): string
     }
     $points = [];
     foreach ($page->mappoints()->toStructure() as $point) {
-        $points[] = ['label' => $point->label()->value(), 'lat' => (float)$point->lat()->value(), 'lon' => (float)$point->lon()->value()];
+        $points[] = ['label' => $point->label()->value(), 'lat' => (float) $point->lat()->value(), 'lon' => (float) $point->lon()->value()];
     }
     $route = $page->route()->toFile()?->read() ?? '';
     return '<div class="map"' . ($page->mapzoom()->toBool() ? ' data-zoomable="true"' : '')

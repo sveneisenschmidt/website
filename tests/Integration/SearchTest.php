@@ -21,7 +21,7 @@ final class SearchTest extends IntegrationTestCase
             $this->post = $this->post->update(['text' => "A grey heron by the pond.\n\n(image: heron.jpg)\n\n[Link](https://example.com/kingfisher)"]);
         });
         $heron = $this->upload($this->jpeg(8, 8), 'heron.jpg');
-        $this->kirby->impersonate('kirby', fn () => $heron->update(['alt' => 'Bird in the reeds']));
+        $this->kirby->impersonate('kirby', fn() => $heron->update(['alt' => 'Bird in the reeds']));
         $this->post('notes', 'note', 'pond-note', 'Pond Note');
     }
 

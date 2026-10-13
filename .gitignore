@@ -40,7 +40,8 @@
 # Assistent: Uploads der Chats, neben www/ und vendor/, nie in Git
 /storage/
 
-# Lokale Ausgabe: Backups, Restore-Test, PHPUnit
+# Lokale Ausgabe: Backups, Restore-Test, PHPUnit, Formatierer
 /backups/
 /.restore-test/
 /.phpunit.cache/
+/.php-cs-fixer.cache

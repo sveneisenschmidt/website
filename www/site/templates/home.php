@@ -13,7 +13,8 @@
 <h2>Featured photo</h2>
 <a class="far" href="/archive/photos/">All photos</a>
 </div>
-<?php if ($lead): $cover = $lead->cover()->toFile(); $picture = blog_picture($cover); ?>
+<?php if ($lead): $cover = $lead->cover()->toFile();
+    $picture = blog_picture($cover); ?>
 <article class="picture">
 <h3><a href="<?= $lead->url() ?>"><?= $lead->title()->esc() ?></a></h3>
 <p class="metadata">

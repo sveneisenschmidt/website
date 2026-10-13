@@ -45,7 +45,7 @@ final class PromptLeakTest extends AssistantTestCase
 
         $this->assertGreaterThan(10, count($outputs));
         foreach ($outputs as $where => $output) {
-            $this->assertStringNotContainsString('PROMPT-CANARY', (string)$output, (string)$where);
+            $this->assertStringNotContainsString('PROMPT-CANARY', (string) $output, (string) $where);
         }
     }
 }

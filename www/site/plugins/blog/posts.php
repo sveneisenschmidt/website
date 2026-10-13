@@ -52,7 +52,7 @@ function blog_is_post(Page $page): bool
 /** The picks with a cover, newest first: the front page shows them. */
 function blog_picks(): Pages
 {
-    return collection('posts')->filter(fn (Page $post) => $post->pick()->toBool() && $post->cover()->toFile() !== null);
+    return collection('posts')->filter(fn(Page $post) => $post->pick()->toBool() && $post->cover()->toFile() !== null);
 }
 
 /**
@@ -104,12 +104,12 @@ function blog_type_line(Page $post, bool $withType = true): string
 {
     if ($post->trip()->isNotEmpty()) {
         $trip = $post->trip()->value();
-        $days = collection('posts')->filter(fn (Page $p) => $p->trip()->value() === $trip)->sortBy('date', 'asc');
+        $days = collection('posts')->filter(fn(Page $p) => $p->trip()->value() === $trip)->sortBy('date', 'asc');
         return sprintf('%s, day %d of %d', ucwords(str_replace('-', ' ', $trip)), $days->indexOf($post) + 1, $days->count());
     }
     return match ($post->intendedTemplate()->name()) {
         // Reading time: 213 words a minute, rounded up.
-        'essay' => ($withType ? 'Essay, ' : '') . (int)ceil(blog_words(blog_plain_content($post)) / 213) . ' min',
+        'essay' => ($withType ? 'Essay, ' : '') . (int) ceil(blog_words(blog_plain_content($post)) / 213) . ' min',
         'note' => $withType ? 'Note' : '',
         'photo' => $withType ? 'Photo' : '',
         default => '',

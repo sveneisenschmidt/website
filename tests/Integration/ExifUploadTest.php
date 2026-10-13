@@ -23,7 +23,7 @@ final class ExifUploadTest extends TestCase
     public function testUploadStoresExifAsFileFields(): void
     {
         $kirby = TestSite::app($this->root);
-        $file = $kirby->impersonate('kirby', fn () => $kirby->site()
+        $file = $kirby->impersonate('kirby', fn() => $kirby->site()
             ->createChild(['slug' => 'aika', 'template' => 'photo', 'content' => ['title' => 'Aika']])
             ->createFile([
                 'source' => __DIR__ . '/../fixtures/exif.jpg',
@@ -41,7 +41,7 @@ final class ExifUploadTest extends TestCase
     public function testValueGivenOnCreateWins(): void
     {
         $kirby = TestSite::app($this->root);
-        $file = $kirby->impersonate('kirby', fn () => $kirby->site()
+        $file = $kirby->impersonate('kirby', fn() => $kirby->site()
             ->createChild(['slug' => 'aika', 'template' => 'photo', 'content' => ['title' => 'Aika']])
             ->createFile([
                 'source' => __DIR__ . '/../fixtures/exif.jpg',
@@ -58,11 +58,11 @@ final class ExifUploadTest extends TestCase
         $kirby = TestSite::app($this->root);
         $plain = $this->root . '/plain.jpg';
         imagejpeg(imagecreatetruecolor(8, 8), $plain, 70);
-        $file = $kirby->impersonate('kirby', fn () => $kirby->site()
+        $file = $kirby->impersonate('kirby', fn() => $kirby->site()
             ->createChild(['slug' => 'aika', 'template' => 'photo', 'content' => ['title' => 'Aika']])
             ->createFile(['source' => __DIR__ . '/../fixtures/exif.jpg', 'filename' => 'aika.jpg']));
 
-        $kirby->impersonate('kirby', fn () => $file->replace($plain));
+        $kirby->impersonate('kirby', fn() => $file->replace($plain));
 
         // Read from disk: the new file has no EXIF, so all six fields are gone.
         $meta = array_change_key_case(Txt::decode(file_get_contents($file->root() . '.txt')));

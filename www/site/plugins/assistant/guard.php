@@ -129,7 +129,7 @@ function blog_guard_targets(string $text, array $allowed): ?string
 /** The type of a KirbyText tag when Kirby knows it, else null: "(https://…)" or "(Update: …)" stay text. */
 function blog_guard_tag_type(string $tag): ?string
 {
-    $type = strtolower(trim(substr($tag, 1, (int)strpos($tag, ':') - 1)));
+    $type = strtolower(trim(substr($tag, 1, (int) strpos($tag, ':') - 1)));
     return isset(KirbyTag::$types[$type]) || isset(KirbyTag::$aliases[$type]) ? $type : null;
 }
 
@@ -155,8 +155,8 @@ function blog_guard_tag(string $tag, array $files, bool $map): ?string
         return "The KirbyText tag ($type:) is not allowed. Allowed are (image: file name), (map:) and (link: page://… text: …).";
     }
     $parsed = KirbyTag::parse($tag);
-    $value = trim((string)$parsed->value);
-    $attrs = array_keys(array_filter($parsed->attrs, fn ($v) => trim((string)$v) !== ''));
+    $value = trim((string) $parsed->value);
+    $attrs = array_keys(array_filter($parsed->attrs, fn($v) => trim((string) $v) !== ''));
     if ($type === 'image') {
         if (!in_array($value, $files, true)) {
             return "(image: $value) names no image of this post. Images: " . ($files === [] ? 'none' : implode(', ', $files)) . '.';
@@ -175,7 +175,7 @@ function blog_guard_tag(string $tag, array $files, bool $map): ?string
     if (array_diff($attrs, ['text']) !== []) {
         return '(link:) takes only text: besides the page.';
     }
-    return preg_match(BLOG_GUARD_HTML, (string)($parsed->attrs['text'] ?? '')) ? 'Raw HTML is not allowed.' : null;
+    return preg_match(BLOG_GUARD_HTML, (string) ($parsed->attrs['text'] ?? '')) ? 'Raw HTML is not allowed.' : null;
 }
 
 /** The URLs the (link: page://…) tags of a text render: tag => URL. */
@@ -184,7 +184,7 @@ function blog_guard_page_links(string $text): array
     $urls = [];
     preg_match_all(BLOG_GUARD_TAG, $text, $m);
     foreach ($m[1] as $tag) {
-        if (blog_guard_tag_type($tag) === 'link' && ($page = blog_guard_page(trim((string)KirbyTag::parse($tag)->value))) !== null) {
+        if (blog_guard_tag_type($tag) === 'link' && ($page = blog_guard_page(trim((string) KirbyTag::parse($tag)->value))) !== null) {
             $urls[$tag] = $page->url();
         }
     }
@@ -217,7 +217,7 @@ function blog_guard_rules(string $text, array $allowed, ?Page $page, string $bef
     }
     return [
         'elements' => $caption ? array_intersect_key(BLOG_GUARD_ELEMENTS, array_flip(BLOG_GUARD_INLINE)) : BLOG_GUARD_ELEMENTS,
-        'link' => fn (string $url) => isset($produced[$url])
+        'link' => fn(string $url) => isset($produced[$url])
             || (isset($known[$url]) && preg_match(BLOG_GUARD_SCHEMES, $url) && !preg_match('/[\x00-\x20\x7F]/', $url)),
         'produced' => $produced,
         'tags' => $tags,
@@ -271,7 +271,7 @@ function blog_guard_walk(Dom\Node $parent, array $rules, array &$problems): void
             continue;
         }
         if ($name === 'a') {
-            $href = (string)$node->getAttribute('href');
+            $href = (string) $node->getAttribute('href');
             if (!$rules['link']($href)) {
                 $problems[] = [blog_guard_link_error($href), $markup];
                 continue;
@@ -367,7 +367,7 @@ function blog_guard_marks(string $text, ?Page $page = null, bool $caption = fals
     }
     $marks = [];
     foreach (blog_guard_body(blog_guard_render($text, $page, $caption))->querySelectorAll('a[href]') as $link) {
-        $href = (string)$link->getAttribute('href');
+        $href = (string) $link->getAttribute('href');
         if ($href !== '' && $link->closest('figure') === null && str_contains($text, $href)) {
             $marks[] = $href;
         }

@@ -26,11 +26,11 @@ function check_get(string $url): array
             $location = trim(substr($header, 9));
         }
     }
-    return [(int)(explode(' ', $headers[0] ?? '')[1] ?? 0), $location];
+    return [(int) (explode(' ', $headers[0] ?? '')[1] ?? 0), $location];
 }
 
-preg_match_all('!<loc>([^<]+)</loc>!', (string)file_get_contents($sitemap), $m);
-$redirects = json_decode((string)file_get_contents("$www/content/.redirects.json"), true) ?? [];
+preg_match_all('!<loc>([^<]+)</loc>!', (string) file_get_contents($sitemap), $m);
+$redirects = json_decode((string) file_get_contents("$www/content/.redirects.json"), true) ?? [];
 
 $failures = [];
 $total = count($m[1]) + 2 * count($redirects);
@@ -48,11 +48,11 @@ $expect = function (string $path, int $status, ?string $location = null) use ($s
 };
 
 foreach ($m[1] as $url) {
-    $expect((string)parse_url($url, PHP_URL_PATH), 200);
+    $expect((string) parse_url($url, PHP_URL_PATH), 200);
 }
 foreach ($redirects as $redirect) {
     $expect($redirect['from'], 301, $redirect['to']);
-    $expect((string)parse_url($redirect['to'], PHP_URL_PATH), 200);
+    $expect((string) parse_url($redirect['to'], PHP_URL_PATH), 200);
 }
 
 printf("%d URLs from the sitemap, %d redirects with their targets, %d failures\n", count($m[1]), count($redirects), count($failures));

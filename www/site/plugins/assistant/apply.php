@@ -152,7 +152,7 @@ function blog_assistant_apply_file(array $in): array
             throw new BlogAssistantStale('Die Bildtexte wurden seit dem Vorschlag bearbeitet. Nichts geändert.', 'the image texts changed since the proposal');
         }
     }
-    return blog_assistant_result(blog_assistant_write($file, array_map(fn ($change) => $change['after'], $in['changes'])));
+    return blog_assistant_result(blog_assistant_write($file, array_map(fn($change) => $change['after'], $in['changes'])));
 }
 
 /** Copies a route file into content/.assistant/routes/ before it is replaced: state, in every backup. */
@@ -190,7 +190,7 @@ function blog_assistant_route_fields(File $file, array $route): array
 {
     return [
         'route' => Yaml::encode([$file->uuid()->toString()]),
-        'mappoints' => Yaml::encode(array_map(fn ($m) => ['label' => $m['label'], 'lat' => blog_num($m['lat'], 6), 'lon' => blog_num($m['lon'], 6)], $route['markers'])),
+        'mappoints' => Yaml::encode(array_map(fn($m) => ['label' => $m['label'], 'lat' => blog_num($m['lat'], 6), 'lon' => blog_num($m['lon'], 6)], $route['markers'])),
         'mapzoom' => $route['zoom'] ? 'true' : 'false',
     ];
 }
@@ -243,7 +243,7 @@ function blog_assistant_apply_post(array $in): array
                 'filename' => $photo['filename'],
                 'template' => 'image',
                 // The camera data read on arrival; the stored file has no EXIF any more.
-                'content' => array_filter(['alt' => $photo['alt'], 'caption' => $photo['caption'], 'photographer' => $photo['photographer'], ...$photo['exif']], fn ($v) => $v !== ''),
+                'content' => array_filter(['alt' => $photo['alt'], 'caption' => $photo['caption'], 'photographer' => $photo['photographer'], ...$photo['exif']], fn($v) => $v !== ''),
             ]);
             if ($photo['filename'] === $in['cover']) {
                 $fields['cover'] = Yaml::encode([$file->uuid()->toString()]);

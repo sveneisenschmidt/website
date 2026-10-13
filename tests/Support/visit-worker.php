@@ -21,7 +21,7 @@ try {
     $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (X11; Linux x86_64) Firefox/131.0';
     // The options of AnalyticsTest: the page cache is on, as it will be live.
     $kirby = TestSite::app($root, ['cache' => ['pages' => ['active' => true]]]);
-    for ($i = 0; $i < (int)$views; $i++) {
+    for ($i = 0; $i < (int) $views; $i++) {
         $kirby->render('photos');
     }
     echo 'ok';

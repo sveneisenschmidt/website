@@ -101,9 +101,9 @@ function blog_robots(): string
 function blog_llms(): string
 {
     $site = site();
-    $lines = ['# ' . $site->title()->value(), '', trim((string)$site->llms()->value())];
+    $lines = ['# ' . $site->title()->value(), '', trim((string) $site->llms()->value())];
     foreach (['essays' => 'Essays', 'notes' => 'Notes'] as $section => $heading) {
-        $posts = collection('posts')->filter(fn (Page $p) => $p->parent()->id() === $section);
+        $posts = collection('posts')->filter(fn(Page $p) => $p->parent()->id() === $section);
         if ($posts->isNotEmpty()) {
             array_push($lines, '', "## $heading", '');
         }
@@ -112,7 +112,11 @@ function blog_llms(): string
         }
     }
     $url = $site->url();
-    array_push($lines, '', '## Site', '',
+    array_push(
+        $lines,
+        '',
+        '## Site',
+        '',
         "- [Homepage]($url/)",
         "- [Archive]($url/archive/): All posts by month, filterable by type (photos, trips, notes, essays).",
         "- [About]($url/about/): Bio, full project list, blogroll, site statistics.",
@@ -137,7 +141,7 @@ function blog_machine_file(string $name, string $type, Closure $build): Response
         $cache->set($name, $entry);
     }
     $headers = ['Last-Modified' => gmdate('D, d M Y H:i:s', $entry['time']) . ' GMT'];
-    $since = strtotime((string)kirby()->request()->header('If-Modified-Since'));
+    $since = strtotime((string) kirby()->request()->header('If-Modified-Since'));
     if ($since !== false && $since >= $entry['time']) {
         return new Response('', $type, 304, $headers);
     }

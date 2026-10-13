@@ -43,7 +43,7 @@ const BLOG_UPLOAD_CODE = '/<\?php|<\?=[\x20-\x7E\t\r\n]*?(?:\?>|\z)|<script|<htm
 
 function blog_uploads_root(): string
 {
-    $root = (string)(option('blog.assistant.storage') ?? dirname(kirby()->root('index')) . '/storage/assistant');
+    $root = (string) (option('blog.assistant.storage') ?? dirname(kirby()->root('index')) . '/storage/assistant');
     Dir::make($root);
     return $root;
 }
@@ -82,7 +82,7 @@ function blog_uploads_accept(string $tmp, string $name): array
     // A 64-megapixel photo and its previews take a while on a slow host.
     // set_time_limit may be disabled on a host; then its limit stays.
     @set_time_limit(60);
-    $size = (int)@filesize($tmp);
+    $size = (int) @filesize($tmp);
     if ($size === 0) {
         throw blog_uploads_error('Die Datei ist leer.');
     }
@@ -102,7 +102,7 @@ function blog_uploads_accept(string $tmp, string $name): array
     if ($width < 1 || $height < 1 || $width * $height > BLOG_UPLOAD_MAX_PIXELS) {
         throw blog_uploads_error('Das Bild hat mehr als ' . intdiv(BLOG_UPLOAD_MAX_PIXELS, 1000000) . ' Megapixel.');
     }
-    $bytes = (string)file_get_contents($tmp);
+    $bytes = (string) file_get_contents($tmp);
     if (preg_match(BLOG_UPLOAD_CODE, $bytes)) {
         throw blog_uploads_error('Die Datei enthält Code. Exportier das Bild neu.');
     }
@@ -112,7 +112,7 @@ function blog_uploads_accept(string $tmp, string $name): array
         if ($ext === 'jpg') {
             // Camera data becomes file fields; GPS and the rest go with the segments.
             $exif = blog_read_exif($tmp);
-            $orientation = (int)((@exif_read_data($tmp) ?: [])['Orientation'] ?? 1);
+            $orientation = (int) ((@exif_read_data($tmp) ?: [])['Orientation'] ?? 1);
             $bytes = blog_jpeg_strip($bytes, $orientation);
         } else {
             $bytes = $ext === 'png' ? blog_png_strip($bytes) : blog_webp_strip($bytes);
@@ -144,14 +144,14 @@ function blog_uploads_accept(string $tmp, string $name): array
         blog_uploads_image("$dir/$id.$ext", $orientation, null, BLOG_UPLOAD_PREVIEW, "$id.preview.jpg");
         // The thumb comes from the upright preview: the original is decoded once.
         blog_uploads_image("$dir/$id.preview.jpg", 1, null, BLOG_UPLOAD_THUMB, "$id.thumb.jpg");
-        if ($load['bytes'] + blog_uploads_base64((int)filesize("$dir/$id.preview.jpg")) > BLOG_ASSISTANT_IMAGE_BYTES) {
+        if ($load['bytes'] + blog_uploads_base64((int) filesize("$dir/$id.preview.jpg")) > BLOG_ASSISTANT_IMAGE_BYTES) {
             throw blog_uploads_error('Die Bilder dieses Chats sind zusammen zu groß für eine Anfrage an Claude. Für weitere beginn einen neuen Chat.');
         }
         return blog_uploads_register($id, $meta);
     } catch (Throwable $e) {
         // Any failure after the first write, also an Error from GD or in the
         // metadata, leaves no half upload behind.
-        array_map(fn ($file) => F::remove($file), glob("$dir/$id.*") ?: []);
+        array_map(fn($file) => F::remove($file), glob("$dir/$id.*") ?: []);
         throw $e instanceof BlogAssistantError ? $e : blog_uploads_error('Das Bild lässt sich nicht lesen.');
     }
 }
@@ -201,7 +201,7 @@ function blog_uploads_meta(string $id): ?array
         return null;
     }
     $dir = blog_uploads_root() . '/' . $state['folder'];
-    $meta = json_decode((string)@file_get_contents("$dir/$id.json"), true);
+    $meta = json_decode((string) @file_get_contents("$dir/$id.json"), true);
     if (!is_array($meta)) {
         return null;
     }
@@ -248,7 +248,7 @@ function blog_uploads_blocks(string $id): array
                 . json_encode(['type' => 'LineString', 'coordinates' => $meta['line']]);
         return [['type' => 'text', 'text' => $text]];
     }
-    $exif = implode(', ', array_map(fn ($key, $value) => "$key $value", array_keys($meta['exif']), $meta['exif']));
+    $exif = implode(', ', array_map(fn($key, $value) => "$key $value", array_keys($meta['exif']), $meta['exif']));
     return [
         ['type' => 'blog_image', 'file' => "$id.preview.jpg"],
         ['type' => 'text', 'text' => "Upload $id: file name {$meta['name']}, {$meta['width']} x {$meta['height']} px" . ($exif === '' ? '' : ", $exif") . '.'],
@@ -264,7 +264,7 @@ function blog_uploads_expand(array $messages): array
     $expand = function (array $blocks) use (&$expand): array {
         foreach ($blocks as $i => $block) {
             if (($block['type'] ?? '') === 'blog_image') {
-                $data = blog_uploads_read((string)$block['file']);
+                $data = blog_uploads_read((string) $block['file']);
                 $blocks[$i] = $data === null
                     ? ['type' => 'text', 'text' => '(This image is no longer available.)']
                     : ['type' => 'image', 'source' => ['type' => 'base64', 'media_type' => 'image/jpeg', 'data' => base64_encode($data)]];
@@ -294,7 +294,7 @@ function blog_uploads_read(string $file): ?string
 function blog_uploads_size(string $file): int
 {
     $path = blog_uploads_file($file, BLOG_UPLOAD_IMAGE);
-    return $path === null ? 0 : (int)@filesize($path);
+    return $path === null ? 0 : (int) @filesize($path);
 }
 
 /**
@@ -311,7 +311,7 @@ function blog_uploads_file(string $name, string $pattern): ?string
 /** Bytes as base64 carries them, as a request to Claude does. */
 function blog_uploads_base64(int $bytes): int
 {
-    return 4 * (int)ceil($bytes / 3);
+    return 4 * (int) ceil($bytes / 3);
 }
 
 /** The thumbnail of an image upload as data URL for a card, or null. */
@@ -353,21 +353,21 @@ function blog_uploads_image(string $source, int $orientation = 1, ?array $crop =
     if ($crop !== null) {
         $w = imagesx($image);
         $h = imagesy($image);
-        $x = (int)round(max(0.0, min(1.0, (float)$crop['x'])) * $w);
-        $y = (int)round(max(0.0, min(1.0, (float)$crop['y'])) * $h);
+        $x = (int) round(max(0.0, min(1.0, (float) $crop['x'])) * $w);
+        $y = (int) round(max(0.0, min(1.0, (float) $crop['y'])) * $h);
         $image = blog_uploads_gd(imagecrop($image, [
             'x' => $x,
             'y' => $y,
-            'width' => max(1, min($w - $x, (int)round((float)$crop['w'] * $w))),
-            'height' => max(1, min($h - $y, (int)round((float)$crop['h'] * $h))),
+            'width' => max(1, min($w - $x, (int) round((float) $crop['w'] * $w))),
+            'height' => max(1, min($h - $y, (int) round((float) $crop['h'] * $h))),
         ]), 'imagecrop');
     }
     $long = max(imagesx($image), imagesy($image));
     if ($long > $max) {
         // imagecopyresampled, not imagescale: imagescale with IMG_BICUBIC
         // returns false on some GD builds (Homebrew PHP 8.5).
-        $w = max(1, (int)round(imagesx($image) * $max / $long));
-        $h = max(1, (int)round(imagesy($image) * $max / $long));
+        $w = max(1, (int) round(imagesx($image) * $max / $long));
+        $h = max(1, (int) round(imagesy($image) * $max / $long));
         $scaled = blog_uploads_gd(imagecreatetruecolor($w, $h), 'imagecreatetruecolor');
         imagealphablending($scaled, false);
         imagesavealpha($scaled, true);
@@ -594,7 +594,7 @@ function blog_uploads_cleanup(): void
         touch("$root/$current/.last");
     }
     foreach (glob($root . '/*', GLOB_ONLYDIR) ?: [] as $dir) {
-        $last = @filemtime($dir . '/.last') ?: (int)@filemtime($dir);
+        $last = @filemtime($dir . '/.last') ?: (int) @filemtime($dir);
         if (preg_match(BLOG_UPLOAD_FOLDER, basename($dir)) && basename($dir) !== $current && $last < $limit) {
             Dir::remove($dir);
         }
@@ -604,7 +604,7 @@ function blog_uploads_cleanup(): void
     }
     $gone = [];
     foreach (glob("$root/$current/u*.json") ?: [] as $file) {
-        $meta = json_decode((string)file_get_contents($file), true);
+        $meta = json_decode((string) file_get_contents($file), true);
         if (($meta['time'] ?? 0) < $limit) {
             foreach (glob("$root/$current/" . basename($file, '.json') . '.*') ?: [] as $part) {
                 F::remove($part);

@@ -49,7 +49,7 @@ function warm_get(array $urls, array $headers, Closure $done): void
         curl_multi_select($multi, 1.0);
         while ($info = curl_multi_info_read($multi)) {
             $handle = $info['handle'];
-            $done((string)curl_getinfo($handle, CURLINFO_PRIVATE), (int)curl_getinfo($handle, CURLINFO_RESPONSE_CODE), (string)curl_multi_getcontent($handle));
+            $done((string) curl_getinfo($handle, CURLINFO_PRIVATE), (int) curl_getinfo($handle, CURLINFO_RESPONSE_CODE), (string) curl_multi_getcontent($handle));
             curl_multi_remove_handle($multi, $handle);
             $active--;
         }
@@ -99,7 +99,7 @@ $failed = [];
 $level = array_keys($seen);
 while ($level !== []) {
     $next = [];
-    warm_get(array_map(fn ($path) => $site . $path, $level), $headers, function (string $url, int $status, string $body) use ($site, &$seen, &$media, &$other, &$failed, &$next): void {
+    warm_get(array_map(fn($path) => $site . $path, $level), $headers, function (string $url, int $status, string $body) use ($site, &$seen, &$media, &$other, &$failed, &$next): void {
         if ($status !== 200) {
             if ($status >= 300 && $status < 500) {
                 $other[] = "$status $url";
@@ -134,7 +134,7 @@ if ($pagesOnly) {
 
 $started = microtime(true);
 $count = 0;
-warm_get(array_map(fn ($path) => $site . $path, array_keys($media)), $headers, function (string $url, int $status) use (&$failed, &$count, $media, $started): void {
+warm_get(array_map(fn($path) => $site . $path, array_keys($media)), $headers, function (string $url, int $status) use (&$failed, &$count, $media, $started): void {
     if ($status !== 200) {
         $failed[] = "$status $url";
     }

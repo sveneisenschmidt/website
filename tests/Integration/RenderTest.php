@@ -24,7 +24,7 @@ final class RenderTest extends TestCase
         $kirby = TestSite::app($this->root);
         // TestSite loads the shared config from www/site.
         $this->assertSame('de', $kirby->option('panel.language'));
-        $page = $kirby->impersonate('kirby', fn () => $kirby->site()->createChild([
+        $page = $kirby->impersonate('kirby', fn() => $kirby->site()->createChild([
             'slug' => 'about',
             'template' => 'default',
             'content' => ['title' => 'About'],
@@ -39,7 +39,7 @@ final class RenderTest extends TestCase
     public function testTitlesAreEscapedOnce(): void
     {
         $kirby = TestSite::app($this->root);
-        $page = $kirby->impersonate('kirby', fn () => $kirby->site()->createChild([
+        $page = $kirby->impersonate('kirby', fn() => $kirby->site()->createChild([
             'slug' => 'fox-and-wagtail',
             'template' => 'default',
             'content' => ['title' => 'Fox & Wagtail'],

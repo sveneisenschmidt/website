@@ -84,7 +84,7 @@ final class AssistantPostTest extends AssistantTestCase
         $this->assertSame('Neuer Entwurf · Foto', $card['title']);
         $this->assertContains(['label' => 'URL-Anhang', 'value' => 'aika'], $card['rows']);
         $this->assertContains(['label' => 'Marker', 'value' => 'Start, End'], $card['rows']);
-        $view = array_values(array_filter(blog_assistant_view(blog_assistant_load())['items'], fn ($i) => $i['type'] === 'card'));
+        $view = array_values(array_filter(blog_assistant_view(blog_assistant_load())['items'], fn($i) => $i['type'] === 'card'));
         $this->assertStringStartsWith('data:image/jpeg;base64,', $view[0]['proposal']['photos'][0]['thumb']);
         $this->assertNull(blog_assistant_slug_taken('aika'), 'Nothing exists before the click.');
 

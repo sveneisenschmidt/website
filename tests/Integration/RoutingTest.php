@@ -79,6 +79,6 @@ final class RoutingTest extends IntegrationTestCase
     {
         $response = $this->get($uri);
         $this->assertSame(301, $response->code(), "$uri $message");
-        $this->assertSame($location, (string)$response->header('Location'), "$uri $message");
+        $this->assertSame($location, (string) $response->header('Location'), "$uri $message");
     }
 }

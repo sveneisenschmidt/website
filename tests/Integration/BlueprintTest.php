@@ -31,9 +31,9 @@ final class BlueprintTest extends IntegrationTestCase
             $this->trip->version()->update([
                 'intro' => 'We packed up and met (link: ' . $aika->uuid() . ' text: Aika) again.',
                 'text' => "(image: A6404180.jpeg)\n\n(map:)",
-                'cover' => [(string)$image->uuid()],
+                'cover' => [(string) $image->uuid()],
                 'trip' => 'summer-2026',
-                'route' => [(string)$route->uuid()],
+                'route' => [(string) $route->uuid()],
                 'mappoints' => [
                     ['label' => "Norman's Bay, East Sussex", 'lat' => '50.8297', 'lon' => '0.3924'],
                     ['label' => 'Brighton', 'lat' => '50.8224', 'lon' => '-0.0970'],

@@ -120,7 +120,7 @@ function blog_assistant_shown(Page $page, string $type, string $value): string
 {
     return match ($type) {
         'toggle' => $value === 'true' ? 'ja' : 'nein',
-        'files' => implode(', ', array_map(fn ($ref) => blog_assistant_file_ref($page, (string)$ref)?->filename() ?? (string)$ref, blog_assistant_list($value))),
+        'files' => implode(', ', array_map(fn($ref) => blog_assistant_file_ref($page, (string) $ref)?->filename() ?? (string) $ref, blog_assistant_list($value))),
         default => $value,
     };
 }
@@ -128,22 +128,22 @@ function blog_assistant_shown(Page $page, string $type, string $value): string
 /** propose_field: a whole field of a post or of About. */
 function blog_assistant_propose_field(array $chat, array $input): array|string
 {
-    $page = blog_assistant_find((string)$input['post']);
+    $page = blog_assistant_find((string) $input['post']);
     if ($page === null) {
         return BLOG_ASSISTANT_NO_POST;
     }
     $fields = array_diff_key(blog_assistant_fields($page), array_flip(BLOG_ASSISTANT_ROUTE_FIELDS));
-    $name = blog_assistant_field_name($fields, (string)$input['field']);
+    $name = blog_assistant_field_name($fields, (string) $input['field']);
     if ($name === null) {
         return 'This field cannot be written: ' . $input['field'] . '. Fields: ' . implode(', ', array_keys($fields)) . '. Route, map points and zoom go through propose_route.';
     }
     $type = $fields[$name]['type'];
-    $value = (string)$input['value'];
+    $value = (string) $input['value'];
     $before = blog_assistant_current($page, $name);
     $stored = $value;
     switch ($type) {
         case 'date':
-            $error = blog_assistant_date_error($value, (bool)($page->blueprint()->field($name)['time'] ?? false));
+            $error = blog_assistant_date_error($value, (bool) ($page->blueprint()->field($name)['time'] ?? false));
             break;
         case 'toggle':
             $error = in_array($value, ['true', 'false'], true) ? null : 'A toggle takes true or false.';
@@ -183,16 +183,16 @@ function blog_assistant_propose_field(array $chat, array $input): array|string
 /** propose_edit: one passage of a text field, in one or more versions. */
 function blog_assistant_propose_edit(array $chat, array $input): array|string
 {
-    $page = blog_assistant_find((string)$input['post']);
+    $page = blog_assistant_find((string) $input['post']);
     if ($page === null) {
         return BLOG_ASSISTANT_NO_POST;
     }
-    $fields = array_filter(blog_assistant_fields($page), fn ($f) => in_array($f['type'], ['text', 'textarea', 'markdown'], true));
-    $name = blog_assistant_field_name($fields, (string)$input['field']);
+    $fields = array_filter(blog_assistant_fields($page), fn($f) => in_array($f['type'], ['text', 'textarea', 'markdown'], true));
+    $name = blog_assistant_field_name($fields, (string) $input['field']);
     if ($name === null) {
         return 'Passages exist in text fields only: ' . implode(', ', array_keys($fields)) . '.';
     }
-    $passage = (string)$input['passage'];
+    $passage = (string) $input['passage'];
     $current = blog_assistant_current($page, $name);
     $count = $passage === '' ? 0 : substr_count($current, $passage);
     if ($count !== 1) {
@@ -213,7 +213,7 @@ function blog_assistant_propose_edit(array $chat, array $input): array|string
         if ($error !== null) {
             return 'Version ' . ($i + 1) . ": $error";
         }
-        $marks[] = array_values(array_filter(blog_assistant_marks($page, $type, $after), fn ($mark) => str_contains($version, $mark)));
+        $marks[] = array_values(array_filter(blog_assistant_marks($page, $type, $after), fn($mark) => str_contains($version, $mark)));
     }
     return blog_assistant_card('edit', 'Passage · ' . blog_assistant_name($page), [
         'where' => blog_assistant_where($page),
@@ -222,7 +222,7 @@ function blog_assistant_propose_edit(array $chat, array $input): array|string
         'passage' => $passage,
         'versions' => $versions,
         // The links the card marks in the passage and in each version.
-        'passageMarks' => array_values(array_filter(blog_assistant_marks($page, $type, $current), fn ($mark) => str_contains($passage, $mark))),
+        'passageMarks' => array_values(array_filter(blog_assistant_marks($page, $type, $current), fn($mark) => str_contains($passage, $mark))),
         'versionMarks' => $marks,
         'input' => ['page' => $page->id(), 'field' => $name, 'passage' => $passage, 'versions' => $versions],
     ]);
@@ -231,15 +231,15 @@ function blog_assistant_propose_edit(array $chat, array $input): array|string
 /** propose_file_fields: alt text, caption or photographer of an image. */
 function blog_assistant_propose_file_fields(array $chat, array $input): array|string
 {
-    $file = blog_assistant_file((string)$input['file']);
+    $file = blog_assistant_file((string) $input['file']);
     if ($file === null || $file->template() !== 'image') {
         return 'No image found. read_post lists the file ids.';
     }
     $changes = [];
     $diff = [];
     foreach ($input['fields'] as $field) {
-        $name = (string)$field['name'];
-        $value = (string)$field['value'];
+        $name = (string) $field['name'];
+        $value = (string) $field['value'];
         if (!in_array($name, BLOG_ASSISTANT_IMAGE_TEXTS, true) || isset($changes[$name])) {
             return "Each of alt, caption and photographer at most once; $name is not possible here.";
         }
@@ -249,8 +249,8 @@ function blog_assistant_propose_file_fields(array $chat, array $input): array|st
             return "$name: $error";
         }
         $changes[$name] = ['before' => $before, 'after' => $value];
-        $marks = fn (string $text) => $name === 'caption' ? blog_guard_marks($text, null, true) : [];
-        $diff[] = ['label' => (string)($file->blueprint()->field($name)['label'] ?? $name), 'before' => $before, 'after' => $value, 'marksBefore' => $marks($before), 'marksAfter' => $marks($value)];
+        $marks = fn(string $text) => $name === 'caption' ? blog_guard_marks($text, null, true) : [];
+        $diff[] = ['label' => (string) ($file->blueprint()->field($name)['label'] ?? $name), 'before' => $before, 'after' => $value, 'marksBefore' => $marks($before), 'marksAfter' => $marks($value)];
     }
     if ($changes === []) {
         return 'Give at least one field.';
@@ -265,8 +265,8 @@ function blog_assistant_propose_file_fields(array $chat, array $input): array|st
 /** A point of a route input as [lon, lat], or null when it lies outside the map. */
 function blog_assistant_point(array $point): ?array
 {
-    $lat = (float)$point['lat'];
-    $lon = (float)$point['lon'];
+    $lat = (float) $point['lat'];
+    $lon = (float) $point['lon'];
     return abs($lat) <= 90 && abs($lon) <= 180 ? [$lon, $lat] : null;
 }
 
@@ -277,21 +277,21 @@ function blog_assistant_point(array $point): ?array
 function blog_assistant_route(array $route): array|string
 {
     $stations = $route['stations'];
-    $gpx = trim((string)$route['gpx']);
+    $gpx = trim((string) $route['gpx']);
     if (($stations === []) === ($gpx === '')) {
         return 'A route takes either stations or a GPX upload id.';
     }
     $markers = [];
-    foreach ([...array_filter($stations, fn ($s) => $s['marker']), ...$route['markers']] as $marker) {
+    foreach ([...array_filter($stations, fn($s) => $s['marker']), ...$route['markers']] as $marker) {
         $point = blog_assistant_point($marker);
         if ($point === null) {
             return 'A marker lies outside the map: lat -90 to 90, lon -180 to 180.';
         }
-        $error = blog_guard_plain((string)$marker['label'], 60);
+        $error = blog_guard_plain((string) $marker['label'], 60);
         if ($error !== null) {
             return 'Marker "' . $marker['label'] . '": ' . $error;
         }
-        $markers[] = ['label' => (string)$marker['label'], 'lon' => $point[0], 'lat' => $point[1]];
+        $markers[] = ['label' => (string) $marker['label'], 'lon' => $point[0], 'lat' => $point[1]];
     }
     if ($gpx !== '') {
         $meta = blog_uploads_meta($gpx);
@@ -322,7 +322,7 @@ function blog_assistant_route(array $route): array|string
             return $e->getMessage();
         }
     }
-    return $line + ['points' => count($line['line']), 'markers' => $markers, 'zoom' => (bool)$route['zoom']];
+    return $line + ['points' => count($line['line']), 'markers' => $markers, 'zoom' => (bool) $route['zoom']];
 }
 
 /** A route as the card shows it: km, driving time, points, markers, zoom. */
@@ -334,7 +334,7 @@ function blog_assistant_route_rows(?array $route): array
     return [
         'Länge' => number_format($route['km'], 1, ',', '.') . ' km' . (isset($route['source']) ? ' · ' . $route['source'] : ''),
         'Fahrzeit' => $route['seconds'] === null ? '' : blog_route_duration($route['seconds']),
-        'Punkte' => (string)$route['points'],
+        'Punkte' => (string) $route['points'],
         'Marker' => implode(', ', array_column($route['markers'], 'label')),
         'Karte zoombar' => $route['zoom'] ? 'ja' : 'nein',
     ];
@@ -343,7 +343,7 @@ function blog_assistant_route_rows(?array $route): array
 /** propose_route: a new route for a photo or trip, replacing route, points and zoom. */
 function blog_assistant_propose_route(array $chat, array $input): array|string
 {
-    $page = blog_assistant_find((string)$input['post']);
+    $page = blog_assistant_find((string) $input['post']);
     if ($page === null || !blog_type_has_map($page->intendedTemplate()->name())) {
         return 'A route is possible for photo and trip posts only. find_posts lists the ids.';
     }
@@ -360,7 +360,7 @@ function blog_assistant_propose_route(array $chat, array $input): array|string
     return blog_assistant_card('route', 'Route · ' . blog_assistant_name($page), [
         'where' => blog_assistant_where($page),
         'uploads' => array_filter([$route['upload']]),
-        'diff' => array_map(fn ($label) => ['label' => $label, 'before' => $old[$label], 'after' => $new[$label]], array_keys($new)),
+        'diff' => array_map(fn($label) => ['label' => $label, 'before' => $old[$label], 'after' => $new[$label]], array_keys($new)),
         'input' => ['page' => $page->id(), 'route' => $route, 'hash' => $before['hash']],
     ]);
 }
@@ -376,33 +376,33 @@ function blog_assistant_draft(Page $section, string $type, string $slug, array $
         'template' => $type,
         'parent' => $section,
         'isDraft' => true,
-        'files' => array_map(fn ($p) => ['filename' => $p['filename'], 'template' => 'image', 'content' => ['alt' => $p['alt'], 'caption' => $p['caption']]], $photos),
+        'files' => array_map(fn($p) => ['filename' => $p['filename'], 'template' => 'image', 'content' => ['alt' => $p['alt'], 'caption' => $p['caption']]], $photos),
     ]);
 }
 
 /** propose_post: a new draft with fields, photos and route in one click. */
 function blog_assistant_propose_post(array $chat, array $input): array|string
 {
-    $type = (string)$input['type'];
+    $type = (string) $input['type'];
     if (!isset(BLOG_TYPES[$type]) || site()->find(BLOG_TYPES[$type]['section']) === null) {
         return 'No section for the type ' . $type . '.';
     }
-    $slug = (string)$input['slug'];
+    $slug = (string) $input['slug'];
     if (!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)) {
         return 'A slug takes a-z, 0-9 and single hyphens.';
     }
     if (($taken = blog_assistant_slug_taken($slug)) !== null) {
         return "The slug $slug is taken by $taken. The URL must be unique.";
     }
-    $date = (string)$input['date'];
+    $date = (string) $input['date'];
     if (($error = blog_assistant_date_error($date)) !== null) {
         return $error;
     }
-    $title = trim((string)$input['title']);
+    $title = trim((string) $input['title']);
     if ($title === '' || ($error = blog_guard_plain($title)) !== null) {
         return 'title: ' . ($error ?? 'A post needs a title.');
     }
-    $trip = trim((string)$input['trip']);
+    $trip = trim((string) $input['trip']);
     if ($trip !== '' && ($type !== 'trip' || ($error = blog_guard_plain($trip)) !== null)) {
         return 'trip: ' . ($error ?? 'only trip posts have this field.');
     }
@@ -410,8 +410,8 @@ function blog_assistant_propose_post(array $chat, array $input): array|string
     $allowed = blog_assistant_links($chat);
     $photos = [];
     foreach ($input['photos'] as $photo) {
-        $id = (string)$photo['upload'];
-        $filename = (string)$photo['filename'];
+        $id = (string) $photo['upload'];
+        $filename = (string) $photo['filename'];
         $meta = blog_uploads_meta($id);
         if ($meta === null || $meta['kind'] !== 'image' || $meta['path'] === null) {
             return "No image upload $id in this chat.";
@@ -426,17 +426,17 @@ function blog_assistant_propose_post(array $chat, array $input): array|string
             return "The file name $filename comes twice.";
         }
         foreach (['alt', 'photographer'] as $key) {
-            if (($error = blog_guard_plain((string)$photo[$key])) !== null) {
+            if (($error = blog_guard_plain((string) $photo[$key])) !== null) {
                 return "$filename, $key: $error";
             }
         }
-        if (($error = blog_guard_caption((string)$photo['caption'], $allowed)) !== null) {
+        if (($error = blog_guard_caption((string) $photo['caption'], $allowed)) !== null) {
             return "$filename, caption: $error";
         }
-        $photos[] = ['upload' => $id, 'filename' => $filename, 'alt' => (string)$photo['alt'], 'caption' => (string)$photo['caption'], 'photographer' => (string)$photo['photographer'], 'exif' => $meta['exif'], 'marks' => blog_guard_marks((string)$photo['caption'], null, true)];
+        $photos[] = ['upload' => $id, 'filename' => $filename, 'alt' => (string) $photo['alt'], 'caption' => (string) $photo['caption'], 'photographer' => (string) $photo['photographer'], 'exif' => $meta['exif'], 'marks' => blog_guard_marks((string) $photo['caption'], null, true)];
     }
     $names = array_column($photos, 'filename');
-    $cover = (string)$input['cover'];
+    $cover = (string) $input['cover'];
     if ($cover !== '' && !in_array($cover, $names, true)) {
         return 'cover is one of the file names: ' . implode(', ', $names) . '.';
     }
@@ -444,12 +444,12 @@ function blog_assistant_propose_post(array $chat, array $input): array|string
     // The texts render in the draft as it will be: its images, its map.
     $draft = blog_assistant_draft(site()->find(BLOG_TYPES[$type]['section']), $type, $slug, $photos);
     foreach (['intro', 'text'] as $key) {
-        if (($error = blog_guard_markdown((string)$input[$key], $allowed, $draft)) !== null) {
+        if (($error = blog_guard_markdown((string) $input[$key], $allowed, $draft)) !== null) {
             return "$key: $error";
         }
     }
     $route = null;
-    if ($input['route']['stations'] !== [] || trim((string)$input['route']['gpx']) !== '') {
+    if ($input['route']['stations'] !== [] || trim((string) $input['route']['gpx']) !== '') {
         if (!$map) {
             return 'A route is possible for photo and trip posts only.';
         }
@@ -461,7 +461,7 @@ function blog_assistant_propose_post(array $chat, array $input): array|string
             return BLOG_ASSISTANT_GPX_TAKEN;
         }
     }
-    $content = ['title' => $title, 'date' => $date, 'intro' => (string)$input['intro'], 'text' => (string)$input['text'], 'pick' => $input['pick'] ? 'true' : 'false'] + ($type === 'trip' ? ['trip' => $trip] : []);
+    $content = ['title' => $title, 'date' => $date, 'intro' => (string) $input['intro'], 'text' => (string) $input['text'], 'pick' => $input['pick'] ? 'true' : 'false'] + ($type === 'trip' ? ['trip' => $trip] : []);
     $rows = [
         ['label' => 'Titel', 'value' => $title],
         ['label' => 'URL-Anhang', 'value' => $slug],
@@ -479,7 +479,7 @@ function blog_assistant_propose_post(array $chat, array $input): array|string
         'where' => 'Anlegen legt einen Entwurf an. Veröffentlichen bleibt bei dir.',
         'uploads' => [...array_column($photos, 'upload'), ...array_filter([$route['upload'] ?? null])],
         'rows' => $rows,
-        'photos' => array_map(fn ($p) => array_diff_key($p, ['exif' => true]), $photos),
-        'input' => ['type' => $type, 'slug' => $slug, 'content' => $content, 'photos' => array_map(fn ($p) => array_diff_key($p, ['marks' => true]), $photos), 'cover' => $cover, 'route' => $route],
+        'photos' => array_map(fn($p) => array_diff_key($p, ['exif' => true]), $photos),
+        'input' => ['type' => $type, 'slug' => $slug, 'content' => $content, 'photos' => array_map(fn($p) => array_diff_key($p, ['marks' => true]), $photos), 'cover' => $cover, 'route' => $route],
     ]);
 }

@@ -49,10 +49,10 @@ return array_replace_recursive([
         'menu' => function (Kirby\Cms\App $kirby) {
             $types = array_column(BLOG_TYPES, null, 'section');
             $path = $kirby->path();
-            $inType = fn (string $slug) => preg_match('!^panel/pages/' . $slug . '(\+|/|$)!', $path) === 1;
-            $menu = ['site' => ['current' => fn (?string $current) => $current === 'site' && !array_filter(array_keys($types), $inType)]];
+            $inType = fn(string $slug) => preg_match('!^panel/pages/' . $slug . '(\+|/|$)!', $path) === 1;
+            $menu = ['site' => ['current' => fn(?string $current) => $current === 'site' && !array_filter(array_keys($types), $inType)]];
             foreach ($types as $slug => $type) {
-                $menu[$slug] = ['label' => $type['menu'], 'icon' => $type['icon'], 'link' => "pages/$slug", 'current' => fn () => $inType($slug)];
+                $menu[$slug] = ['label' => $type['menu'], 'icon' => $type['icon'], 'link' => "pages/$slug", 'current' => fn() => $inType($slug)];
             }
             return [...$menu, '-', 'besucher', 'verlauf', 'assistent', '-', 'users', 'system'];
         },

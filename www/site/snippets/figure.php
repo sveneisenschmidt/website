@@ -9,8 +9,8 @@
  */
 $picture = blog_picture($file);
 $rows = blog_exif_rows($file);
-$caption = (string)$file->caption()->value();
-$photographer = (string)$file->photographer()->value();
+$caption = (string) $file->caption()->value();
+$photographer = (string) $file->photographer()->value();
 // The cover is the picture under the title: the browser loads it first.
 $cover = $page->cover()->toFile()?->is($file) === true;
 ?>

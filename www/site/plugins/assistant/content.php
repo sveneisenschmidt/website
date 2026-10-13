@@ -46,7 +46,7 @@ function blog_assistant_file(string $id): ?File
 /** A file of a page by its UUID ("file://…") or file name. */
 function blog_assistant_file_ref(Page $page, string $ref): ?File
 {
-    return $page->files()->filter(fn (File $file) => $file->uuid()?->toString() === $ref || $file->filename() === $ref)->first();
+    return $page->files()->filter(fn(File $file) => $file->uuid()?->toString() === $ref || $file->filename() === $ref)->first();
 }
 
 /** A YAML list as a field stores it (files, structure), or none. */
@@ -62,7 +62,7 @@ function blog_assistant_fields(ModelWithContent $model): array
     $fields = $model instanceof Page ? ['title' => ['label' => 'Titel', 'type' => 'text']] : [];
     foreach ($model->blueprint()->fields() as $name => $field) {
         $label = $field['label'] ?? null;
-        $fields[strtolower($name)] = ['label' => is_string($label) ? $label : ucfirst($name), 'type' => (string)($field['type'] ?? 'text')];
+        $fields[strtolower($name)] = ['label' => is_string($label) ? $label : ucfirst($name), 'type' => (string) ($field['type'] ?? 'text')];
     }
     return $fields;
 }
@@ -72,14 +72,14 @@ function blog_assistant_current(ModelWithContent $model, string $field): string
 {
     $changes = $model->version('changes');
     $source = $changes->exists() ? $changes : $model->version('latest');
-    return (string)($source->read()[strtolower($field)] ?? '');
+    return (string) ($source->read()[strtolower($field)] ?? '');
 }
 
 /** True when the field has unsaved changes in the Panel. */
 function blog_assistant_unsaved(ModelWithContent $model, string $field): bool
 {
     $changes = $model->version('changes');
-    return $changes->exists() && blog_assistant_current($model, $field) !== (string)($model->version('latest')->read()[strtolower($field)] ?? '');
+    return $changes->exists() && blog_assistant_current($model, $field) !== (string) ($model->version('latest')->read()[strtolower($field)] ?? '');
 }
 
 /** The image file names of a post. */
@@ -99,8 +99,8 @@ function blog_assistant_route_summary(Page $page): ?array
         return null;
     }
     $refs = blog_assistant_list(blog_assistant_current($page, 'route'));
-    $file = isset($refs[0]) ? blog_assistant_file_ref($page, (string)$refs[0]) : null;
-    $json = $file !== null ? (string)file_get_contents($file->root()) : '';
+    $file = isset($refs[0]) ? blog_assistant_file_ref($page, (string) $refs[0]) : null;
+    $json = $file !== null ? (string) file_get_contents($file->root()) : '';
     $points = blog_assistant_current($page, 'mappoints');
     $zoom = blog_assistant_current($page, 'mapzoom');
     $line = blog_route_line($json);
@@ -109,7 +109,7 @@ function blog_assistant_route_summary(Page $page): ?array
         'km' => round(blog_route_length($line) / 1000, 1),
         'seconds' => null,
         'points' => count($line),
-        'markers' => array_map(fn ($p) => ['label' => (string)($p['label'] ?? ''), 'lat' => (float)($p['lat'] ?? 0), 'lon' => (float)($p['lon'] ?? 0)], blog_assistant_list($points)),
+        'markers' => array_map(fn($p) => ['label' => (string) ($p['label'] ?? ''), 'lat' => (float) ($p['lat'] ?? 0), 'lon' => (float) ($p['lon'] ?? 0)], blog_assistant_list($points)),
         'zoom' => $zoom === 'true',
         'hash' => sha1($json . "\0" . $points . "\0" . $zoom),
     ];

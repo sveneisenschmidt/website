@@ -24,7 +24,7 @@ function prompt_guard_prompt(string $file): string
     if (!is_file($file)) {
         return '';
     }
-    foreach (preg_split('/\R----\s*\R/', (string)file_get_contents($file)) as $field) {
+    foreach (preg_split('/\R----\s*\R/', (string) file_get_contents($file)) as $field) {
         if (preg_match('/^\s*assistant[-_ ]?prompt\s*:(.*)$/is', $field, $m)) {
             return trim(str_replace("\n\\----", "\n----", $m[1]));
         }
@@ -60,7 +60,7 @@ function prompt_guard_hits(string $prompt, string $diff): array
 /** Runs the hook: exit code 1 stops the commit or the push. */
 function prompt_guard_main(string $mode): int
 {
-    $top = trim((string)shell_exec('git rev-parse --show-toplevel'));
+    $top = trim((string) shell_exec('git rev-parse --show-toplevel'));
     $prompt = prompt_guard_prompt($top . '/www/content/site.txt');
     if ($prompt === '') {
         return 0;
@@ -71,11 +71,11 @@ function prompt_guard_main(string $mode): int
             $sha = explode(' ', trim($line))[1] ?? '';
             // A deleted branch pushes nothing.
             if (preg_match('/^[0-9a-f]+$/', $sha) && trim($sha, '0') !== '') {
-                $diffs[] = (string)shell_exec('git log -p --no-color --no-ext-diff -U0 --format= ' . escapeshellarg($sha) . ' --not --remotes');
+                $diffs[] = (string) shell_exec('git log -p --no-color --no-ext-diff -U0 --format= ' . escapeshellarg($sha) . ' --not --remotes');
             }
         }
     } else {
-        $diffs[] = (string)shell_exec('git diff --cached --no-color --no-ext-diff -U0');
+        $diffs[] = (string) shell_exec('git diff --cached --no-color --no-ext-diff -U0');
     }
     $hits = [];
     foreach ($diffs as $diff) {

@@ -119,7 +119,7 @@ final class AssistantChatTest extends AssistantTestCase
         }
 
         $this->assertSame('Ja, mit Quelle https://evil.example/promo', $this->lastText($this->requests[1]));
-        $this->assertSame(['type' => 'me', 'text' => 'Ja, mit Quelle https://evil.example/promo'], array_intersect_key(array_values(array_filter($state['items'], fn ($i) => $i['type'] === 'me'))[1], ['type' => 1, 'text' => 1]));
+        $this->assertSame(['type' => 'me', 'text' => 'Ja, mit Quelle https://evil.example/promo'], array_intersect_key(array_values(array_filter($state['items'], fn($i) => $i['type'] === 'me'))[1], ['type' => 1, 'text' => 1]));
         $this->assertSame([], blog_assistant_load()['mine']);
         $this->assertStringContainsString('not allowed', $this->results(2)[0]['content']);
         $this->assertSame([], blog_assistant_load()['proposals']);
@@ -127,7 +127,7 @@ final class AssistantChatTest extends AssistantTestCase
         // A second pick finds no open choice: the Panel gets the text, not Kirby's "unexpected error".
         $state = $this->kirby->api()->call('blog-assistant/send', 'POST', ['body' => ['choice' => 1]]);
         $this->assertSame(['kind' => 'chat', 'text' => 'Keine offene Auswahl'], $state['error']);
-        $this->assertCount(2, array_filter($state['items'], fn ($i) => $i['type'] === 'me'));
+        $this->assertCount(2, array_filter($state['items'], fn($i) => $i['type'] === 'me'));
     }
 
     public function testAnswersAfterAStoppedLoopJoinTheToolResults(): void
@@ -267,7 +267,7 @@ final class AssistantChatTest extends AssistantTestCase
 
     public function testTheSourcesAreTheCitationsOrTheResultsTheAnswerNames(): void
     {
-        $result = fn (string $url, string $title = '') => ['type' => 'web_search_result', 'url' => $url, 'title' => $title];
+        $result = fn(string $url, string $title = '') => ['type' => 'web_search_result', 'url' => $url, 'title' => $title];
         $search = ['type' => 'web_search_tool_result', 'content' => [$result('https://www.camping.test/a', 'Camping'), $result('https://river.test/b'), $result('ftp://files.test/c', 'Files')]];
         $cited = ['type' => 'text', 'text' => 'Offen.', 'citations' => [['url' => 'https://cited.test/x', 'title' => ' ']]];
 
@@ -280,7 +280,7 @@ final class AssistantChatTest extends AssistantTestCase
         $this->assertSame([['url' => 'https://www.camping.test/a', 'title' => 'Camping']], blog_assistant_sources([$search], 'Laut camping.test ist es offen.')['list']);
         $this->assertSame([['url' => 'https://river.test/b', 'title' => 'https://river.test/b']], blog_assistant_sources([$search], 'Der River-Platz.')['list']);
         $this->assertSame([], blog_assistant_sources([$search], 'Ohne Quelle.')['list']);
-        $many = ['type' => 'web_search_tool_result', 'content' => array_map(fn ($n) => $result("https://site$n.test/"), range(1, 4))];
+        $many = ['type' => 'web_search_tool_result', 'content' => array_map(fn($n) => $result("https://site$n.test/"), range(1, 4))];
         $this->assertCount(3, blog_assistant_sources([$many], 'site1.test, site2.test, site3.test, site4.test')['list']);
         // A failed search brings nothing.
         $this->assertSame(['urls' => [], 'list' => []], blog_assistant_sources([['type' => 'web_search_tool_result', 'content' => ['error_code' => 'max_uses_exceeded']]], 'camping'));
@@ -395,7 +395,7 @@ final class AssistantChatTest extends AssistantTestCase
         $this->reply('end_turn');
         $this->chat('Eins.');
         $this->chat('Zwei.');
-        blog_assistant_update(BLOG_ASSISTANT_SESSION, blog_assistant_load(...), fn (array $chat) => ['date' => '2000-01-01'] + $chat);
+        blog_assistant_update(BLOG_ASSISTANT_SESSION, blog_assistant_load(...), fn(array $chat) => ['date' => '2000-01-01'] + $chat);
 
         $this->chat('Drei.');
 
@@ -431,7 +431,7 @@ final class AssistantChatTest extends AssistantTestCase
 
     public function testAChatTakesAtMost40Images(): void
     {
-        blog_assistant_update(BLOG_ASSISTANT_SESSION, blog_assistant_load(...), fn (array $chat) => ['images' => 38] + $chat);
+        blog_assistant_update(BLOG_ASSISTANT_SESSION, blog_assistant_load(...), fn(array $chat) => ['images' => 38] + $chat);
         $first = blog_uploads_accept($this->jpeg(40, 30, 'a.jpg'), 'a.jpg')['id'];
         blog_uploads_accept($this->jpeg(40, 30, 'b.jpg'), 'b.jpg');
         try {
@@ -476,7 +476,7 @@ final class AssistantChatTest extends AssistantTestCase
         $id = blog_uploads_accept($this->jpeg(40, 30), 'a.jpg')['id'];
         $this->reply('end_turn');
         $this->chat('Hier.');
-        $this->reply('tool_use', ...array_map(fn ($i) => $this->tool("t$i", 'view_photo', $this->crop($id)), range(1, 6)));
+        $this->reply('tool_use', ...array_map(fn($i) => $this->tool("t$i", 'view_photo', $this->crop($id)), range(1, 6)));
         $this->reply('end_turn');
 
         $this->chat('Schau dir Ausschnitte an.');

@@ -103,7 +103,7 @@ final class RouteTest extends TestCase
             foreach ($line['line'] as $point) {
                 $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, blog_route_distance($home, $point));
             }
-            $this->assertSame([array_map(fn ($v) => round($v, 3), $ride[0]), array_map(fn ($v) => round($v, 3), $ride[360])], $line['ends'], 'The ends stay on the server, to 3 decimals.');
+            $this->assertSame([array_map(fn($v) => round($v, 3), $ride[0]), array_map(fn($v) => round($v, 3), $ride[360])], $line['ends'], 'The ends stay on the server, to 3 decimals.');
         }
         $this->assertGreaterThanOrEqual(BLOG_GPX_TRIM_MIN, min([...$heads, ...$tails]));
         $this->assertLessThan(1250, max([...$heads, ...$tails]));
