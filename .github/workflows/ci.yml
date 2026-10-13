@@ -71,6 +71,28 @@ jobs:
       - name: Deploy test
         run: bin/deploy-test.sh
 
+  # A pull request from Dependabot merges itself once the tests pass. A push
+  # with the token of a run starts no new run, so the job then starts this
+  # workflow on main by hand, and that run deploys.
+  merge:
+    needs: test
+    if: github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: self-hosted
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    steps:
+      - name: Merge and deploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+          API: https://api.github.com/repos/${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          curl -fsS -X PUT -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API/pulls/$PR/merge" -d '{"merge_method":"merge"}'
+          curl -fsS -X POST -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API/actions/workflows/ci.yml/dispatches" -d '{"ref":"main"}'
+
   deploy:
     needs: test
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'

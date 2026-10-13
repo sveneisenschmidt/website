@@ -27,7 +27,7 @@ make analyse
 make test
 ```
 
-`make format` formats the code to PER-CS 2.0, `make analyse` runs PHPStan. The workflow `CI` checks all four for every pull request and every push to `main`. Dependabot opens one pull request a week each for Composer packages and actions.
+`make format` formats the code to PER-CS 2.0, `make analyse` runs PHPStan. The workflow `CI` checks all four for every pull request and every push to `main`. Dependabot opens one pull request a week each for Composer packages and actions; CI merges it when the checks pass and deploys it.
 
 ## Deploy
 

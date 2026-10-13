@@ -1,9 +1,13 @@
 # Weekly updates as one pull request per ecosystem. The workflow CI tests
-# each of them; the pinned commits of the actions move with their version.
+# each of them, merges it when the tests pass and deploys it; the pinned
+# commits of the actions move with their version. Composer stays inside the
+# version ranges of composer.json: a new major version of Kirby is a change
+# by hand.
 version: 2
 updates:
   - package-ecosystem: composer
     directory: /
+    versioning-strategy: lockfile-only
     schedule:
       interval: weekly
     groups:
