@@ -145,13 +145,13 @@ kirby-parity:
 	@test -f public/index.html || { echo "Kein Hugo-Build in public/. Erst: hugo"; exit 1; }
 	@$(PHP) bin/parity.php $(WWW) public
 
-# Deploy der Live-Seite (seit 2026-10-13 liegt sie im Ordner, der als Staging
-# begann). Host und Pfad sind nicht geheim, es gilt der SSH-Alias website.
+# Deploy der Live-Seite. Host und Pfad sind nicht geheim, es gilt der
+# SSH-Alias website.
 # Den API-Schlüssel holt bin/deploy-env.sh aus der lokalen env.php. Ein
 # Staging-Passwort kommt nur, wenn STAGING_USER und STAGING_PASSWORD gesetzt
 # sind. Lint und Tests laufen vorher.
 KIRBY_DEPLOY_HOST ?= website
-KIRBY_DEPLOY_PATH ?= /www/htdocs/w00611ad/kirby.eisenschmidt.website
+KIRBY_DEPLOY_PATH ?= /www/htdocs/w00611ad/sven.eisenschmidt.website
 KIRBY_SITE_URL ?= https://sven.eisenschmidt.website
 
 .PHONY: kirby-deploy
