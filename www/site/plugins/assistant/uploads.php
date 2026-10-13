@@ -45,9 +45,6 @@ function blog_uploads_root(): string
 {
     $root = (string)(option('blog.assistant.storage') ?? dirname(kirby()->root('index')) . '/storage/assistant');
     Dir::make($root);
-    if (!is_file($root . '/.htaccess')) {
-        F::write($root . '/.htaccess', "# Uploads of the assistant: never served.\nRequire all denied\n");
-    }
     return $root;
 }
 

@@ -1,8 +1,8 @@
 <?php
 /**
- * Posts by month, as the archive lists them (archive.html) and search.js
- * shows its results: a bar with month and count, below it a sheet of
- * covers ($sheet) or rows of day, title and cover.
+ * Posts by month, as the archive lists them and search.js shows its
+ * results: a bar with month and count, below it a sheet of covers
+ * ($sheet) or rows of day, title and cover.
  *
  * @var Kirby\Cms\Pages $posts Newest first
  * @var bool $sheet

@@ -1,7 +1,7 @@
 <?php
 /**
- * The timeline, as Hugo's stream.html: a post shows its two neighbours,
- * every other page the newest $limit posts with their count.
+ * The timeline: a post shows its two neighbours, every other page the
+ * newest $limit posts with their count.
  *
  * @var Kirby\Cms\Page|null $current The page the timeline stands beside
  * @var int $limit
@@ -10,7 +10,7 @@
 $current ??= null;
 $limit ??= 25;
 $fit ??= false;
-$posts = blog_posts();
+$posts = collection('posts');
 $neighbours = $current !== null && $posts->has($current->id());
 $entries = [];
 if ($neighbours) {
@@ -45,7 +45,7 @@ if ($neighbours) {
 </p>
 </div>
 <?php snippet('thumb', ['post' => $post]) ?>
-<?php if ($i === 0 && !$neighbours && ($excerpt = blog_plain(blog_summary($post))) !== ''): ?><p class="excerpt"><?= $excerpt ?></p><?php endif ?>
+<?php if ($i === 0 && !$neighbours && ($excerpt = blog_summary($post)) !== ''): ?><p class="excerpt"><?= esc($excerpt) ?></p><?php endif ?>
 </article>
 <?php endforeach ?>
 </div>

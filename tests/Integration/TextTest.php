@@ -3,17 +3,17 @@
 namespace Website\Tests\Integration;
 
 /**
- * plugins/blog/text.php: Markdown, summary, plain text, words and
- * truncation as Hugo made them.
+ * plugins/blog/text.php: Markdown, summary, plain text and words, and
+ * the meta description cut from the summary.
  */
 final class TextTest extends IntegrationTestCase
 {
-    public function testMarkdownAsHugoRenderedIt(): void
+    public function testMarkdownKeepsLineBreaksAndSetsTypography(): void
     {
         $html = blog_html("A line\nand the next -- \"quoted\" it's... --- done", $this->post);
 
-        // No <br> for a line break, typography as Goldmark's typographer.
-        $this->assertSame("<p>A line\nand the next &ndash; &ldquo;quoted&rdquo; it&rsquo;s&hellip; &mdash; done</p>", $html);
+        // No <br> for a line break; "--" an en dash, "---" an em dash.
+        $this->assertSame("<p>A line\nand the next \u{2013} “quoted” it’s… \u{2014} done</p>", $html);
     }
 
     public function testHeadingsGetAnIdAndAnAnchor(): void
@@ -25,35 +25,33 @@ final class TextTest extends IntegrationTestCase
         $this->assertStringContainsString('<h3 id="über_uns-2">', $html);
     }
 
-    public function testPlainTextAndWordsAsHugo(): void
+    public function testPlainTextLeavesOutExifRowsAndScripts(): void
     {
-        $html = "<p>One <em>two</em></p>\n<p>three</p>\n<div class=\"map\"><script type=\"application/json\">{\"a\":1}</script>\n</div>";
+        $html = "<p>One <em>two</em></p>\n<figure>\n<img src=\"a.webp\" alt=\"\">\n<dl class=\"exif\">\n<div>\n<dt>Camera</dt>\n<dd>Canon EOS R5</dd>\n</div>\n</dl></figure>\n"
+            . "<p>three &amp; it&rsquo;s</p>\n<div class=\"map\"><script type=\"application/json\">{\"a\": 1}</script>\n</div>";
 
-        $this->assertSame("One two\nthree\n", blog_plain($html));
-        $this->assertSame(3, blog_words($html));
-        // Entities stay, as in Hugo: the feed decodes them, meta tags keep them.
-        $this->assertSame("It&rsquo;s\n", blog_plain('<p>It&rsquo;s</p>'));
+        $this->assertSame("One two\n\n\n\nthree & it’s", blog_plain($html));
+        $this->assertSame(5, blog_words(blog_plain($html)));
     }
 
-    public function testTruncateCutsAfterAWord(): void
+    public function testDescriptionIsTheSummaryCutAfterAWord(): void
     {
-        $this->assertSame('Short text', blog_truncate('Short text'));
-        $this->assertSame(str_repeat('word ', 31) . 'word …', blog_truncate(str_repeat('word ', 40)));
+        $post = $this->kirby->impersonate('kirby', fn () => $this->post->update(['intro' => str_repeat('word ', 40)]));
+
+        $this->assertSame(str_repeat('word ', 31) . 'word …', blog_description($post));
     }
 
-    public function testSummaryIsTheIntroOrTheFirstParagraphsUpTo70Words(): void
+    public function testSummaryIsTheIntroOrTheText(): void
     {
-        $this->assertSame('<p>Test intro</p>', blog_summary($this->post));
+        $this->assertSame('Test intro', blog_summary($this->post));
 
         $note = $this->post('notes', 'note', 'no-intro', 'No intro');
         $note = $this->kirby->impersonate('kirby', fn () => $note->update([
             'intro' => '',
-            'text' => str_repeat('one ', 50) . "\n\n" . str_repeat('two ', 30) . "\n\nNot in the summary.",
+            'text' => "Cliff's **new** blog.\n\nGo check it out!",
         ]));
 
-        $summary = blog_summary($note);
-        $this->assertSame(80, blog_words($summary));
-        $this->assertStringNotContainsString('Not in the summary', $summary);
-        $this->assertSame(84, blog_words(blog_content($note)));
+        $this->assertSame("Cliff’s new blog.\nGo check it out!", blog_summary($note));
+        $this->assertSame('Cliff’s new blog. Go check it out!', blog_description($note));
     }
 }

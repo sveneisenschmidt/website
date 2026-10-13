@@ -3,9 +3,9 @@
 use Kirby\Cms\File;
 
 /**
- * EXIF of photos. Read once, on import and on upload, and stored as file
- * fields: camera, lens, focal, aperture, shutter, iso. The values carry no
- * units; the templates format them.
+ * EXIF of photos. Read once, on upload, and stored as file fields:
+ * camera, lens, focal, aperture, shutter, iso. The values carry no units;
+ * the templates format them.
  */
 
 const BLOG_EXIF_FIELDS = ['camera', 'lens', 'focal', 'aperture', 'shutter', 'iso'];
@@ -32,7 +32,7 @@ function blog_num(float $v): string
     return rtrim(rtrim(number_format($v, 1, '.', ''), '0'), '.');
 }
 
-/** "Canon EOS R6m2" from make "Canon" and model "Canon EOS R6m2": the make once, as Hugo showed it. */
+/** "Canon EOS R6m2" from make "Canon" and model "Canon EOS R6m2": the make once. */
 function blog_camera(string $make, string $model): string
 {
     $make = trim($make);
@@ -84,8 +84,9 @@ function blog_exif_fields(array $d): array
         $out['shutter'] = blog_shutter($t);
     }
 
-    // In Hugo's order. The Canon EOS R5 writes ISO only in the tags 0x8832
-    // (RecommendedExposureIndex) and 0x8833 (ISOSpeed), which PHP does not name.
+    // The first of these tags the photo has. The Canon EOS R5 writes ISO
+    // only in the tags 0x8832 (RecommendedExposureIndex) and 0x8833
+    // (ISOSpeed), which PHP does not name.
     $iso = $exif['ISOSpeedRatings']
         ?? $exif['RecommendedExposureIndex'] ?? $exif['UndefinedTag:0x8832']
         ?? $exif['ISOSpeed'] ?? $exif['UndefinedTag:0x8833']

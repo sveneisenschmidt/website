@@ -1,8 +1,8 @@
 <?php
 /**
- * An image of a post, as Hugo's img shortcode drew it: linked to the
- * original, 600, 1000 and 1600 px WebP, the EXIF rows below. No blank
- * lines: Markdown would end the HTML block there.
+ * An image of a post: linked to the original, 600, 1000 and 1600 px WebP,
+ * the EXIF rows below. No blank lines: Markdown would end the HTML block
+ * there.
  *
  * @var Kirby\Cms\File $file
  * @var Kirby\Cms\Page $page
@@ -10,7 +10,8 @@
 $wide = blog_wide($file, 1600);
 $mid = blog_wide($file, 1000);
 $narrow = blog_wide($file, 600);
-[$width, $height] = blog_wide_size($file, 1600);
+// fitWidth() changes its object: a copy, so the file keeps its own size.
+$size = (clone $file->dimensions())->fitWidth(1600);
 $rows = blog_exif_rows($file);
 $caption = (string)$file->caption()->value();
 $photographer = (string)$file->photographer()->value();
@@ -23,8 +24,8 @@ class="frame-picture"
 <?php endif ?>src="<?= $wide->url() ?>"
 srcset="<?= $narrow->url() ?> 600w, <?= $mid->url() ?> 1000w, <?= $wide->url() ?> 1600w"
 sizes="(max-width: 900px) calc(100vw - 2rem), (max-width: 90rem) 63vw, 907px"
-width="<?= $width ?>"
-height="<?= $height ?>"
+width="<?= $size->width() ?>"
+height="<?= $size->height() ?>"
 alt="<?= $file->alt()->esc() ?>"
 loading="lazy"
 decoding="async"

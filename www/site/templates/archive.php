@@ -1,12 +1,12 @@
 <?php
 /**
- * The archive and its four streams, as Hugo's archive.html. Photos are
- * the photo posts and the trips with a cover.
+ * The archive and its four streams. Photos are the photo posts and the
+ * trips with a cover.
  *
  * @var Kirby\Cms\Page $page
  */
 $stream = $page->stream()->or('all')->value();
-$posts = blog_posts();
+$posts = collection('posts');
 if ($stream === 'photos') {
     $posts = $posts->filter(fn ($post) => $post->parent()->id() === 'photos' || ($post->parent()->id() === 'trips' && $post->cover()->isNotEmpty()));
 } elseif ($stream !== 'all') {

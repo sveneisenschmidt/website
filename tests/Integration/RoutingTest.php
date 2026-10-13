@@ -50,7 +50,7 @@ final class RoutingTest extends IntegrationTestCase
         $this->assertSame(200, $this->get('/2026-10-07-test-photo/?source=rss')->code());
     }
 
-    public function testAnOriginalImageAtItsHugoUrl(): void
+    public function testAnOriginalImageAtItsOldUrlNextToThePost(): void
     {
         $file = $this->upload($this->jpeg(8, 8), 'a.jpg');
 

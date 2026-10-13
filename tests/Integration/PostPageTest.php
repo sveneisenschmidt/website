@@ -3,23 +3,23 @@
 namespace Website\Tests\Integration;
 
 /**
- * A post as Hugo's page.html showed it, in the frame of baseof.html:
- * head, article, timeline with the neighbours.
+ * A post in the frame of the site: head, article, timeline with the
+ * neighbours.
  */
 final class PostPageTest extends IntegrationTestCase
 {
-    public function testHeadAsHugoWroteIt(): void
+    public function testHead(): void
     {
         $html = $this->post->render();
         $url = $this->post->url();
 
         $this->assertStringContainsString('<title>Test Photo · Sven Eisenschmidt - Personal Blog</title>', $html);
-        $this->assertStringContainsString('<meta name="description" content="Test intro' . "\n" . '">', $html);
+        $this->assertStringContainsString('<meta name="description" content="Test intro">', $html);
         $this->assertStringContainsString('<meta property="og:type" content="article">', $html);
         $this->assertStringContainsString('<meta property="article:published_time" content="2026-10-07T20:00:00+02:00">', $html);
         $this->assertStringContainsString("<link rel=\"canonical\" href=\"$url\">", $html);
         $this->assertStringContainsString('"@type": "Article"', $html);
-        $this->assertStringContainsString('<body class="page">', $html);
+        $this->assertStringContainsString('<body class="photo">', $html);
         $this->assertStringContainsString('<p class="masthead"><a href="/">Sven Eisenschmidt</a></p>', $html);
         $this->assertStringNotContainsString('pop.eisenschmidt.website', $html);
     }

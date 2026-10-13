@@ -33,11 +33,8 @@ RewriteRule ^(.*) index.php [L]
 
 </IfModule>
 
-# Pass the Authorization header to PHP
-SetEnvIf Authorization "(.+)" HTTP_AUTHORIZATION=$1
-
-# Headers as Hugo's layouts/home.htaccess set them. Kirby sends the 404
-# page itself, the redirects live in content/.redirects.json.
+# Headers for every response. Kirby sends the 404 page itself, the
+# redirects live in content/.redirects.json.
 
 # Content-Type
 AddDefaultCharset UTF-8

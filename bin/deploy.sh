@@ -11,21 +11,21 @@
 # 3. rsync of www/ and vendor/, with --delete, but state, host config and
 #    generated files are excluded, so rsync neither uploads nor deletes them.
 # 4. Staging password: .htpasswd next to www/, the auth block in www/.htaccess.
-# 5. Host config: env.php and, for a fresh site, .salt. 'url' is SITE_URL;
-#    'assistantKey' is ANTHROPIC_API_KEY, if set.
+# 5. Host config: env.php and, for a fresh site, .salt. bin/set-env.php
+#    sets 'url' to SITE_URL and 'assistantKey' to ANTHROPIC_API_KEY, if set.
 # 6. Page cache cleared under the site's cache lock, then a request to the start page.
 #
 # Environment:
 #   DEPLOY_PATH                       required, the site folder on the server
 #   SITE_URL                          required, the canonical URL ('url' in env.php)
-#   DEPLOY_HOST                       ssh target (alias or user@host); empty: DEPLOY_PATH
-#                                     is a local folder standing in for the server (tests)
+#   DEPLOY_HOST                       required, ssh target (alias or user@host)
 #   DEPLOY_SSH_KEY_FILE               optional, private key file for ssh
 #   STAGING_USER, STAGING_PASSWORD    optional, staging password over the whole site
 #   ANTHROPIC_API_KEY                 optional, key of the Panel assistant
 #   REMOTE_PHP                        PHP on the server, default php85 (php in the ssh shell is 8.4)
 set -euo pipefail
 
+: "${DEPLOY_HOST:?DEPLOY_HOST missing}"
 : "${DEPLOY_PATH:?DEPLOY_PATH missing}"
 : "${SITE_URL:?SITE_URL missing}"
 DEPLOY_PATH="${DEPLOY_PATH%/}"
@@ -35,24 +35,18 @@ RPHP="${REMOTE_PHP:-php85}"
 
 SSH_OPTS=(-o ConnectTimeout=30 -o ServerAliveInterval=30 -o BatchMode=yes)
 [ -n "${DEPLOY_SSH_KEY_FILE:-}" ] && SSH_OPTS+=(-i "$DEPLOY_SSH_KEY_FILE")
-if [ -n "${DEPLOY_HOST:-}" ]; then
-  remote() { ssh "${SSH_OPTS[@]}" "$DEPLOY_HOST" "$@"; }
-  DEST="$DEPLOY_HOST:$DEPLOY_PATH"
-  RSYNC_SSH=(-e "ssh ${SSH_OPTS[*]}")
-else
-  remote() { bash -c "$*"; }
-  DEST="$DEPLOY_PATH"
-  RSYNC_SSH=()
-fi
+remote() { ssh "${SSH_OPTS[@]}" "$DEPLOY_HOST" "$@"; }
+DEST="$DEPLOY_HOST:$DEPLOY_PATH"
+RSYNC_SSH=(-e "ssh ${SSH_OPTS[*]}")
 
 [ -f www/index.php ] && [ -f composer.lock ] && [ -f server/root.htaccess ] || { echo "Run from the repository root" >&2; exit 1; }
 
 # State, host config and generated files: never in the build, never deleted on the server.
 EXCLUDES=(
   --exclude '/content/' --exclude '/media/'
-  --exclude '/site/accounts/' --exclude '/site/cache/' --exclude '/site/sessions/' --exclude '/site/logs/'
+  --exclude '/site/accounts/' --exclude '/site/cache/' --exclude '/site/sessions/'
   --exclude '/site/config/env.php' --exclude '/site/config/.salt' --exclude '/site/config/.license'
-  --exclude '/.htpasswd' --exclude '.DS_Store'
+  --exclude '.DS_Store'
 )
 
 BUILD="$(mktemp -d)"
@@ -93,9 +87,9 @@ fi
 
 echo "== Code"
 remote "mkdir -p '$DEPLOY_PATH/www' '$DEPLOY_PATH/vendor'"
-rsync -rlptz --delete ${RSYNC_SSH[@]+"${RSYNC_SSH[@]}"} "$BUILD/vendor/" "$DEST/vendor/"
+rsync -rlptz --delete "${RSYNC_SSH[@]}" "$BUILD/vendor/" "$DEST/vendor/"
 # www/.htaccess goes up on its own, after .htpasswd.
-rsync -rlptz --delete "${EXCLUDES[@]}" --exclude '/.htaccess' ${RSYNC_SSH[@]+"${RSYNC_SSH[@]}"} "$BUILD/www/" "$DEST/www/"
+rsync -rlptz --delete "${EXCLUDES[@]}" --exclude '/.htaccess' "${RSYNC_SSH[@]}" "$BUILD/www/" "$DEST/www/"
 
 echo "== Staging password"
 if [ -n "${STAGING_USER:-}" ] && [ -n "${STAGING_PASSWORD:-}" ]; then
@@ -114,8 +108,8 @@ else
 fi
 # mktemp creates 0600; Apache must be able to read the file.
 chmod 644 "$HTACCESS"
-rsync -tpz ${RSYNC_SSH[@]+"${RSYNC_SSH[@]}"} "$HTACCESS" "$DEST/www/.htaccess"
-rsync -tpz ${RSYNC_SSH[@]+"${RSYNC_SSH[@]}"} server/root.htaccess "$DEST/.htaccess"
+rsync -tpz "${RSYNC_SSH[@]}" "$HTACCESS" "$DEST/www/.htaccess"
+rsync -tpz "${RSYNC_SSH[@]}" server/root.htaccess "$DEST/.htaccess"
 [ -n "${STAGING_USER:-}" ] && [ -n "${STAGING_PASSWORD:-}" ] || remote "rm -f '$DEPLOY_PATH/.htpasswd'"
 # KAS puts a placeholder page into a new domain folder.
 remote "rm -f '$DEPLOY_PATH/index.htm'"
@@ -127,13 +121,11 @@ remote "cd '$DEPLOY_PATH/www/site/config' && { test -f env.php || printf '<?php\
 
 # Kirby runs from www/index.php: without a fixed url it would take /www as
 # its base, and every link would start with /www/.
-remote "$RPHP -- '$DEPLOY_PATH/www/site/config/env.php' 'url=$SITE_URL'" < bin/set-env.php
-
-# The assistant's key travels on stdin, never on a command line. Without it
-# the assistant is off; an existing key stays.
-if [ -n "${ANTHROPIC_API_KEY:-}" ]; then
-  printf '%s' "$ANTHROPIC_API_KEY" | remote "$RPHP -r '\$k = trim(stream_get_contents(STDIN)); \$f = \$argv[1]; \$e = require \$f; if ((\$e[\"assistantKey\"] ?? null) === \$k) exit(0); \$e[\"assistantKey\"] = \$k; file_put_contents(\$f . \".tmp\", \"<?php\\n\\nreturn \" . var_export(\$e, true) . \";\\n\"); rename(\$f . \".tmp\", \$f); echo \"assistantKey: set\\n\";' '$DEPLOY_PATH/www/site/config/env.php'"
-fi
+# The assistant's key travels on stdin, never on a command line, so the
+# script goes up as a file first. Without a key the assistant is off; an
+# existing key stays.
+rsync -tpz "${RSYNC_SSH[@]}" bin/set-env.php "$DEST/set-env.php"
+printf '%s' "${ANTHROPIC_API_KEY:-}" | remote "$RPHP '$DEPLOY_PATH/set-env.php' '$DEPLOY_PATH/www/site/config/env.php' 'url=$SITE_URL'; status=\$?; rm -f '$DEPLOY_PATH/set-env.php'; exit \$status"
 
 echo "== Cache"
 # Under the site's cache lock: rm -rf would race with a page that writes

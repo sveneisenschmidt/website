@@ -1,20 +1,19 @@
 <?php
 /**
- * The frame of every page, as Hugo's baseof.html. A template puts its
- * content between snippet('layout', slots: true) and endsnippet(). The
- * kind is Hugo's .Kind: home, page, section or 404.
+ * The frame of every page. A template puts its content between
+ * snippet('layout', slots: true) and endsnippet(). The body carries the
+ * name of the template as its class.
  *
  * @var Kirby\Cms\Page $page
  * @var Kirby\Template\Slot $slot
  */
-$kind = blog_kind($page);
 ?>
 <!doctype html>
 <html lang="en" dir="ltr">
 <head>
-<?php snippet('head', ['kind' => $kind]) ?>
+<?php snippet('head') ?>
 </head>
-<body class="<?= $kind ?>">
+<body class="<?= $page->intendedTemplate()->name() ?>">
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
 <?php if ($page->isHomePage()): ?>

@@ -1,5 +1,4 @@
-# Website › Beiträge. The site blueprint itself is PHP (plugins/assistant):
-# the tab "Assistent" shows for admins only.
+# Website › Beiträge (blueprints/site.yml).
 label: Beiträge
 icon: page
 columns:

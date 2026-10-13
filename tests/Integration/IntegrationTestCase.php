@@ -16,7 +16,7 @@ abstract class IntegrationTestCase extends TestCase
     protected Page $post;
     /** Options for the test site, on top of config.php. */
     protected array $options = [];
-    /** Further App props for the test site, such as roles. */
+    /** Further App props for the test site, such as hooks. */
     protected array $props = [];
 
     protected function setUp(): void

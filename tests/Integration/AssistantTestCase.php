@@ -27,8 +27,6 @@ abstract class AssistantTestCase extends IntegrationTestCase
     protected array $osrm = [];
     protected array $osrmCalls = [];
 
-    protected array $props = ['roles' => [['name' => 'editor', 'title' => 'Editor']]];
-
     protected function setUp(): void
     {
         $this->root = TestSite::create();

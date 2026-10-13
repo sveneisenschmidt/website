@@ -8,7 +8,7 @@ namespace Website\Tests\Integration;
  */
 final class ThumbTest extends IntegrationTestCase
 {
-    public function testTheAssetsOfHugoAreThere(): void
+    public function testTheAssetsAreThere(): void
     {
         foreach (['css/base.css', 'js/map.js', 'js/search.js', 'leaflet/leaflet.js'] as $file) {
             $this->assertFileExists($this->kirby->root('assets') . '/' . $file);

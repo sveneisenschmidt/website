@@ -3,11 +3,11 @@
 namespace Website\Tests\Integration;
 
 /**
- * (image:) and (map:) draw what Hugo's img and map shortcodes drew.
+ * (image:) draws a figure with its EXIF rows, (map:) the map of a trip.
  */
 final class TagTest extends IntegrationTestCase
 {
-    public function testImageAsHugoDrewIt(): void
+    public function testImageIsAFigureWithExifRows(): void
     {
         $file = $this->upload(__DIR__ . '/../fixtures/exif.jpg', 'a.jpg');
         $file = $this->kirby->impersonate('kirby', fn () => $file->update([
@@ -32,7 +32,7 @@ final class TagTest extends IntegrationTestCase
         $this->assertStringNotContainsString("\n\n", $html, 'no blank line: Markdown would end the HTML block');
     }
 
-    public function testExifRowsAsHugoFormattedThem(): void
+    public function testExifRowsAreFormatted(): void
     {
         $file = $this->upload($this->jpeg(8, 8), 'b.jpg');
         $exif = function (array $values) use (&$file) {
@@ -69,7 +69,7 @@ final class TagTest extends IntegrationTestCase
         $this->assertSame("<img src=\"{$file->url()}\" alt=\"Sven\" class=\"inline\">\n<p>Hello</p>", $html);
     }
 
-    public function testMapAsTheHugoShortcode(): void
+    public function testMapWithPointsAndRoute(): void
     {
         $trip = $this->post('trips', 'trip', 'a-trip', 'A Trip');
         $route = $this->kirby->impersonate('kirby', fn () => $trip->createFile([
@@ -85,7 +85,7 @@ final class TagTest extends IntegrationTestCase
 
         $html = blog_html("Before\n\n(map:)", $trip);
 
-        // Points as numbers, keys and labels as Hugo's jsonify wrote them.
+        // Points as numbers, the JSON escaped for the attribute.
         $this->assertStringContainsString('<div class="map" data-zoomable="true" data-points="[{&quot;label&quot;:&quot;Pegau&quot;,&quot;lat&quot;:51.166,&quot;lon&quot;:12.248},{&quot;label&quot;:&quot;St Michael&#039;s ', $html);
         $this->assertStringContainsString('&quot;lat&quot;:50.1,&quot;lon&quot;:-5.47}]"><script type="application/json">{"type":"LineString","coordinates":[[12.24,51.12],[12.25,51.13]]}</script>' . "\n</div>", $html);
         $this->assertStringNotContainsString('<b>', $html, 'a label is text');

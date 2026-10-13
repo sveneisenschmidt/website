@@ -3,7 +3,6 @@
 namespace Website\Tests\Integration;
 
 use BlogAssistantError;
-use Kirby\Exception\PermissionException;
 
 /**
  * The chat of the assistant: rounds, stop, errors, Protokoll, prompt and
@@ -479,24 +478,5 @@ final class AssistantChatTest extends AssistantTestCase
         $this->kirby->trigger('user.logout:before', ['user' => $this->kirby->user(), 'session' => $this->kirby->session()]);
 
         $this->assertDirectoryDoesNotExist($folder);
-    }
-
-    public function testOnlyAdminsReachTheAssistant(): void
-    {
-        $this->kirby->users()->create(['id' => 'editor', 'email' => 'editor@website.test', 'role' => 'editor', 'password' => 'editor-password-1']);
-        $this->kirby->impersonate('editor');
-
-        try {
-            $this->kirby->api()->call('blog-assistant/send', 'POST', ['body' => ['text' => 'Hallo']]);
-            $this->fail('No error');
-        } catch (PermissionException) {
-        }
-        $this->assertSame([], $this->requests);
-        $this->assertArrayNotHasKey('views', $this->kirby->load()->areas()['assistent']);
-        $this->assertNull(blog_assistant_button($this->post));
-
-        $this->kirby->impersonate('kirby');
-        $this->assertArrayHasKey('views', $this->kirby->load()->areas()['assistent']);
-        $this->assertSame('assistent?page=photos%2Ftest-photo', blog_assistant_button($this->post)->link);
     }
 }

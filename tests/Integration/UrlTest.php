@@ -3,12 +3,12 @@
 namespace Website\Tests\Integration;
 
 /**
- * URLs as Hugo had them, from the page model (plugins/blog/urls.php), so
- * links in the text and the Panel's preview use them too.
+ * The URL scheme of the site, from the page model (plugins/blog/urls.php),
+ * so links in the text and the Panel's preview use it too.
  */
 final class UrlTest extends IntegrationTestCase
 {
-    public function testEveryUrlAsHugoHadIt(): void
+    public function testEveryUrlFollowsTheScheme(): void
     {
         $pages = $this->kirby->impersonate('kirby', function () {
             $site = $this->kirby->site();

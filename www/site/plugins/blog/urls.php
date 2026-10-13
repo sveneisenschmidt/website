@@ -5,10 +5,11 @@ use Kirby\Cms\Response;
 use Kirby\Data\Json;
 
 /**
- * URLs as Hugo had them: a post at /YYYY-MM-DD-slug/, every other page at
- * its path with a slash at the end, the home page at /. Old URLs lead on
+ * The URL scheme of the site, which links and feed readers know and which
+ * stays as it is: a post at /YYYY-MM-DD-slug/, every other page at its
+ * path with a slash at the end, the home page at /. Old URLs lead on
  * through the redirects in content/.redirects.json: state, like the
- * change log, started from data/redirects.yaml (make kirby-seed).
+ * change log.
  */
 class BlogPage extends Page
 {
@@ -55,8 +56,9 @@ function blog_post(string $date, string $slug): ?Page
 
 /**
  * Answers a path before Kirby does, or null for Kirby's own routes:
- * a redirect, a post, an original image at its Hugo URL, every page only
- * at its URL with the slash at the end, as Apache served Hugo's folders.
+ * a redirect, a post, an original image at its old URL next to its post
+ * (a redirect to the file), every page only at its URL with the slash at
+ * the end.
  */
 function blog_route(string $path): Page|Response|null
 {
@@ -100,7 +102,10 @@ function blog_redirects_file(): string
     return kirby()->root('content') . '/.redirects.json';
 }
 
-/** The redirects: a list of from, to and Hugo's flags rss, pop and note. */
+/**
+ * The redirects: a list of from and to. With rss: keep the feed keeps the
+ * old URL as the post's GUID (feeds.php). Other keys are not read.
+ */
 function blog_redirects(): array
 {
     $file = blog_redirects_file();
@@ -113,7 +118,7 @@ function blog_redirects_write(array $redirects): void
     blog_analytics_write(blog_redirects_file(), array_values($redirects));
 }
 
-/** Where an old path leads, or null. As Hugo's RedirectMatch: with or without the slash at the end. */
+/** Where an old path leads, or null. A path matches with or without the slash at the end. */
 function blog_redirect_to(string $path): ?string
 {
     foreach (blog_redirects() as $redirect) {

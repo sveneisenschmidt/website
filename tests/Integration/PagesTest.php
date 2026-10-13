@@ -5,8 +5,7 @@ namespace Website\Tests\Integration;
 use Website\Tests\Support\TestSite;
 
 /**
- * Home, archive, About and the error page, as Hugo's front.html,
- * archive.html, page.html and 404.html showed them.
+ * Home, archive, About and the error page.
  */
 final class PagesTest extends IntegrationTestCase
 {
@@ -41,7 +40,7 @@ final class PagesTest extends IntegrationTestCase
         $this->assertStringContainsString('data-fit=".pictures"', $html);
         $this->assertStringContainsString('<span class="stream-count">1</span>', $html);
         $this->assertStringContainsString('<span class="writing-label">Latest:</span> Test Photo', $html);
-        $this->assertStringContainsString('<p class="excerpt">Test intro' . "\n" . '</p>', $html);
+        $this->assertStringContainsString('<p class="excerpt">Test intro</p>', $html);
         $this->assertStringContainsString('.writing[data-fit]', $html, 'fit.js');
         $this->assertStringContainsString('<meta property="og:image" content="', $html);
     }
@@ -50,7 +49,7 @@ final class PagesTest extends IntegrationTestCase
     {
         $html = $this->kirby->page('archive')->render();
 
-        $this->assertStringContainsString('<body class="section">', $html);
+        $this->assertStringContainsString('<body class="archive">', $html);
         $this->assertStringContainsString('<a href="/archive/" aria-current="true">All</a>', $html);
         $this->assertStringContainsString("<h2 class=\"archive-month stream-title\">\n<span>October 2026</span>\n<span>1</span>\n</h2>", $html);
         $this->assertStringContainsString('<a class="archive-title" href="' . $this->post->url() . '">Test Photo</a>', $html);
