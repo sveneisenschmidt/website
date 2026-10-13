@@ -2,6 +2,7 @@
 
 use Kirby\Cms\App as Kirby;
 use Kirby\Cms\File;
+use Kirby\Cms\Page;
 use Kirby\Text\KirbyTag;
 
 /**
@@ -16,6 +17,7 @@ require_once __DIR__ . '/layout.php';
 require_once __DIR__ . '/tags.php';
 require_once __DIR__ . '/feeds.php';
 require_once __DIR__ . '/cache.php';
+require_once __DIR__ . '/urls.php';
 
 Kirby::plugin('sveneisenschmidt/blog', [
     'hooks' => [
@@ -23,6 +25,10 @@ Kirby::plugin('sveneisenschmidt/blog', [
         // and can be corrected in the Panel. A replaced photo brings its own.
         'file.create:after' => fn (File $file) => blog_store_exif($file),
         'file.replace:after' => fn (File $newFile) => blog_store_exif($newFile, true),
+        // A new slug or date gives a published post a new URL: the old one leads there.
+        // The old page of changeSlug has no content any more: its date comes from the new one.
+        'page.changeSlug:after' => fn (Page $newPage, Page $oldPage) => blog_redirect_moved($newPage, blog_post_path($newPage, $oldPage->slug())),
+        'page.update:after' => fn (Page $newPage, Page $oldPage) => blog_redirect_moved($newPage, blog_post_path($oldPage)),
     ],
     'tags' => [
         'image' => [
@@ -36,4 +42,6 @@ Kirby::plugin('sveneisenschmidt/blog', [
     // One template for the four post types, as Hugo's page.html.
     'templates' => array_fill_keys(['photo', 'trip', 'note', 'essay'], __DIR__ . '/../../templates/post.php'),
     'cacheTypes' => ['blog-file' => BlogFileCache::class],
+    // Every page: its URL ends with a slash, a post's is /YYYY-MM-DD-slug/ (urls.php).
+    'pageModels' => ['default' => BlogPage::class],
 ]);

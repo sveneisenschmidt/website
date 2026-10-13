@@ -55,6 +55,7 @@ $staging = $content . '.new';
 rrmdir($staging);
 try {
     $counts = hugo_import($root . '/content', $staging, 'blog_read_exif');
+    $redirects = hugo_import_redirects($root . '/data/redirects.yaml', $staging);
 } catch (Throwable $e) {
     rrmdir($staging);
     fwrite(STDERR, "Import failed, www/content is unchanged.\n" . $e->getMessage() . "\n");
@@ -91,6 +92,6 @@ if ($kept !== []) {
 
 $posts = $counts['photo'] + $counts['trip'] + $counts['note'] + $counts['essay'];
 printf(
-    "Imported %d posts (%d photo, %d trip, %d note, %d essay), %d drafts, %d files.\n",
-    $posts, $counts['photo'], $counts['trip'], $counts['note'], $counts['essay'], $counts['drafts'], $counts['files']
+    "Imported %d posts (%d photo, %d trip, %d note, %d essay), %d drafts, %d files, %d redirects.\n",
+    $posts, $counts['photo'], $counts['trip'], $counts['note'], $counts['essay'], $counts['drafts'], $counts['files'], $redirects
 );

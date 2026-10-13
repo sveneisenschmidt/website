@@ -10,6 +10,7 @@ const HUGO_SITE_TITLE = 'Sven Eisenschmidt - Personal Blog';
 const HUGO_EMAIL = 'sven.eisenschmidt@gmail.com';
 // The introduction of llms.txt, from static/llms.txt. The lists below it come from the content.
 const HUGO_LLMS = "> Personal website of Sven Eisenschmidt, Chief Technology & Product Officer at roadsurfer, based near Leipzig, Germany. Daily photographs, trip diaries, short notes, and essays. Private and non-commercial: no ads, no affiliate links, no monetization.\n\nThis site welcomes crawling by LLMs and AI systems for training and indexing purposes.";
+const HUGO_REDIRECT_KEYS = ['from', 'to', 'note', 'pop', 'rss'];
 const HUGO_SECTIONS = ['photos' => 'photo', 'trips' => 'trip', 'notes' => 'note', 'essays' => 'essay'];
 const HUGO_POST_KEYS = ['title', 'date', 'type', 'cover', 'pick', 'draft', 'trip'];
 const HUGO_ABOUT_KEYS = ['title', 'date', 'showDate', 'draft', 'label', 'lastmod', 'build.list'];
@@ -471,4 +472,24 @@ function hugo_import(string $hugo, string $content, callable $exif): array
     }
     touch($content, HUGO_FIXED_TIME);
     return $counts;
+}
+
+/**
+ * Writes data/redirects.yaml as the redirects of the site
+ * (content/.redirects.json) with the fixed time. Returns their number.
+ */
+function hugo_import_redirects(string $yaml, string $content): int
+{
+    // Symfony, not Kirby's default Spyc: Spyc cuts "#things-i-built" off as a comment.
+    $redirects = Symfony\Component\Yaml\Yaml::parseFile($yaml);
+    foreach ($redirects as $redirect) {
+        if (!isset($redirect['from'], $redirect['to']) || array_diff(array_keys($redirect), HUGO_REDIRECT_KEYS)) {
+            throw new RuntimeException("$yaml: unknown redirect " . json_encode($redirect));
+        }
+    }
+    $file = "$content/.redirects.json";
+    file_put_contents($file, json_encode($redirects, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n");
+    touch($file, HUGO_FIXED_TIME);
+    touch($content, HUGO_FIXED_TIME);
+    return count($redirects);
 }

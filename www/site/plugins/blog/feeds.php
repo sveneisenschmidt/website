@@ -27,13 +27,14 @@ function blog_rss(): string
         . "    <language>en-us</language>\n"
         . '    <lastBuildDate>' . ($posts->first()?->date()->toDate(BLOG_RSS_DATE) ?? '') . "</lastBuildDate>\n"
         . "    <atom:link href=\"{$home}index.xml\" rel=\"self\" type=\"application/rss+xml\" />\n";
+    $frozen = blog_rss_guids();
     foreach ($posts as $post) {
         $link = $post->url() . '?source=rss';
         $xml .= "    <item>\n"
             . '      <title>' . Xml::encode($post->title()->value()) . "</title>\n"
             . "      <link>$link</link>\n"
             . '      <pubDate>' . $post->date()->toDate(BLOG_RSS_DATE) . "</pubDate>\n"
-            . "      <guid isPermaLink=\"true\">$link</guid>\n"
+            . '      <guid isPermaLink="true">' . ($frozen[parse_url($post->url(), PHP_URL_PATH)] ?? $post->url()) . "?source=rss</guid>\n"
             . '      <description><![CDATA[' . blog_rss_description($post, $link) . "]]></description>\n"
             . "    </item>\n";
     }
@@ -119,4 +120,19 @@ function blog_llms(): string
         "- [Sitemap]($url/sitemap.xml)",
     );
     return implode("\n", $lines) . "\n";
+}
+
+/**
+ * The GUIDs that stay as they were (home.rss.xml): path of a post => the
+ * old URL of each redirect with rss: keep. A later redirect wins.
+ */
+function blog_rss_guids(): array
+{
+    $guids = [];
+    foreach (blog_redirects() as $redirect) {
+        if (($redirect['rss'] ?? '') === 'keep') {
+            $guids[$redirect['to']] = site()->url() . $redirect['from'];
+        }
+    }
+    return $guids;
 }

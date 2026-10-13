@@ -31,8 +31,8 @@ final class AnalyticsTest extends IntegrationTestCase
 
     public function testSameBrowserCountsOneVisitAndEveryView(): void
     {
-        $this->visit('photos/test-photo');
-        $this->visit('photos/test-photo');
+        $this->visit('2026-10-07-test-photo');
+        $this->visit('2026-10-07-test-photo');
 
         $day = $this->today();
         $this->assertSame(1, $day['visits']);
@@ -42,8 +42,8 @@ final class AnalyticsTest extends IntegrationTestCase
 
     public function testTwoBrowsersCountTwoVisits(): void
     {
-        $this->visit('photos/test-photo', ip: '203.0.113.1');
-        $this->visit('photos/test-photo', ip: '203.0.113.2');
+        $this->visit('2026-10-07-test-photo', ip: '203.0.113.1');
+        $this->visit('2026-10-07-test-photo', ip: '203.0.113.2');
         $this->visit('photos', ip: '203.0.113.2');
 
         $day = $this->today();
@@ -54,10 +54,10 @@ final class AnalyticsTest extends IntegrationTestCase
 
     public function testPageFromThePageCacheCounts(): void
     {
-        $this->visit('photos/test-photo', ip: '203.0.113.1');
+        $this->visit('2026-10-07-test-photo', ip: '203.0.113.1');
         $this->assertTrue($this->kirby->cache('pages')->exists('photos/test-photo.latest.html'), 'page is in the page cache');
 
-        $this->visit('photos/test-photo', ip: '203.0.113.2');
+        $this->visit('2026-10-07-test-photo', ip: '203.0.113.2');
 
         $this->assertSame(['photos/test-photo' => 2], $this->today()['pages']);
     }
@@ -65,7 +65,7 @@ final class AnalyticsTest extends IntegrationTestCase
     public function testHomeAndPostPagesCount(): void
     {
         $this->visit('');
-        $this->visit('photos/test-photo');
+        $this->visit('2026-10-07-test-photo');
 
         $this->assertSame(['home' => 1, 'photos/test-photo' => 1], $this->today()['pages']);
     }
@@ -76,7 +76,7 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->post('notes', 'note', 'a-note', 'A Note');
         $this->post('essays', 'essay', 'an-essay', 'An Essay');
 
-        foreach (['trips/a-trip', 'notes/a-note', 'essays/an-essay'] as $path) {
+        foreach (['2026-10-07-a-trip', '2026-10-07-a-note', '2026-10-07-an-essay'] as $path) {
             $this->visit($path);
         }
 
@@ -131,7 +131,7 @@ final class AnalyticsTest extends IntegrationTestCase
     public function testExternalReferrerCountsHostOnceAVisit(): void
     {
         $this->visit('photos', referer: 'https://www.instagram.com/sveneisenschmidt/?igsh=abc');
-        $this->visit('photos/test-photo', referer: 'http://localhost/photos');
+        $this->visit('2026-10-07-test-photo', referer: 'http://localhost/photos');
         $this->visit('photos', ip: '203.0.113.2', referer: 'http://localhost/');
 
         $this->assertSame(['instagram.com' => 1], $this->today()['referrers']);
@@ -170,9 +170,9 @@ final class AnalyticsTest extends IntegrationTestCase
 
     public function testSummaryForThePanel(): void
     {
-        $this->visit('photos/test-photo', referer: 'https://instagram.com/');
+        $this->visit('2026-10-07-test-photo', referer: 'https://instagram.com/');
         $this->visit('photos', ip: '203.0.113.2');
-        $this->visit('photos/test-photo', ip: '203.0.113.2');
+        $this->visit('2026-10-07-test-photo', ip: '203.0.113.2');
 
         $summary = blog_analytics_summary(30);
 
@@ -181,15 +181,15 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->assertSame(0, $summary['days'][0]['visits']);
         $this->assertSame(['today' => 2, 'week' => 2, 'month' => 2, 'views' => 3], $summary['totals']);
         $this->assertSame([
-            ['id' => 'photos/test-photo', 'title' => 'Test Photo', 'url' => 'http://localhost/photos/test-photo', 'visits' => 2],
-            ['id' => 'photos', 'title' => 'Photos', 'url' => 'http://localhost/photos', 'visits' => 1],
+            ['id' => 'photos/test-photo', 'title' => 'Test Photo', 'url' => 'http://localhost/2026-10-07-test-photo/', 'visits' => 2],
+            ['id' => 'photos', 'title' => 'Photos', 'url' => 'http://localhost/photos/', 'visits' => 1],
         ], $summary['pages']);
         $this->assertSame([['host' => 'instagram.com', 'visits' => 1]], $summary['referrers']);
     }
 
     public function testSummaryNamesHomeRenamedAndDeletedPages(): void
     {
-        $this->visit('photos/test-photo');
+        $this->visit('2026-10-07-test-photo');
         $this->visit('');
         $this->kirby->impersonate('kirby', fn () => $this->kirby->page('photos/test-photo')->changeTitle('Renamed Photo'));
         $this->kirby->impersonate('kirby', fn () => $this->kirby->site()->createChild(['slug' => 'gone', 'template' => 'default', 'content' => ['title' => 'Gone']])->changeStatus('listed'));
