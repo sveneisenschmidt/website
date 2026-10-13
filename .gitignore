@@ -20,7 +20,6 @@ data.db*
 
 # Kirby: Zustand lebt in Backups, nie in Git
 /www/content/
-/www/content.new/
 /www/site/accounts/
 /www/site/config/env.php
 /www/site/config/.salt
@@ -54,6 +53,3 @@ data.db*
 
 # Assistent: Uploads der Chats, neben www/ und vendor/, nie in Git
 /storage/
-
-# Kirby: Ausgabe von make kirby-parity
-/.parity/

@@ -74,11 +74,6 @@ kirby-test:
 	@test -x vendor/bin/phpunit || { echo "PHPUnit fehlt. Erst: composer install"; exit 1; }
 	@$(PHP) vendor/bin/phpunit
 
-.PHONY: kirby-seed
-kirby-seed:
-	@test -f vendor/autoload.php || { echo "Kirby fehlt. Erst: composer install"; exit 1; }
-	$(PHP) bin/seed.php $(if $(filter 1,$(FORCE)),--force,)
-
 # Nur localhost: der PHP-Server liefert jede Datei unter www/ aus, auch
 # content/ und site/. Anders als Hugos make dev nie an 0.0.0.0 binden.
 # Uploads im Assistenten: bis 60 MB pro Datei, die Vorschau eines Fotos mit
@@ -89,7 +84,7 @@ kirby-seed:
 kirby-dev:
 	@test -f vendor/autoload.php || { echo "Kirby fehlt. Erst: composer install"; exit 1; }
 	@test -f $(WWW)/site/config/env.php || { echo "Keine Konfiguration. Erst: make kirby-config"; exit 1; }
-	@test -d $(WWW)/content || { echo "Keine Inhalte. Erst: make kirby-seed"; exit 1; }
+	@test -d $(WWW)/content || { echo "Keine Inhalte. Erst: make kirby-pull"; exit 1; }
 	@$(PHP) -r 'if (PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION !== trim(file_get_contents(".php-version"))) fwrite(STDERR, "Hinweis: hier PHP ".PHP_VERSION.", .php-version sagt ".trim(file_get_contents(".php-version"))."\n");'
 	@rm -rf $(WWW)/site/cache/localhost_$(KIRBY_PORT)
 	@echo "Seite: http://localhost:$(KIRBY_PORT)  Panel: http://localhost:$(KIRBY_PORT)/panel  (Ende mit Ctrl+C)"
@@ -138,13 +133,6 @@ SITE ?= http://localhost:$(KIRBY_PORT)
 kirby-check-urls:
 	@$(PHP) bin/check-urls.php $(SITE)
 
-# Jede Seite von Kirby gegen Hugos Build in public/ (bin/parity.php). Braucht
-# einen Hugo-Build: hugo, oder make build.
-.PHONY: kirby-parity
-kirby-parity:
-	@test -f public/index.html || { echo "Kein Hugo-Build in public/. Erst: hugo"; exit 1; }
-	@$(PHP) bin/parity.php $(WWW) public
-
 # Deploy der Live-Seite. Host und Pfad sind nicht geheim, es gilt der
 # SSH-Alias website.
 # Den API-Schlüssel holt bin/deploy-env.sh aus der lokalen env.php. Ein
@@ -162,12 +150,6 @@ kirby-deploy: kirby-lint kirby-test
 .PHONY: kirby-pull
 kirby-pull:
 	DEPLOY_HOST=$(KIRBY_DEPLOY_HOST) DEPLOY_PATH=$(KIRBY_DEPLOY_PATH) bin/pull.sh
-
-# Ersetzt die Inhalte auf dem Server durch einen lokalen Snapshot ohne Konten.
-.PHONY: kirby-upload-state
-kirby-upload-state:
-	@test -n "$(SNAPSHOT)" || { echo "Aufruf: make kirby-upload-state SNAPSHOT=backups/website-..."; exit 1; }
-	DEPLOY_HOST=$(KIRBY_DEPLOY_HOST) DEPLOY_PATH=$(KIRBY_DEPLOY_PATH) bin/upload-state.sh $(SNAPSHOT)
 
 # Ruft jede Seite und jedes Bild unter /media/ einmal ab (bin/warm.php).
 .PHONY: kirby-warm

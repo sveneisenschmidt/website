@@ -49,7 +49,7 @@ fi
 
 # State, host config and generated files: never in the build, never deleted on the server.
 EXCLUDES=(
-  --exclude '/content/' --exclude '/content.new/' --exclude '/media/'
+  --exclude '/content/' --exclude '/media/'
   --exclude '/site/accounts/' --exclude '/site/cache/' --exclude '/site/sessions/' --exclude '/site/logs/'
   --exclude '/site/config/env.php' --exclude '/site/config/.salt' --exclude '/site/config/.license'
   --exclude '/.htpasswd' --exclude '.DS_Store'

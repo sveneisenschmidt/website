@@ -70,14 +70,4 @@ return array_replace_recursive([
             'page' => ['open', 'preview', '-', 'assistant', 'settings', 'languages', 'status'],
         ],
     ],
-    'hooks' => [
-        // The local dev login from bin/seed.php (an address under .test) works
-        // only with debug on. Should a local backup with accounts ever reach
-        // the server (debug off there), nobody can log in with it.
-        'user.login:before' => function (Kirby\Cms\User $user) {
-            if (str_ends_with($user->email(), '.test') && option('debug') !== true) {
-                throw new Kirby\Exception\PermissionException('The dev login works only locally.');
-            }
-        },
-    ],
 ], $env);
