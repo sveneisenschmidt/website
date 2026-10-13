@@ -62,6 +62,10 @@ return array_replace_recursive([
         'pages' => ['active' => true, 'type' => 'blog-file', 'ignore' => ['about']],
     ],
     'routes' => require __DIR__ . '/routes.php',
+    // A Panel login needs the password and a code. The code comes from an
+    // authenticator app (TOTP) when the account has one, and by email when
+    // it has none. The account menu offers the TOTP setup only when 2fa is on.
+    'auth' => ['methods' => ['password' => ['2fa' => true]]],
     'panel' => [
         'language' => 'de',
         // Each post type gets its own entry in the Panel menu, which links to

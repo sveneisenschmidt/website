@@ -5,8 +5,8 @@ use Kirby\Cms\Event;
 use Website\Changelog\Log;
 
 /**
- * Registers the change log with Kirby: the hooks after every change and the
- * Panel view "Verlauf". The classes are in src/Changelog.
+ * Registers the change log with Kirby: the hooks after every change and
+ * every login, and the Panel view "Verlauf". The classes are in src/Changelog.
  */
 
 App::plugin('website/changelog', [
@@ -15,6 +15,7 @@ App::plugin('website/changelog', [
         'file.*:after' => fn(Event $event) => Log::event($event),
         'site.*:after' => fn(Event $event) => Log::event($event),
         'user.*:after' => fn(Event $event) => Log::event($event),
+        'user.login:failed' => fn(?string $email) => Log::failedLogin($email),
     ],
     'areas' => [
         'verlauf' => fn() => [

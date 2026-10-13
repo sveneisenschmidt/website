@@ -15,7 +15,8 @@ use Website\Blog\Types;
 /**
  * The change log: who changed what, when and where. Every
  * change to a page, a file, the site or a user adds one JSON line to
- * content/.changelog/<year>-<month>.jsonl. Kirby ignores folders in
+ * content/.changelog/<year>-<month>.jsonl. So does every Panel login and
+ * every failed login. Kirby ignores folders in
  * content/ whose name starts with a dot, so the log never shows as a page.
  * The backup includes all of content/, and the deploy never overwrites it,
  * so a restore brings the log back. The Panel view "Verlauf"
@@ -28,7 +29,7 @@ final class Log
         'page' => ['create', 'update', 'delete', 'duplicate', 'changeStatus', 'changeTitle', 'changeSlug', 'changeNum', 'changeTemplate'],
         'file' => ['create', 'update', 'delete', 'replace', 'changeName', 'changeSort'],
         'site' => ['update', 'changeTitle'],
-        'user' => ['create', 'delete', 'changeEmail', 'changeName', 'changeRole', 'changePassword'],
+        'user' => ['create', 'delete', 'changeEmail', 'changeName', 'changeRole', 'changePassword', 'login'],
     ];
 
     public static function dir(): string
@@ -78,6 +79,36 @@ final class Log
             ]);
         } catch (Throwable $e) {
             // An error in the log must not fail the save.
+            error_log('blog changelog: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Handler for the hook user.login:failed (plugins/changelog): a wrong
+     * email, password or code. Kirby also fires the hook for every attempt
+     * while it blocks the IP address or the email. Those attempts make no
+     * entry, so one IP address adds at most auth.trials entries (Kirby: 10)
+     * per auth.timeout (Kirby: one hour).
+     */
+    public static function failedLogin(?string $email): void
+    {
+        try {
+            if (kirby()->auth()->isBlocked($email ?? '')) {
+                return;
+            }
+            // The email is the text from the login form. No valid address is
+            // longer than 254 characters, so a longer text cannot fill the log.
+            $email = mb_substr($email ?? '', 0, 254);
+            self::write([
+                'action' => 'user.login:failed',
+                'type' => 'user',
+                'id' => $email,
+                'title' => $email,
+                'kind' => null,
+                'link' => null,
+                'changes' => [],
+            ]);
+        } catch (Throwable $e) {
             error_log('blog changelog: ' . $e->getMessage());
         }
     }

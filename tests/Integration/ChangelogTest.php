@@ -8,6 +8,9 @@ final class ChangelogTest extends IntegrationTestCase
 {
     private const EMAIL = 'author@website.test';
 
+    /** Kirby writes every failed login to the PHP error log, and PHPUnit counts that as output. */
+    protected array $options = ['auth' => ['debug' => false]];
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -256,5 +259,54 @@ final class ChangelogTest extends IntegrationTestCase
         $this->assertSame([['field' => 'assistantprompt', 'label' => 'Prompt', 'old' => '', 'new' => 'geändert']], $entry['changes']);
         $raw = implode('', array_map('file_get_contents', glob($this->root . '/content/.changelog/*.jsonl')));
         $this->assertStringNotContainsString('PROMPT-CANARY-7f3a', $raw);
+    }
+
+    public function testLoginIsLogged(): void
+    {
+        $session = $this->kirby->session(['createMode' => 'manual']);
+        $this->kirby->user(self::EMAIL)->loginPasswordless($session);
+        // Without destroy(), the session writes its file at the end of the
+        // run, when the test site is gone.
+        $session->destroy();
+
+        $entry = Log::entries()[0];
+        $this->assertSame('user.login', $entry['action']);
+        $this->assertSame(self::EMAIL, $entry['user']);
+        $this->assertSame('Author', $entry['title']);
+    }
+
+    public function testFailedLoginIsLoggedWithoutThePassword(): void
+    {
+        try {
+            $this->kirby->auth()->login(self::EMAIL, 'wrong-password-789');
+            $this->fail('The login must fail.');
+        } catch (\Kirby\Exception\Exception) {
+        }
+
+        $entry = Log::entries()[0];
+        $this->assertSame('user.login:failed', $entry['action']);
+        $this->assertNull($entry['user']);
+        $this->assertSame(self::EMAIL, $entry['title']);
+        $raw = implode('', array_map('file_get_contents', glob($this->root . '/content/.changelog/*.jsonl')));
+        $this->assertStringNotContainsString('wrong-password-789', $raw);
+    }
+
+    public function testAttemptsWhileBlockedAddNoEntry(): void
+    {
+        // track() without the hook counts failed attempts like a login does.
+        for ($i = 0; $i < 10; $i++) {
+            $this->kirby->auth()->track(self::EMAIL, false);
+        }
+
+        Log::failedLogin(self::EMAIL);
+
+        $this->assertNotContains('user.login:failed', array_column(Log::entries(), 'action'));
+    }
+
+    public function testFailedLoginKeepsAtMostTheLengthOfAnAddress(): void
+    {
+        Log::failedLogin(str_repeat('a', 1000) . '@website.test');
+
+        $this->assertSame(254, mb_strlen(Log::entries()[0]['title']));
     }
 }
