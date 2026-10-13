@@ -21,8 +21,7 @@
 #   DEPLOY_HOST                       ssh target (alias or user@host); empty: DEPLOY_PATH
 #                                     is a local folder standing in for the server (tests)
 #   DEPLOY_SSH_KEY_FILE               optional, private key file for ssh
-#   STAGING_USER, STAGING_PASSWORD    staging password
-#   PUBLIC=1                          deploy without staging password (launch, phase 5b)
+#   STAGING_USER, STAGING_PASSWORD    optional, staging password over the whole site
 #   ANTHROPIC_API_KEY                 optional, key of the Panel assistant
 #   REMOTE_PHP                        PHP on the server, default php85 (php in the ssh shell is 8.4)
 set -euo pipefail
@@ -47,12 +46,6 @@ else
 fi
 
 [ -f www/index.php ] && [ -f composer.lock ] && [ -f server/root.htaccess ] || { echo "Run from the repository root" >&2; exit 1; }
-
-# Until launch the site must stay behind the staging password. Going public
-# is a deliberate step: PUBLIC=1 (and a Kirby license).
-if [ -z "${STAGING_USER:-}" ] || [ -z "${STAGING_PASSWORD:-}" ]; then
-  [ "${PUBLIC:-0}" = "1" ] || { echo "STAGING_USER/STAGING_PASSWORD not set. Refusing to deploy a public site (set PUBLIC=1 at launch)." >&2; exit 1; }
-fi
 
 # State, host config and generated files: never in the build, never deleted on the server.
 EXCLUDES=(

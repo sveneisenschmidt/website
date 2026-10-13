@@ -10,4 +10,9 @@ RewriteEngine On
 # staging password of www/.htaccess.
 RewriteRule ^\.well-known/ - [L]
 
+# The folder also answers as kirby.eisenschmidt.website, where it began as
+# staging: every other host name leads to the one address.
+RewriteCond %{HTTP_HOST} !^sven\.eisenschmidt\.website$ [NC]
+RewriteRule ^(.*)$ https://sven.eisenschmidt.website/$1 [R=301,L]
+
 RewriteRule ^(.*)$ www/$1 [L]
