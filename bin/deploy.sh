@@ -146,6 +146,9 @@ remote "mkdir -p '$config' && cd '$config' && { test -f env.php || printf '<?php
 # the script goes up as a file first. Without a key an existing key stays.
 rsync -tpz ${RSYNC_SSH[@]+"${RSYNC_SSH[@]}"} bin/set-env.php "$DEST/set-env.php"
 printf '%s' "${ANTHROPIC_API_KEY:-}" | remote "$RPHP '$DEPLOY_PATH/set-env.php' '$config/env.php' 'url=$SITE_URL'; status=\$?; rm -f '$DEPLOY_PATH/set-env.php'; exit \$status"
+# Only PHP reads these files, and PHP runs as the account's user: nobody
+# else needs them, env.php holds the assistant's key.
+remote "cd '$config' && chmod 600 env.php .salt && { test ! -e .license || chmod 600 .license; }"
 
 echo "== Switch to $ID"
 switch_to "$ID"

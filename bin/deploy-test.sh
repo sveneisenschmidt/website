@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Runs bin/deploy.sh against a site folder on this machine (DEPLOY_HOST=local),
 # with PHP's server in place of Apache:
-# 1. The first release of a site whose state is in shared/.
+# 1. The first release of a site whose state is in shared/; env.php and
+#    .salt only for the account's user.
 # 2. A second release: the switch, the check, folders and files the web
 #    server may read (it runs as another user than the deploy).
 # 3. A release whose start page fails: the site goes back to the release before.
@@ -56,6 +57,7 @@ echo "## 1. First release"
 bin/deploy.sh >/dev/null
 first="$(current)"
 [ "$(status)" = 200 ] || fail "the first release does not answer 200"
+[ -n "$(find "$SITE/shared/site/config" -name env.php -perm 600)" ] && [ -n "$(find "$SITE/shared/site/config" -name .salt -perm 600)" ] || fail "env.php or .salt is readable by others"
 echo "OK: $first"
 
 echo "## 2. Second release"
