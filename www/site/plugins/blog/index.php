@@ -1,11 +1,13 @@
 <?php
 
 use Kirby\Cms\App as Kirby;
+use Kirby\Cms\Event;
 use Kirby\Cms\File;
 use Kirby\Cms\Page;
 use Kirby\Image\Darkroom;
 use Website\Blog\Exif;
 use Website\Blog\FileCache;
+use Website\Blog\Images;
 use Website\Blog\Posts;
 use Website\Blog\Redirects;
 use Website\Blog\SrgbGd;
@@ -31,15 +33,20 @@ Kirby::plugin('website/blog', [
     'hooks' => [
         // The EXIF goes into the content file of the image once, on upload.
         // So every backup has it, and a wrong value can be corrected in the
-        // Panel. A replaced photo gets the EXIF of the new file. Then the
-        // metadata leaves the original, the GPS position included.
+        // Panel. A replaced photo gets the EXIF of the new file. The hooks
+        // read the EXIF, remove the metadata from the original (the GPS
+        // position included), and then save the fields. The save is a file
+        // update, which can render thumbnails (Images::renderAfter()), and
+        // after the removal they get the URL of the final file.
         'file.create:after' => function (File $file) {
-            Exif::store($file);
+            $exif = Exif::read($file->root());
             Exif::strip($file);
+            Exif::store($file, $exif);
         },
         'file.replace:after' => function (File $newFile) {
-            Exif::store($newFile, true);
+            $exif = Exif::read($newFile->root());
             Exif::strip($newFile);
+            Exif::store($newFile, $exif, true);
         },
         // A new slug or date gives a published post a new URL, and
         // Redirects::moved() adds a redirect from the old one. After
@@ -55,6 +62,10 @@ Kirby::plugin('website/blog', [
                 Redirects::moved($newPage, $oldPage->postPath());
             }
         },
+        // Images::renderAfter() decides which events give images new
+        // thumbnail URLs and renders the thumbnails before the first visit.
+        'file.*:after' => fn(Event $event) => Images::renderAfter($event),
+        'page.*:after' => fn(Event $event) => Images::renderAfter($event),
     ],
     'tags' => [
         'image' => [

@@ -2,6 +2,7 @@
 
 namespace Website\Tests\Integration;
 
+use Kirby\Filesystem\Dir;
 use Website\Blog\Text;
 
 /**
@@ -51,6 +52,9 @@ final class TextTest extends IntegrationTestCase
             'intro' => '',
             'text' => "(image: a.jpg)\n\nOne two.\n\n## A heading\n\n(map:)\n\nThree (image: a.jpg caption: (four)) five.",
         ]));
+        // The upload rendered the thumbnails (Images::render()). Without them,
+        // each figure that renders writes a job file, and the test counts these.
+        Dir::remove($this->kirby->root('media') . '/pages/notes/with-figure');
         $thumbs = fn() => glob($this->kirby->root('media') . '/pages/notes/with-figure/*/.jobs/*.json') ?: [];
 
         $this->assertSame("One two.\nA heading\nThree  five.", $note->summary());

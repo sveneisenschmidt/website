@@ -4,7 +4,6 @@ namespace Website\Blog;
 
 use Closure;
 use Kirby\Cache\FileCache as KirbyFileCache;
-use Kirby\Filesystem\Dir;
 
 /**
  * Kirby's file cache with a lock, so that parallel requests do not fail.
@@ -32,17 +31,6 @@ class FileCache extends KirbyFileCache
     /** @param Closure(): bool $action */
     private function locked(int $mode, Closure $action): bool
     {
-        Dir::make(dirname($this->root));
-        $lock = fopen(dirname($this->root) . '/.flush.lock', 'c');
-        if ($lock === false) {
-            return $action();
-        }
-        try {
-            flock($lock, $mode);
-            return $action();
-        } finally {
-            flock($lock, LOCK_UN);
-            fclose($lock);
-        }
+        return Lock::run(dirname($this->root) . '/.flush.lock', $mode, $action);
     }
 }
