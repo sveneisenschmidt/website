@@ -26,8 +26,8 @@ final class Images
 
     /**
      * The square covers of tile() as [quality, small edge, large edge,
-     * srcset descriptor]: `home` for the tiles on the front page, `archive` for the
-     * grid of the photo archive, `list` for the small square in the
+     * srcset descriptor]: `home` for the tiles on the front page, `archive`
+     * for the grid of the photo archive, `list` for the small square in the
      * timeline and in the archive lists. A tile names the widths in srcset,
      * and the browser picks by the width of the layout. The small square is
      * 48 px wide in every layout and names the pixel density.
@@ -123,11 +123,11 @@ final class Images
     /**
      * Renders the missing thumbnails after a Kirby event that gives images
      * new thumbnail URLs or a page a new cover. plugins/blog calls it after
-     * every page and file event. The URL of a thumbnail contains the page id, the file name and
-     * the modification time of the file. A crop also contains the focus
-     * point. Upload and replace run after the EXIF hooks of plugins/blog,
-     * because Kirby runs the hooks with the exact name of an event before
-     * the hooks with a wildcard.
+     * every page and file event. The URL of a thumbnail contains the page
+     * id, the file name and the modification time of the file. A crop also
+     * contains the focus point. Upload and replace run after the EXIF hooks
+     * of plugins/blog, because Kirby runs the hooks with the exact name of
+     * an event before the hooks with a wildcard.
      */
     public static function renderAfter(Event $event): void
     {
@@ -143,10 +143,8 @@ final class Images
             case 'file.update:after':
                 // Kirby deletes the thumbnails of a file when the focus point
                 // changes, and also when the file has a focus point and the
-                // update has none in its input (File::update()). A new upload
-                // has no focus point: Exif::store() saves it once before
-                // Exif::strip() changes the file, and that save renders
-                // nothing.
+                // update has none in its input (File::update()), as the save
+                // of the EXIF fields after an upload or a replace.
                 $focus = $args['oldFile']->focus()->value();
                 if ($focus !== null || $args['newFile']->focus()->value() !== $focus) {
                     self::renderFile($args['newFile']);
@@ -211,6 +209,12 @@ final class Images
      */
     public static function render(File $file, bool $cover = false): void
     {
+        $kirby = $file->kirby();
+        // After the budget, the checks below also stop: each one builds up
+        // to 11 versions and writes their job files.
+        if (self::left($kirby) <= 0) {
+            return;
+        }
         $versions = array_map(fn(int $width) => self::wide($file, $width), self::WIDTHS);
         if ($cover) {
             foreach (self::TILES as [$quality, $small, $large]) {
@@ -223,10 +227,9 @@ final class Images
         if (self::missing($versions) === []) {
             return;
         }
-        $kirby = $file->kirby();
         self::$started ??= new WeakMap();
         self::$started[$kirby] ??= microtime(true);
-        $left = (float) $kirby->option('blog.thumbs.budget', self::BUDGET) - (microtime(true) - self::$started[$kirby]);
+        $left = self::left($kirby);
         if ($left <= 0) {
             return;
         }
@@ -238,10 +241,11 @@ final class Images
             }
             // set_time_limit() starts the count again. The assistant creates
             // a draft with all its photos in one request
-            // (Website\Assistant\Apply), and GD time counts toward the limit.
-            // The old limit comes back afterwards, with a new count; in the CLI
-            // of the tests it is 0, no limit. A host can disable set_time_limit(); the @
-            // hides the warning, and the limit of the host applies.
+            // (Website\Assistant\Apply), and GD time counts toward the
+            // limit. The old limit comes back afterwards, with a new count;
+            // in the CLI of the tests it is 0, no limit. A host can disable
+            // set_time_limit(); the @ hides the warning, and the limit of
+            // the host applies.
             $limit = (int) ini_get('max_execution_time');
             @set_time_limit(self::TIME_LIMIT);
             $source = count($versions) >= self::COPY_FROM ? self::source($kirby, $file) : null;
@@ -257,6 +261,16 @@ final class Images
                 @set_time_limit($limit);
             }
         }, $left);
+    }
+
+    /**
+     * The seconds of BUDGET that are left for this Kirby instance. Before
+     * the first render() with work, the whole budget is left.
+     */
+    private static function left(App $kirby): float
+    {
+        $started = self::$started[$kirby] ?? null;
+        return (float) $kirby->option('blog.thumbs.budget', self::BUDGET) - ($started === null ? 0 : microtime(true) - $started);
     }
 
     /**
@@ -317,10 +331,11 @@ final class Images
     /**
      * Renders a thumbnail from $source and removes its job file, as Kirby's
      * media route does (Kirby\Cms\Media::thumb()). $copy is the size of
-     * $source when $source is the copy of source(), else null. A failed render must not
-     * fail the upload or the save: the job file stays, and Kirby tries
-     * again on the first request. Kirby renders into a temporary file and
-     * removes it after a failure, so no broken thumbnail stays behind.
+     * $source when $source is the copy of source(), else null. A failed
+     * render must not fail the upload or the save: the job file stays, and
+     * Kirby tries again on the first request. Kirby renders into a
+     * temporary file and removes it after a failure, so no broken
+     * thumbnail stays behind.
      */
     private static function save(App $kirby, FileVersion $version, string $source, ?Dimensions $copy): void
     {

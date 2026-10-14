@@ -131,9 +131,9 @@ final class Exif
     /**
      * Removes the metadata from the original of an uploaded photo, the GPS
      * position included (`Strip`). The site serves the original, so its
-     * metadata is public. The upload hooks call it after store(), because
-     * store() reads the EXIF from the file. A file that Strip cannot read
-     * stays as it is, and the upload still succeeds.
+     * metadata is public. The upload hooks call read() before it, because
+     * it removes the EXIF. A file that Strip cannot read stays as it is,
+     * and the upload still succeeds.
      */
     public static function strip(File $file): void
     {
@@ -162,17 +162,18 @@ final class Exif
     }
 
     /**
-     * Writes the EXIF of an uploaded image into its content file. On upload,
-     * a field that already has a value keeps it. With $replace (the photo
-     * was replaced), all six fields come from the new photo, and a field
-     * that the new photo has no value for is emptied.
+     * Writes $exif, the result of read(), into the content file of an
+     * uploaded image. On upload, a field that already has a value keeps it.
+     * With $replace (the photo was replaced), all six fields come from the
+     * new photo, and a field that the new photo has no value for is emptied.
+     *
+     * @param array<string, string> $exif
      */
-    public static function store(File $file, bool $replace = false): void
+    public static function store(File $file, array $exif, bool $replace = false): void
     {
         if ($file->type() !== 'image') {
             return;
         }
-        $exif = self::read($file->root());
         $update = [];
         foreach (self::FIELDS as $key) {
             $value = $exif[$key] ?? null;

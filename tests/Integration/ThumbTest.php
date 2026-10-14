@@ -2,11 +2,13 @@
 
 namespace Website\Tests\Integration;
 
+use Kirby\Cms\File;
 use Kirby\Filesystem\Dir;
 use Kirby\Filesystem\F;
 use Kirby\Image\Darkroom;
 use Kirby\Image\Darkroom\GdLib;
 use RuntimeException;
+use Website\Blog\Exif;
 use Website\Blog\Images;
 use Website\Tests\Support\TestSite;
 
@@ -328,7 +330,7 @@ final class ThumbTest extends IntegrationTestCase
         $draft = $kirby->impersonate('kirby', fn() => $kirby->page('photos/test-photo')->changeStatus('draft'));
         $cover = $kirby->impersonate('kirby', fn() => $draft->createFile(['source' => $this->jpeg(40, 30), 'filename' => 'cover.jpg', 'template' => 'image']));
         $draft = $kirby->impersonate('kirby', fn() => $draft->update(['cover' => [$cover->uuid()->toString()], 'pick' => 'true']));
-        $this->assertNotSame([], $this->jobs());
+        $this->assertSame([], glob($this->kirby->root('media') . '/pages/photos/test-photo/*/*.webp') ?: []);
 
         $this->kirby = TestSite::app($this->root);
         $this->kirby->impersonate('kirby', fn() => $this->kirby->page('photos')->draft('test-photo')?->changeStatus('listed') ?? throw new RuntimeException('no draft'));
@@ -353,6 +355,43 @@ final class ThumbTest extends IntegrationTestCase
         // the original post, and that cover has its sizes.
         $this->assertSame('photos/test-photo/cover.jpg', $child->coverImage()?->id());
         $this->assertFileExists(Images::share($child->coverImage())->root());
+    }
+
+    /**
+     * The save of the EXIF fields runs after Exif::strip(). A thumbnail that
+     * this save renders (a file with a focus point, see renderAfter()) then
+     * gets the URL of the final file.
+     */
+    public function testTheExifSaveSeesTheStrippedFile(): void
+    {
+        $seen = [];
+        $kirby = TestSite::app($this->root, [], ['hooks' => ['file.update:after' => function (File $newFile) use (&$seen) {
+            $seen[] = Exif::read($newFile->root());
+        }]]);
+
+        $kirby->impersonate('kirby', fn() => $kirby->page('photos/test-photo')->createFile(['source' => __DIR__ . '/../fixtures/exif.jpg', 'filename' => 'a.jpg', 'template' => 'image']));
+
+        $this->assertSame([[]], $seen);
+    }
+
+    /**
+     * The budget starts with the first render() that has work. After it,
+     * render() also skips the checks, which would write job files.
+     */
+    public function testAfterTheBudgetRenderSkipsTheChecks(): void
+    {
+        $kirby = TestSite::app($this->root, ['blog.thumbs.budget' => 0.2]);
+        $page = $kirby->page('photos/test-photo');
+        $upload = fn(string $name) => $kirby->impersonate('kirby', fn() => $page->createFile(['source' => $this->jpeg(40, 30), 'filename' => $name, 'template' => 'image']));
+
+        $upload('a.jpg');
+        usleep(300_000);
+        $upload('b.jpg');
+
+        $thumbnails = array_map('basename', glob($this->kirby->root('media') . '/pages/photos/test-photo/*/*.webp') ?: []);
+        sort($thumbnails);
+        $this->assertSame(['a-1000x-q80.webp', 'a-1600x-q80.webp', 'a-600x-q80.webp'], $thumbnails);
+        $this->assertSame([], $this->jobs());
     }
 
     /** The front page and the two archive pages that list the post. */

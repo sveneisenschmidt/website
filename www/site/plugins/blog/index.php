@@ -33,15 +33,20 @@ Kirby::plugin('website/blog', [
     'hooks' => [
         // The EXIF goes into the content file of the image once, on upload.
         // So every backup has it, and a wrong value can be corrected in the
-        // Panel. A replaced photo gets the EXIF of the new file. Then the
-        // metadata leaves the original, the GPS position included.
+        // Panel. A replaced photo gets the EXIF of the new file. The hooks
+        // read the EXIF, remove the metadata from the original (the GPS
+        // position included), and then save the fields. The save is a file
+        // update, which can render thumbnails (Images::renderAfter()), and
+        // after the removal they get the URL of the final file.
         'file.create:after' => function (File $file) {
-            Exif::store($file);
+            $exif = Exif::read($file->root());
             Exif::strip($file);
+            Exif::store($file, $exif);
         },
         'file.replace:after' => function (File $newFile) {
-            Exif::store($newFile, true);
+            $exif = Exif::read($newFile->root());
             Exif::strip($newFile);
+            Exif::store($newFile, $exif, true);
         },
         // A new slug or date gives a published post a new URL, and
         // Redirects::moved() adds a redirect from the old one. After
