@@ -35,27 +35,40 @@ Kirby::plugin('website/blog', [
         // Panel. A replaced photo gets the EXIF of the new file. Then the
         // metadata leaves the original, the GPS position included.
         // The thumbnails come last: removing the metadata changes the file,
-        // and with it the URL of every thumbnail.
+        // and with it the URL of every thumbnail. A replace deletes the
+        // thumbnails of the old file.
         'file.create:after' => function (File $file) {
             Exif::store($file);
             Exif::strip($file);
-            Images::render($file);
+            Images::renderFile($file);
         },
-        // A replace deletes the thumbnails of the old file. When the file is
-        // the cover, its page needs the sizes of a cover again.
         'file.replace:after' => function (File $newFile) {
             Exif::store($newFile, true);
             Exif::strip($newFile);
-            $page = $newFile->page();
-            Images::render($newFile, $page instanceof SitePage && $page->coverImage()?->id() === $newFile->id());
+            Images::renderFile($newFile);
+        },
+        // A new file name gives every thumbnail a new URL. A new focus point
+        // gives the crops of a cover new URLs.
+        'file.changeName:after' => function (File $newFile) {
+            Images::renderFile($newFile);
+        },
+        'file.update:after' => function (File $newFile, File $oldFile) {
+            if ($newFile->focus()->value() !== $oldFile->focus()->value()) {
+                Images::renderFile($newFile);
+            }
         },
         // A new slug or date gives a published post a new URL, and
         // Redirects::moved() adds a redirect from the old one. After
         // changeSlug, the old page object finds no content file, so the old
         // path takes its date from the new page.
+        // The new slug also gives every thumbnail of the page a new URL, and
+        // Kirby deletes the media folder of the old one.
         'page.changeSlug:after' => function (Page $newPage, Page $oldPage) {
             if ($newPage instanceof PostPage) {
                 Redirects::moved($newPage, $newPage->postPath($oldPage->slug()));
+            }
+            foreach ($newPage->images() as $image) {
+                Images::renderFile($image);
             }
         },
         // A save can set a new cover. Images::render() skips the thumbnails

@@ -19,16 +19,16 @@ $sheet ??= false;
 </h2>
 <?php if ($sheet): ?>
 <ul class="archive-sheet">
-<?php foreach ($group as $post): if ($cover = $post->coverImage()): ?>
+<?php foreach ($group as $post): if ($cover = $post->coverImage()): $square = Images::tile($cover, 'archive'); ?>
 <li>
 <a href="<?= $post->url() ?>" aria-label="<?= $post->title()->esc() ?>">
 <img
 class="tile"
-src="<?= Images::square($cover, 400, 85)->url() ?>"
-srcset="<?= Images::square($cover, 200, 85)->url() ?> 200w, <?= Images::square($cover, 400, 85)->url() ?> 400w"
+src="<?= $square['src'] ?>"
+srcset="<?= $square['srcset'] ?>"
 sizes="(max-width: 900px) 45vw, (max-width: 1200px) 200px, 170px"
-width="400"
-height="400"
+width="<?= $square['edge'] ?>"
+height="<?= $square['edge'] ?>"
 alt=""
 loading="lazy"
 decoding="async"

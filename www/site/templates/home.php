@@ -40,17 +40,17 @@ decoding="async"
 <?php if ($tiles->isNotEmpty()): ?>
 <h2 class="stream-title">Previously featured</h2>
 <ul class="tiles" role="list">
-<?php foreach ($tiles as $tile): $cover = $tile->coverImage(); ?>
+<?php foreach ($tiles as $tile): $square = Images::tile($tile->coverImage(), 'home'); ?>
 <li>
 <a href="<?= $tile->url() ?>" aria-label="<?= $tile->title()->esc() ?>">
 <img
 class="tile"
 style="view-transition-name: <?= $tile->transitionName() ?>"
-src="<?= Images::square($cover, 480, 80)->url() ?>"
-srcset="<?= Images::square($cover, 240, 80)->url() ?> 240w, <?= Images::square($cover, 480, 80)->url() ?> 480w"
+src="<?= $square['src'] ?>"
+srcset="<?= $square['srcset'] ?>"
 sizes="(max-width: 900px) 25vw, 16vw"
-width="480"
-height="480"
+width="<?= $square['edge'] ?>"
+height="<?= $square['edge'] ?>"
 alt=""
 loading="lazy"
 decoding="async"
