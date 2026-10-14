@@ -62,7 +62,7 @@ final class Feeds
             // fit() changes the object it is called on, and the file keeps its
             // dimensions object for later calls. The clone keeps the file's size intact.
             $size = (clone $file->dimensions())->fit(768);
-            $cover = ['url' => $file->thumb(['width' => 768, 'height' => 768, 'format' => 'webp', 'quality' => 80])->url(), 'width' => $size->width(), 'height' => $size->height()];
+            $cover = ['url' => Images::feed($file)->url(), 'width' => $size->width(), 'height' => $size->height()];
         }
         $summary = $post->summary();
         return rtrim(snippet('feed-item', [

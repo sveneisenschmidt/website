@@ -6,6 +6,7 @@ use Kirby\Cms\File;
 use Kirby\Cms\Page;
 use Kirby\Content\Field;
 use Kirby\Toolkit\Str;
+use Website\Blog\Images;
 use Website\Blog\Posts;
 use Website\Blog\Site;
 use Website\Blog\Text;
@@ -118,9 +119,10 @@ class SitePage extends Page
         return $this->isHomePage() ? Posts::picks()->first()?->coverImage() : $this->coverImage();
     }
 
-    /** The URL of the link preview image, cropped to 1200 x 630 px, the size that Facebook recommends for og:image; or null. */
+    /** The URL of the link preview image (Images::share()), or null. */
     public function shareImage(): ?string
     {
-        return $this->shareCover()?->thumb(['width' => 1200, 'height' => 630, 'crop' => true, 'format' => 'webp', 'quality' => 80])->url();
+        $cover = $this->shareCover();
+        return $cover === null ? null : Images::share($cover)->url();
     }
 }

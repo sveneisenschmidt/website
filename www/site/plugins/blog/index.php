@@ -6,6 +6,7 @@ use Kirby\Cms\Page;
 use Kirby\Image\Darkroom;
 use Website\Blog\Exif;
 use Website\Blog\FileCache;
+use Website\Blog\Images;
 use Website\Blog\Posts;
 use Website\Blog\Redirects;
 use Website\Blog\SrgbGd;
@@ -33,13 +34,20 @@ Kirby::plugin('website/blog', [
         // So every backup has it, and a wrong value can be corrected in the
         // Panel. A replaced photo gets the EXIF of the new file. Then the
         // metadata leaves the original, the GPS position included.
+        // The thumbnails come last: removing the metadata changes the file,
+        // and with it the URL of every thumbnail.
         'file.create:after' => function (File $file) {
             Exif::store($file);
             Exif::strip($file);
+            Images::render($file);
         },
+        // A replace deletes the thumbnails of the old file. When the file is
+        // the cover, its page needs the sizes of a cover again.
         'file.replace:after' => function (File $newFile) {
             Exif::store($newFile, true);
             Exif::strip($newFile);
+            $page = $newFile->page();
+            Images::render($newFile, $page instanceof SitePage && $page->coverImage()?->id() === $newFile->id());
         },
         // A new slug or date gives a published post a new URL, and
         // Redirects::moved() adds a redirect from the old one. After
@@ -50,9 +58,14 @@ Kirby::plugin('website/blog', [
                 Redirects::moved($newPage, $newPage->postPath($oldPage->slug()));
             }
         },
+        // A save can set a new cover. Images::render() skips the thumbnails
+        // that exist, so a save without a new cover renders nothing.
         'page.update:after' => function (Page $newPage, Page $oldPage) {
             if ($newPage instanceof PostPage && $oldPage instanceof PostPage) {
                 Redirects::moved($newPage, $oldPage->postPath());
+            }
+            if ($newPage instanceof SitePage && ($cover = $newPage->coverImage()) !== null) {
+                Images::render($cover, true);
             }
         },
     ],
