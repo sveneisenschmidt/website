@@ -188,14 +188,20 @@ final class Images
 
     /**
      * renderFile() for every image of $page and of its subpages, drafts
-     * included. A new id of a page is also a new id for each subpage.
+     * included. A new id of a page is also a new id for each subpage. After
+     * the budget it stops, so a section with hundreds of posts loads no
+     * further subpages.
      */
     public static function renderTree(Page $page): void
     {
-        foreach ([$page, ...$page->index(true)->values()] as $each) {
-            foreach ($each->images() as $image) {
-                self::renderFile($image);
+        foreach ($page->images() as $image) {
+            if (self::left($page->kirby()) <= 0) {
+                return;
             }
+            self::renderFile($image);
+        }
+        foreach ($page->childrenAndDrafts() as $child) {
+            self::renderTree($child);
         }
     }
 
