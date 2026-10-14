@@ -15,6 +15,9 @@ final class Images
     /** The widths of picture(). */
     private const WIDTHS = [600, 1000, 1600];
 
+    /** Seconds for the thumbnails of one image (render()). */
+    private const TIME_LIMIT = 60;
+
     /**
      * The squares of a cover as [edge, quality]: the front page
      * (templates/home.php), the photo archive (snippets/months.php) and the
@@ -72,6 +75,12 @@ final class Images
      */
     public static function render(File $file, bool $cover = false): void
     {
+        // set_time_limit() starts the count again. The assistant creates a
+        // draft with all its photos in one request (Website\Assistant\Apply),
+        // and GD time counts toward the limit. With the new count, each photo
+        // gets TIME_LIMIT seconds. A host can disable set_time_limit(); the @
+        // hides the warning, and the limit of the host applies.
+        @set_time_limit(self::TIME_LIMIT);
         $versions = array_map(fn(int $width) => self::wide($file, $width), self::WIDTHS);
         if ($cover) {
             foreach (self::SQUARES as [$edge, $quality]) {
@@ -89,7 +98,8 @@ final class Images
      * Renders a thumbnail that does not exist yet and removes its job file,
      * as Kirby's media route does (Kirby\Cms\Media::thumb()). A failed render
      * must not fail the upload or the save: the job file stays, and Kirby
-     * tries again on the first request.
+     * tries again on the first request. Kirby renders into a temporary file
+     * and removes it after a failure, so no broken thumbnail stays behind.
      */
     private static function save(FileVersion|File $version): void
     {
@@ -100,7 +110,6 @@ final class Images
             $version->save();
             F::remove(dirname($version->root()) . '/.jobs/' . basename($version->root()) . '.json');
         } catch (Throwable $e) {
-            F::remove($version->root());
             error_log('blog thumbnail: ' . $e->getMessage());
         }
     }

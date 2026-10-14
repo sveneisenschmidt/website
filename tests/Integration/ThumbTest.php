@@ -14,8 +14,7 @@ final class ThumbTest extends IntegrationTestCase
      * Kirby renders a thumbnail on the first request of its URL. A page that
      * shows a thumbnail before that writes a job file for it. After the
      * upload of the images and the save of the cover, the pages that show
-     * the post add no job file. The job files from before are the previews
-     * that the Panel shows.
+     * the post leave no job file.
      */
     public function testUploadAndSaveRenderEveryThumbnailThatThePagesShow(): void
     {
@@ -27,11 +26,10 @@ final class ThumbTest extends IntegrationTestCase
             'pick' => 'true',
             'text' => "(image: cover.jpg)\n\n(image: second.jpg)",
         ]));
-        $jobs = $this->jobs();
 
         $this->renderThePagesOfThePost();
 
-        $this->assertSame($jobs, $this->jobs());
+        $this->assertSame([], $this->jobs());
     }
 
     /** A replace deletes the thumbnails of the old file. The replace of a cover renders the sizes of a cover again. */
@@ -42,11 +40,10 @@ final class ThumbTest extends IntegrationTestCase
         $this->kirby->impersonate('kirby', fn() => $this->post->update(['cover' => [$cover->uuid()->toString()], 'pick' => 'true']));
 
         $this->kirby->impersonate('kirby', fn() => $this->kirby->page('photos/test-photo')->file('cover.jpg')->replace($this->jpeg(30, 40, 'new.jpg')));
-        $jobs = $this->jobs();
 
         $this->renderThePagesOfThePost();
 
-        $this->assertSame($jobs, $this->jobs());
+        $this->assertSame([], $this->jobs());
     }
 
     /** The front page and the two archive pages that list the post. */
@@ -68,13 +65,15 @@ final class ThumbTest extends IntegrationTestCase
     }
 
     /**
-     * The job files that wait in the media folder of the post.
+     * The job files of WebP thumbnails that wait in the media folder of the
+     * post. Every thumbnail that a page shows is WebP (Images). The Panel
+     * writes job files for its own JPEG previews, and these stay out.
      *
      * @return list<string>
      */
     private function jobs(): array
     {
-        return array_map('basename', glob($this->kirby->root('media') . '/pages/photos/test-photo/*/.jobs/*.json') ?: []);
+        return array_map('basename', glob($this->kirby->root('media') . '/pages/photos/test-photo/*/.jobs/*.webp.json') ?: []);
     }
 
     public function testTheAssetsAreThere(): void
