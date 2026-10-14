@@ -1,6 +1,7 @@
 <?php
 
 use Kirby\Cms\App as Kirby;
+use Kirby\Cms\Event;
 use Kirby\Cms\File;
 use Kirby\Cms\Page;
 use Kirby\Image\Darkroom;
@@ -34,53 +35,32 @@ Kirby::plugin('website/blog', [
         // So every backup has it, and a wrong value can be corrected in the
         // Panel. A replaced photo gets the EXIF of the new file. Then the
         // metadata leaves the original, the GPS position included.
-        // The thumbnails come last: removing the metadata changes the file,
-        // and with it the URL of every thumbnail. A replace deletes the
-        // thumbnails of the old file.
         'file.create:after' => function (File $file) {
             Exif::store($file);
             Exif::strip($file);
-            Images::renderFile($file);
         },
         'file.replace:after' => function (File $newFile) {
             Exif::store($newFile, true);
             Exif::strip($newFile);
-            Images::renderFile($newFile);
-        },
-        // A new file name gives every thumbnail a new URL. A new focus point
-        // gives the crops of a cover new URLs.
-        'file.changeName:after' => function (File $newFile) {
-            Images::renderFile($newFile);
-        },
-        'file.update:after' => function (File $newFile, File $oldFile) {
-            if ($newFile->focus()->value() !== $oldFile->focus()->value()) {
-                Images::renderFile($newFile);
-            }
         },
         // A new slug or date gives a published post a new URL, and
         // Redirects::moved() adds a redirect from the old one. After
         // changeSlug, the old page object finds no content file, so the old
         // path takes its date from the new page.
-        // The new slug also gives every thumbnail of the page a new URL, and
-        // Kirby deletes the media folder of the old one.
         'page.changeSlug:after' => function (Page $newPage, Page $oldPage) {
             if ($newPage instanceof PostPage) {
                 Redirects::moved($newPage, $newPage->postPath($oldPage->slug()));
             }
-            foreach ($newPage->images() as $image) {
-                Images::renderFile($image);
-            }
         },
-        // A save can set a new cover. Images::render() skips the thumbnails
-        // that exist, so a save without a new cover renders nothing.
         'page.update:after' => function (Page $newPage, Page $oldPage) {
             if ($newPage instanceof PostPage && $oldPage instanceof PostPage) {
                 Redirects::moved($newPage, $oldPage->postPath());
             }
-            if ($newPage instanceof SitePage && ($cover = $newPage->coverImage()) !== null) {
-                Images::render($cover, true);
-            }
         },
+        // Images::renderAfter() decides which events give images new
+        // thumbnail URLs and renders the thumbnails before the first visit.
+        'file.*:after' => fn(Event $event) => Images::renderAfter($event),
+        'page.*:after' => fn(Event $event) => Images::renderAfter($event),
     ],
     'tags' => [
         'image' => [

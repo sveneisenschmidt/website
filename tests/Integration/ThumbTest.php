@@ -2,6 +2,8 @@
 
 namespace Website\Tests\Integration;
 
+use Kirby\Filesystem\Dir;
+use Kirby\Filesystem\F;
 use Kirby\Image\Darkroom;
 use Kirby\Image\Darkroom\GdLib;
 use RuntimeException;
@@ -174,6 +176,95 @@ final class ThumbTest extends IntegrationTestCase
         $this->assertFileExists($file->root());
         $this->assertSame(['a-1000x-q80.webp.json', 'a-1600x-q80.webp.json', 'a-600x-q80.webp.json'], $this->jobs());
         $this->assertStringContainsString('blog thumbnail: test driver fails', (string) file_get_contents($log));
+    }
+
+    /** A duplicate with its files is a new page, and its files have new ids. */
+    public function testADuplicateGetsItsThumbnails(): void
+    {
+        $cover = $this->upload($this->jpeg(40, 30), 'cover.jpg');
+        $post = $this->kirby->impersonate('kirby', fn() => $this->post->update(['cover' => [$cover->uuid()->toString()], 'text' => '(image: cover.jpg)']));
+
+        $copy = $this->kirby->impersonate('kirby', fn() => $post->duplicate('copy-photo', ['files' => true]));
+
+        $copy->render();
+        $this->assertSame([], $this->jobs('copy-photo'));
+        $this->assertFileExists(Images::wide($copy->file('cover.jpg'), 600)->root());
+    }
+
+    /** A move to another parent gives the page a new id. */
+    public function testAMoveRendersTheThumbnailsAgain(): void
+    {
+        $cover = $this->upload($this->jpeg(40, 30), 'cover.jpg');
+        $this->kirby->impersonate('kirby', fn() => $this->post->update(['cover' => [$cover->uuid()->toString()], 'pick' => 'true']));
+        $other = $this->kirby->impersonate('kirby', fn() => $this->kirby->site()->createChild(['slug' => 'pictures', 'template' => 'photos', 'content' => ['title' => 'Pictures']])->changeStatus('unlisted'));
+
+        $moved = $this->kirby->impersonate('kirby', fn() => $this->kirby->page('photos/test-photo')->move($other));
+
+        $this->assertSame('pictures/test-photo', $moved->id());
+        // Each call writes a job file for a thumbnail that does not exist.
+        $cover = $moved->file('cover.jpg');
+        Images::picture($cover);
+        Images::feed($cover);
+        Images::share($cover);
+        foreach (['home', 'archive', 'list'] as $use) {
+            Images::tile($cover, $use);
+        }
+        $this->assertSame([], array_map('basename', glob($this->kirby->root('media') . '/pages/pictures/test-photo/*/.jobs/*.webp.json') ?: []));
+    }
+
+    /** While another request holds the lock past the budget, the upload renders nothing and keeps the job files. */
+    public function testABusyLockLeavesTheThumbnailsToTheFirstRequest(): void
+    {
+        $kirby = TestSite::app($this->root, ['blog.thumbs.budget' => 0.3]);
+        $lock = fopen($kirby->root('cache') . '/.thumbs.lock', 'c') ?: throw new RuntimeException('no lock file');
+        flock($lock, LOCK_EX);
+        try {
+            $started = microtime(true);
+            $kirby->impersonate('kirby', fn() => $kirby->page('photos/test-photo')->createFile(['source' => $this->jpeg(40, 30), 'filename' => 'a.jpg', 'template' => 'image']));
+            $seconds = microtime(true) - $started;
+        } finally {
+            flock($lock, LOCK_UN);
+            fclose($lock);
+        }
+
+        $this->assertLessThan(2, $seconds);
+        $this->assertSame(['a-1000x-q80.webp.json', 'a-1600x-q80.webp.json', 'a-600x-q80.webp.json'], $this->jobs());
+    }
+
+    /** For fewer than 3 missing thumbnails, render() reads the original and makes no copy. */
+    public function testOneMissingThumbnailNeedsNoCopy(): void
+    {
+        $file = $this->upload($this->jpeg(40, 30), 'a.jpg');
+        F::remove(Images::wide($file, 600)->root());
+        Dir::remove($this->kirby->root('cache') . '/thumbs');
+
+        Images::render($file);
+
+        $this->assertFileExists(Images::wide($file, 600)->root());
+        $this->assertDirectoryDoesNotExist($this->kirby->root('cache') . '/thumbs');
+    }
+
+    /** A copy older than one hour is left from a request that ended with a fatal error. */
+    public function testTheNextCopyRemovesCopiesOlderThanOneHour(): void
+    {
+        $folder = $this->kirby->root('cache') . '/thumbs';
+        Dir::make($folder);
+        touch($folder . '/old.png', time() - 7200);
+        touch($folder . '/new.png');
+
+        $this->upload($this->jpeg(40, 30), 'a.jpg');
+
+        $this->assertSame(['new.png'], array_map('basename', glob($folder . '/*.png') ?: []));
+    }
+
+    /** render() raises the time limit for each image and sets the old limit again afterwards. */
+    public function testRenderSetsTheOldTimeLimitAgain(): void
+    {
+        $limit = ini_get('max_execution_time');
+
+        $this->upload($this->jpeg(40, 30), 'a.jpg');
+
+        $this->assertSame($limit, ini_get('max_execution_time'));
     }
 
     /** The front page and the two archive pages that list the post. */

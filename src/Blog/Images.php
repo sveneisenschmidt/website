@@ -2,13 +2,15 @@
 
 namespace Website\Blog;
 
-use Closure;
 use Kirby\Cms\App;
+use Kirby\Cms\Event;
 use Kirby\Cms\File;
 use Kirby\Cms\FileVersion;
+use Kirby\Cms\Page;
 use Kirby\Filesystem\Dir;
 use Kirby\Filesystem\F;
 use Throwable;
+use WeakMap;
 use Website\Models\SitePage;
 
 /**
@@ -22,15 +24,17 @@ final class Images
     private const WIDTHS = [600, 1000, 1600];
 
     /**
-     * The square covers of tile() as [quality, small edge, large edge]:
-     * `home` for the tiles on the front page, `archive` for the grid of the
-     * photo archive, `list` for the small square in the timeline and in the
-     * archive lists.
+     * The square covers of tile() as [quality, small edge, large edge,
+     * srcset]: `home` for the tiles on the front page, `archive` for the
+     * grid of the photo archive, `list` for the small square in the
+     * timeline and in the archive lists. A tile names the widths in srcset,
+     * and the browser picks by the width of the layout. The small square is
+     * 48 px wide in every layout and names the pixel density.
      */
     private const TILES = [
-        'home' => [80, 240, 480],
-        'archive' => [85, 200, 400],
-        'list' => [80, 48, 96],
+        'home' => [80, 240, 480, 'width'],
+        'archive' => [85, 200, 400, 'width'],
+        'list' => [80, 48, 96, 'density'],
     ];
 
     /**
@@ -40,8 +44,28 @@ final class Images
      */
     private const SOURCE_SIDE = 1600;
 
-    /** Seconds for the thumbnails of one image (render()). */
+    /**
+     * The copy pays off from this number of thumbnails on. Measured locally
+     * with a photo of 24 MP on 2026-10-14: 2 thumbnails took 0.42 s from the
+     * original and 0.45 s with the copy, 3 took 0.56 s and 0.49 s.
+     */
+    private const COPY_FROM = 3;
+
+    /** CPU seconds for the thumbnails of one image (render()). */
     private const TIME_LIMIT = 60;
+
+    /**
+     * Seconds after the first render() of a request in which render() still
+     * starts work, the wait for the lock included. A web server ends a
+     * request that sends no output for too long, mod_fcgid after 40 s by
+     * default (FcgidIOTimeout). Thumbnails beyond the budget render on their
+     * first request. The option blog.thumbs.budget sets another value; the
+     * tests use it.
+     */
+    private const BUDGET = 20.0;
+
+    /** @var WeakMap<App, float>|null The time of the first render() of each Kirby instance, for BUDGET. */
+    private static ?WeakMap $started = null;
 
     /**
      * The <img> attributes of a photo at the full column width: src at
@@ -61,21 +85,18 @@ final class Images
     }
 
     /**
-     * The <img> attributes of a square cover: src, srcset and the edge for
-     * width and height. A tile on the front page or in the archive names
-     * the widths in srcset, and the browser picks by the width of the
-     * layout. The small square of a list is 48 px wide in every layout and
-     * names the pixel density.
+     * The <img> attributes of a square cover (TILES): src, srcset and the
+     * edge for width and height.
      *
      * @param 'home'|'archive'|'list' $use
      * @return array{src: string, srcset: string, edge: int}
      */
     public static function tile(File $file, string $use): array
     {
-        [$quality, $small, $large] = self::TILES[$use];
+        [$quality, $small, $large, $srcset] = self::TILES[$use];
         $one = self::square($file, $small, $quality)->url();
         $two = self::square($file, $large, $quality)->url();
-        return $use === 'list'
+        return $srcset === 'density'
             ? ['src' => $one, 'srcset' => "$one 1x, $two 2x", 'edge' => $small]
             : ['src' => $two, 'srcset' => "$one {$small}w, $two {$large}w", 'edge' => $large];
     }
@@ -99,9 +120,53 @@ final class Images
     }
 
     /**
-     * render() for a file of a page, with the sizes of a cover when the
-     * file is the cover of its page. No template shows a file of the site
-     * or of a user as a thumbnail, so these files get none.
+     * Renders the missing thumbnails after a Kirby event that gives images
+     * new thumbnail URLs or a page a new cover. plugins/blog calls it after
+     * every page and file event. The URL of a thumbnail contains the page id, the file name and
+     * the modification time of the file. A crop also contains the focus
+     * point. Upload and replace run after the EXIF hooks of plugins/blog,
+     * because Kirby runs the hooks with the exact name of an event before
+     * the hooks with a wildcard.
+     */
+    public static function renderAfter(Event $event): void
+    {
+        $args = $event->arguments();
+        switch ($event->name()) {
+            case 'file.create:after':
+                self::renderFile($args['file']);
+                break;
+            case 'file.replace:after':
+            case 'file.changeName:after':
+                self::renderFile($args['newFile']);
+                break;
+            case 'file.update:after':
+                // Exif::store() saves every upload once before Exif::strip()
+                // changes the file. That save keeps the focus point.
+                if ($args['newFile']->focus()->value() !== $args['oldFile']->focus()->value()) {
+                    self::renderFile($args['newFile']);
+                }
+                break;
+            case 'page.changeSlug:after':
+            case 'page.move:after':
+                self::renderImages($args['newPage']);
+                break;
+            case 'page.duplicate:after':
+                self::renderImages($args['duplicatePage']);
+                break;
+            case 'page.update:after':
+                // A save can set a new cover. When its thumbnails exist,
+                // render() checks them and returns.
+                if ($args['newPage'] instanceof SitePage && ($cover = $args['newPage']->coverImage()) !== null) {
+                    self::render($cover, true);
+                }
+                break;
+        }
+    }
+
+    /**
+     * Renders the thumbnails of a file of a page, with the sizes of a cover
+     * when the file is the cover of its page. No template shows a file of
+     * the site or of a user as a thumbnail, so these files get none.
      */
     public static function renderFile(File $file): void
     {
@@ -111,13 +176,21 @@ final class Images
         }
     }
 
+    /** renderFile() for every image of $page. */
+    public static function renderImages(Page $page): void
+    {
+        foreach ($page->images() as $image) {
+            self::renderFile($image);
+        }
+    }
+
     /**
      * Renders the thumbnails of picture() that do not exist yet. With
      * $cover, it also renders the squares of tile(), the feed image and the
      * link preview image. Kirby renders a thumbnail on the first request of
-     * its URL. A photo in a post needs 3 thumbnails, a cover 8 more.
-     * plugins/blog calls this after an upload and after a save, so the
-     * first visitor gets files that exist.
+     * its URL. A photo in a post needs 3 thumbnails, a cover 8 more. A
+     * thumbnail that this request cannot render within BUDGET keeps its job
+     * file, and Kirby renders it on the first request.
      */
     public static function render(File $file, bool $cover = false): void
     {
@@ -130,62 +203,59 @@ final class Images
             $versions[] = self::feed($file);
             $versions[] = self::share($file);
         }
-        $missing = array_filter($versions, fn($version) => $version instanceof FileVersion && !is_file($version->root()));
-        if ($missing === []) {
+        if (self::missing($versions) === []) {
             return;
         }
-        // set_time_limit() starts the count again. The assistant creates a
-        // draft with all its photos in one request (Website\Assistant\Apply),
-        // and GD time counts toward the limit. With the new count, each photo
-        // gets TIME_LIMIT seconds. A host can disable set_time_limit(); the @
-        // hides the warning, and the limit of the host applies.
-        @set_time_limit(self::TIME_LIMIT);
         $kirby = $file->kirby();
-        self::locked($kirby, function () use ($kirby, $file, $missing): void {
-            // The copy pays off from two thumbnails on.
-            $source = count($missing) > 1 ? self::source($kirby, $file) : null;
+        self::$started ??= new WeakMap();
+        self::$started[$kirby] ??= microtime(true);
+        $left = (float) $kirby->option('blog.thumbs.budget', self::BUDGET) - (microtime(true) - self::$started[$kirby]);
+        if ($left <= 0) {
+            return;
+        }
+        Lock::run($kirby->root('cache') . '/.thumbs.lock', LOCK_EX, function () use ($kirby, $file, $versions): void {
+            // Another request can have rendered them while this one waited.
+            $versions = self::missing($versions);
+            if ($versions === []) {
+                return;
+            }
+            // set_time_limit() starts the count again. The assistant creates
+            // a draft with all its photos in one request
+            // (Website\Assistant\Apply), and GD time counts toward the limit.
+            // The old limit comes back afterwards, with a new count; in the CLI
+            // of the tests it is 0, no limit. A host can disable set_time_limit(); the @
+            // hides the warning, and the limit of the host applies.
+            $limit = (int) ini_get('max_execution_time');
+            @set_time_limit(self::TIME_LIMIT);
+            $source = count($versions) >= self::COPY_FROM ? self::source($kirby, $file) : null;
             try {
-                foreach ($missing as $version) {
+                foreach ($versions as $version) {
                     self::save($kirby, $version, $source ?? $file->root());
                 }
             } finally {
                 if ($source !== null) {
                     F::remove($source);
                 }
+                @set_time_limit($limit);
             }
-        });
+        }, $left);
+    }
+
+    /**
+     * The thumbnails of $versions that do not exist yet.
+     *
+     * @param list<FileVersion|File> $versions
+     * @return array<int, FileVersion>
+     */
+    private static function missing(array $versions): array
+    {
+        return array_filter($versions, fn($version) => $version instanceof FileVersion && !is_file($version->root()));
     }
 
     /** A square of $edge px, WebP: from the middle, or from the focus point set in the Panel. */
     private static function square(File $file, int $edge, int $quality): FileVersion|File
     {
         return $file->thumb(['width' => $edge, 'height' => $edge, 'crop' => true, 'format' => 'webp', 'quality' => $quality]);
-    }
-
-    /**
-     * Runs $render under an exclusive lock, so that one request at a time
-     * renders thumbnails. The Panel uploads up to 20 files at once, and a
-     * render holds a photo in memory: about 320 MB for 64 MP (Makefile,
-     * target dev). The other uploads wait for the lock. The system releases
-     * the lock when a request ends, also after a fatal error.
-     *
-     * @param Closure(): void $render
-     */
-    private static function locked(App $kirby, Closure $render): void
-    {
-        Dir::make($kirby->root('cache'));
-        $lock = fopen($kirby->root('cache') . '/.thumbs.lock', 'c');
-        if ($lock === false) {
-            $render();
-            return;
-        }
-        try {
-            flock($lock, LOCK_EX);
-            $render();
-        } finally {
-            flock($lock, LOCK_UN);
-            fclose($lock);
-        }
     }
 
     /**
@@ -198,15 +268,25 @@ final class Images
      */
     private static function source(App $kirby, File $file): ?string
     {
+        $folder = $kirby->root('cache') . '/thumbs';
+        // A copy older than one hour is left from a request that ended with
+        // a fatal error, for example at the memory limit, before it could
+        // remove its copy. render() takes at most TIME_LIMIT seconds of CPU
+        // time per image.
+        foreach (glob($folder . '/*.png') ?: [] as $old) {
+            if (filemtime($old) < time() - 3600) {
+                F::remove($old);
+            }
+        }
         // A square box of SOURCE_SIDE times the aspect ratio gives the short
         // side SOURCE_SIDE px, also for a photo that EXIF rotates.
         $dimensions = $file->dimensions();
         $long = max($dimensions->width(), $dimensions->height());
         $short = max(1, min($dimensions->width(), $dimensions->height()));
         $box = (int) ceil(self::SOURCE_SIDE * $long / $short);
-        $path = $kirby->root('cache') . '/thumbs/' . bin2hex(random_bytes(6)) . '.png';
+        $path = $folder . '/' . bin2hex(random_bytes(6)) . '.png';
         try {
-            Dir::make(dirname($path));
+            Dir::make($folder);
             $kirby->thumb($file->root(), $path, ['width' => $box, 'height' => $box, 'format' => 'png', 'compression' => 0]);
             return $path;
         } catch (Throwable $e) {
@@ -217,18 +297,14 @@ final class Images
     }
 
     /**
-     * Renders a thumbnail from $source unless another request rendered it
-     * while this one waited for the lock. Then it removes the job file, as
-     * Kirby's media route does (Kirby\Cms\Media::thumb()). A failed render
-     * must not fail the upload or the save: the job file stays, and Kirby
-     * tries again on the first request. Kirby renders into a temporary file
-     * and removes it after a failure, so no broken thumbnail stays behind.
+     * Renders a thumbnail from $source and removes its job file, as Kirby's
+     * media route does (Kirby\Cms\Media::thumb()). A failed render must not
+     * fail the upload or the save: the job file stays, and Kirby tries
+     * again on the first request. Kirby renders into a temporary file and
+     * removes it after a failure, so no broken thumbnail stays behind.
      */
     private static function save(App $kirby, FileVersion $version, string $source): void
     {
-        if (is_file($version->root())) {
-            return;
-        }
         try {
             $kirby->thumb($source, $version->root(), $version->modifications());
             F::remove(dirname($version->root()) . '/.jobs/' . basename($version->root()) . '.json');
