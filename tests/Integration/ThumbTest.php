@@ -114,9 +114,14 @@ final class ThumbTest extends IntegrationTestCase
     {
         $wide = $this->upload($this->jpeg(4000, 2000, 'wide.jpg'), 'wide.jpg');
         $tall = $this->upload($this->jpeg(2000, 4000, 'tall.jpg'), 'tall.jpg');
+        // From a copy with whole pixels, Kirby's own math gives this photo
+        // 1600 x 2401 and 1000 x 1501; from the original 1600 x 2400 and
+        // 1000 x 1500.
+        $odd = $this->upload($this->jpeg(2007, 3011, 'odd.jpg'), 'odd.jpg');
 
         Images::render($wide, true);
         Images::render($tall, true);
+        Images::render($odd, true);
 
         $sizes = [];
         foreach (glob($this->kirby->root('media') . '/pages/photos/test-photo/*/*.webp') ?: [] as $path) {
@@ -124,6 +129,17 @@ final class ThumbTest extends IntegrationTestCase
         }
         ksort($sizes);
         $this->assertSame([
+            'odd-1000x-q80.webp' => [1000, 1500],
+            'odd-1200x630-crop-q80.webp' => [1200, 630],
+            'odd-1600x-q80.webp' => [1600, 2400],
+            'odd-200x200-crop-q85.webp' => [200, 200],
+            'odd-240x240-crop-q80.webp' => [240, 240],
+            'odd-400x400-crop-q85.webp' => [400, 400],
+            'odd-480x480-crop-q80.webp' => [480, 480],
+            'odd-48x48-crop-q80.webp' => [48, 48],
+            'odd-600x-q80.webp' => [600, 900],
+            'odd-768x768-q80.webp' => [512, 768],
+            'odd-96x96-crop-q80.webp' => [96, 96],
             'tall-1000x-q80.webp' => [1000, 2000],
             'tall-1200x630-crop-q80.webp' => [1200, 630],
             'tall-1600x-q80.webp' => [1600, 3200],
@@ -171,6 +187,7 @@ final class ThumbTest extends IntegrationTestCase
             $file = $kirby->impersonate('kirby', fn() => $kirby->page('photos/test-photo')->createFile(['source' => $this->jpeg(40, 30), 'filename' => 'a.jpg', 'template' => 'image']));
         } finally {
             ini_set('error_log', (string) $previous);
+            unset(Darkroom::$types['test-fails']);
         }
 
         $this->assertFileExists($file->root());
@@ -265,6 +282,77 @@ final class ThumbTest extends IntegrationTestCase
         $this->upload($this->jpeg(40, 30), 'a.jpg');
 
         $this->assertSame($limit, ini_get('max_execution_time'));
+    }
+
+    /**
+     * Kirby deletes every thumbnail of a file with a focus point when an
+     * update has no focus in its input (File::update()), as the assistant
+     * does when it changes an alt text.
+     */
+    public function testAnUpdateWithoutFocusRendersTheDeletedThumbnailsAgain(): void
+    {
+        $this->createListPages();
+        $cover = $this->upload($this->jpeg(40, 30), 'cover.jpg');
+        $this->kirby->impersonate('kirby', fn() => $this->post->update(['cover' => [$cover->uuid()->toString()], 'pick' => 'true']));
+        $this->kirby->impersonate('kirby', fn() => $this->kirby->page('photos/test-photo')->file('cover.jpg')->update(['focus' => '20.0%, 70.0%']));
+
+        $this->kirby->impersonate('kirby', fn() => $this->kirby->page('photos/test-photo')->file('cover.jpg')->update(['alt' => 'A dog']));
+
+        $this->renderThePagesOfThePost();
+        $this->assertSame([], $this->jobs());
+    }
+
+    /** The main flow: upload into a draft, set the cover, publish. The move out of _drafts keeps the media folder. */
+    public function testThumbnailsOfADraftSurviveThePublish(): void
+    {
+        $this->createListPages();
+        $draft = $this->post('photos', 'photo', 'draft-photo', 'Draft Photo', 'draft');
+        $cover = $this->upload($this->jpeg(40, 30), 'cover.jpg', $draft);
+        $draft = $this->kirby->impersonate('kirby', fn() => $draft->update(['cover' => [$cover->uuid()->toString()], 'pick' => 'true', 'text' => '(image: cover.jpg)']));
+
+        $this->kirby->impersonate('kirby', fn() => $draft->changeStatus('listed'));
+
+        $this->renderThePagesOfThePost('draft-photo');
+        $this->assertSame([], $this->jobs('draft-photo'));
+    }
+
+    /**
+     * The publish renders what an earlier request left out, for example
+     * after the budget ran out, or after a change to draft deleted the
+     * media folder (Page::unpublish()).
+     */
+    public function testThePublishRendersWhatTheUploadLeftOut(): void
+    {
+        $this->createListPages();
+        $kirby = TestSite::app($this->root, ['blog.thumbs.budget' => 0]);
+        $draft = $kirby->impersonate('kirby', fn() => $kirby->page('photos/test-photo')->changeStatus('draft'));
+        $cover = $kirby->impersonate('kirby', fn() => $draft->createFile(['source' => $this->jpeg(40, 30), 'filename' => 'cover.jpg', 'template' => 'image']));
+        $draft = $kirby->impersonate('kirby', fn() => $draft->update(['cover' => [$cover->uuid()->toString()], 'pick' => 'true']));
+        $this->assertNotSame([], $this->jobs());
+
+        $this->kirby = TestSite::app($this->root);
+        $this->kirby->impersonate('kirby', fn() => $this->kirby->page('photos')->draft('test-photo')?->changeStatus('listed') ?? throw new RuntimeException('no draft'));
+
+        $this->renderThePagesOfThePost();
+        $this->assertSame([], $this->jobs());
+    }
+
+    /** A duplicate with its children gives every child page a new id too. */
+    public function testADuplicateWithChildrenGetsTheThumbnailsOfTheChildren(): void
+    {
+        $cover = $this->upload($this->jpeg(40, 30), 'cover.jpg');
+        $this->kirby->impersonate('kirby', fn() => $this->post->update(['cover' => [$cover->uuid()->toString()]]));
+
+        $copy = $this->kirby->impersonate('kirby', fn() => $this->kirby->page('photos')->duplicate('photos-copy', ['children' => true, 'files' => true]));
+
+        $child = $copy->childrenAndDrafts()->find('test-photo');
+        $this->assertNotNull($child);
+        $this->assertFileExists(Images::wide($child->file('cover.jpg'), 600)->root());
+        // The duplicate gives the copied file a new UUID, and the field cover
+        // keeps the UUID of the original file. The copy shows the cover of
+        // the original post, and that cover has its sizes.
+        $this->assertSame('photos/test-photo/cover.jpg', $child->coverImage()?->id());
+        $this->assertFileExists(Images::share($child->coverImage())->root());
     }
 
     /** The front page and the two archive pages that list the post. */

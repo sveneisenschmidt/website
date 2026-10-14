@@ -17,7 +17,8 @@ final class Lock
      * Runs $action under the lock $mode (LOCK_SH or LOCK_EX) on $file and
      * returns its result. With $wait, it waits at most $wait seconds, and
      * when the lock stays taken it returns null without running $action.
-     * When the lock file cannot be opened, $action runs without the lock.
+     * When the lock file cannot be opened or the file system has no locks,
+     * $action runs without the lock.
      *
      * @template T
      * @param Closure(): T $action
@@ -35,7 +36,12 @@ final class Lock
                 flock($handle, $mode);
             } else {
                 $until = microtime(true) + $wait;
-                while (!flock($handle, $mode | LOCK_NB)) {
+                while (!flock($handle, $mode | LOCK_NB, $taken)) {
+                    // A file system without locks fails without $taken. Then
+                    // $action runs without the lock, as without the file.
+                    if (!$taken) {
+                        break;
+                    }
                     if (microtime(true) >= $until) {
                         return null;
                     }

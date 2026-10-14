@@ -9,6 +9,7 @@ use Kirby\Cms\FileVersion;
 use Kirby\Cms\Page;
 use Kirby\Filesystem\Dir;
 use Kirby\Filesystem\F;
+use Kirby\Image\Dimensions;
 use Throwable;
 use WeakMap;
 use Website\Models\SitePage;
@@ -25,7 +26,7 @@ final class Images
 
     /**
      * The square covers of tile() as [quality, small edge, large edge,
-     * srcset]: `home` for the tiles on the front page, `archive` for the
+     * srcset descriptor]: `home` for the tiles on the front page, `archive` for the
      * grid of the photo archive, `list` for the small square in the
      * timeline and in the archive lists. A tile names the widths in srcset,
      * and the browser picks by the width of the layout. The small square is
@@ -93,10 +94,10 @@ final class Images
      */
     public static function tile(File $file, string $use): array
     {
-        [$quality, $small, $large, $srcset] = self::TILES[$use];
+        [$quality, $small, $large, $descriptor] = self::TILES[$use];
         $one = self::square($file, $small, $quality)->url();
         $two = self::square($file, $large, $quality)->url();
-        return $srcset === 'density'
+        return $descriptor === 'density'
             ? ['src' => $one, 'srcset' => "$one 1x, $two 2x", 'edge' => $small]
             : ['src' => $two, 'srcset' => "$one {$small}w, $two {$large}w", 'edge' => $large];
     }
@@ -140,18 +141,29 @@ final class Images
                 self::renderFile($args['newFile']);
                 break;
             case 'file.update:after':
-                // Exif::store() saves every upload once before Exif::strip()
-                // changes the file. That save keeps the focus point.
-                if ($args['newFile']->focus()->value() !== $args['oldFile']->focus()->value()) {
+                // Kirby deletes the thumbnails of a file when the focus point
+                // changes, and also when the file has a focus point and the
+                // update has none in its input (File::update()). A new upload
+                // has no focus point: Exif::store() saves it once before
+                // Exif::strip() changes the file, and that save renders
+                // nothing.
+                $focus = $args['oldFile']->focus()->value();
+                if ($focus !== null || $args['newFile']->focus()->value() !== $focus) {
                     self::renderFile($args['newFile']);
                 }
                 break;
             case 'page.changeSlug:after':
             case 'page.move:after':
-                self::renderImages($args['newPage']);
+                self::renderTree($args['newPage']);
                 break;
             case 'page.duplicate:after':
-                self::renderImages($args['duplicatePage']);
+                self::renderTree($args['duplicatePage']);
+                break;
+            case 'page.changeStatus:after':
+                // A change to draft deletes the media folder
+                // (Page::unpublish()). A publish also renders what an earlier
+                // request left out after its BUDGET.
+                self::renderTree($args['newPage']);
                 break;
             case 'page.update:after':
                 // A save can set a new cover. When its thumbnails exist,
@@ -176,11 +188,16 @@ final class Images
         }
     }
 
-    /** renderFile() for every image of $page. */
-    public static function renderImages(Page $page): void
+    /**
+     * renderFile() for every image of $page and of its subpages, drafts
+     * included. A new id of a page is also a new id for each subpage.
+     */
+    public static function renderTree(Page $page): void
     {
-        foreach ($page->images() as $image) {
-            self::renderFile($image);
+        foreach ([$page, ...$page->index(true)->values()] as $each) {
+            foreach ($each->images() as $image) {
+                self::renderFile($image);
+            }
         }
     }
 
@@ -228,9 +245,10 @@ final class Images
             $limit = (int) ini_get('max_execution_time');
             @set_time_limit(self::TIME_LIMIT);
             $source = count($versions) >= self::COPY_FROM ? self::source($kirby, $file) : null;
+            $copy = $source === null ? null : new Dimensions(...array_slice(getimagesize($source) ?: [0, 0], 0, 2));
             try {
                 foreach ($versions as $version) {
-                    self::save($kirby, $version, $source ?? $file->root());
+                    self::save($kirby, $version, $source ?? $file->root(), $copy);
                 }
             } finally {
                 if ($source !== null) {
@@ -298,15 +316,33 @@ final class Images
 
     /**
      * Renders a thumbnail from $source and removes its job file, as Kirby's
-     * media route does (Kirby\Cms\Media::thumb()). A failed render must not
+     * media route does (Kirby\Cms\Media::thumb()). $copy is the size of
+     * $source when $source is the copy of source(), else null. A failed render must not
      * fail the upload or the save: the job file stays, and Kirby tries
      * again on the first request. Kirby renders into a temporary file and
      * removes it after a failure, so no broken thumbnail stays behind.
      */
-    private static function save(App $kirby, FileVersion $version, string $source): void
+    private static function save(App $kirby, FileVersion $version, string $source, ?Dimensions $copy): void
     {
+        $options = $version->modifications();
+        if ($copy !== null && ($options['crop'] ?? false) === false) {
+            // The copy has whole pixels, so a thumbnail scaled from it can be
+            // 1 px off from one scaled from the original: 2,050 of 27,456
+            // sizes in a count with Kirby's size math on 2026-10-14.
+            // picture() and the feed take width and height from the
+            // original. For these sizes, a crop to the size of the original
+            // removes at most 1 px from the middle. Every other size scales
+            // without the crop, which would shift the image by up to 1 px.
+            // thumb() changes the dimensions object that it is called on;
+            // the clones keep the sizes intact.
+            $size = (clone $version->original()->dimensions())->thumb($options);
+            $scaled = (clone $copy)->thumb($options);
+            if ([$scaled->width(), $scaled->height()] !== [$size->width(), $size->height()]) {
+                $options = ['width' => $size->width(), 'height' => $size->height(), 'crop' => 'center'] + $options;
+            }
+        }
         try {
-            $kirby->thumb($source, $version->root(), $version->modifications());
+            $kirby->thumb($source, $version->root(), $options);
             F::remove(dirname($version->root()) . '/.jobs/' . basename($version->root()) . '.json');
         } catch (Throwable $e) {
             error_log('blog thumbnail: ' . $e->getMessage());
