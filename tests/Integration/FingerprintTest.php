@@ -60,6 +60,17 @@ final class FingerprintTest extends IntegrationTestCase
         $this->assertMatchesRegularExpression('/^[0-9a-f]{64}$/', (string) file_get_contents($this->root . '/storage/analytics.key'));
     }
 
+    /** An editor adds a line break at the end of a file. The key stays, without it. */
+    public function testALineBreakAfterTheKeyIsNoPartOfIt(): void
+    {
+        $key = str_repeat('0123456789abcdef', 4);
+        mkdir($this->root . '/storage');
+        file_put_contents($this->root . '/storage/analytics.key', "$key\n");
+
+        $this->assertSame(substr(hash_hmac('sha256', '198.51.100.77', $key), 0, 32), Fingerprint::ip('198.51.100.77'));
+        $this->assertSame("$key\n", file_get_contents($this->root . '/storage/analytics.key'));
+    }
+
     public function testAKeyThatCannotBeWrittenMakesNoFingerprint(): void
     {
         mkdir($this->root . '/storage');

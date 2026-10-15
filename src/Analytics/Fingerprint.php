@@ -121,10 +121,15 @@ final class Fingerprint
         return self::$keys[$file];
     }
 
-    /** The key in $file: 64 hex digits, or null when the file is missing or holds no such key. */
+    /**
+     * The key in $file: 64 hex digits, or null when the file is missing or
+     * holds no such key. A line break at the end, as an editor adds it, is
+     * no part of the key.
+     */
     private static function read(string $file): ?string
     {
         $key = is_file($file) ? @file_get_contents($file) : false;
-        return is_string($key) && preg_match('/^[0-9a-f]{64}$/', $key) === 1 ? $key : null;
+        $key = is_string($key) ? trim($key) : '';
+        return preg_match('/^[0-9a-f]{64}$/', $key) === 1 ? $key : null;
     }
 }
