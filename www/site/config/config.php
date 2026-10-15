@@ -51,7 +51,10 @@ $local = is_file(__DIR__ . '/env.php') ? [] : [
         'beforeSend' => function (PHPMailer\PHPMailer\PHPMailer $mailer) {
             $catcher = realpath(Composer\InstalledVersions::getRootPackage()['install_path']) . '/bin/mail-catcher.php';
             $mailer->isSendmail();
-            $mailer->Sendmail = PHP_BINARY . " $catcher " . kirby()->root('storage') . '/mail';
+            // PHPMailer runs the command through escapeshellcmd(), which keeps
+            // quotes that come in pairs. The quotes keep a path with spaces
+            // in one argument.
+            $mailer->Sendmail = sprintf('"%s" "%s" "%s/mail"', PHP_BINARY, $catcher, Website\Blog\Storage::root());
             return $mailer;
         },
     ],

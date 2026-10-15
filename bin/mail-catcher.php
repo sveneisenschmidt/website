@@ -23,10 +23,33 @@ if (file_put_contents($file, $mail) === false) {
 }
 
 if (getenv('MAIL_CATCHER_QUIET') !== '1') {
-    [$head, $body] = array_pad(preg_split('/\R\R/', $mail, 2) ?: [], 2, '');
-    $subject = preg_match('/^Subject: (.*)$/mi', $head, $m) ? (string) iconv_mime_decode(trim($m[1]), 0, 'UTF-8') : '';
-    if (preg_match('/^Content-Transfer-Encoding: quoted-printable/mi', $head)) {
+    [$head, $body] = mail_catcher_split($mail);
+    $subject = preg_match('/^Subject: (.*)$/mi', $head, $m) ? (string) iconv_mime_decode(trim($m[1]), ICONV_MIME_DECODE_CONTINUE_ON_ERROR, 'UTF-8') : '';
+    // A mail with HTML has one part per format. The terminal shows the text part.
+    if (preg_match('/boundary="?([^";\r\n]+)"?/i', $head, $b)) {
+        foreach (explode('--' . $b[1], $body) as $part) {
+            [$partHead, $partBody] = mail_catcher_split(ltrim($part));
+            if (stripos($partHead, 'text/plain') !== false) {
+                [$head, $body] = [$partHead, $partBody];
+                break;
+            }
+        }
+    }
+    if (preg_match('/^Content-Transfer-Encoding: *quoted-printable/mi', $head)) {
         $body = quoted_printable_decode($body);
+    } elseif (preg_match('/^Content-Transfer-Encoding: *base64/mi', $head)) {
+        $body = (string) base64_decode($body);
     }
     fwrite(STDERR, "\n--- Mail: $subject\n" . trim($body) . "\n--- $file\n\n");
+}
+
+/**
+ * The head and the body of a mail or of one of its parts.
+ *
+ * @return array{0: string, 1: string}
+ */
+function mail_catcher_split(string $text): array
+{
+    $parts = preg_split('/\R\R/', $text, 2) ?: [];
+    return [$parts[0] ?? '', $parts[1] ?? ''];
 }

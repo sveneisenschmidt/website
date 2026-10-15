@@ -3,6 +3,7 @@
 namespace Website\Analytics;
 
 use Website\Blog\Lock;
+use Website\Blog\Storage;
 
 /**
  * Turns an IP address into a fingerprint: an HMAC (a hash with a secret
@@ -96,7 +97,7 @@ final class Fingerprint
      */
     private static function key(): string
     {
-        $dir = kirby()->root('storage');
+        $dir = Storage::root();
         $file = "$dir/analytics.key";
         if (!isset(self::$keys[$file])) {
             if (!is_file($file)) {

@@ -9,6 +9,7 @@ use Kirby\Filesystem\F;
 use RuntimeException;
 use Throwable;
 use Website\Blog\Exif;
+use Website\Blog\Storage;
 
 /**
  * Stores the photos and GPX files that the Panel user adds to the chat. They
@@ -52,7 +53,7 @@ final class Uploads
 
     public static function root(): string
     {
-        $root = kirby()->root('storage') . '/assistant';
+        $root = Storage::root() . '/assistant';
         Dir::make($root);
         return $root;
     }

@@ -153,6 +153,18 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->assertSame('document', $headers['sec-fetch-dest']);
     }
 
+    public function testClickIdsAreStoredWithoutTheirValue(): void
+    {
+        $this->visit('photos', referer: 'https://www.instagram.com/example/?igsh=abc123&utm_medium=share', query: ['fbclid' => 'IwAR3xyz', 'utm_source' => 'instagram']);
+
+        $row = $this->rows('uri, referer')[0];
+        $this->assertSame('/photos/?fbclid=&utm_source=instagram', $row['uri']);
+        $this->assertSame('https://www.instagram.com/example/?igsh=&utm_medium=share', $row['referer']);
+        $this->assertSame(['instagram.com' => 1], $this->today()['referrers']);
+        $this->assertSame('/a/?GCLID=&b=1#top', Counter::withoutClickIds('/a/?GCLID=x&b=1#top'));
+        $this->assertSame('/a/', Counter::withoutClickIds('/a/'));
+    }
+
     public function testNoIpAddressAndNoLoginSecretIsStored(): void
     {
         $this->visit('photos', ip: '198.51.100.77', headers: [

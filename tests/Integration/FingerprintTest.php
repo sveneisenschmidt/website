@@ -2,6 +2,7 @@
 
 namespace Website\Tests\Integration;
 
+use LogicException;
 use Website\Analytics\Fingerprint;
 
 final class FingerprintTest extends IntegrationTestCase
@@ -38,6 +39,14 @@ final class FingerprintTest extends IntegrationTestCase
         $this->assertMatchesRegularExpression('/^[0-9a-f]{64}$/', $key);
         $this->assertSame([$this->root . '/storage/analytics.key'], glob($this->root . '/storage/*'));
         $this->assertSame($fingerprint, Fingerprint::ip('198.51.100.77'), 'the second call reads the same key');
+    }
+
+    public function testWithoutTheStorageRootNoFingerprintIsMade(): void
+    {
+        $this->kirby->clone(['roots' => ['storage' => null]]);
+
+        $this->expectException(LogicException::class);
+        Fingerprint::ip('203.0.113.7');
     }
 
     public function testOwnAddressesComeFromThePanelField(): void

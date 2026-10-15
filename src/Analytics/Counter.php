@@ -18,6 +18,14 @@ use Throwable;
  */
 final class Counter
 {
+    /**
+     * Query parameters whose value identifies one click or one person to the
+     * platform that added it, such as fbclid from Meta or gclid from Google.
+     * The statistics keep the name, so the source stays visible, and drop
+     * the value (withoutClickIds()).
+     */
+    public const CLICK_IDS = ['fbclid', 'gclid', 'gbraid', 'wbraid', 'dclid', 'msclkid', 'ttclid', 'twclid', 'li_fat_id', 'igsh', 'igshid', 'yclid', 'mc_eid', '_hsenc', '_hsmi'];
+
     /** Headers that are never stored: login secrets and the IP addresses that proxies add. */
     private const PRIVATE_HEADERS = ['cookie', 'authorization', 'proxy-authorization', 'x-forwarded-for', 'x-real-ip', 'forwarded', 'x-client-ip', 'client-ip', 'true-client-ip', 'cf-connecting-ip', 'x-cluster-client-ip', 'fastly-client-ip'];
 
@@ -64,7 +72,7 @@ final class Counter
             'ip_hash' => Fingerprint::ip($ip),
             'net_hash' => Fingerprint::net($ip),
             'method' => $method,
-            'uri' => mb_scrub((string) ($_SERVER['REQUEST_URI'] ?? '/' . $path), 'UTF-8'),
+            'uri' => self::withoutClickIds(mb_scrub((string) ($_SERVER['REQUEST_URI'] ?? '/' . $path), 'UTF-8')),
             'protocol' => (string) ($_SERVER['SERVER_PROTOCOL'] ?? ''),
             'page' => $result instanceof Page ? self::pageId($result) : null,
             'status' => self::status($result),
@@ -76,8 +84,9 @@ final class Counter
     /**
      * Every request header as name => value, the names in lower case,
      * without PRIVATE_HEADERS and without a header whose value contains the
-     * IP address. mb_scrub() replaces broken bytes: the Panel sends values as
-     * JSON, and JSON needs valid UTF-8.
+     * IP address. The referrer loses the values of CLICK_IDS. mb_scrub()
+     * replaces broken bytes: the Panel sends values as JSON, and JSON needs
+     * valid UTF-8.
      *
      * @return array<string, string>
      */
@@ -94,10 +103,30 @@ final class Counter
             if (in_array($name, self::PRIVATE_HEADERS, true) || ($ip !== '' && str_contains($value, $ip))) {
                 continue;
             }
-            $headers[$name] = mb_scrub($value, 'UTF-8');
+            $value = mb_scrub($value, 'UTF-8');
+            $headers[$name] = $name === 'referer' ? self::withoutClickIds($value) : $value;
         }
         ksort($headers);
         return $headers;
+    }
+
+    /**
+     * $url with an empty value for every parameter of CLICK_IDS in its
+     * query, such as "/photos/?fbclid=" for "/photos/?fbclid=IwAR3x". The
+     * other parameters stay as they came.
+     */
+    public static function withoutClickIds(string $url): string
+    {
+        $parts = explode('?', $url, 2);
+        if (count($parts) === 1) {
+            return $url;
+        }
+        [$query, $fragment] = array_pad(explode('#', $parts[1], 2), 2, null);
+        $pairs = array_map(function (string $pair): string {
+            $name = explode('=', $pair, 2)[0];
+            return in_array(strtolower(urldecode($name)), self::CLICK_IDS, true) ? "$name=" : $pair;
+        }, explode('&', $query));
+        return $parts[0] . '?' . implode('&', $pairs) . ($fragment === null ? '' : "#$fragment");
     }
 
     /** The HTTP status of the answer. Kirby answers a route without a result and the error page with 404. */

@@ -61,4 +61,46 @@ final class MailCatcherTest extends IntegrationTestCase
         $this->assertStringContainsString('Dein Code: 123 456, gültig 10 Minuten.', $terminal);
         $this->assertSame($mail, file_get_contents((glob("$dir/*.eml") ?: [''])[0]));
     }
+
+    public function testTheCatcherShowsTheTextPartOfAMailWithHtml(): void
+    {
+        $mail = "Subject: Code\r\nContent-Type: multipart/alternative; boundary=\"b1\"\r\n\r\n--b1\r\n"
+            . "Content-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . base64_encode('Dein Code: 654 321') . "\r\n"
+            . "--b1\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n<p>HTML</p>\r\n--b1--\r\n";
+
+        $terminal = $this->catch($mail);
+
+        $this->assertStringContainsString('Dein Code: 654 321', $terminal);
+        $this->assertStringNotContainsString('<p>HTML</p>', $terminal);
+    }
+
+    public function testABrokenSubjectPrintsNoNotice(): void
+    {
+        $terminal = $this->catch("Subject: =?UTF-8?Q?kaputt=ZZ?=\r\n\r\nText\r\n");
+
+        $this->assertStringContainsString('Text', $terminal);
+        $this->assertStringNotContainsString('Notice', $terminal);
+        $this->assertStringNotContainsString('Warning', $terminal);
+    }
+
+    public function testAStorageFolderWithASpaceWorks(): void
+    {
+        $app = $this->kirby->clone(['roots' => ['storage' => $this->root . '/with space/storage']]);
+
+        $app->email(['from' => 'panel@localhost.test', 'to' => 'author@example.com', 'subject' => 'Test', 'body' => 'Hallo']);
+
+        $this->assertCount(1, glob($this->root . '/with space/storage/mail/*.eml') ?: []);
+    }
+
+    /** Runs bin/mail-catcher.php with $mail and returns what it prints in the terminal. */
+    private function catch(string $mail): string
+    {
+        $proc = proc_open([PHP_BINARY, __DIR__ . '/../../bin/mail-catcher.php', $this->root . '/caught'], [0 => ['pipe', 'r'], 2 => ['pipe', 'w']], $pipes, null, ['MAIL_CATCHER_QUIET' => '']);
+        $this->assertIsResource($proc);
+        fwrite($pipes[0], $mail);
+        fclose($pipes[0]);
+        $terminal = (string) stream_get_contents($pipes[2]);
+        $this->assertSame(0, proc_close($proc));
+        return $terminal;
+    }
 }
