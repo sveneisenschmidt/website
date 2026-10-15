@@ -2,6 +2,8 @@
 
 namespace Website\Tests\Integration;
 
+use Website\Tests\Support\TestSite;
+
 /**
  * Locally there is no mail server. Without env.php, config.php hands every
  * mail of Kirby to bin/mail-catcher.php, which saves it in storage/mail/.
@@ -43,6 +45,28 @@ final class MailCatcherTest extends IntegrationTestCase
         $this->assertStringContainsString('From: ', $mail);
         $this->assertStringContainsString('panel@localhost.test', $mail);
         $this->assertMatchesRegularExpression('/\b\d{3} \d{3}\b/', $mail);
+    }
+
+    public function testWithEnvPhpKirbySendsMailsAsUsual(): void
+    {
+        $this->assertNotNull($this->kirby->option('email.beforeSend'), 'locally, without env.php, the catcher is on');
+
+        // bin/deploy.sh writes env.php on the server, so the server never uses
+        // the catcher or the local sender address. Kirby keeps a loaded
+        // config.php per path, so the server gets a test site of its own.
+        $root = TestSite::create();
+        try {
+            file_put_contents("$root/config/env.php", "<?php\n\nreturn ['debug' => false];\n");
+            file_put_contents("$root/config/.salt", str_repeat('a', 48));
+            $server = TestSite::app($root);
+
+            $this->assertNull($server->option('email.beforeSend'));
+            $this->assertNull($server->option('auth.challenge.email.from'));
+        } finally {
+            TestSite::remove($root);
+            // tearDown() destroys the session of the app of this test.
+            $this->kirby = TestSite::app($this->root);
+        }
     }
 
     public function testTheCatcherPrintsSubjectAndTextInTheTerminal(): void
