@@ -309,6 +309,20 @@ final class ChangelogTest extends IntegrationTestCase
         $this->assertSame(['guess4@website.test', 'guess3@website.test'], array_column(array_slice($entries, 0, 2), 'title'));
     }
 
+    /** "Verlauf" reads only the files of the newest 12 months. */
+    public function testTheViewReadsTheNewest12Months(): void
+    {
+        foreach (range(1, 12) as $month) {
+            $file = sprintf('%s/2025-%02d.jsonl', Log::dir(), $month);
+            file_put_contents($file, json_encode(['action' => 'page.update', 'title' => basename($file, '.jsonl')]) . "\n");
+        }
+
+        $titles = array_column(Log::entries(), 'title');
+
+        $this->assertContains('2025-02', $titles);
+        $this->assertNotContains('2025-01', $titles, 'The 13th month back is not read.');
+    }
+
     public function testFailedLoginKeepsAtMostTheLengthOfAnAddress(): void
     {
         Log::failedLogin(str_repeat('a', 1000) . '@website.test');

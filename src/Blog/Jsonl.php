@@ -52,17 +52,17 @@ final class Jsonl
     }
 
     /**
-     * Every entry, the newest first. It reads one file at a time, the
-     * newest month first, so a caller that stops early reads only the
-     * newest files.
+     * Every entry, the newest first, or only those of the newest $months
+     * files. It reads one file at a time, the newest month first, so a
+     * caller that stops early reads only the newest files.
      *
      * @return Generator<int, array<string, mixed>>
      */
-    public static function newest(string $dir): Generator
+    public static function newest(string $dir, ?int $months = null): Generator
     {
         $files = glob($dir . '/*.jsonl') ?: [];
         rsort($files);
-        foreach ($files as $file) {
+        foreach (array_slice($files, 0, $months) as $file) {
             $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [];
             foreach (array_reverse($lines) as $line) {
                 $entry = json_decode($line, true);
