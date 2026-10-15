@@ -23,7 +23,7 @@ sha256() { if command -v sha256sum >/dev/null; then sha256sum "$@"; else shasum 
 # bin/backup.sh leaves out site/accounts/.logins, the failed logins of the
 # last hour, and the journals of SQLite, so the comparison leaves them out
 # too.
-NO_JOURNALS=(! -name '*.sqlite-journal' ! -name '*.sqlite-wal' ! -name '*.sqlite-shm')
+NO_JOURNALS=(! -name '*.sqlite-journal')
 state_sums() { ( cd "$1" && find content site/accounts site/config/.salt site/config/.license -type f ! -name '.DS_Store' "${NO_JOURNALS[@]}" ! -path 'site/accounts/.logins' 2>/dev/null | LC_ALL=C sort | while read -r f; do sha256 "$f"; done ); }
 # One PHP process for all files: a process per file would start PHP once
 # for every file in content/.

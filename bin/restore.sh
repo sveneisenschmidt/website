@@ -3,9 +3,10 @@
 # site root or into shared/ on the server. make restore, bin/pull.sh and
 # bin/restore-test.sh run it.
 # 1. Checks every file against MANIFEST.sha256. On a mismatch, nothing changes.
-# 2. Deletes the state and the generated folders media/, site/cache/ and
-#    site/sessions/. Kirby makes the generated files again.
-# 3. Copies the state from the backup.
+# 2. Copies the state from the backup into a temporary folder next to the
+#    target, and puts each path in place with a rename.
+# 3. Deletes the old state and the generated folders media/, site/cache/
+#    and site/sessions/. Kirby makes the generated files again.
 # The script copies the files of a snapshot and never moves or changes them,
 # because older snapshots share them as hard links. env.php stays as it is:
 # make config creates it locally, bin/deploy.sh on the server.
@@ -26,11 +27,15 @@
 # On the server, from this checkout:
 #   ssh <host> "cd <site folder> && bash -s -- backups/website-<time> shared" < bin/restore.sh
 #
+# Environment: PHP, the PHP command for rename(), default php. Any version
+# does.
+#
 # Usage: bin/restore.sh <archive.tar.gz | snapshot-folder> [www-root | shared-folder]
 set -euo pipefail
 
 ARCHIVE="${1:?Usage: bin/restore.sh <archive.tar.gz | snapshot-folder> [www-root | shared-folder]}"
 WWW="${2:-www}"
+PHP="${PHP:-php}"
 STATE_PATHS=(content site/accounts site/config/.salt site/config/.license)
 GENERATED=(media site/cache site/sessions)
 
@@ -66,17 +71,44 @@ listed=$(wc -l < "$SRC/MANIFEST.sha256" | tr -d ' ')
 actual=$( cd "$SRC/state" && find . -type f ! -name '.DS_Store' ! -name '._*' | wc -l | tr -d ' ')
 [ "$listed" = "$actual" ] || { echo "Archive has $actual files, manifest lists $listed" >&2; exit 1; }
 
-for p in "${STATE_PATHS[@]}" "${GENERATED[@]}"; do rm -rf "${WWW:?}/$p"; done
-
+# The copy goes into a temporary folder next to the target first. On a live
+# site a request can make content/ again at any moment (the visitor
+# statistics, the likes, the change log), and cp into an existing folder
+# would put the backup inside it. place() puts a path in place with
+# rename(). rename() refuses a folder that is not empty: then the path in
+# the way moves aside, and the rename runs again. Both folders lie in the
+# target, so the renames stay on one file system.
+NEW="$(mktemp -d "$WWW/.restore-new-XXXXXX")"
+OLD="$(mktemp -d "$WWW/.restore-old-XXXXXX")"
 for p in "${STATE_PATHS[@]}"; do
   if [ -e "$SRC/state/$p" ]; then
-    mkdir -p "$WWW/$(dirname "$p")"
-    cp -Rp "$SRC/state/$p" "$WWW/$p"
+    mkdir -p "$NEW/$(dirname "$p")"
+    cp -Rp "$SRC/state/$p" "$NEW/$p"
   fi
 done
 # A backup made before bin/backup.sh left out SQLite journals can hold one.
 # Next to the copy of the database it would roll that copy back.
-find "$WWW/content" -type f \( -name '*.sqlite-journal' -o -name '*.sqlite-wal' -o -name '*.sqlite-shm' \) -delete
+find "$NEW/content" -type f -name '*.sqlite-journal' -delete
+
+place() {
+  local tries=0
+  until "$PHP" -r 'exit(@rename($argv[1], $argv[2]) ? 0 : 1);' "$1" "$2"; do
+    tries=$((tries + 1))
+    [ "$tries" -le 5 ] || { echo "Cannot put $2 in place. The backup is in $1, the old state in $OLD." >&2; exit 1; }
+    if [ -e "$2" ] || [ -L "$2" ]; then mv "$2" "$OLD/$(basename "$2").$tries"; fi
+  done
+}
+for p in "${STATE_PATHS[@]}"; do
+  if [ -e "$NEW/$p" ]; then
+    mkdir -p "$WWW/$(dirname "$p")"
+    place "$NEW/$p" "$WWW/$p"
+  elif [ -e "$WWW/$p" ]; then
+    # A path that the backup does not have, such as .license, goes too.
+    mv "$WWW/$p" "$OLD/$(basename "$p")"
+  fi
+done
+rm -rf "$NEW" "$OLD"
+for p in "${GENERATED[@]}"; do rm -rf "${WWW:?}/$p"; done
 
 if [ "$TARGET" = shared ]; then
   for p in "${GENERATED[@]}"; do mkdir -p "$WWW/$p"; done

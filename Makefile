@@ -60,7 +60,7 @@ backup:
 .PHONY: restore
 restore:
 	@test -n "$(BACKUP)" || { echo "Usage: make restore BACKUP=backups/website-....tar.gz"; exit 1; }
-	bin/restore.sh $(BACKUP) $(WWW)
+	PHP=$(PHP) bin/restore.sh $(BACKUP) $(WWW)
 
 .PHONY: restore-test
 restore-test:

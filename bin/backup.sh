@@ -61,14 +61,15 @@ else
   STATE="$TMP/state"
 fi
 
-# SQLite keeps a journal next to a database while a request writes to it:
-# <name>.sqlite-journal, or -wal and -shm in WAL mode. The databases under
-# content/ use the default journal, so the database file holds every
-# finished change. A copy of a journal, restored next to the copy of the
-# database made below in a read transaction, would roll that copy back. The
-# backup leaves journals out: rsync with these patterns, and cp in archive
-# mode copies them and the script removes them after the copy.
-NO_JOURNALS=(--exclude '*.sqlite-journal' --exclude '*.sqlite-wal' --exclude '*.sqlite-shm')
+# SQLite keeps a journal <name>.sqlite-journal next to a database while a
+# request writes to it. The databases under content/ use this default
+# journal, so the database file holds every finished change. A copy of a
+# journal, restored next to the copy of the database made below in a read
+# transaction, would roll that copy back. The backup leaves journals out:
+# rsync with this pattern, and cp in archive mode copies them and the
+# script removes them after the copy. In WAL mode the file -wal holds
+# finished changes, so -wal and -shm stay in a backup.
+NO_JOURNALS=(--exclude '*.sqlite-journal')
 
 mkdir -p "$STATE"
 for p in "${PATHS[@]}"; do
@@ -95,7 +96,7 @@ for p in "${PATHS[@]}"; do
   fi
 done
 
-find "$STATE/content" -type f \( -name '*.sqlite-journal' -o -name '*.sqlite-wal' -o -name '*.sqlite-shm' \) -delete
+find "$STATE/content" -type f -name '*.sqlite-journal' -delete
 
 # A request can write to a SQLite database under content/ while rsync or
 # cp copies it, and the copy is then broken. Each database that was

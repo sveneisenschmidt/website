@@ -175,6 +175,7 @@ bin/restore.sh "$archive" "$SITE/shared" >/dev/null
 grep -qx 'Title: Hello' "$SITE/shared/content/notes/20260101_hello/note.txt" || fail "the restore did not bring the note back"
 [ ! -e "$SITE/shared/content/.test.sqlite-journal" ] || fail "the journal is still there"
 for d in media site/cache site/sessions; do [ -d "$SITE/shared/$d" ] || fail "shared/$d is missing after the restore"; done
+[ -z "$(find "$SITE/shared" -maxdepth 1 -name '.restore-*')" ] || fail "the restore left its temporary folders in shared/"
 [ -n "$(find "$SITE/shared/site/accounts" -maxdepth 0 -perm 700)" ] || fail "shared/site/accounts/ is open to others after the restore"
 [ "$(status)" = 200 ] || fail "the site does not answer 200 after the restore"
 [ "$(curl -s -o /dev/null -w '%{http_code}' "$URL/2026-01-01-hello/")" = 200 ] || fail "the post does not answer 200 after the restore"
