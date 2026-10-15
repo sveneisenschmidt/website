@@ -52,6 +52,7 @@ final class TestSite
                 'media' => $root . '/media',
                 'sessions' => $root . '/sessions',
                 'logs' => $root . '/logs',
+                'storage' => $root . '/storage',
             ],
             'urls' => ['index' => 'http://localhost'],
             'options' => $options,

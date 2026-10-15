@@ -35,7 +35,7 @@ final class CacheTest extends IntegrationTestCase
         $kirby = TestSite::app($this->root, $this->options, ['server' => ['REQUEST_URI' => '/2026-10-07-test-photo/']]);
 
         $this->assertSame([], $_GET);
-        $this->assertSame('rss', Campaign::source());
+        $this->assertSame(['source' => 'rss', 'utm_source' => 'mastodon', 'fbclid' => 'x'], Campaign::params());
         $this->assertTrue($kirby->page('photos/test-photo')->isCacheable());
 
         $_GET = ['q' => 'bike', 'utm_medium' => 'social'];

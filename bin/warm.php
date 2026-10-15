@@ -15,9 +15,10 @@
  * 4.1 GB on 2026-10-13.
  *
  * The script sends 4 requests at a time. Its user agent contains "bot", so
- * the visitor count `Website\Analytics\Counter` skips it. With --pages, the
- * script stops after the pages. bin/deploy.sh runs it that way, because a
- * deploy clears the page cache but keeps the thumbnails in media/.
+ * the statistics list its requests under bots (Website\Analytics\Kind).
+ * With --pages, the script stops after the pages. bin/deploy.sh runs it that
+ * way, because a deploy clears the page cache but keeps the thumbnails in
+ * media/.
  *
  * Usage: php bin/warm.php [--pages] <site-url>
  */

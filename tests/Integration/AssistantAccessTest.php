@@ -11,9 +11,9 @@ use Website\Assistant\Panel;
  */
 final class AssistantAccessTest extends AssistantTestCase
 {
-    public function testTheSiteHasTheTabsPostsDetailsAndAssistant(): void
+    public function testTheSiteHasTheTabsPostsDetailsVisitorsAndAssistant(): void
     {
-        $this->assertSame(['beitraege', 'angaben', 'assistent'], array_column($this->kirby->site()->blueprint()->tabs(), 'name'));
+        $this->assertSame(['beitraege', 'angaben', 'besucher', 'assistent'], array_column($this->kirby->site()->blueprint()->tabs(), 'name'));
     }
 
     public function testTheLoggedInUserHasAreaAndButton(): void

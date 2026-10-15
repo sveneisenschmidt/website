@@ -21,6 +21,10 @@ set_error_handler(function (int $severity, string $message, string $file, int $l
 try {
     $_SERVER['REMOTE_ADDR'] = $ip;
     $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (X11; Linux x86_64) Firefox/131.0';
+    $_SERVER['REQUEST_URI'] = '/photos/';
+    // Every browser sends these two headers when it opens a page (see Kind).
+    $_SERVER['HTTP_SEC_FETCH_DEST'] = 'document';
+    $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'en';
     // The options of AnalyticsTest: the page cache is on, as on the live site.
     $kirby = TestSite::app($root, ['cache' => ['pages' => ['active' => true]]]);
     for ($i = 0; $i < (int) $views; $i++) {

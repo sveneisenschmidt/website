@@ -2,14 +2,17 @@
 
 namespace Website\Tests\Integration;
 
+use PDO;
+use Pdo\Sqlite;
 use Website\Analytics\Campaign;
 use Website\Analytics\Counter;
-use Website\Analytics\Months;
+use Website\Analytics\Hits;
 use Website\Analytics\Totals;
 
 final class AnalyticsTest extends IntegrationTestCase
 {
     private const SAFARI = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15';
+    private const GOOGLEBOT = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)';
 
     /**
      * The page cache is on, as config.php turns it on for the live site. The
@@ -61,7 +64,7 @@ final class AnalyticsTest extends IntegrationTestCase
         $day = $this->today();
         $this->assertSame(2, $day['visits']);
         $this->assertSame(3, $day['views']);
-        $this->assertSame(['photos/test-photo' => 2, 'photos' => 1], $day['pages']);
+        $this->assertSame(['photos' => 1, 'photos/test-photo' => 2], $day['pages']);
     }
 
     public function testPageFromThePageCacheCounts(): void
@@ -92,10 +95,10 @@ final class AnalyticsTest extends IntegrationTestCase
             $this->visit($path);
         }
 
-        $this->assertSame(['trips/a-trip' => 1, 'notes/a-note' => 1, 'essays/an-essay' => 1], $this->today()['pages']);
+        $this->assertSame(['essays/an-essay' => 1, 'notes/a-note' => 1, 'trips/a-trip' => 1], $this->today()['pages']);
     }
 
-    public function testDraftAndErrorPageDoNotCount(): void
+    public function testDraftAndErrorPageHaveNoPageId(): void
     {
         $error = $this->kirby->impersonate('kirby', fn() => $this->kirby->site()->createChild(['slug' => 'error', 'template' => 'error', 'content' => ['title' => 'Error']]));
         $draft = $this->post('photos', 'photo', 'draft-photo', 'Draft', 'draft');
@@ -105,39 +108,97 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->assertSame('photos/test-photo', Counter::pageId($this->kirby->page('photos/test-photo')));
     }
 
-    public function testUnreadableMonthIsNotOverwritten(): void
+    public function testEveryRequestIsRecorded(): void
     {
-        $file = $this->root . '/content/.analytics/' . date('Y-m') . '.json';
-        @mkdir(dirname($file), 0777, true);
-        file_put_contents($file, '{"broken');
-        // Both the count and the Panel log the broken file. phpunit.xml fails
-        // a test on any output, so the log goes to a file here.
-        $log = $this->root . '/php-errors.log';
-        $previous = ini_set('error_log', $log);
-
-        try {
-            $this->visit('photos');
-            $month = Totals::summary(30)['totals']['month'];
-        } finally {
-            ini_set('error_log', (string) $previous);
-        }
-
-        $this->assertSame('{"broken', file_get_contents($file));
-        $this->assertSame(0, $month, 'the Panel still opens');
-        $this->assertSame(2, substr_count(file_get_contents($log), 'blog analytics: '), 'the count and the Panel log the broken file');
-    }
-
-    public function testBotsLoggedInUsersAndOtherRequestsAddNothing(): void
-    {
-        $this->visit('photos', ua: 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)');
-        $this->visit('photos', ua: 'curl/8.7.1');
-        $this->visit('photos', ua: '');
+        $this->visit('photos', ua: self::GOOGLEBOT, browser: false);
+        $this->visit('photos', ua: 'curl/8.7.1', browser: false);
         $this->visit('photos', method: 'HEAD');
-        $this->visit('photos', session: true);
         $this->visit('does-not-exist');
         $this->visit('robots.txt');
+        $this->visit('photos', session: true);
+
+        $this->assertSame([
+            ['method' => 'GET', 'uri' => '/photos/', 'page' => 'photos', 'status' => 200, 'session' => 0, 'agent' => self::GOOGLEBOT],
+            ['method' => 'GET', 'uri' => '/photos/', 'page' => 'photos', 'status' => 200, 'session' => 0, 'agent' => 'curl/8.7.1'],
+            ['method' => 'HEAD', 'uri' => '/photos/', 'page' => 'photos', 'status' => 200, 'session' => 0, 'agent' => self::SAFARI],
+            ['method' => 'GET', 'uri' => '/does-not-exist/', 'page' => null, 'status' => 404, 'session' => 0, 'agent' => self::SAFARI],
+            ['method' => 'GET', 'uri' => '/robots.txt', 'page' => null, 'status' => 200, 'session' => 0, 'agent' => self::SAFARI],
+            ['method' => 'GET', 'uri' => '/photos/', 'page' => 'photos', 'status' => 200, 'session' => 1, 'agent' => self::SAFARI],
+        ], $this->rows('method, uri, page, status, session, agent'));
+        $this->assertNull($this->today(), 'no request is a page view of a person');
+    }
+
+    public function testEveryHeaderIsStoredWithTheQueryAndTheProtocol(): void
+    {
+        $this->visit('photos', query: ['source' => 'rss', 'utm_medium' => 'social'], headers: ['HTTP_SEC_CH_UA' => '"Chromium";v="141"', 'HTTP_DNT' => '1']);
+
+        $row = $this->rows('uri, protocol, headers')[0];
+        $headers = json_decode((string) $row['headers'], true);
+        $this->assertSame('/photos/?source=rss&utm_medium=social', $row['uri']);
+        $this->assertSame('HTTP/2.0', $row['protocol']);
+        $this->assertSame('"Chromium";v="141"', $headers['sec-ch-ua']);
+        $this->assertSame('1', $headers['dnt']);
+        $this->assertSame(self::SAFARI, $headers['user-agent']);
+        $this->assertSame('document', $headers['sec-fetch-dest']);
+    }
+
+    public function testNoIpAddressAndNoLoginSecretIsStored(): void
+    {
+        $this->visit('photos', ip: '198.51.100.77', headers: [
+            'HTTP_COOKIE' => 'kirby_session=secret-session',
+            'HTTP_AUTHORIZATION' => 'Basic c2VjcmV0LXBhc3N3b3Jk',
+            'HTTP_X_FORWARDED_FOR' => '192.0.2.9, 198.51.100.77',
+            'HTTP_X_REAL_IP' => '192.0.2.10',
+            'HTTP_X_ODD_HEADER' => 'seen from 198.51.100.77',
+        ]);
+
+        $files = [$this->database(), $this->root . '/storage/analytics.key'];
+        foreach ($files as $file) {
+            $text = (string) file_get_contents($file);
+            foreach (['198.51.100.77', '192.0.2.9', '192.0.2.10', 'secret-session', 'c2VjcmV0LXBhc3N3b3Jk'] as $secret) {
+                $this->assertStringNotContainsString($secret, $text, basename($file));
+            }
+        }
+        $this->assertNotContains('.analytics', $this->kirby->site()->childrenAndDrafts()->pluck('slug'));
+    }
+
+    public function testOwnAddressesCountForNothingAlsoAfterwards(): void
+    {
+        $this->visit('photos', ip: '198.51.100.7');
+        $this->visit('photos', ip: '2001:db8:1:2::abcd');
+        $this->visit('photos', ip: '203.0.113.9');
+        $this->assertSame(3, $this->today()['visits']);
+
+        $this->kirby->impersonate('kirby', fn() => $this->kirby->site()->update(['ownIps' => "198.51.100.7\n2001:db8:1:2::/64"]));
+        $this->visit('photos', ip: '2001:db8:1:2::ffff');
+
+        $this->assertSame(1, $this->today()['visits']);
+        $this->assertCount(4, $this->rows('uri'), 'the requests stay in the database');
+    }
+
+    public function testThePanelItsApiAndThumbnailsAreNotRecorded(): void
+    {
+        $this->assertFalse(Counter::isRecorded('panel/pages/photos'));
+        $this->assertFalse(Counter::isRecorded('api/site'));
+        $this->assertFalse(Counter::isRecorded('media/pages/photos/abc/photo-1200x.jpg'));
+        $this->assertTrue(Counter::isRecorded('photos'));
+        $this->assertTrue(Counter::isRecorded(''));
+    }
+
+    public function testABrowserNameWithoutBrowserHeadersIsNoPageView(): void
+    {
+        $this->visit('photos', browser: false);
 
         $this->assertNull($this->today());
+        $this->assertCount(1, $this->rows('uri'));
+    }
+
+    public function testAPrefetchIsNoPageView(): void
+    {
+        $this->visit('photos', headers: ['HTTP_SEC_PURPOSE' => 'prefetch']);
+
+        $this->assertNull($this->today());
+        $this->assertCount(1, $this->rows('uri'));
     }
 
     public function testExternalReferrerCountsHostOnceAVisit(): void
@@ -149,82 +210,33 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->assertSame(['instagram.com' => 1], $this->today()['referrers']);
     }
 
-    public function testFeedLinkCountsAsSourceRssOnceAVisit(): void
+    public function testTheOriginOfAVisitIsItsReferrerElseTheFeed(): void
     {
         $this->visit('2026-10-07-test-photo', query: ['source' => 'rss']);
         $this->visit('photos', query: ['source' => 'rss']);
-        $this->visit('photos', ip: '203.0.113.2', referer: 'https://feedly.com/', query: ['source' => 'rss']);
+        $this->visit('photos', ip: '203.0.113.2', referer: 'https://kagi.com/', query: ['source' => 'rss']);
         $this->visit('photos', ip: '203.0.113.3', query: ['source' => 'other']);
 
-        $this->assertSame(['RSS' => 2], $this->today()['referrers']);
-        $this->assertSame([['host' => 'RSS', 'visits' => 2]], Totals::summary(30)['referrers']);
+        $this->assertSame(['RSS' => 1, 'kagi.com' => 1], $this->today()['referrers']);
     }
 
-    public function testAViewBeyondTheVisitorCapCountsAsViewOnly(): void
+    public function testUnreadableDatabaseIsNotOverwritten(): void
     {
-        $file = $this->root . '/cache/analytics/' . date('Y-m-d') . '.json';
+        $file = $this->database();
         @mkdir(dirname($file), 0777, true);
-        $visitors = array_fill_keys(array_map(fn($i) => sprintf('%016x', $i), range(1, Counter::MAX_VISITORS)), ['photos']);
-        file_put_contents($file, json_encode(['key' => str_repeat('a', 64), 'visitors' => $visitors]));
+        file_put_contents($file, 'broken');
+        // phpunit.xml fails a test on any output, so the log goes to a file here.
+        $log = $this->root . '/php-errors.log';
+        $previous = ini_set('error_log', $log);
 
-        $this->visit('photos', referer: 'https://example.org/');
-
-        $this->assertSame(['visits' => 0, 'views' => 1, 'pages' => [], 'referrers' => []], $this->today());
-        $this->assertCount(Counter::MAX_VISITORS, json_decode((string) file_get_contents($file), true)['visitors']);
-    }
-
-    public function testAHostBeyondTheReferrerCapCountsAsOther(): void
-    {
-        $referrers = array_fill_keys(array_map(fn($i) => "host$i.example", range(1, Counter::MAX_REFERRERS)), 1);
-        Months::write(date('Y-m'), [date('Y-m-d') => ['visits' => Counter::MAX_REFERRERS, 'views' => Counter::MAX_REFERRERS, 'pages' => [], 'referrers' => $referrers]]);
-
-        $this->visit('photos', referer: 'https://new.example/');
-        $this->visit('photos', ip: '203.0.113.2', referer: 'https://host1.example/');
-
-        $today = $this->today()['referrers'];
-        $this->assertSame(1, $today['Andere']);
-        $this->assertSame(2, $today['host1.example']);
-        $this->assertArrayNotHasKey('new.example', $today);
-    }
-
-    public function testALongHostCountsAsOther(): void
-    {
-        $this->visit('photos', referer: 'https://' . str_repeat('a', 100) . '.example/');
-
-        $this->assertSame(['Andere' => 1], $this->today()['referrers']);
-    }
-
-    public function testStatsAreStateAndHoldNoIpAddress(): void
-    {
-        $this->visit('photos', ip: '198.51.100.77');
-
-        $stats = $this->root . '/content/.analytics/' . date('Y-m') . '.json';
-        $this->assertFileExists($stats);
-        $text = file_get_contents($stats);
-        $this->assertStringNotContainsString('198.51.100.77', $text);
-        $this->assertStringNotContainsString('Safari', $text);
-        $this->assertNotContains('.analytics', $this->kirby->site()->childrenAndDrafts()->pluck('slug'));
-
-        // cache/analytics/ holds the daily hashes that count a browser once a
-        // day. They are generated files and never in a backup, but they must
-        // not hold the IP address either.
-        foreach (glob($this->root . '/cache/analytics/*') as $file) {
-            $this->assertStringNotContainsString('198.51.100.77', file_get_contents($file));
+        try {
+            $this->visit('photos');
+        } finally {
+            ini_set('error_log', (string) $previous);
         }
-    }
 
-    public function testOldDailyHashesAreDeleted(): void
-    {
-        $old = $this->root . '/cache/analytics/2020-01-01.json';
-        @mkdir(dirname($old), 0777, true);
-        file_put_contents($old, '{}');
-        file_put_contents($old . '.1a2b3c4d.tmp', '{}');
-
-        $this->visit('photos');
-
-        $this->assertFileDoesNotExist($old);
-        $this->assertFileDoesNotExist($old . '.1a2b3c4d.tmp');
-        $this->assertFileExists($this->root . '/cache/analytics/' . date('Y-m-d') . '.json');
+        $this->assertSame('broken', file_get_contents($file));
+        $this->assertStringContainsString('blog analytics: ', (string) file_get_contents($log));
     }
 
     public function testSummaryForThePanel(): void
@@ -232,18 +244,23 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->visit('2026-10-07-test-photo', referer: 'https://instagram.com/');
         $this->visit('photos', ip: '203.0.113.2');
         $this->visit('2026-10-07-test-photo', ip: '203.0.113.2');
+        $this->visit('photos', ip: '203.0.113.3', ua: self::GOOGLEBOT, browser: false);
+        $this->visit('photos', ip: '203.0.113.4', browser: false);
 
         $summary = Totals::summary(30);
-
-        $this->assertCount(30, $summary['days']);
-        $this->assertSame(['date' => date('Y-m-d'), 'visits' => 2, 'views' => 3], end($summary['days']));
-        $this->assertSame(0, $summary['days'][0]['visits']);
-        $this->assertSame(['today' => 2, 'week' => 2, 'month' => 2, 'views' => 3], $summary['totals']);
-        $this->assertSame([
+        $pages = [
             ['id' => 'photos/test-photo', 'title' => 'Test Photo', 'url' => 'http://localhost/2026-10-07-test-photo/', 'visits' => 2],
             ['id' => 'photos', 'title' => 'Photos', 'url' => 'http://localhost/photos/', 'visits' => 1],
-        ], $summary['pages']);
-        $this->assertSame([['host' => 'instagram.com', 'visits' => 1]], $summary['referrers']);
+        ];
+        $referrers = [['host' => 'instagram.com', 'visits' => 1]];
+
+        $this->assertCount(30, $summary['days']);
+        $this->assertSame(['date' => date('Y-m-d'), 'visits' => 2, 'views' => 3, 'pages' => $pages, 'referrers' => $referrers], end($summary['days']));
+        $this->assertSame(['date' => date('Y-m-d', strtotime('-29 days')), 'visits' => 0, 'views' => 0, 'pages' => [], 'referrers' => []], $summary['days'][0]);
+        $this->assertSame(['today' => 2, 'week' => 2, 'month' => 2, 'views' => 3], $summary['totals']);
+        $this->assertSame($pages, $summary['pages']);
+        $this->assertSame($referrers, $summary['referrers']);
+        $this->assertSame(['named' => 1, 'suspect' => 1, 'names' => [['name' => 'Googlebot', 'hits' => 1]]], $summary['bots']);
     }
 
     public function testSummaryNamesHomeRenamedAndDeletedPages(): void
@@ -260,6 +277,77 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->assertSame('Renamed Photo', $titles['photos/test-photo']);
         $this->assertSame('Startseite', $titles['home']);
         $this->assertSame('gone (gelöscht)', $titles['gone']);
+    }
+
+    public function testOldMonthFilesAndRequestsAddUpAlsoPerDay(): void
+    {
+        $yesterday = date('Y-m-d', strtotime('-1 day'));
+        foreach ([date('Y-m', strtotime('-1 day')), date('Y-m')] as $month) {
+            $days = array_filter([
+                $yesterday => ['visits' => 2, 'views' => 2, 'pages' => ['photos/test-photo' => 2], 'referrers' => ['RSS' => 1]],
+                date('Y-m-d') => ['visits' => 3, 'views' => 5, 'pages' => ['photos' => 3], 'referrers' => ['RSS' => 2]],
+            ], fn($date) => str_starts_with($date, $month), ARRAY_FILTER_USE_KEY);
+            $file = $this->root . "/content/.analytics/$month.json";
+            @mkdir(dirname($file), 0777, true);
+            file_put_contents($file, json_encode($days));
+        }
+
+        $this->visit('photos', referer: 'https://kagi.com/');
+
+        $summary = Totals::summary(30);
+        $this->assertSame(['today' => 4, 'week' => 6, 'month' => 6, 'views' => 8], $summary['totals']);
+        $this->assertSame([['host' => 'RSS', 'visits' => 3], ['host' => 'kagi.com', 'visits' => 1]], $summary['referrers']);
+        $this->assertSame([['host' => 'RSS', 'visits' => 1]], $summary['days'][28]['referrers']);
+        $this->assertSame('photos/test-photo', $summary['days'][28]['pages'][0]['id']);
+        $this->assertSame([['host' => 'RSS', 'visits' => 2], ['host' => 'kagi.com', 'visits' => 1]], $summary['days'][29]['referrers']);
+        $this->assertSame(['visits' => 6, 'views' => 8, 'pages' => 2, 'top' => ['photos/test-photo' => 2]], Totals::all());
+    }
+
+    public function testAnUnreadableMonthFileIsLoggedAndThePanelOpens(): void
+    {
+        $file = $this->root . '/content/.analytics/' . date('Y-m') . '.json';
+        @mkdir(dirname($file), 0777, true);
+        file_put_contents($file, '{"broken');
+        $log = $this->root . '/php-errors.log';
+        $previous = ini_set('error_log', $log);
+
+        try {
+            $this->visit('photos');
+            $month = Totals::summary(30)['totals']['month'];
+        } finally {
+            ini_set('error_log', (string) $previous);
+        }
+
+        $this->assertSame(1, $month, 'the request from the database still counts');
+        $this->assertSame('{"broken', file_get_contents($file));
+        $this->assertStringContainsString('blog analytics: ', (string) file_get_contents($log));
+    }
+
+    public function testOwnAddressesAreNoBotsEither(): void
+    {
+        $this->visit('photos', ip: '198.51.100.7', ua: 'curl/8.7.1', browser: false);
+        $this->visit('photos', ip: '203.0.113.9', ua: 'curl/8.7.1', browser: false);
+        $this->kirby->impersonate('kirby', fn() => $this->kirby->site()->update(['ownIps' => '198.51.100.7']));
+
+        $this->assertSame(['named' => 1, 'suspect' => 0, 'names' => [['name' => 'curl', 'hits' => 1]]], Totals::summary(30)['bots']);
+    }
+
+    public function testAboutShowsNothingBeforeTheFirstVisit(): void
+    {
+        $this->visit('2026-10-07-test-photo', ua: self::GOOGLEBOT, browser: false);
+
+        $this->assertNull(Totals::stats());
+    }
+
+    public function testAboutCountsOnlyPersons(): void
+    {
+        $this->visit('2026-10-07-test-photo');
+        $this->visit('2026-10-07-test-photo', ip: '203.0.113.5', ua: self::GOOGLEBOT, browser: false);
+
+        $stats = Totals::stats();
+        $this->assertNotNull($stats);
+        $this->assertSame([1, 1, 1], [$stats['visits'], $stats['views'], $stats['pages']]);
+        $this->assertSame('photos/test-photo', $stats['top'][0][0]->id());
     }
 
     public function testParallelViewsLoseNoCount(): void
@@ -285,7 +373,13 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->assertSame(['photos' => $workers], $day['pages']);
     }
 
-    /** @param array<mixed> $query */
+    /**
+     * Renders $path as a request. $_SERVER starts from its state before the
+     * test, so no header of an earlier visit stays.
+     *
+     * @param array<string, string> $query
+     * @param array<string, string> $headers further $_SERVER entries, such as HTTP_DNT
+     */
     private function visit(
         string $path,
         string $ip = '203.0.113.1',
@@ -294,15 +388,29 @@ final class AnalyticsTest extends IntegrationTestCase
         string $method = 'GET',
         bool $session = false,
         array $query = [],
+        bool $browser = true,
+        array $headers = [],
     ): void {
         $_GET = $query;
         Campaign::strip();
+        $_SERVER = $this->server;
         $_SERVER['REMOTE_ADDR'] = $ip;
         $_SERVER['HTTP_USER_AGENT'] = $ua;
         $_SERVER['HTTP_HOST'] = 'localhost';
-        unset($_SERVER['HTTP_REFERER']);
+        $_SERVER['SERVER_PROTOCOL'] = 'HTTP/2.0';
+        // The URI as a browser sends it: a page with a slash at the end.
+        $uri = '/' . $path . ($path === '' || str_contains(basename($path), '.') ? '' : '/');
+        $_SERVER['REQUEST_URI'] = $uri . ($query === [] ? '' : '?' . http_build_query($query));
         if ($referer !== null) {
             $_SERVER['HTTP_REFERER'] = $referer;
+        }
+        // Every browser sends these two headers when it opens a page (see Kind).
+        if ($browser) {
+            $_SERVER['HTTP_SEC_FETCH_DEST'] = 'document';
+            $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'de-DE,de;q=0.9';
+        }
+        foreach ($headers as $key => $value) {
+            $_SERVER[$key] = $value;
         }
         if ($session) {
             $_COOKIE['kirby_session'] = 'x';
@@ -312,9 +420,22 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->kirby->render($path, $method);
     }
 
-    /** @return array<mixed> */
+    /** @return array<mixed>|null */
     private function today(): ?array
     {
-        return Months::read(date('Y-m'))[date('Y-m-d')] ?? null;
+        return Hits::days(date('Y-m-d'), date('Y-m-d'))[date('Y-m-d')] ?? null;
+    }
+
+    /** @return list<array<string, mixed>> */
+    private function rows(string $columns): array
+    {
+        $statement = (new Sqlite('sqlite:' . $this->database()))->query("SELECT $columns FROM hits ORDER BY rowid");
+        $this->assertNotFalse($statement);
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    private function database(): string
+    {
+        return $this->root . '/content/.analytics/' . date('Y-m') . '.sqlite';
     }
 }
