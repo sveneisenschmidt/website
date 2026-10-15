@@ -87,6 +87,17 @@ final class AssistantEditTest extends AssistantTestCase
         $this->assertNotEmpty($this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'date', 'value' => '2026-10-01 03:17:42'])['id']);
     }
 
+    /** Autolinks and a "<" without a ">" after it are Markdown and text, not HTML. */
+    public function testAutolinksAndALessThanSignAreNoHtml(): void
+    {
+        foreach (['See <https://example.com/a?b=1>.', 'Mail <name@example.com>.', 'Mail <mailto:name@example.com>.', 'a<b', '1 < 2', 'I <3 bikes'] as $value) {
+            $this->assertSame('field', $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => $value])['kind'], $value);
+        }
+        foreach (['<b>bold</b>', '</p>', '<!-- hidden', '<?php', '<javascript://%0aalert(1)>', '<x:y onmouseover=alert(1)>', "<img\nsrc=x>"] as $value) {
+            $this->assertStringContainsString('HTML', $this->refusal('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => $value]), $value);
+        }
+    }
+
     public function testAStaleCardChangesNothing(): void
     {
         $card = $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => 'New text.']);

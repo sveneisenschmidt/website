@@ -21,8 +21,16 @@ use Website\Blog\Types;
  */
 final class Proposals
 {
-    /** The start of raw HTML: a tag, a closing tag, a comment, a doctype or a processing instruction. */
-    public const HTML = '/<[a-z!\/?]/i';
+    /**
+     * Raw HTML: a comment, a doctype or a processing instruction ("<!",
+     * "<?"), or a tag or a closing tag up to its ">". Parsedown, Kirby's
+     * Markdown parser, takes a "<" only as HTML when a ">" follows, and
+     * escapes it otherwise, as in "a<b". An autolink to a web or mail
+     * address, such as <https://example.com> or <name@example.com>, is
+     * Markdown: Parsedown makes it a link. Other schemes, such as
+     * <javascript://...>, count as HTML.
+     */
+    public const HTML = '/<(?:[!?]|(?!https?:\/\/[^\s<>]+>|(?:mailto:)?[\w.!#$%&\'*+\/=?^`{|}~-]+@[a-z0-9.-]+>)[\w\/][^>]*>)/i';
 
     /**
      * Turns a propose tool call into a card. Returns the proposal, or the
