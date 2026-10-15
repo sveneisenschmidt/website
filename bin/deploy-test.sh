@@ -16,6 +16,10 @@
 # 4. A release whose switch fails after the rename of `current`. `current`
 #    must be back on the second release, and the failed release must be
 #    gone.
+# 5. A snapshot and an archive of shared/, which must not hold a SQLite
+#    journal. A restore into the release current/www must refuse. A restore
+#    into shared/ must bring the state back, keep the folders the releases
+#    link to, and the site must answer 200.
 #
 # Usage: bin/deploy-test.sh
 set -euo pipefail
@@ -128,3 +132,29 @@ grep -q '^The switch to .* failed\.$' "$TMP/switch.log" || fail "the switch did 
 [ "$(releases)" = "$first $second " ] || fail "a failed release is still there: $(releases)"
 [ "$(status)" = 200 ] || fail "the site does not answer 200 after the switch back"
 echo "OK: back on $second"
+
+echo "## 5. Backup and restore in shared/"
+# A journal of SQLite, as a request leaves it next to its database while it
+# writes. No backup may hold it.
+# A new mtime makes the state differ from the newest snapshot, so the
+# backup makes a new one.
+printf 'journal' > "$SITE/shared/content/.test.sqlite-journal"
+newest="$(ls -1d "$SITE"/backups/website-*/ | tail -1)"
+touch "$SITE/shared/content/notes/notes.txt"
+snapshot="$(PHP="$PHP" bin/backup.sh --snapshot "$SITE/shared" "$SITE/backups" | tail -1)"
+archive="$(PHP="$PHP" bin/backup.sh "$SITE/shared" "$TMP/archives" | tail -1)"
+[ "$snapshot/" != "$newest" ] || fail "the backup made no new snapshot"
+[ -z "$(find "$snapshot" -name '*.sqlite-journal')" ] || fail "the snapshot holds a SQLite journal"
+! tar -tzf "$archive" | grep -q 'sqlite-journal' || fail "the archive holds a SQLite journal"
+# A change after the backup, which the restore must undo.
+printf 'Title: Changed\n' > "$SITE/shared/content/notes/20260101_hello/note.txt"
+! bin/restore.sh "$archive" "$SITE/current/www" >/dev/null 2>&1 || fail "the restore into current/www did not refuse"
+[ -L "$SITE/releases/$second/www/content" ] || fail "the restore into current/www replaced the symlink to shared/content"
+bin/restore.sh "$archive" "$SITE/shared" >/dev/null
+grep -qx 'Title: Hello' "$SITE/shared/content/notes/20260101_hello/note.txt" || fail "the restore did not bring the note back"
+[ ! -e "$SITE/shared/content/.test.sqlite-journal" ] || fail "the journal is still there"
+for d in media site/cache site/sessions; do [ -d "$SITE/shared/$d" ] || fail "shared/$d is missing after the restore"; done
+[ -n "$(find "$SITE/shared/site/accounts" -maxdepth 0 -perm 700)" ] || fail "shared/site/accounts/ is open to others after the restore"
+[ "$(status)" = 200 ] || fail "the site does not answer 200 after the restore"
+[ "$(curl -s -o /dev/null -w '%{http_code}' "$URL/2026-01-01-hello/")" = 200 ] || fail "the post does not answer 200 after the restore"
+echo "OK: restored into shared/"

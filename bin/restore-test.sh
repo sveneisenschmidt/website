@@ -21,11 +21,13 @@ PHP="${PHP:-php}"
 
 sha256() { if command -v sha256sum >/dev/null; then sha256sum "$@"; else shasum -a 256 "$@"; fi; }
 # bin/backup.sh leaves out site/accounts/.logins, the failed logins of the
-# last hour, so the comparison leaves it out too.
-state_sums() { ( cd "$1" && find content site/accounts site/config/.salt site/config/.license -type f ! -name '.DS_Store' ! -path 'site/accounts/.logins' 2>/dev/null | LC_ALL=C sort | while read -r f; do sha256 "$f"; done ); }
+# last hour, and the journals of SQLite, so the comparison leaves them out
+# too.
+NO_JOURNALS=(! -name '*.sqlite-journal' ! -name '*.sqlite-wal' ! -name '*.sqlite-shm')
+state_sums() { ( cd "$1" && find content site/accounts site/config/.salt site/config/.license -type f ! -name '.DS_Store' "${NO_JOURNALS[@]}" ! -path 'site/accounts/.logins' 2>/dev/null | LC_ALL=C sort | while read -r f; do sha256 "$f"; done ); }
 # One PHP process for all files: a process per file would start PHP once
 # for every file in content/.
-mtimes() { ( cd "$1" && find content -type f ! -name '.DS_Store' | LC_ALL=C sort | "$PHP" -r 'while (($f = fgets(STDIN)) !== false) { $f = rtrim($f, "\n"); echo filemtime($f), " ", $f, "\n"; }' ); }
+mtimes() { ( cd "$1" && find content -type f ! -name '.DS_Store' "${NO_JOURNALS[@]}" | LC_ALL=C sort | "$PHP" -r 'while (($f = fgets(STDIN)) !== false) { $f = rtrim($f, "\n"); echo filemtime($f), " ", $f, "\n"; }' ); }
 # Prints the first 20 differences, so a failure shows where the trees differ.
 same() { local d; d=$(diff "$1" "$2") || { echo "FAIL: $3 differ"; echo "$d" | head -20; exit 1; }; }
 
