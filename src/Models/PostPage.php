@@ -3,6 +3,7 @@
 namespace Website\Models;
 
 use Kirby\Content\Field;
+use Kirby\Content\VersionId;
 use Website\Blog\Images;
 use Website\Blog\Posts;
 
@@ -31,6 +32,16 @@ class PostPage extends SitePage
     public function postPath(?string $slug = null): string
     {
         return '/' . $this->date()->toDate('Y-m-d') . '-' . ($slug ?? $this->slug()) . '/';
+    }
+
+    /**
+     * Removes the post from the page cache, so the next request renders it
+     * again. Website\Blog\Likes calls it after a like, because the post shows
+     * the count. Kirby empties the whole cache only after a content change.
+     */
+    public function uncache(): void
+    {
+        $this->kirby()->cache('pages')->remove($this->cacheId('html', VersionId::latest()));
     }
 
     public function isArticle(): bool
