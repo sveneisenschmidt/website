@@ -3,6 +3,7 @@
 namespace Website\Tests\Integration;
 
 use LogicException;
+use RuntimeException;
 use Website\Analytics\Fingerprint;
 
 final class FingerprintTest extends IntegrationTestCase
@@ -39,6 +40,40 @@ final class FingerprintTest extends IntegrationTestCase
         $this->assertMatchesRegularExpression('/^[0-9a-f]{64}$/', $key);
         $this->assertSame([$this->root . '/storage/analytics.key'], glob($this->root . '/storage/*'));
         $this->assertSame($fingerprint, Fingerprint::ip('198.51.100.77'), 'the second call reads the same key');
+    }
+
+    public function testOnlyTheAccountUserReadsTheKey(): void
+    {
+        Fingerprint::ip('198.51.100.77');
+
+        $this->assertSame(0600, fileperms($this->root . '/storage/analytics.key') & 0777);
+    }
+
+    /** A write that failed on a full disk can leave an empty key file. Such a file gets a new key. */
+    public function testAnEmptyKeyFileGetsANewKey(): void
+    {
+        mkdir($this->root . '/storage');
+        touch($this->root . '/storage/analytics.key');
+
+        Fingerprint::ip('198.51.100.77');
+
+        $this->assertMatchesRegularExpression('/^[0-9a-f]{64}$/', (string) file_get_contents($this->root . '/storage/analytics.key'));
+    }
+
+    public function testAKeyThatCannotBeWrittenMakesNoFingerprint(): void
+    {
+        mkdir($this->root . '/storage');
+        touch($this->root . '/storage/.analytics.key.lock');
+        chmod($this->root . '/storage', 0500);
+        try {
+            Fingerprint::ip('198.51.100.77');
+            $this->fail('A fingerprint was made without a key.');
+        } catch (RuntimeException $e) {
+            $this->assertStringContainsString('Cannot write the key', $e->getMessage());
+        } finally {
+            chmod($this->root . '/storage', 0700);
+        }
+        $this->assertSame(['.analytics.key.lock'], array_values(array_diff(scandir($this->root . '/storage'), ['.', '..'])));
     }
 
     public function testWithoutTheStorageRootNoFingerprintIsMade(): void

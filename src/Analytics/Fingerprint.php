@@ -2,6 +2,7 @@
 
 namespace Website\Analytics;
 
+use RuntimeException;
 use Website\Blog\Lock;
 use Website\Blog\Storage;
 
@@ -93,24 +94,37 @@ final class Fingerprint
      * The key, read once per request and key file. The first request
      * creates it under the lock storage/.analytics.key.lock, so parallel
      * first requests all read the same key. rename() puts the complete file
-     * in place in one step.
+     * in place in one step, with mode 600. A file without a valid key, such
+     * as an empty file after a full disk, gets a new key. When the key
+     * cannot be written or read, the method throws: a fingerprint with an
+     * empty key would be no secret.
      */
     private static function key(): string
     {
         $dir = Storage::root();
         $file = "$dir/analytics.key";
         if (!isset(self::$keys[$file])) {
-            if (!is_file($file)) {
+            if (self::read($file) === null) {
                 Lock::run("$dir/.analytics.key.lock", LOCK_EX, function () use ($file) {
-                    if (!is_file($file)) {
+                    if (self::read($file) === null) {
                         $tmp = $file . '.' . bin2hex(random_bytes(4)) . '.tmp';
-                        file_put_contents($tmp, bin2hex(random_bytes(32)));
-                        rename($tmp, $file);
+                        $key = bin2hex(random_bytes(32));
+                        if (@file_put_contents($tmp, $key) !== strlen($key) || !@chmod($tmp, 0600) || !@rename($tmp, $file)) {
+                            @unlink($tmp);
+                            throw new RuntimeException("Cannot write the key $file");
+                        }
                     }
                 });
             }
-            self::$keys[$file] = (string) file_get_contents($file);
+            self::$keys[$file] = self::read($file) ?? throw new RuntimeException("No valid key in $file");
         }
         return self::$keys[$file];
+    }
+
+    /** The key in $file: 64 hex digits, or null when the file is missing or holds no such key. */
+    private static function read(string $file): ?string
+    {
+        $key = is_file($file) ? @file_get_contents($file) : false;
+        return is_string($key) && preg_match('/^[0-9a-f]{64}$/', $key) === 1 ? $key : null;
     }
 }
