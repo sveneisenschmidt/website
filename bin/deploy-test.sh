@@ -16,7 +16,10 @@
 # 4. A release whose switch fails after the rename of `current`. `current`
 #    must be back on the second release, and the failed release must be
 #    gone.
-# 5. A snapshot and an archive of shared/, which must not hold a SQLite
+# 5. The release of 3 again, and the switch back fails after the rename of
+#    `current`. .htaccess still sends the requests to the failed release,
+#    so it must stay. A third release then repairs the site.
+# 6. A snapshot and an archive of shared/, which must not hold a SQLite
 #    journal. A restore into the release current/www must refuse. A restore
 #    into shared/ must bring the state back, keep the folders the releases
 #    link to, and the site must answer 200.
@@ -113,18 +116,23 @@ releases() { ls -1 "$SITE/releases" | tr '\n' ' '; }
 echo "OK: back on $second"
 
 echo "## 4. Release whose switch fails"
-# A PHP for the server side that fails the next switch once: it renames
-# `current` and fails before the rename of .htaccess, as a full disk could.
+# A PHP for the server side whose switch fails once: it renames `current`
+# and fails before the rename of .htaccess, as a full disk could. The file
+# fail-switch holds how many switches go through before that one.
 cat > "$TMP/php-switch-fails" <<SH
 #!/usr/bin/env bash
 if [ -f "$TMP/fail-switch" ] && [[ "\$*" == *'rename(".htaccess.new"'* ]]; then
-  rm "$TMP/fail-switch"
-  exec "$PHP" -r 'rename("current.new", "current"); exit(1);'
+  n=\$(cat "$TMP/fail-switch")
+  if [ "\$n" = 0 ]; then
+    rm "$TMP/fail-switch"
+    exec "$PHP" -r 'rename("current.new", "current"); exit(1);'
+  fi
+  echo \$((n - 1)) > "$TMP/fail-switch"
 fi
 exec "$PHP" "\$@"
 SH
 chmod +x "$TMP/php-switch-fails"
-touch "$TMP/fail-switch"
+echo 0 > "$TMP/fail-switch"
 sleep 1
 ! REMOTE_PHP="$TMP/php-switch-fails" bin/deploy.sh >"$TMP/switch.log" 2>&1 || fail "the deploy did not fail"
 grep -q '^The switch to .* failed\.$' "$TMP/switch.log" || fail "the switch did not fail"
@@ -133,7 +141,20 @@ grep -q '^The switch to .* failed\.$' "$TMP/switch.log" || fail "the switch did 
 [ "$(status)" = 200 ] || fail "the site does not answer 200 after the switch back"
 echo "OK: back on $second"
 
-echo "## 5. Backup and restore in shared/"
+echo "## 5. Release with failing posts whose switch back fails"
+echo 1 > "$TMP/fail-switch"
+sleep 1
+! (cd "$TMP/broken" && REMOTE_PHP="$TMP/php-switch-fails" bin/deploy.sh >"$TMP/back.log" 2>&1) || fail "the deploy did not fail"
+grep -qx 'HTTP 500 /2026-01-01-hello/' "$TMP/back.log" || fail "the health check did not fail at the newest post"
+broken="$(ls -1 "$SITE/releases" | grep -v -x -e "$first" -e "$second")" || fail "the failed release is gone, but .htaccess still sends the requests to it"
+grep -qF "releases/$broken/" "$SITE/.htaccess" || fail "the switch back did not fail between its renames"
+sleep 1
+bin/deploy.sh >/dev/null
+third="$(current)"
+[ "$(status)" = 200 ] || fail "the third release does not answer 200"
+echo "OK: $broken kept while live, repaired with $third"
+
+echo "## 6. Backup and restore in shared/"
 # A journal of SQLite, as a request leaves it next to its database while it
 # writes. No backup may hold it.
 # A new mtime makes the state differ from the newest snapshot, so the
@@ -149,7 +170,7 @@ archive="$(PHP="$PHP" bin/backup.sh "$SITE/shared" "$TMP/archives" | tail -1)"
 # A change after the backup, which the restore must undo.
 printf 'Title: Changed\n' > "$SITE/shared/content/notes/20260101_hello/note.txt"
 ! bin/restore.sh "$archive" "$SITE/current/www" >/dev/null 2>&1 || fail "the restore into current/www did not refuse"
-[ -L "$SITE/releases/$second/www/content" ] || fail "the restore into current/www replaced the symlink to shared/content"
+[ -L "$SITE/releases/$third/www/content" ] || fail "the restore into current/www replaced the symlink to shared/content"
 bin/restore.sh "$archive" "$SITE/shared" >/dev/null
 grep -qx 'Title: Hello' "$SITE/shared/content/notes/20260101_hello/note.txt" || fail "the restore did not bring the note back"
 [ ! -e "$SITE/shared/content/.test.sqlite-journal" ] || fail "the journal is still there"

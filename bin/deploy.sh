@@ -47,8 +47,9 @@
 #    release, check it the same way and exit with 1.
 # 7. Delete all releases except the newest 5. Fill the page cache again
 #    with bin/warm.php --pages.
-# A deploy that fails after the upload deletes its release, unless the site
-# runs on it, so that the newest 5 releases are releases that worked.
+# A deploy that fails after the upload deletes its release, unless .htaccess
+# or `current` names it, so that the newest 5 releases are releases that
+# worked.
 #
 # Environment:
 #   DEPLOY_HOST              required. The ssh target, an alias or user@host.
@@ -96,12 +97,14 @@ fi
 BUILD="$(mktemp -d)"
 # A failed release would count toward the newest 5 releases of the clean up
 # and push out a release that worked. So a deploy that fails after the
-# upload has started deletes its release, unless `current` points to it.
+# upload has started deletes its release, unless the site may run on it:
+# .htaccess sends the requests to it, or `current` points to it. A switch
+# back can fail between its two renames, so both count.
 UPLOADED=0
 on_exit() {
   local status=$?
   if [ "$status" != 0 ] && [ "$UPLOADED" = 1 ]; then
-    remote "cd '$DEPLOY_PATH' && { [ \"\$(readlink current)\" = 'releases/$ID' ] || rm -rf 'releases/$ID'; }" || echo "The failed release $ID is still on the server." >&2
+    remote "cd '$DEPLOY_PATH' && { grep -qF 'releases/$ID/' .htaccess 2>/dev/null || [ \"\$(readlink current)\" = 'releases/$ID' ] || rm -rf 'releases/$ID'; }" || echo "The failed release $ID is still on the server." >&2
   fi
   rm -rf "$BUILD"
 }
