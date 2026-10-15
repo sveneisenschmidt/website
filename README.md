@@ -33,7 +33,7 @@ make test
 
 Every push to `main` deploys. The workflow `CI` runs the checks and then `bin/deploy.sh` on a self-hosted runner, a machine outside GitHub. There is no deploy by hand.
 
-The site runs on shared hosting at All-Inkl with Apache and PHP 8.5. A deploy builds the code once and uploads it as a new release next to the old ones. A release is the code of one deploy. The site folder on the server holds:
+The site runs on shared hosting with Apache and PHP 8.5. A deploy builds the code once and uploads it as a new release next to the old ones. A release is the code of one deploy. The site folder on the server holds:
 
 ```
 .htaccess        sends every request to the live release

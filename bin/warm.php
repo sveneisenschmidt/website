@@ -11,8 +11,8 @@
  * /index.xml and /sitemap.xml, because it skips links with an extension.
  * Thumbnails: every path under /media/ in a src, srcset, href or content
  * attribute whose file name ends in a size. Originals stay out: Kirby only
- * copies an original to media/ on its first request, and content/ held
- * 4.1 GB on 2026-10-13.
+ * copies an original to media/ on its first request, and warming them would
+ * put a second copy of every photo in content/ into media/.
  *
  * The script sends 4 requests at a time. Its user agent contains "bot", so
  * the statistics list its requests under bots (Website\Analytics\Kind).

@@ -31,7 +31,10 @@ final class Hits
     private const VIEW = "method = 'GET' AND status = 200 AND page IS NOT NULL AND session = 0 AND fetch_dest = 'document' AND purpose IS NULL AND kind(agent, fetch_dest IS NOT NULL, COALESCE(language, '') <> '') = 'browser' AND own(ip_hash, net_hash) = 0";
 
     /**
-     * One row per request. The stored columns keep the request as it came,
+     * One row per request. `time` is ISO 8601 with milliseconds and offset
+     * (2026-10-25T02:30:00.000+01:00), so the hour that the change to winter
+     * time repeats stays apart, and its first 10 characters are the local
+     * date. The stored columns keep the request as it came,
      * with every header in `headers` as a JSON object. No column holds an IP
      * address: `ip_hash` and `net_hash` hold the fingerprints of the address
      * and its network (Fingerprint). The generated columns read single
@@ -60,10 +63,19 @@ final class Hits
         CREATE INDEX IF NOT EXISTS hits_time ON hits (time);
         SQL;
 
+    /**
+     * The folder of the visitor statistics, also of the older totals in
+     * Months.
+     */
+    public static function dir(): string
+    {
+        return kirby()->root('content') . '/.analytics';
+    }
+
     /** @param Hit $hit */
     public static function add(array $hit): void
     {
-        self::connect(Months::dir() . '/' . substr($hit['time'], 0, 7) . '.sqlite')->prepare(
+        self::connect(self::dir() . '/' . substr($hit['time'], 0, 7) . '.sqlite')->prepare(
             'INSERT INTO hits (time, ip_hash, net_hash, method, uri, protocol, page, status, session, headers)
              VALUES (:time, :ip_hash, :net_hash, :method, :uri, :protocol, :page, :status, :session, :headers)',
         )->execute([
@@ -80,7 +92,7 @@ final class Hits
      */
     public static function months(): array
     {
-        return array_map(fn(string $file) => basename($file, '.sqlite'), glob(Months::dir() . '/*.sqlite') ?: []);
+        return array_map(fn(string $file) => basename($file, '.sqlite'), glob(self::dir() . '/*.sqlite') ?: []);
     }
 
     /**
@@ -153,7 +165,7 @@ final class Hits
                 continue;
             }
             try {
-                $db = self::connect(Months::dir() . "/$month.sqlite");
+                $db = self::connect(self::dir() . "/$month.sqlite");
                 $found = [];
                 foreach ($queries as $name => $sql) {
                     $statement = $db->prepare($sql);

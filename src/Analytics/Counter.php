@@ -48,8 +48,10 @@ final class Counter
     }
 
     /**
-     * Stores one request in Hits: the fingerprints of the IP address and its
-     * network, the URI with its query, the protocol and the headers.
+     * Stores one request in Hits: the time in ISO 8601 with milliseconds and
+     * offset, as Website\Blog\Jsonl writes it, the fingerprints of the IP
+     * address and its network, the URI with its query, the protocol and the
+     * headers.
      * `session` marks a browser with a Panel session. The method reads
      * $_COOKIE directly: Kirby's user() or Cookie::get() would mark the
      * response as private, and Kirby would not cache the page.
@@ -58,7 +60,7 @@ final class Counter
     {
         $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
         Hits::add([
-            'time' => (new DateTimeImmutable())->format('Y-m-d H:i:s.v'),
+            'time' => (new DateTimeImmutable())->format('Y-m-d\TH:i:s.vP'),
             'ip_hash' => Fingerprint::ip($ip),
             'net_hash' => Fingerprint::net($ip),
             'method' => $method,

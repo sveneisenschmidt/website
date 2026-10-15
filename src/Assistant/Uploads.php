@@ -52,7 +52,7 @@ final class Uploads
 
     public static function root(): string
     {
-        $root = (string) (option('blog.assistant.storage') ?? dirname(kirby()->root('index')) . '/storage/assistant');
+        $root = kirby()->root('storage') . '/assistant';
         Dir::make($root);
         return $root;
     }

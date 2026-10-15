@@ -25,7 +25,7 @@ final class HitsTest extends IntegrationTestCase
         $this->assertNotFalse($statement);
 
         $this->assertSame([
-            'time' => '2026-10-15 10:00:00.000',
+            'time' => '2026-10-15T10:00:00.000+02:00',
             'ip_hash' => 'ip-a',
             'net_hash' => 'net-a',
             'method' => 'GET',
@@ -46,8 +46,8 @@ final class HitsTest extends IntegrationTestCase
 
     public function testAHitGoesIntoTheDatabaseOfItsMonth(): void
     {
-        Hits::add($this->hit(time: '2026-09-30 23:59:59.999'));
-        Hits::add($this->hit(time: '2026-10-01 00:00:00.000'));
+        Hits::add($this->hit(time: '2026-09-30T23:59:59.999+02:00'));
+        Hits::add($this->hit(time: '2026-10-01T00:00:00.000+02:00'));
 
         $this->assertSame(['2026-09', '2026-10'], Hits::months());
         $this->assertSame(['2026-10-01'], array_keys(Hits::days('2026-10-01', '2026-10-31')));
@@ -77,7 +77,7 @@ final class HitsTest extends IntegrationTestCase
     {
         Hits::add($this->hit());
         Hits::add($this->hit(agent: self::SAFARI . ' Other'));
-        Hits::add($this->hit(time: '2026-10-16 09:00:00.000'));
+        Hits::add($this->hit(time: '2026-10-16T09:00:00.000+02:00'));
 
         $days = Hits::days('2026-10-15', '2026-10-16');
 
@@ -92,7 +92,7 @@ final class HitsTest extends IntegrationTestCase
         Hits::add($this->hit(visitor: 'b', query: '?source=rss'));
         Hits::add($this->hit(visitor: 'c', referer: 'http://localhost/'));
         Hits::add($this->hit(visitor: 'd', query: '?source=other'));
-        Hits::add($this->hit(time: '2026-10-16 09:00:00.000', referer: 'https://instagram.com/'));
+        Hits::add($this->hit(time: '2026-10-16T09:00:00.000+02:00', referer: 'https://instagram.com/'));
 
         $days = Hits::days('2026-10-15', '2026-10-16');
 
@@ -131,7 +131,7 @@ final class HitsTest extends IntegrationTestCase
 
     public function testAnUnreadableMonthIsLoggedAndSkipped(): void
     {
-        Hits::add($this->hit(time: '2026-09-30 10:00:00.000'));
+        Hits::add($this->hit(time: '2026-09-30T10:00:00.000+02:00'));
         file_put_contents($this->root . '/content/.analytics/2026-10.sqlite', 'broken');
         // phpunit.xml fails a test on any output, so the log goes to a file here.
         $log = $this->root . '/php-errors.log';
@@ -158,7 +158,7 @@ final class HitsTest extends IntegrationTestCase
         string $visitor = 'a',
         ?string $ipHash = null,
         ?string $netHash = null,
-        string $time = '2026-10-15 10:00:00.000',
+        string $time = '2026-10-15T10:00:00.000+02:00',
         string $method = 'GET',
         ?string $page = 'photos',
         int $status = 200,

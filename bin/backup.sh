@@ -22,8 +22,8 @@
 # snapshot becomes a hard link to it and takes no new space. When nothing in
 # the state changed, the script makes no snapshot and prints the newest one.
 #
-# On the server, `php` in the ssh shell is PHP 8.4. bin/deploy.sh and
-# bin/pull.sh set PHP=php85, the PHP of the site.
+# On the server, `php` in the ssh shell can be another PHP than the one of
+# the site. bin/deploy.sh and bin/pull.sh set PHP to the PHP of the site.
 set -euo pipefail
 
 SNAPSHOT=0

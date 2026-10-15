@@ -138,12 +138,13 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->assertNull($this->today());
     }
 
-    public function testEveryHeaderIsStoredWithTheQueryAndTheProtocol(): void
+    public function testEveryHeaderIsStoredWithTimeQueryAndProtocol(): void
     {
         $this->visit('photos', query: ['source' => 'rss', 'utm_medium' => 'social'], headers: ['HTTP_SEC_CH_UA' => '"Chromium";v="141"', 'HTTP_DNT' => '1']);
 
-        $row = $this->rows('uri, protocol, headers')[0];
+        $row = $this->rows('time, uri, protocol, headers')[0];
         $headers = json_decode((string) $row['headers'], true);
+        $this->assertMatchesRegularExpression('/^' . date('Y-m-d') . 'T\d\d:\d\d:\d\d\.\d{3}[+-]\d\d:\d\d$/', $row['time']);
         $this->assertSame('/photos/?source=rss&utm_medium=social', $row['uri']);
         $this->assertSame('HTTP/2.0', $row['protocol']);
         $this->assertSame('"Chromium";v="141"', $headers['sec-ch-ua']);

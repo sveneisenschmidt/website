@@ -96,7 +96,7 @@ final class Fingerprint
      */
     private static function key(): string
     {
-        $dir = kirby()->root('storage') ?? dirname(kirby()->root('index')) . '/storage';
+        $dir = kirby()->root('storage');
         $file = "$dir/analytics.key";
         if (!isset(self::$keys[$file])) {
             if (!is_file($file)) {

@@ -4,8 +4,8 @@
 # Run it from the repository root. It needs rsync, Composer, PHP and curl on
 # this machine, and ssh access to the server.
 #
-# The server is shared hosting at All-Inkl with Apache. In KAS, the admin
-# panel of All-Inkl, the document root of the domain is the site folder. The
+# The server is shared hosting with Apache. In the admin panel of the
+# hosting provider, the document root of the domain is the site folder. The
 # site folder holds:
 #   .htaccess       made from server/root.htaccess. It sends every request
 #                   to the www/ folder of the live release.
@@ -23,7 +23,9 @@
 #   host config      site/config/env.php. Each host has its own.
 #   generated files  media/, site/cache/ and site/sessions/. Kirby makes them
 #                    again from the state.
-#   uploads          storage/, the files of the Panel assistant's chats.
+#   storage          storage/: the files of the Panel assistant's chats and
+#                    the key of the visitor statistics. No backup includes
+#                    them. A new key gives the visitors new fingerprints.
 # A release has a symlink into shared/ for each of these paths, so a switch
 # moves no file.
 #
@@ -54,8 +56,8 @@
 #   DEPLOY_KNOWN_HOSTS_FILE  optional. The known_hosts file for ssh.
 #   ANTHROPIC_API_KEY        optional. The API key of the Panel assistant.
 #   REMOTE_PHP               optional. The PHP command on the server, default
-#                            php85. In the ssh shell of the server, `php` is
-#                            PHP 8.4.
+#                            php85. In the ssh shell, `php` can be another
+#                            PHP than the one of the site.
 set -euo pipefail
 
 : "${DEPLOY_HOST:?DEPLOY_HOST missing}"
@@ -124,8 +126,9 @@ ln -s ../../../shared/content "$BUILD/www/content"
 ln -s ../../../shared/media "$BUILD/www/media"
 for d in accounts cache sessions; do ln -s "../../../../shared/site/$d" "$BUILD/www/site/$d"; done
 for f in env.php .salt .license; do ln -s "../../../../../shared/site/config/$f" "$BUILD/www/site/config/$f"; done
-# The Panel assistant stores its uploads in storage/ next to www/
-# (src/Assistant/Uploads.php).
+# storage/ next to www/ holds the uploads of the Panel assistant
+# (src/Assistant/Uploads.php) and the key of the visitor statistics
+# (src/Analytics/Fingerprint.php).
 ln -s ../../shared/storage "$BUILD/storage"
 
 # Switches the site to the release $1. A rename() replaces .htaccess and
@@ -195,7 +198,8 @@ remote "mkdir -p '$BACKUP_DIR' && cp '$SHARED/.htaccess' '$BACKUP_DIR/.htaccess'
 
 echo "== Switch to $ID"
 switch_to "$ID"
-# KAS puts a placeholder page index.htm into the folder of a new domain.
+# The hosting provider puts a placeholder page index.htm into the folder of a
+# new domain.
 remote "rm -f '$DEPLOY_PATH/index.htm'"
 
 clear_cache() {

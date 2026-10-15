@@ -13,5 +13,8 @@ Website\Analytics\Campaign::strip();
 
 // The index root is the folder of this file. Without it, Kirby derives the
 // root from the location of the autoloader, and a copy of www/ would serve
-// the content of the original www/.
-echo (new Kirby(['roots' => ['index' => __DIR__]]))->render();
+// the content of the original www/. The root storage is the folder next to
+// www/ for files that the web server must not serve and no backup includes:
+// the uploads of the assistant, the key of the visitor statistics and,
+// locally, the mails of bin/mail-catcher.php.
+echo (new Kirby(['roots' => ['index' => __DIR__, 'storage' => dirname(__DIR__) . '/storage']]))->render();

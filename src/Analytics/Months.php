@@ -7,18 +7,13 @@ use Throwable;
 
 /**
  * Reads the daily visitor totals from before Hits existed, one JSON file per
- * month: content/.analytics/<year>-<month>.json. Totals adds them to the
- * days in Hits. The folder is also the folder of Hits.
+ * month in the folder of Hits: content/.analytics/<year>-<month>.json.
+ * Totals adds them to the days in Hits.
  *
  * @phpstan-type Day array{visits?: int, views?: int, pages?: array<string, int>, referrers?: array<string, int>}
  */
 final class Months
 {
-    public static function dir(): string
-    {
-        return kirby()->root('content') . '/.analytics';
-    }
-
     /**
      * The days of one month ("2026-10"), keyed by date. An unreadable file
      * is logged and reads as empty, so the Panel view still opens.
@@ -27,7 +22,7 @@ final class Months
      */
     public static function read(string $month): array
     {
-        $file = self::dir() . "/$month.json";
+        $file = Hits::dir() . "/$month.json";
         try {
             return is_file($file) ? Json::read($file) : [];
         } catch (Throwable $e) {
@@ -43,6 +38,6 @@ final class Months
      */
     public static function all(): array
     {
-        return array_map(fn(string $file) => basename($file, '.json'), glob(self::dir() . '/*.json') ?: []);
+        return array_map(fn(string $file) => basename($file, '.json'), glob(Hits::dir() . '/*.json') ?: []);
     }
 }

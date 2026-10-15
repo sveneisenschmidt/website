@@ -58,10 +58,10 @@ final class Images
     /**
      * Seconds after the first render() of a request in which render() still
      * starts work, the wait for the lock included. A web server ends a
-     * request that sends no output for too long, mod_fcgid after 40 s by
-     * default (FcgidIOTimeout). Thumbnails beyond the budget render on their
-     * first request. The option blog.thumbs.budget sets another value; the
-     * tests use it.
+     * request that sends no output for too long; Apache's mod_fcgid does so
+     * after 40 s in its default setting. Thumbnails beyond the budget render
+     * on their first request. The option blog.thumbs.budget sets another
+     * value; the tests use it.
      */
     private const BUDGET = 20.0;
 
