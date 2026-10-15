@@ -1,11 +1,12 @@
-// The Panel view "Besucher": the visits of the last 30 days. A click on the
-// bar of a day shows the pages and origins of that day only. The file needs
-// no build step: the Panel includes the Vue template compiler (option
-// panel.vue.compiler, on by default) and compiles the template in the browser.
+// The Panel view "Besucher": the visits of the last 30 days and the likes
+// (Website\Blog\Likes). A click on the bar of a day shows the pages and
+// origins of that day only. The file needs no build step: the Panel
+// includes the Vue template compiler (option panel.vue.compiler, on by
+// default) and compiles the template in the browser.
 panel.plugin("website/analytics", {
   components: {
     "k-blog-analytics-view": {
-      props: { summary: Object },
+      props: { summary: Object, likes: Object },
       data() {
         return { picked: null };
       },
@@ -24,6 +25,12 @@ panel.plugin("website/analytics", {
           return [
             { label: "Bots mit Namen", value: String(b.named), info: "Abrufe, letzte 30 Tage" },
             { label: "Verdacht", value: String(b.suspect), info: "Abrufe, letzte 30 Tage" },
+          ];
+        },
+        likeReports() {
+          return [
+            { label: "Gesamt", value: String(this.likes.total), info: "Likes" },
+            { label: "Letzte 30 Tage", value: String(this.likes.month), info: "Likes" },
           ];
         },
         max() {
@@ -52,6 +59,10 @@ panel.plugin("website/analytics", {
           // Noon local time keeps the date the same in every time zone; a
           // date without a time would be parsed as midnight UTC.
           return new Date(date + "T12:00:00").toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
+        },
+        // "09.09.2026": the likes have no time limit, so the date shows the year.
+        date(date) {
+          return new Date(date + "T12:00:00").toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
         },
         height(visits) {
           return (visits / this.max) * 100 + "%";
@@ -123,6 +134,39 @@ panel.plugin("website/analytics", {
                   </tr>
                 </tbody>
               </table>
+            </div>
+          </section>
+
+          <section class="blog-stats-section">
+            <k-headline>Likes</k-headline>
+            <k-stats :reports="likeReports" class="blog-stats-tiles" />
+            <div class="blog-stats-tables">
+              <div>
+                <k-headline>Posts nach Likes</k-headline>
+                <k-empty v-if="likes.posts.length === 0" icon="heart">Noch keine Likes.</k-empty>
+                <table v-else class="blog-log">
+                  <thead><tr><th>Post</th><th class="blog-stats-num">Likes</th></tr></thead>
+                  <tbody>
+                    <tr v-for="(p, i) in likes.posts" :key="i">
+                      <td><k-link v-if="p.url" :to="p.url" target="_blank">{{ p.title }}</k-link><span v-else>{{ p.title }}</span></td>
+                      <td class="blog-stats-num">{{ p.likes }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div>
+                <k-headline>Neueste Likes</k-headline>
+                <k-empty v-if="likes.likes.length === 0" icon="heart">Noch keine Likes.</k-empty>
+                <table v-else class="blog-log">
+                  <thead><tr><th>Post</th><th class="blog-stats-num">Datum</th></tr></thead>
+                  <tbody>
+                    <tr v-for="(l, i) in likes.likes" :key="i">
+                      <td><k-link v-if="l.url" :to="l.url" target="_blank">{{ l.title }}</k-link><span v-else>{{ l.title }}</span></td>
+                      <td class="blog-stats-num">{{ date(l.date) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </section>
 
