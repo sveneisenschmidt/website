@@ -39,12 +39,13 @@
 /www/kirby/
 /vendor/
 # Plugins from Composer. Only the plugins of this site (blog, changelog,
-# analytics, assistant) are in git.
+# analytics, assistant, likes) are in git.
 /www/site/plugins/*
 !/www/site/plugins/blog/
 !/www/site/plugins/changelog/
 !/www/site/plugins/analytics/
 !/www/site/plugins/assistant/
+!/www/site/plugins/likes/
 
 # Files next to www/ that the web server must not serve and no backup
 # includes: the assistant's uploads (src/Assistant/Uploads.php), the key of

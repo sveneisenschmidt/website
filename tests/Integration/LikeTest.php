@@ -4,14 +4,15 @@ namespace Website\Tests\Integration;
 
 use Kirby\Http\Response;
 use Website\Analytics\Campaign;
-use Website\Blog\Likes;
+use Website\Likes\Likes;
 use Website\Models\PostPage;
 use Website\Tests\Support\TestSite;
 
 /**
- * The like button at the end of a post (Website\Blog\Likes): a form that
- * sends POST to /YYYY-MM-DD-slug/like, without JavaScript and without a
- * cookie.
+ * The likes module (Website\Likes\Likes, plugins/likes). The like button at
+ * the end of a post is a form that sends POST to /YYYY-MM-DD-slug/like. It
+ * works without JavaScript and without a cookie. The Panel view "Likes"
+ * shows all likes.
  */
 final class LikeTest extends IntegrationTestCase
 {
@@ -150,10 +151,9 @@ final class LikeTest extends IntegrationTestCase
     }
 
     /**
-     * The Panel view "Besucher" shows the likes: the total, the last 30
-     * days, the posts by likes and every like, newest first. A post with
-     * the same number of likes as another comes first when its newest like
-     * is newer. A deleted post keeps its likes, as in the visitor statistics.
+     * The Panel view "Likes" shows the total, the last 30 days, the posts
+     * by likes and every like, newest first. A post with the same number of
+     * likes as another comes first when its newest like is newer. A deleted post keeps its likes, as in the visitor statistics.
      * The 30 days are today and the 29 days before it.
      */
     public function testThePanelSummary(): void
@@ -194,17 +194,36 @@ final class LikeTest extends IntegrationTestCase
         $this->assertFileDoesNotExist(Likes::file());
     }
 
-    /** The Panel view "Besucher" gets the likes of the last 30 days as its prop `likes`. */
+    /**
+     * The Panel has its own view "Likes", with an entry in the menu after
+     * "Besucher". The view gets the likes of the last 30 days as its prop
+     * `likes`. The view "Besucher" shows the visits only.
+     */
     public function testThePanelViewGetsTheLikes(): void
     {
         Likes::connect(Likes::file())->prepare('INSERT INTO likes (page, ip_hash, time) VALUES (:page, NULL, :time)')
             ->execute(['page' => $this->post->uuid()->id(), 'time' => (new \DateTimeImmutable('-10 days'))->format('Y-m-d\TH:i:s.vP')]);
 
-        $area = $this->kirby->extensions('areas')['besucher'][0]();
+        $area = $this->kirby->extensions('areas')['likes'][0]();
         $props = $area['views'][0]['action']()['props'];
+        $menu = $this->kirby->option('panel.menu')($this->kirby);
+        $visits = $this->kirby->extensions('areas')['besucher'][0]()['views'][0]['action']()['props'];
 
+        $this->assertSame(['label' => 'Likes', 'icon' => 'heart', 'menu' => true, 'link' => 'likes'], array_intersect_key($area, array_flip(['label', 'icon', 'menu', 'link'])));
         $this->assertSame(1, $props['likes']['month']);
         $this->assertSame(Likes::summary(30), $props['likes']);
+        $this->assertSame('likes', $menu[array_search('besucher', $menu, true) + 1]);
+        $this->assertSame(['summary'], array_keys($visits));
+    }
+
+    /** The plugin brings the styles of the button in its site.css, and every page has them inline. */
+    public function testThePostHasTheStylesOfTheButton(): void
+    {
+        $html = (string) $this->request('/2026-10-07-test-photo/')->body();
+
+        $this->assertStringContainsString('.like{margin-left: auto;}', $html);
+        $this->assertStringContainsString('.like button:hover{color: var(--color-link-hover);}', $html);
+        $this->assertMatchesRegularExpression('/\.like button\{[^}]*text-decoration: underline;/', $html, 'the underline of the other actions');
     }
 
     /**

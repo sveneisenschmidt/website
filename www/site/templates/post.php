@@ -3,16 +3,14 @@ use Website\Blog\Site;
 
 /**
  * A post of any type: label, title, date and type line, the text, a mail
- * link, the like button, and the timeline with the newer and the older
- * post. Variables from controllers/post.php. The footer is a div, because
- * a form cannot stand in a p.
+ * link, the like button (plugins/likes), and the timeline with the newer
+ * and the older post. Variables from controllers/post.php. The footer is a
+ * div, because the form of the like button cannot stand in a p.
  *
  * @var Website\Models\PostPage $page
  * @var string $section
  * @var string $label
  * @var string $type
- * @var int|null $likes
- * @var bool $liked
  */
 ?>
 <?php snippet('layout', slots: true) ?>
@@ -33,7 +31,7 @@ use Website\Blog\Site;
 <div class="post-footer">
 <?php if (Site::email() !== ''): ?><a href="mailto:<?= esc(Site::email()) ?>?subject=<?= rawurlencode('Re: ' . $page->title()->value()) ?>">Leave me a message</a>
 <?php endif ?>
-<form class="like" id="like" method="post" action="<?= $page->url() ?>like"><?php if ($liked): ?><strong>Liked</strong><?php else: ?><button type="submit">Like</button><?php endif ?><?= $likes > 0 ? " &middot; $likes" : '' ?></form>
+<?php snippet('like', ['page' => $page]) ?>
 </div>
 </article>
 <?php snippet('stream', ['current' => $page]) ?>

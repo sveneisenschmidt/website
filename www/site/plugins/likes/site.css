@@ -1,0 +1,30 @@
+/* The like button (snippets/like.php) stands at the right edge of the post
+   footer. A like changes data, so it is a form button. The rules below
+   remove the look of a button and give it the underline of the other
+   actions. */
+.like {
+    margin-left: auto;
+}
+
+.like button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: var(--rule-hairline);
+    text-underline-offset: var(--space-underline);
+    cursor: pointer;
+    transition: color var(--duration-hover);
+}
+
+.like button:hover {
+    color: var(--color-link-hover);
+}
+
+.like strong {
+    font-weight: var(--weight-opening);
+}

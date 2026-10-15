@@ -6,6 +6,7 @@ parameters:
         - www/site/plugins/assistant
         - www/site/plugins/blog
         - www/site/plugins/changelog
+        - www/site/plugins/likes
         - www/site/config
         - www/site/controllers
         - bin

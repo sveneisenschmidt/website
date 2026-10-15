@@ -101,7 +101,7 @@ return array_replace_recursive([
             foreach ($types as $slug => $type) {
                 $menu[$slug] = ['label' => $type['menu'], 'icon' => $type['icon'], 'link' => "pages/$slug", 'current' => fn() => $inType($slug)];
             }
-            return [...$menu, '-', 'besucher', 'verlauf', 'assistent', '-', 'users', 'system'];
+            return [...$menu, '-', 'besucher', 'likes', 'verlauf', 'assistent', '-', 'users', 'system'];
         },
         // The buttons at the top of a page in the Panel: Kirby's own and the
         // button of the assistant (plugins/assistant), which shows on posts

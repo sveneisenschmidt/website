@@ -1,6 +1,6 @@
 <?php
 
-namespace Website\Blog;
+namespace Website\Likes;
 
 use DateTimeImmutable;
 use Kirby\Cms\Response;
@@ -10,16 +10,17 @@ use Pdo\Sqlite;
 use Throwable;
 use Website\Analytics\Fingerprint;
 use Website\Analytics\Kind;
+use Website\Blog\Router;
 use Website\Models\PostPage;
 
 /**
  * The likes of the posts, in the SQLite database content/.likes.sqlite. The
- * file is in content/, so every backup has it and git does not. The like
- * button in templates/post.php is a form that sends POST to
- * /YYYY-MM-DD-slug/like (config/routes.php). It works without JavaScript and
- * without a cookie. A post counts one like per IP address. As in the
- * visitor statistics, an error with the file goes to the PHP error log and
- * fails no request.
+ * file is in content/, so every backup has it and git does not.
+ * plugins/likes registers the route, the snippet of the like button and the
+ * Panel view "Likes". The button is a form that sends POST to
+ * /YYYY-MM-DD-slug/like. It works without JavaScript and without a cookie.
+ * A post counts one like per IP address. As in the visitor statistics, an
+ * error with the file goes to the PHP error log and fails no request.
  *
  * @phpstan-type LikedPost array{title: string, url: ?string, likes: int}
  * @phpstan-type Like array{title: string, url: ?string, date: string}
@@ -64,12 +65,13 @@ final class Likes
     }
 
     /**
-     * The likes for the Panel view "Besucher" (plugins/analytics). It gives
-     * the total, the likes of the last $days days, today included, the posts
-     * by likes and every like, newest first. Of two posts with the same number of likes,
-     * the one with the newer like comes first. A deleted post keeps its
-     * likes and shows as "(gelöscht)", as in Website\Analytics\Totals. A file
-     * that cannot be read gives an empty summary, so the view still opens.
+     * The likes for the Panel view "Likes" (plugins/likes). It gives the
+     * total, the likes of the last $days days, today included, the posts by
+     * likes and every like, newest first. Of two posts with the same number
+     * of likes, the one with the newer like comes first. A deleted post
+     * keeps its likes and shows as "(gelöscht)", as in
+     * Website\Analytics\Totals. A file that cannot be read gives an empty
+     * summary, so the view still opens.
      *
      * @return array{total: int, month: int, posts: list<LikedPost>, likes: list<Like>}
      */
@@ -119,6 +121,28 @@ final class Likes
             : ['title' => $page->title()->value(), 'url' => $page->url()];
     }
 
+    /**
+     * The values of the like button (plugins/likes/snippets/like.php):
+     * `likes` is the count, `liked` is true after a like of this IP address.
+     * Only a request with ?liked checks the address: Kirby never caches such
+     * a request, and the cached page must be the same for every visitor.
+     * When count() cannot read the file, `likes` is null. The post then
+     * stays out of the page cache, so the first request after a repair
+     * shows the count again.
+     *
+     * @return array{likes: ?int, liked: bool}
+     */
+    public static function button(PostPage $post): array
+    {
+        $kirby = $post->kirby();
+        $likes = self::count($post);
+        if ($likes === null) {
+            $kirby->response()->cache(false);
+        }
+        $liked = $kirby->request()->query()->get('liked') !== null && self::has($post, (string) ($_SERVER['REMOTE_ADDR'] ?? ''));
+        return ['likes' => $likes, 'liked' => $liked];
+    }
+
     /** True when the IP address $ip has liked the post. */
     public static function has(PostPage $post, string $ip): bool
     {
@@ -140,8 +164,8 @@ final class Likes
      * back to the post, or gives null for no published post. A request that
      * Kind does not count as a browser leads back without a like. A new like
      * removes the post from the page cache, so the next visitor sees the new
-     * count. ?liked lets the post say "Liked" to this address (see
-     * controllers/post.php), and #like scrolls to the form.
+     * count. ?liked lets the post say "Liked" to this address (button()),
+     * and #like scrolls to the form.
      */
     public static function route(string $date, string $slug): ?Response
     {
