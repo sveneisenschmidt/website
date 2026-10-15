@@ -98,6 +98,7 @@ final class HitsTest extends IntegrationTestCase
 
         $this->assertSame(['RSS' => 1, 'kagi.com' => 1], $days['2026-10-15']['referrers']);
         $this->assertSame(['instagram.com' => 1], $days['2026-10-16']['referrers']);
+        $this->assertSame([], Hits::days('2026-10-15', '2026-10-15', origins: false)['2026-10-15']['referrers']);
     }
 
     public function testOwnAddressesAndNetworksCountForNothing(): void

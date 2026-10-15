@@ -128,6 +128,16 @@ final class AnalyticsTest extends IntegrationTestCase
         $this->assertNull($this->today(), 'no request is a page view of a person');
     }
 
+    public function testARedirectIsStoredWithItsStatusAndCountsNoView(): void
+    {
+        file_put_contents($this->root . '/content/.redirects.json', json_encode([['from' => 'old-photos', 'to' => '/photos/']]));
+
+        $this->visit('old-photos');
+
+        $this->assertSame([['uri' => '/old-photos/', 'page' => null, 'status' => 301]], $this->rows('uri, page, status'));
+        $this->assertNull($this->today());
+    }
+
     public function testEveryHeaderIsStoredWithTheQueryAndTheProtocol(): void
     {
         $this->visit('photos', query: ['source' => 'rss', 'utm_medium' => 'social'], headers: ['HTTP_SEC_CH_UA' => '"Chromium";v="141"', 'HTTP_DNT' => '1']);

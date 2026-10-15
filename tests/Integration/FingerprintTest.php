@@ -23,6 +23,13 @@ final class FingerprintTest extends IntegrationTestCase
         $this->assertNull(Fingerprint::network('not an address'));
     }
 
+    public function testAnIpv4AddressInIpv6FormCountsAsTheIpv4Address(): void
+    {
+        $this->assertSame(Fingerprint::ip('203.0.113.7'), Fingerprint::ip('::ffff:203.0.113.7'));
+        $this->assertSame(Fingerprint::net('203.0.113.7'), Fingerprint::net('::ffff:203.0.113.99'));
+        $this->assertSame('203.0.113.0/24', Fingerprint::network('::ffff:203.0.113.7'));
+    }
+
     public function testTheKeyIsInStorageAndHoldsNoAddress(): void
     {
         $fingerprint = Fingerprint::ip('198.51.100.77');

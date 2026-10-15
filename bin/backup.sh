@@ -86,6 +86,25 @@ for p in "${PATHS[@]}"; do
   fi
 done
 
+# A request can write to a SQLite database of the visitor statistics
+# (content/.analytics/) while rsync or cp copies it, and the copy is then
+# broken. Each database that was copied anew is copied again inside a read
+# transaction: while it lasts, SQLite lets no writer finish a change. The
+# copy keeps mtime and mode, as rsync -a and cp -p do. A file linked to the
+# newest snapshot is unchanged and stays. When the second copy fails, the
+# first copy stays and the backup goes on.
+find "$STATE/content" -type f -name '*.sqlite' -links 1 | while read -r copy; do
+  "$PHP" -r '
+    [, $src, $dst] = $argv;
+    $db = new PDO("sqlite:$src", null, null, [PDO::ATTR_TIMEOUT => 5]);
+    $db->beginTransaction();
+    $db->query("SELECT 1 FROM sqlite_master LIMIT 1")->fetchAll();
+    $ok = copy($src, "$dst.tmp") && touch("$dst.tmp", filemtime($src)) && chmod("$dst.tmp", fileperms($src) & 0777) && rename("$dst.tmp", $dst);
+    $db->commit();
+    exit($ok ? 0 : 1);
+  ' "$WWW/${copy#"$STATE"/}" "$copy" || echo "Copied $copy without the read transaction" >&2
+done
+
 # Kirby keeps the failed logins of the last hour, with hashed IP addresses,
 # in site/accounts/.logins. A snapshot does not need them.
 rm -f "$STATE/site/accounts/.logins"

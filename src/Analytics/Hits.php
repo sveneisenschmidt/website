@@ -20,14 +20,15 @@ use Throwable;
 final class Hits
 {
     /**
-     * A page view of a person: a browser (Kind::BROWSER) opened a public
-     * page, and the page loaded. A prefetch request does not count, because
-     * the visitor has not opened the page yet. A request with a Panel
-     * session or from an address in "Eigene IP-Adressen" does not count
-     * either. SQL has no regular expressions, so connect() adds the rules
-     * of Kind and Fingerprint as browser() and own().
+     * A page view of a person: a request of the group Kind::BROWSER opened
+     * a public page (Sec-Fetch-Dest "document"), and the page loaded. A
+     * prefetch request does not count, because the visitor has not opened
+     * the page yet. A request with a Panel session or from an address in
+     * "Eigene IP-Adressen" does not count either. connect() adds the rules
+     * of Kind and Fingerprint as the SQL functions kind() and own(), so the
+     * rules stay in one place.
      */
-    private const VIEW = "method = 'GET' AND status = 200 AND page IS NOT NULL AND session = 0 AND fetch_dest = 'document' AND COALESCE(language, '') <> '' AND purpose IS NULL AND browser(agent) = 1 AND own(ip_hash, net_hash) = 0";
+    private const VIEW = "method = 'GET' AND status = 200 AND page IS NOT NULL AND session = 0 AND fetch_dest = 'document' AND purpose IS NULL AND kind(agent, fetch_dest IS NOT NULL, COALESCE(language, '') <> '') = 'browser' AND own(ip_hash, net_hash) = 0";
 
     /**
      * One row per request. The stored columns keep the request as it came,
@@ -86,22 +87,31 @@ final class Hits
      * The page views of persons from $from to $to, both dates included, in
      * the form of the days in Months. A visitor is one address with one
      * browser on one day. The origin of a visit comes from its first view
-     * (Kind::origin()).
+     * (Kind::origin()). Without $origins, the days have no referrers: About
+     * does not show them.
      *
      * @return array<string, Day>
      */
-    public static function days(string $from, string $to): array
+    public static function days(string $from, string $to, bool $origins = true): array
     {
         $where = 'time >= :from AND time < :end AND ' . self::VIEW;
+        $queries = [
+            'days' => "SELECT substr(time, 1, 10) AS day, COUNT(DISTINCT visitor) AS visits, COUNT(*) AS views FROM hits WHERE $where GROUP BY day",
+            'pages' => "SELECT substr(time, 1, 10) AS day, page, COUNT(DISTINCT visitor) AS visits FROM hits WHERE $where GROUP BY day, page",
+        ];
+        if ($origins) {
+            $first = "SELECT MIN(rowid) FROM hits WHERE $where GROUP BY substr(time, 1, 10), visitor";
+            $queries['origins'] = "SELECT substr(time, 1, 10) AS day, origin(referer, uri) AS origin, COUNT(*) AS visits FROM hits WHERE rowid IN ($first) GROUP BY day, origin HAVING origin IS NOT NULL";
+        }
+        $rows = self::select($queries, $from, $to);
         $days = [];
-        foreach (self::select("SELECT substr(time, 1, 10) AS day, COUNT(DISTINCT visitor) AS visits, COUNT(*) AS views FROM hits WHERE $where GROUP BY day", $from, $to) as $row) {
+        foreach ($rows['days'] as $row) {
             $days[(string) $row['day']] = ['visits' => (int) $row['visits'], 'views' => (int) $row['views'], 'pages' => [], 'referrers' => []];
         }
-        foreach (self::select("SELECT substr(time, 1, 10) AS day, page, COUNT(DISTINCT visitor) AS visits FROM hits WHERE $where GROUP BY day, page", $from, $to) as $row) {
+        foreach ($rows['pages'] as $row) {
             $days[(string) $row['day']]['pages'][(string) $row['page']] = (int) $row['visits'];
         }
-        $first = "SELECT MIN(rowid) FROM hits WHERE $where GROUP BY substr(time, 1, 10), visitor";
-        foreach (self::select("SELECT substr(time, 1, 10) AS day, origin(referer, uri) AS origin, COUNT(*) AS visits FROM hits WHERE rowid IN ($first) GROUP BY day, origin HAVING origin IS NOT NULL", $from, $to) as $row) {
+        foreach ($rows['origins'] ?? [] as $row) {
             $days[(string) $row['day']]['referrers'][(string) $row['origin']] = (int) $row['visits'];
         }
         ksort($days);
@@ -122,30 +132,40 @@ final class Hits
             'fetchDest' => (bool) $row['fetch_dest'],
             'language' => (bool) $row['language'],
             'hits' => (int) $row['hits'],
-        ], self::select("SELECT agent, fetch_dest IS NOT NULL AS fetch_dest, COALESCE(language, '') <> '' AS language, COUNT(*) AS hits FROM hits WHERE time >= :from AND time < :end AND own(ip_hash, net_hash) = 0 GROUP BY 1, 2, 3", $from, $to));
+        ], self::select(['agents' => "SELECT agent, fetch_dest IS NOT NULL AS fetch_dest, COALESCE(language, '') <> '' AS language, COUNT(*) AS hits FROM hits WHERE time >= :from AND time < :end AND own(ip_hash, net_hash) = 0 GROUP BY 1, 2, 3"], $from, $to)['agents']);
     }
 
     /**
-     * The rows of $sql from the database of every month from $from to $to.
-     * A database that cannot be read is logged and skipped, so the Panel
-     * view still opens.
+     * Runs every query of $queries on the database of every month from
+     * $from to $to, with one connection per month, and returns the rows per
+     * query. A database that cannot be read is logged and skipped, so the
+     * Panel view still opens.
      *
-     * @return list<array<string, mixed>>
+     * @param array<string, string> $queries
+     * @return array<string, list<array<string, mixed>>>
      */
-    private static function select(string $sql, string $from, string $to): array
+    private static function select(array $queries, string $from, string $to): array
     {
         $params = ['from' => $from, 'end' => date('Y-m-d', strtotime("$to +1 day"))];
-        $rows = [];
+        $rows = array_fill_keys(array_keys($queries), []);
         foreach (self::months() as $month) {
             if ($month < substr($from, 0, 7) || $month > substr($to, 0, 7)) {
                 continue;
             }
             try {
-                $statement = self::connect(Months::dir() . "/$month.sqlite")->prepare($sql);
-                $statement->execute($params);
-                /** @var list<array<string, mixed>> $found */
-                $found = $statement->fetchAll(PDO::FETCH_ASSOC);
-                array_push($rows, ...$found);
+                $db = self::connect(Months::dir() . "/$month.sqlite");
+                $found = [];
+                foreach ($queries as $name => $sql) {
+                    $statement = $db->prepare($sql);
+                    $statement->execute($params);
+                    /** @var list<array<string, mixed>> $list */
+                    $list = $statement->fetchAll(PDO::FETCH_ASSOC);
+                    $found[$name] = $list;
+                }
+                // A month adds its rows only when every query worked.
+                foreach ($found as $name => $list) {
+                    array_push($rows[$name], ...$list);
+                }
             } catch (Throwable $e) {
                 error_log('blog analytics: ' . $e->getMessage());
             }
@@ -164,7 +184,7 @@ final class Hits
         Dir::make(dirname($file));
         $db = new Sqlite('sqlite:' . $file, null, null, [PDO::ATTR_TIMEOUT => 5]);
         $db->exec(self::SCHEMA);
-        $db->createFunction('browser', fn(string $agent): int => (int) Kind::claimsBrowser($agent), 1, Sqlite::DETERMINISTIC);
+        $db->createFunction('kind', fn(string $agent, int $fetchDest, int $language): string => Kind::of($agent, (bool) $fetchDest, (bool) $language), 3, Sqlite::DETERMINISTIC);
         $db->createFunction('origin', fn(?string $referer, string $uri): ?string => Kind::origin($referer, $uri), 2);
         $own = null;
         $db->createFunction('own', function (string $ipHash, string $netHash) use (&$own): int {

@@ -81,7 +81,7 @@ final class Totals
         $visits = 0;
         $views = 0;
         $pages = [];
-        foreach (self::days("$first-01", date('Y-m-d')) as $day) {
+        foreach (self::days("$first-01", date('Y-m-d'), origins: false) as $day) {
             $visits += $day['visits'] ?? 0;
             $views += $day['views'] ?? 0;
             foreach ($day['pages'] ?? [] as $id => $n) {
@@ -153,10 +153,11 @@ final class Totals
 
     /**
      * The days from $from to $to from Months and Hits, keyed by date.
+     * Without $origins, the days from Hits have no referrers (Hits::days()).
      *
      * @return array<string, Day>
      */
-    private static function days(string $from, string $to): array
+    private static function days(string $from, string $to, bool $origins = true): array
     {
         $days = [];
         foreach (Months::all() as $month) {
@@ -169,7 +170,7 @@ final class Totals
                 }
             }
         }
-        foreach (Hits::days($from, $to) as $date => $day) {
+        foreach (Hits::days($from, $to, $origins) as $date => $day) {
             $days[$date] = self::add($days[$date] ?? [], $day);
         }
         return $days;

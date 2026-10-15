@@ -2,7 +2,7 @@
 
 namespace Website\Analytics;
 
-use Kirby\Filesystem\Dir;
+use Website\Blog\Lock;
 
 /**
  * Turns an IP address into a fingerprint: an HMAC (a hash with a secret
@@ -18,6 +18,9 @@ use Kirby\Filesystem\Dir;
  */
 final class Fingerprint
 {
+    /** @var array<string, string> The key per key file. */
+    private static array $keys = [];
+
     public static function ip(string $ip): string
     {
         $packed = self::pack($ip);
@@ -65,11 +68,19 @@ final class Fingerprint
         return $own;
     }
 
-    /** The binary form of a valid IPv4 or IPv6 address, else null. */
+    /**
+     * The binary form of a valid IPv4 or IPv6 address, else null. A server
+     * that listens on IPv6 can report an IPv4 client as ::ffff:203.0.113.7.
+     * That form counts as the IPv4 address, so it gets the same fingerprint
+     * and the /24 network.
+     */
     private static function pack(string $ip): ?string
     {
         $packed = filter_var($ip, FILTER_VALIDATE_IP) === false ? false : inet_pton($ip);
-        return $packed === false ? null : $packed;
+        if ($packed === false) {
+            return null;
+        }
+        return str_starts_with($packed, str_repeat("\0", 10) . "\xff\xff") ? substr($packed, 12) : $packed;
     }
 
     private static function hash(string $value): string
@@ -78,29 +89,27 @@ final class Fingerprint
     }
 
     /**
-     * The key. The first request creates it while it holds the lock on
-     * storage/.analytics.key.lock, so parallel first requests all read the
-     * same key. rename() puts the complete file in place in one step.
+     * The key, read once per request and key file. The first request
+     * creates it under the lock storage/.analytics.key.lock, so parallel
+     * first requests all read the same key. rename() puts the complete file
+     * in place in one step.
      */
     private static function key(): string
     {
         $dir = kirby()->root('storage') ?? dirname(kirby()->root('index')) . '/storage';
         $file = "$dir/analytics.key";
-        if (!is_file($file)) {
-            Dir::make($dir);
-            $lock = fopen("$dir/.analytics.key.lock", 'c');
-            flock($lock, LOCK_EX);
-            try {
-                if (!is_file($file)) {
-                    $tmp = $file . '.' . bin2hex(random_bytes(4)) . '.tmp';
-                    file_put_contents($tmp, bin2hex(random_bytes(32)));
-                    rename($tmp, $file);
-                }
-            } finally {
-                flock($lock, LOCK_UN);
-                fclose($lock);
+        if (!isset(self::$keys[$file])) {
+            if (!is_file($file)) {
+                Lock::run("$dir/.analytics.key.lock", LOCK_EX, function () use ($file) {
+                    if (!is_file($file)) {
+                        $tmp = $file . '.' . bin2hex(random_bytes(4)) . '.tmp';
+                        file_put_contents($tmp, bin2hex(random_bytes(32)));
+                        rename($tmp, $file);
+                    }
+                });
             }
+            self::$keys[$file] = (string) file_get_contents($file);
         }
-        return (string) file_get_contents($file);
+        return self::$keys[$file];
     }
 }
