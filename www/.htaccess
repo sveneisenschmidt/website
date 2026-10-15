@@ -40,7 +40,8 @@ AddType font/woff2 .woff2
 AddType font/woff .woff
 
 # No ETags. Fonts, images, CSS and JS are cached for a year and get a new
-# URL when they change, so a browser never needs to revalidate them.
+# URL when they change, so a browser never needs to revalidate them. The
+# icons keep their URL and revalidate with Last-Modified (see below).
 <IfModule mod_headers.c>
     Header unset ETag
 </IfModule>
@@ -89,5 +90,12 @@ FileETag None
 <IfModule mod_headers.c>
     <FilesMatch "\.(ttf|woff|woff2|jpg|jpeg|png|gif|webp|svg|ico|css|js)$">
         Header set Cache-Control "max-age=31536000, public, immutable"
+    </FilesMatch>
+    # The favicon and the touch and Android icons keep their names when they
+    # change: browsers, iOS and site.webmanifest ask for them by name. They
+    # are cached for a week and without immutable, so a new icon arrives.
+    <FilesMatch "^(favicon|apple-touch-icon|android-chrome)[^/]*\.(ico|png)$">
+        Header set Cache-Control "max-age=604800, public"
+        Header unset Expires
     </FilesMatch>
 </IfModule>
