@@ -293,6 +293,22 @@ final class ChangelogTest extends IntegrationTestCase
         $this->assertNotContains('user.login:failed', array_column(Log::entries(), 'action'));
     }
 
+    /** Failed logins from many addresses have their own limit and push no change out of "Verlauf". */
+    public function testFailedLoginsDoNotPushChangesOut(): void
+    {
+        $photo = $this->kirby->page('photos/test-photo');
+        $photo = $this->kirby->impersonate(self::EMAIL, fn() => $photo->update(['intro' => 'First']));
+        $this->kirby->impersonate(self::EMAIL, fn() => $photo->update(['intro' => 'Second']));
+        for ($i = 0; $i < 5; $i++) {
+            Log::failedLogin("guess$i@website.test");
+        }
+
+        $entries = Log::entries(2);
+
+        $this->assertSame(['user.login:failed', 'user.login:failed', 'page.update', 'page.update'], array_column($entries, 'action'));
+        $this->assertSame(['guess4@website.test', 'guess3@website.test'], array_column(array_slice($entries, 0, 2), 'title'));
+    }
+
     public function testFailedLoginKeepsAtMostTheLengthOfAnAddress(): void
     {
         Log::failedLogin(str_repeat('a', 1000) . '@website.test');

@@ -2,6 +2,7 @@
 
 namespace Website\Blog;
 
+use Generator;
 use Kirby\Filesystem\F;
 
 /**
@@ -40,21 +41,35 @@ final class Jsonl
      */
     public static function read(string $dir, int $limit): array
     {
+        $entries = [];
+        foreach (self::newest($dir) as $entry) {
+            if (count($entries) >= $limit) {
+                break;
+            }
+            $entries[] = $entry;
+        }
+        return $entries;
+    }
+
+    /**
+     * Every entry, the newest first. It reads one file at a time, the
+     * newest month first, so a caller that stops early reads only the
+     * newest files.
+     *
+     * @return Generator<int, array<string, mixed>>
+     */
+    public static function newest(string $dir): Generator
+    {
         $files = glob($dir . '/*.jsonl') ?: [];
         rsort($files);
-        $entries = [];
         foreach ($files as $file) {
             $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [];
             foreach (array_reverse($lines) as $line) {
                 $entry = json_decode($line, true);
                 if (is_array($entry)) {
-                    $entries[] = $entry;
-                    if (count($entries) >= $limit) {
-                        return $entries;
-                    }
+                    yield $entry;
                 }
             }
         }
-        return $entries;
     }
 }
