@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
     )
         return;
 
-    // After a like, Website\Blog\Likes redirects to the same post. The
+    // After a like, Website\Likes\Likes redirects to the same post. The
     // previous entry in the history is then that post, and history.back()
     // would show it again. The visitor keeps the link to the front page.
     if (new URL(document.referrer).pathname === window.location.pathname) return;

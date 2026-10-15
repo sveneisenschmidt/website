@@ -89,13 +89,20 @@ final class Layout
      * All CSS files joined into one string, which snippets/head.php puts
      * inline into every page. Every page contains the full CSS, so comments
      * and most whitespace are removed. The order of the files matters: a
-     * rule in a later file overrides the same rule in an earlier one.
+     * rule in a later file overrides the same rule in an earlier one. A
+     * plugin with a site.css brings the styles of its own parts of the page.
+     * Its file comes after the files of assets/.
      */
     public static function css(): string
     {
         $css = '';
         foreach (['fonts', 'tokens', 'base', 'page', 'exif', 'home', 'article', 'archive'] as $name) {
             $css .= F::read(kirby()->root('assets') . "/css/$name.css");
+        }
+        foreach (kirby()->plugins() as $plugin) {
+            if (is_file($file = $plugin->root() . '/site.css')) {
+                $css .= F::read($file);
+            }
         }
         // Outside quoted strings, comments are removed, each run of whitespace
         // becomes one space, and the spaces around { } ; and "," are removed.

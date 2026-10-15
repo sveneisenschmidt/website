@@ -86,9 +86,8 @@ for p in "${PATHS[@]}"; do
   fi
 done
 
-# A request can write to a SQLite database of the visitor statistics
-# (content/.analytics/) or of the likes (content/.likes.sqlite) while rsync
-# or cp copies it, and the copy is then broken. Each database that was
+# A request can write to a SQLite database under content/ while rsync or
+# cp copies it, and the copy is then broken. Each database that was
 # copied anew is copied again inside a read transaction: while it lasts,
 # SQLite lets no writer finish a change. The copy keeps mtime and mode, as
 # rsync -a and cp -p do. A file linked to the newest snapshot is unchanged

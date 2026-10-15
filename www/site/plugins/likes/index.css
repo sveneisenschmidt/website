@@ -1,0 +1,17 @@
+/* The tables use the class .blog-log from plugins/changelog/index.css. */
+.likes-tiles {
+  margin-bottom: var(--spacing-8);
+}
+.likes-tables {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: var(--spacing-6);
+}
+.likes-tables .k-headline {
+  margin-bottom: var(--spacing-3);
+}
+.likes-num {
+  text-align: end !important;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}

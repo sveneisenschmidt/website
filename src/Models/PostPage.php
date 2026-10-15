@@ -36,7 +36,7 @@ class PostPage extends SitePage
 
     /**
      * Removes the post from the page cache, so the next request renders it
-     * again. Website\Blog\Likes calls it after a like, because the post shows
+     * again. Website\Likes\Likes calls it after a like, because the post shows
      * the count. Kirby empties the whole cache only after a content change.
      */
     public function uncache(): void

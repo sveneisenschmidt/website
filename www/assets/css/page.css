@@ -150,15 +150,14 @@ main {
 }
 
 /* Underlines mark the links that the page offers as actions: the small
-   uppercase actions (such as Back, Archive, the filters, the footer, the
-   mail link and the like button) and links in the text. A link in the
-   metadata, such as the date, has no underline. */
+   uppercase actions (such as Back, Archive, the filters, the footer and the
+   mail link) and links in the text. A link in the metadata, such as the
+   date, has no underline. */
 a.far,
 .far a,
 .site-footer a,
 .stream-filter a,
 .post-footer a,
-.like button,
 .body a {
     text-decoration: underline;
     text-decoration-thickness: var(--rule-hairline);
