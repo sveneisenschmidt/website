@@ -1,5 +1,5 @@
-# The .htaccess of the site folder on the server. In KAS, the admin panel of
-# the hosting provider All-Inkl, the site folder is the document root.
+# The .htaccess of the site folder on the server. In the admin panel of the
+# hosting provider, the site folder is the document root.
 # bin/deploy.sh puts the id of the new release in place of RELEASE_ID and
 # uploads the file. One rename then replaces the old .htaccess, and that
 # rename switches the site to the new release.

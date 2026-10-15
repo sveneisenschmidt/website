@@ -12,9 +12,9 @@
 date_default_timezone_set('Europe/Berlin');
 
 // json_encode() writes a float with the digits of serialize_precision. The
-// web PHP of the host has a fixed value there and wrote the map point
-// 51.1547 as 51.15469999999999828332875040359795093536376953125 (live HTML,
-// 2026-10-13). -1 writes the shortest form that reads back as the same float.
+// web PHP of the host has a fixed value there that writes a map point such
+// as 12.3 as 12.300000000000000710542735760100185871124267578125. -1 writes
+// the shortest form that reads back as the same float.
 ini_set('serialize_precision', '-1');
 
 $env = is_file(__DIR__ . '/env.php') ? require __DIR__ . '/env.php' : [];
@@ -39,6 +39,26 @@ $salt = is_file(__DIR__ . '/.salt') ? trim(file_get_contents(__DIR__ . '/.salt')
 if (is_file(__DIR__ . '/env.php') && ($salt === null || $salt === '')) {
     throw new RuntimeException('site/config/.salt is missing: restore it from a backup.');
 }
+
+// Locally there is no mail server, and Kirby would send the login code of
+// the Panel from noreply@localhost, which is no valid address, so the login
+// fails. Without env.php, every mail goes to bin/mail-catcher.php in place of
+// sendmail. The script saves it in storage/mail/ next to www/, where the web
+// server cannot reach it, and prints it in the terminal of make dev.
+$local = is_file(__DIR__ . '/env.php') ? [] : [
+    'auth' => ['challenge' => ['email' => ['from' => 'panel@localhost.test']]],
+    'email' => [
+        'beforeSend' => function (PHPMailer\PHPMailer\PHPMailer $mailer) {
+            $catcher = realpath(Composer\InstalledVersions::getRootPackage()['install_path']) . '/bin/mail-catcher.php';
+            $mailer->isSendmail();
+            // PHPMailer runs the command through escapeshellcmd(), which keeps
+            // quotes that come in pairs. The quotes keep a path with spaces
+            // in one argument.
+            $mailer->Sendmail = sprintf('"%s" "%s" "%s/mail"', PHP_BINARY, $catcher, Website\Blog\Storage::root());
+            return $mailer;
+        },
+    ],
+];
 
 return array_replace_recursive([
     'locale' => 'en_US.utf-8',
@@ -90,4 +110,4 @@ return array_replace_recursive([
             'page' => ['open', 'preview', '-', 'assistant', 'settings', 'languages', 'status'],
         ],
     ],
-], $env);
+], $local, $env);

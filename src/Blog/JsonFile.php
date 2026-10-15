@@ -8,8 +8,7 @@ use RuntimeException;
 /**
  * Writes JSON to a temporary file and then renames it to the target name.
  * rename() replaces the target in one step, so a crash or a full disk never
- * leaves half a file. Redirects and Website\Analytics write their files
- * with it.
+ * leaves half a file. Redirects writes its file with it.
  */
 final class JsonFile
 {

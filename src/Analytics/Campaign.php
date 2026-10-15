@@ -6,9 +6,10 @@ namespace Website\Analytics;
  * Query parameters that say where a visit came from and do not change the
  * page: `source` (the feed links add source=rss), `utm_*`, `fbclid` and
  * `gclid`. Kirby skips its page cache for every request with a query
- * string, so www/index.php calls `strip()` before Kirby starts. `Counter`
- * reads `source` from here. A redirect to the canonical URL of a page adds
- * the parameters again, so the next request still counts its source.
+ * string, so www/index.php calls `strip()` before Kirby starts. The
+ * statistics read `source` from the stored request URI, which keeps the
+ * query. A redirect to the canonical URL of a page adds the parameters
+ * again, so the next request still has its source.
  */
 final class Campaign
 {
@@ -31,10 +32,5 @@ final class Campaign
     public static function params(): array
     {
         return self::$params;
-    }
-
-    public static function source(): ?string
-    {
-        return self::$params['source'] ?? null;
     }
 }

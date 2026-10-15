@@ -46,7 +46,10 @@
 !/www/site/plugins/analytics/
 !/www/site/plugins/assistant/
 
-# The assistant's uploads, next to www/ (src/Assistant/Uploads.php)
+# Files next to www/ that the web server must not serve and no backup
+# includes: the assistant's uploads (src/Assistant/Uploads.php), the key of
+# the visitor statistics (src/Analytics/Fingerprint.php) and, locally, the
+# mails of bin/mail-catcher.php.
 /storage/
 
 # Local output: backups, the restore test, PHPUnit, the formatter

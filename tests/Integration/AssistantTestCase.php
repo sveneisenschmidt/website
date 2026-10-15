@@ -55,7 +55,6 @@ abstract class AssistantTestCase extends IntegrationTestCase
                 $this->osrmCalls[] = $url;
                 return array_shift($this->osrm) ?? [0, ''];
             },
-            'blog.assistant.storage' => $this->root . '/storage/assistant',
             'api' => ['allowImpersonation' => true],
         ];
         $this->kirby = TestSite::app($this->root, $this->options, $this->props);
