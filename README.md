@@ -45,11 +45,11 @@ backups/         the snapshots of the state
 
 The state is what only a backup can restore: content, accounts, `.salt` and `.license`. `env.php` is the configuration of one host. Kirby makes the generated files (media, cache, sessions) again from the state. `storage/` holds the files of the Panel assistant's chats and the key of the visitor statistics. No backup includes it. A new key gives every visitor a new fingerprint, and older visits then no longer match the own IP addresses in the Panel.
 
-A release has a symlink into `shared/` for each of these paths. The switch replaces `.htaccess` in one rename. Then a health check requests the start page, the RSS feed and the newest post. If one of them does not answer 200, the site switches back to the previous release, the check runs again, and the deploy fails. The newest 5 releases stay. To go back to an older version, run the deploy of its commit again in GitHub Actions.
+A release has a symlink into `shared/` for each of these paths. The switch replaces `.htaccess` in one rename. Then a health check requests the start page, the RSS feed and the newest post. If one of them does not answer 200, the site switches back to the previous release, the check runs again, and the deploy fails. A failed switch also switches back. A failed deploy deletes its release, so the newest 5 releases that stay all worked. To go back to an older version, run the deploy of its commit again in GitHub Actions.
 
 After every deploy the workflow `Speed` measures the live site with PageSpeed Insights (`bin/pagespeed.php`, key in the secret `PAGESPEED_API_KEY`) and shows the scores on the page of the run.
 
-`bin/deploy-test.sh` runs the deploy against a folder on this machine, a switch back after a failed health check included. CI runs it too.
+`bin/deploy-test.sh` runs the deploy against a folder on this machine, a switch back after a failed health check and after a failed switch included. CI runs it too.
 
 The workflow reads the host key of the server from the secret `DEPLOY_KNOWN_HOSTS` (the output of `ssh-keyscan` for the deploy host) and the key of the Panel assistant from the secret `ANTHROPIC_API_KEY`. The URL of the site comes from the repository variable `SITE_URL`.
 
