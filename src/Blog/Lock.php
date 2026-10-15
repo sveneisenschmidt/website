@@ -8,7 +8,8 @@ use Kirby\Filesystem\Dir;
 /**
  * A lock on a file, for work that parallel requests must not do at the
  * same time. FileCache locks the page cache with it, Images the rendering
- * of thumbnails, Website\Analytics\Fingerprint the creation of its key.
+ * of thumbnails, Website\Analytics\Fingerprint the creation of its key,
+ * Website\Assistant\Apply the decisions on cards.
  * The system releases a lock when the request ends, also
  * after a fatal error.
  */

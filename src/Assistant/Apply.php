@@ -8,6 +8,7 @@ use Kirby\Cms\Page;
 use Kirby\Data\Yaml;
 use Kirby\Filesystem\F;
 use Throwable;
+use Website\Blog\Lock;
 use Website\Blog\Text;
 use Website\Blog\Types;
 
@@ -30,13 +31,26 @@ final class Apply
             throw new Error('chat', 'Unbekannte Entscheidung');
         }
         // The lock makes a second click on the same card wait for the first.
-        // It then sees the first decision and changes nothing.
+        // It then sees the first decision and changes nothing. It is a lock
+        // file of its own, not the lock of the session: a new draft renders
+        // the thumbnails of its photos for up to 20 s (`Website\Blog\Images`),
+        // and every other request of the same browser would wait that long
+        // for the session.
+        return Lock::run(Uploads::root() . '/.decide.lock', LOCK_EX, fn() => self::decideLocked($id, $action, $version));
+    }
+
+    private static function decideLocked(string $id, string $action, ?int $version): ChatState
+    {
+        // The lock of the session reads the session again, so the check below
+        // sees a decision that another request has just stored. The session
+        // is free again before the change runs.
         Session::lock();
         $chat = Session::load();
         $proposal = $chat->proposals[$id] ?? throw new Error('chat', 'Vorschlag nicht gefunden');
         // Decisions have their own session key, because a request to Claude
         // that runs meanwhile writes the whole chat back but never this key.
         $decisions = Session::decisions();
+        Session::unlock();
         // A card whose change failed can be tried again; any other decision is final.
         if (!in_array($decisions[$id]['state'] ?? 'open', ['open', 'failed'], true)) {
             return Session::load();
