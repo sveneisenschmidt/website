@@ -76,6 +76,12 @@ final class FingerprintTest extends IntegrationTestCase
         mkdir($this->root . '/storage');
         touch($this->root . '/storage/.analytics.key.lock');
         chmod($this->root . '/storage', 0500);
+        // root ignores file modes, as on the CI runner: the folder stays
+        // writable, and the case cannot happen there.
+        if (is_writable($this->root . '/storage')) {
+            chmod($this->root . '/storage', 0700);
+            $this->markTestSkipped('The folder stays writable for this user (root).');
+        }
         try {
             Fingerprint::ip('198.51.100.77');
             $this->fail('A fingerprint was made without a key.');
