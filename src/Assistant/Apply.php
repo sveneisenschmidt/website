@@ -180,7 +180,13 @@ final class Apply
         if (substr_count($current, $in['passage']) !== 1) {
             throw new Stale('Die Passage steht nicht mehr genau einmal im Feld. Nichts geändert.', 'the passage no longer occurs exactly once');
         }
-        $result = self::result(self::write($page, [$in['field'] => str_replace($in['passage'], $text, $current)]));
+        $after = str_replace($in['passage'], $text, $current);
+        // The text around the passage can have changed since the proposal, and
+        // with it the raw HTML that the version makes there (Proposals::edit()).
+        if (Proposals::addsHtml($current, $after)) {
+            throw new Stale('Mit dieser Fassung bekäme das Feld rohes HTML. Nichts geändert.', 'the field would get raw HTML');
+        }
+        $result = self::result(self::write($page, [$in['field'] => $after]));
         $result['claude'] .= count($in['versions']) > 1 ? ' The user took version ' . ($version + 1) . '.' : '';
         return $result;
     }

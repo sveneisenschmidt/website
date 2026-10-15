@@ -93,9 +93,31 @@ final class AssistantEditTest extends AssistantTestCase
         foreach (['See <https://example.com/a?b=1>.', 'Mail <name@example.com>.', 'Mail <mailto:name@example.com>.', 'a<b', '1 < 2', 'I <3 bikes'] as $value) {
             $this->assertSame('field', $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => $value])['kind'], $value);
         }
-        foreach (['<b>bold</b>', '</p>', '<!-- hidden', '<?php', '<javascript://%0aalert(1)>', '<x:y onmouseover=alert(1)>', "<img\nsrc=x>"] as $value) {
+        // The last two passed the first version of the check (review of 15 Oct 2026).
+        foreach (['<b>bold</b>', '</p>', '<!-- hidden', '<javascript://%0aalert(1)>', '<x:y onmouseover=alert(1)>', "a <mailto:x='/onmouseover=alert`1`//'y=z@-> b", '<><https://x/onmouseover=alert(1)>'] as $value) {
             $this->assertStringContainsString('HTML', $this->refusal('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => $value]), $value);
         }
+    }
+
+    /**
+     * A version without raw HTML can still make some with the text around
+     * the passage: "<b x" before a later ">" is a tag, and a version inside
+     * an attribute changes an existing tag. The proposal refuses it, and so
+     * does the click, because the text around the passage can change.
+     */
+    public function testAVersionMustNotMakeRawHtmlWithItsField(): void
+    {
+        $this->page()->update(['text' => "<iframe src=\"https://video.test/embed/1\"></iframe>\n\nIt rained all day. Sun > rain."]);
+        $this->assertStringContainsString('raw HTML', $this->refusal('propose_edit', ['post' => 'photos/test-photo', 'field' => 'text', 'passage' => 'It rained all day.', 'versions' => ['<b onmouseover=alert(1) x']]));
+        $this->assertStringContainsString('raw HTML', $this->refusal('propose_edit', ['post' => 'photos/test-photo', 'field' => 'text', 'passage' => 'https://video.test/embed/1', 'versions' => ['x" onload="alert(1)']]));
+
+        $card = $this->propose('propose_edit', ['post' => 'photos/test-photo', 'field' => 'text', 'passage' => 'Sun > rain.', 'versions' => ['Sun <b x']]);
+        $this->page()->update(['text' => "<iframe src=\"https://video.test/embed/1\"></iframe>\n\nIt rained all day. Sun > rain. y >"]);
+        Apply::decide($card['id'], 'apply');
+
+        $this->assertSame('stale', Session::decisions()[$card['id']]['state']);
+        $this->assertStringContainsString('rohes HTML', Session::decisions()[$card['id']]['warn']);
+        $this->assertFalse($this->page()->version('changes')->exists());
     }
 
     public function testAStaleCardChangesNothing(): void
