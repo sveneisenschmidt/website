@@ -18,8 +18,11 @@ final class Lock
      * Runs $action under the lock $mode (LOCK_SH or LOCK_EX) on $file and
      * returns its result. With $wait, it waits at most $wait seconds, and
      * when the lock stays taken it returns null without running $action.
-     * When the lock file cannot be opened or the file system has no locks,
-     * $action runs without the lock.
+     * When the folder of $file cannot be made, Dir::make() throws, and
+     * $action does not run. When the lock file cannot be opened, PHP warns.
+     * Kirby's error handler turns the warning into an exception, so $action
+     * does not run either; without such a handler, $action runs without the
+     * lock. When the file system has no locks, $action runs without the lock.
      *
      * @template T
      * @param Closure(): T $action
