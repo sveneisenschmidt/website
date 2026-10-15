@@ -67,7 +67,7 @@ final class Router
      * Panel user who may open it, or for a request with the draft's preview
      * token, as in Kirby's own draft routing.
      */
-    private static function post(string $date, string $slug): ?PostPage
+    public static function post(string $date, string $slug): ?PostPage
     {
         foreach (Types::sections() as $section) {
             $post = page($section)?->childrenAndDrafts()->find($slug);

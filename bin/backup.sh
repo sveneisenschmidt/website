@@ -87,12 +87,13 @@ for p in "${PATHS[@]}"; do
 done
 
 # A request can write to a SQLite database of the visitor statistics
-# (content/.analytics/) while rsync or cp copies it, and the copy is then
-# broken. Each database that was copied anew is copied again inside a read
-# transaction: while it lasts, SQLite lets no writer finish a change. The
-# copy keeps mtime and mode, as rsync -a and cp -p do. A file linked to the
-# newest snapshot is unchanged and stays. When the second copy fails, the
-# first copy stays and the backup goes on.
+# (content/.analytics/) or of the likes (content/.likes.sqlite) while rsync
+# or cp copies it, and the copy is then broken. Each database that was
+# copied anew is copied again inside a read transaction: while it lasts,
+# SQLite lets no writer finish a change. The copy keeps mtime and mode, as
+# rsync -a and cp -p do. A file linked to the newest snapshot is unchanged
+# and stays. When the second copy fails, the first copy stays and the
+# backup goes on.
 find "$STATE/content" -type f -name '*.sqlite' -links 1 | while read -r copy; do
   "$PHP" -r '
     [, $src, $dst] = $argv;

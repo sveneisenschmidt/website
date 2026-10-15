@@ -113,6 +113,32 @@
     text-transform: uppercase;
 }
 
+/* A like changes data, so it is a form button. The rules below remove the
+   look of a button. */
+.like {
+    margin-left: auto;
+}
+
+.like button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    cursor: pointer;
+    transition: color var(--duration-hover);
+}
+
+.like button:hover {
+    color: var(--color-link-hover);
+}
+
+.like strong {
+    font-weight: var(--weight-opening);
+}
+
 /* The label row and the title stay at the top while the article scrolls,
    and leave with the end of the article. The page background hides the
    text below them. The negative margin cancels the padding, so the rule
