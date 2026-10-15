@@ -150,6 +150,64 @@ final class LikeTest extends IntegrationTestCase
     }
 
     /**
+     * The Panel view "Besucher" shows the likes: the total, the last 30
+     * days, the posts by likes and every like, newest first. A post with
+     * the same number of likes as another comes first when its newest like
+     * is newer. A deleted post keeps its likes, as in the visitor statistics.
+     * The 30 days are today and the 29 days before it.
+     */
+    public function testThePanelSummary(): void
+    {
+        $second = $this->post(slug: 'second-photo', title: 'Second Photo');
+        $now = new \DateTimeImmutable();
+        $time = fn(string $ago) => $now->modify($ago)->format('Y-m-d\TH:i:s.vP');
+        $rows = [
+            [$this->post->uuid()->id(), $time('-40 days')],
+            [$this->post->uuid()->id(), $time('-1 day')],
+            [$second->uuid()->id(), $time('-50 days')],
+            [$second->uuid()->id(), $time('-29 days')],
+            ['gone', $time('-30 days')],
+            ['gone', $time('-61 days')],
+            ['gone', $time('-62 days')],
+        ];
+        $insert = Likes::connect(Likes::file())->prepare('INSERT INTO likes (page, ip_hash, time) VALUES (:page, NULL, :time)');
+        foreach ($rows as [$page, $at]) {
+            $insert->execute(['page' => $page, 'time' => $at]);
+        }
+
+        $summary = Likes::summary(30);
+
+        $this->assertSame(7, $summary['total']);
+        $this->assertSame(2, $summary['month']);
+        $this->assertSame([
+            ['title' => 'gone (gelöscht)', 'url' => null, 'likes' => 3],
+            ['title' => 'Test Photo', 'url' => 'http://localhost/2026-10-07-test-photo/', 'likes' => 2],
+            ['title' => 'Second Photo', 'url' => 'http://localhost/2026-10-07-second-photo/', 'likes' => 2],
+        ], $summary['posts']);
+        $this->assertSame(['Test Photo', 'Second Photo', 'gone (gelöscht)', 'Test Photo', 'Second Photo', 'gone (gelöscht)', 'gone (gelöscht)'], array_column($summary['likes'], 'title'));
+        $this->assertSame(substr($time('-1 day'), 0, 10), $summary['likes'][0]['date']);
+    }
+
+    public function testThePanelSummaryWithoutLikes(): void
+    {
+        $this->assertSame(['total' => 0, 'month' => 0, 'posts' => [], 'likes' => []], Likes::summary(30));
+        $this->assertFileDoesNotExist(Likes::file());
+    }
+
+    /** The Panel view "Besucher" gets the likes of the last 30 days as its prop `likes`. */
+    public function testThePanelViewGetsTheLikes(): void
+    {
+        Likes::connect(Likes::file())->prepare('INSERT INTO likes (page, ip_hash, time) VALUES (:page, NULL, :time)')
+            ->execute(['page' => $this->post->uuid()->id(), 'time' => (new \DateTimeImmutable('-10 days'))->format('Y-m-d\TH:i:s.vP')]);
+
+        $area = $this->kirby->extensions('areas')['besucher'][0]();
+        $props = $area['views'][0]['action']()['props'];
+
+        $this->assertSame(1, $props['likes']['month']);
+        $this->assertSame(Likes::summary(30), $props['likes']);
+    }
+
+    /**
      * A broken file breaks no post, as in the visitor statistics. The post
      * shows the button without a count. It stays out of the page cache, so
      * the first request after a repair shows the count.
@@ -163,6 +221,17 @@ final class LikeTest extends IntegrationTestCase
         $this->assertSame(200, $response->code());
         $this->assertStringContainsString('<button type="submit">Like</button></form>', (string) $response->body());
         $this->assertFalse($this->kirby->cache('pages')->exists('photos/test-photo.latest.html'));
+        $this->assertStringContainsString('blog likes: ', $log);
+    }
+
+    /** With a broken file, the Panel view still opens, as with the visitor statistics. */
+    public function testABrokenFileGivesAnEmptySummary(): void
+    {
+        file_put_contents(Likes::file(), 'not a database');
+
+        [$summary, $log] = $this->logged(fn() => Likes::summary(30));
+
+        $this->assertSame(['total' => 0, 'month' => 0, 'posts' => [], 'likes' => []], $summary);
         $this->assertStringContainsString('blog likes: ', $log);
     }
 

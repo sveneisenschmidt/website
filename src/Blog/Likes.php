@@ -20,6 +20,9 @@ use Website\Models\PostPage;
  * without a cookie. A post counts one like per IP address. As in the
  * visitor statistics, an error with the file goes to the PHP error log and
  * fails no request.
+ *
+ * @phpstan-type LikedPost array{title: string, url: ?string, likes: int}
+ * @phpstan-type Like array{title: string, url: ?string, date: string}
  */
 final class Likes
 {
@@ -58,6 +61,62 @@ final class Likes
             error_log('blog likes: ' . $e->getMessage());
             return null;
         }
+    }
+
+    /**
+     * The likes for the Panel view "Besucher" (plugins/analytics). It gives
+     * the total, the likes of the last $days days, today included, the posts
+     * by likes and every like, newest first. Of two posts with the same number of likes,
+     * the one with the newer like comes first. A deleted post keeps its
+     * likes and shows as "(gelöscht)", as in Website\Analytics\Totals. A file
+     * that cannot be read gives an empty summary, so the view still opens.
+     *
+     * @return array{total: int, month: int, posts: list<LikedPost>, likes: list<Like>}
+     */
+    public static function summary(int $days = 30): array
+    {
+        $summary = ['total' => 0, 'month' => 0, 'posts' => [], 'likes' => []];
+        if (!is_file(self::file())) {
+            return $summary;
+        }
+        try {
+            $rows = self::connect(self::file())->query('SELECT page, time FROM likes ORDER BY time DESC, rowid DESC')->fetchAll(PDO::FETCH_NUM);
+        } catch (Throwable $e) {
+            error_log('blog likes: ' . $e->getMessage());
+            return $summary;
+        }
+        $from = date('Y-m-d', strtotime('-' . ($days - 1) . ' days'));
+        $pages = [];
+        $counts = [];
+        foreach ($rows as [$uuid, $time]) {
+            $pages[$uuid] ??= self::page((string) $uuid);
+            $counts[$uuid] = ($counts[$uuid] ?? 0) + 1;
+            $summary['likes'][] = [...$pages[$uuid], 'date' => substr((string) $time, 0, 10)];
+            if (substr((string) $time, 0, 10) >= $from) {
+                $summary['month']++;
+            }
+        }
+        $summary['total'] = count($rows);
+        // $counts has the posts in the order of their newest like. uasort()
+        // is stable, so posts with the same number of likes keep that order.
+        uasort($counts, fn(int $a, int $b) => $b <=> $a);
+        foreach ($counts as $uuid => $likes) {
+            $summary['posts'][] = [...$pages[$uuid], 'likes' => $likes];
+        }
+        return $summary;
+    }
+
+    /**
+     * The title and URL of the post with the UUID $uuid.
+     *
+     * @return array{title: string, url: ?string}
+     */
+    private static function page(string $uuid): array
+    {
+        $page = kirby()->page('page://' . $uuid);
+        return $page === null
+            ? ['title' => "$uuid (gelöscht)", 'url' => null]
+            : ['title' => $page->title()->value(), 'url' => $page->url()];
     }
 
     /** True when the IP address $ip has liked the post. */
