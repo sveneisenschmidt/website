@@ -375,6 +375,30 @@ final class AssistantChatTest extends AssistantTestCase
         $this->assertCount(1, Log::read());
     }
 
+    /**
+     * A stop during the first round of an answer finds no answer in the
+     * session, because send() stores the chat only after the round. The
+     * Protokoll still gets one line "stopped" with the tokens of that round,
+     * whether Claude called a tool or not.
+     */
+    public function testAStopInTheFirstRoundLogsTheAnswer(): void
+    {
+        $tool = $this->tool('t1', 'find_posts', ['type' => '', 'query' => '', 'from' => '', 'to' => '']);
+        foreach (['tool_use' => $tool, 'end_turn' => $this->text('Ok.')] as $stop => $block) {
+            $this->replies[] = function () use ($stop, $block) {
+                Chat::stop();
+                return [200, ['stop_reason' => $stop, 'usage' => ['input_tokens' => 100, 'output_tokens' => 20], 'content' => [$block]]];
+            };
+
+            $chat = Chat::send('Such alle Beiträge.');
+
+            $this->assertFalse($chat->next, $stop);
+            $answer = Log::read()[0];
+            $this->assertSame(['stopped', 1, 100, 20], [$answer['outcome'], $answer['rounds'], $answer['tokensIn'], $answer['tokensOut']], $stop);
+        }
+        $this->assertCount(2, Log::read());
+    }
+
     public function testThereIsNoToolToDeleteOrPublish(): void
     {
         foreach (Tools::definitions() as $tool) {
