@@ -149,6 +149,57 @@ final class LikeTest extends IntegrationTestCase
         $this->assertSame(3, Likes::count($this->current()));
     }
 
+    /**
+     * A broken file breaks no post, as in the visitor statistics. The post
+     * shows the button without a count. It stays out of the page cache, so
+     * the first request after a repair shows the count.
+     */
+    public function testABrokenFileKeepsThePostsUp(): void
+    {
+        file_put_contents(Likes::file(), 'not a database');
+
+        [$response, $log] = $this->logged(fn() => $this->request('/2026-10-07-test-photo/'));
+
+        $this->assertSame(200, $response->code());
+        $this->assertStringContainsString('<button type="submit">Like</button></form>', (string) $response->body());
+        $this->assertFalse($this->kirby->cache('pages')->exists('photos/test-photo.latest.html'));
+        $this->assertStringContainsString('blog likes: ', $log);
+    }
+
+    /** With a broken file, a like still leads back to the post. */
+    public function testABrokenFileStillLeadsBackAfterALike(): void
+    {
+        file_put_contents(Likes::file(), 'not a database');
+
+        [$like, $log] = $this->logged(fn() => $this->request('/2026-10-07-test-photo/like', 'POST'));
+        [$post] = $this->logged(fn() => $this->request('/2026-10-07-test-photo/?liked'));
+
+        $this->assertSame(303, $like->code());
+        $this->assertStringContainsString('blog likes: ', $log);
+        $this->assertSame(200, $post->code());
+        $this->assertStringContainsString('<button type="submit">Like</button></form>', (string) $post->body());
+    }
+
+    /**
+     * Runs $action with the PHP error log in a file and returns the result
+     * and the log. phpunit.xml fails a test on any output.
+     *
+     * @template T
+     * @param \Closure(): T $action
+     * @return array{T, string}
+     */
+    private function logged(\Closure $action): array
+    {
+        $log = $this->root . '/php-errors.log';
+        $previous = ini_set('error_log', $log);
+        try {
+            $result = $action();
+        } finally {
+            ini_set('error_log', (string) $previous);
+        }
+        return [$result, is_file($log) ? (string) file_get_contents($log) : ''];
+    }
+
     /** The post as the current Kirby reads it. */
     private function current(): PostPage
     {

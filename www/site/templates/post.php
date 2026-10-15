@@ -11,7 +11,7 @@ use Website\Blog\Site;
  * @var string $section
  * @var string $label
  * @var string $type
- * @var int $likes
+ * @var int|null $likes
  * @var bool $liked
  */
 ?>

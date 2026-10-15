@@ -7,6 +7,7 @@ use Kirby\Cms\Response;
 use Kirby\Filesystem\Dir;
 use PDO;
 use Pdo\Sqlite;
+use Throwable;
 use Website\Analytics\Fingerprint;
 use Website\Analytics\Kind;
 use Website\Models\PostPage;
@@ -16,7 +17,9 @@ use Website\Models\PostPage;
  * file is in content/, so every backup has it and git does not. The like
  * button in templates/post.php is a form that sends POST to
  * /YYYY-MM-DD-slug/like (config/routes.php). It works without JavaScript and
- * without a cookie. A post counts one like per IP address.
+ * without a cookie. A post counts one like per IP address. As in the
+ * visitor statistics, an error with the file goes to the PHP error log and
+ * fails no request.
  */
 final class Likes
 {
@@ -41,14 +44,20 @@ final class Likes
         return kirby()->root('content') . '/.likes.sqlite';
     }
 
-    public static function count(PostPage $post): int
+    /** The number of likes of the post, or null when the file cannot be read. */
+    public static function count(PostPage $post): ?int
     {
         if (!is_file(self::file())) {
             return 0;
         }
-        $query = self::connect(self::file())->prepare('SELECT COUNT(*) FROM likes WHERE page = :page');
-        $query->execute(['page' => $post->uuid()->id()]);
-        return (int) $query->fetchColumn();
+        try {
+            $query = self::connect(self::file())->prepare('SELECT COUNT(*) FROM likes WHERE page = :page');
+            $query->execute(['page' => $post->uuid()->id()]);
+            return (int) $query->fetchColumn();
+        } catch (Throwable $e) {
+            error_log('blog likes: ' . $e->getMessage());
+            return null;
+        }
     }
 
     /** True when the IP address $ip has liked the post. */
@@ -57,9 +66,14 @@ final class Likes
         if (!is_file(self::file())) {
             return false;
         }
-        $query = self::connect(self::file())->prepare('SELECT 1 FROM likes WHERE page = :page AND ip_hash = :ip_hash');
-        $query->execute(['page' => $post->uuid()->id(), 'ip_hash' => Fingerprint::ip($ip)]);
-        return $query->fetchColumn() !== false;
+        try {
+            $query = self::connect(self::file())->prepare('SELECT 1 FROM likes WHERE page = :page AND ip_hash = :ip_hash');
+            $query->execute(['page' => $post->uuid()->id(), 'ip_hash' => Fingerprint::ip($ip)]);
+            return $query->fetchColumn() !== false;
+        } catch (Throwable $e) {
+            error_log('blog likes: ' . $e->getMessage());
+            return false;
+        }
     }
 
     /**
@@ -78,14 +92,18 @@ final class Likes
         }
         $agent = (string) ($_SERVER['HTTP_USER_AGENT'] ?? '');
         if (Kind::of($agent, isset($_SERVER['HTTP_SEC_FETCH_DEST']), isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) === Kind::BROWSER) {
-            $insert = self::connect(self::file())->prepare('INSERT OR IGNORE INTO likes (page, ip_hash, time) VALUES (:page, :ip_hash, :time)');
-            $insert->execute([
-                'page' => $post->uuid()->id(),
-                'ip_hash' => Fingerprint::ip((string) ($_SERVER['REMOTE_ADDR'] ?? '')),
-                'time' => (new DateTimeImmutable())->format('Y-m-d\TH:i:s.vP'),
-            ]);
-            if ($insert->rowCount() > 0) {
-                $post->uncache();
+            try {
+                $insert = self::connect(self::file())->prepare('INSERT OR IGNORE INTO likes (page, ip_hash, time) VALUES (:page, :ip_hash, :time)');
+                $insert->execute([
+                    'page' => $post->uuid()->id(),
+                    'ip_hash' => Fingerprint::ip((string) ($_SERVER['REMOTE_ADDR'] ?? '')),
+                    'time' => (new DateTimeImmutable())->format('Y-m-d\TH:i:s.vP'),
+                ]);
+                if ($insert->rowCount() > 0) {
+                    $post->uncache();
+                }
+            } catch (Throwable $e) {
+                error_log('blog likes: ' . $e->getMessage());
             }
         }
         // 303 makes the browser load the post with GET. A reload then does
