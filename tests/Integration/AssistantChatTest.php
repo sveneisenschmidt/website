@@ -356,6 +356,34 @@ final class AssistantChatTest extends AssistantTestCase
     }
 
     /**
+     * "Neuer Chat" waits while a card is applied (Apply::decide), so it
+     * does not delete the uploads that a new draft still copies. While it
+     * waits, it holds no lock of the session: the click it waits for needs
+     * that lock to store its decision. Another process holds the lock of
+     * the cards here for one second and looks at the session meanwhile.
+     */
+    public function testANewChatWaitsForACardWithoutHoldingTheSession(): void
+    {
+        $this->reply('end_turn');
+        Chat::send('Hallo.');
+        $this->assertTrue($this->sessionLocked());
+        [$expiry, $id] = explode('.', (string) $this->kirby->session()->token());
+        $code = '[, $lock, $session] = $argv; $h = fopen($lock, "c"); flock($h, LOCK_EX); echo "locked\n"; usleep(500000);'
+            . ' $s = fopen($session, "r+"); $free = flock($s, LOCK_EX | LOCK_NB); if ($free) { flock($s, LOCK_UN); }'
+            . ' echo $free ? "free\n" : "held\n"; usleep(500000);';
+        $proc = proc_open([PHP_BINARY, '-r', $code, Uploads::root() . '/.decide.lock', $this->root . "/sessions/$expiry.$id.sess"], [1 => ['pipe', 'w']], $pipes);
+        $this->assertSame("locked\n", fgets($pipes[1]));
+
+        $start = microtime(true);
+        Chat::reset();
+        $waited = microtime(true) - $start;
+
+        $this->assertSame("free\n", fgets($pipes[1]), 'The waiting reset holds no lock of the session.');
+        proc_close($proc);
+        $this->assertGreaterThan(0.5, $waited, 'The reset waited for the card.');
+    }
+
+    /**
      * A new chat ("Neuer Chat") during an answer ends that answer like a
      * stop: the Protokoll gets its line with the tokens used so far.
      */

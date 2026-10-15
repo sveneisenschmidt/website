@@ -2,6 +2,7 @@
 
 namespace Website\Assistant;
 
+use Closure;
 use Kirby\Cms\File;
 use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
@@ -31,12 +32,28 @@ final class Apply
             throw new Error('chat', 'Unbekannte Entscheidung');
         }
         // The lock makes a second click on the same card wait for the first.
-        // It then sees the first decision and changes nothing. It is a lock
-        // file of its own, not the lock of the session: a new draft renders
-        // the thumbnails of its photos for up to 20 s (`Website\Blog\Images`),
-        // and every other request of the same browser would wait that long
-        // for the session.
-        return Lock::run(Uploads::root() . '/.decide.lock', LOCK_EX, fn() => self::decideLocked($id, $action, $version));
+        // It then sees the first decision and changes nothing.
+        return self::exclusive(fn() => self::decideLocked($id, $action, $version));
+    }
+
+    /**
+     * Runs $action under the lock of the cards: decide() and `Chat::reset()`
+     * run one at a time, so a new chat does not delete the uploads that a
+     * new draft still copies. It is a lock file of its own, not the lock of
+     * the session: a new draft renders the thumbnails of its photos for up
+     * to 20 s (`Website\Blog\Images`), and every other request of the same
+     * browser would wait that long for the session. A request releases the
+     * session before it waits here, because the request that holds this
+     * lock needs the session to store its decision.
+     *
+     * @template T
+     * @param Closure(): T $action
+     * @return T
+     */
+    public static function exclusive(Closure $action): mixed
+    {
+        Session::unlock();
+        return Lock::run(Uploads::root() . '/.decide.lock', LOCK_EX, $action);
     }
 
     private static function decideLocked(string $id, string $action, ?int $version): ChatState

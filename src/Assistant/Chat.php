@@ -334,6 +334,12 @@ final class Chat
      */
     public static function reset(): ChatState
     {
+        // A card that is being applied finishes first (`Apply::exclusive()`).
+        return Apply::exclusive(fn() => self::resetLocked());
+    }
+
+    private static function resetLocked(): ChatState
+    {
         $chat = Session::change(function (ChatState $old): ChatState {
             // An answer that still runs ends here like a stop. Without the
             // line, the Protokoll would miss the tokens it used so far.
