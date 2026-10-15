@@ -1,6 +1,7 @@
 <?php
 use Website\Blog\Exif;
 use Website\Blog\Images;
+use Website\Models\PostPage;
 
 /**
  * One image of a post, for the KirbyText tag (image:): the image as a link
@@ -15,11 +16,11 @@ $rows = Exif::rows($file);
 $caption = (string) $file->caption()->value();
 $photographer = (string) $file->photographer()->value();
 // The first image of the post is at the top of the page, so the browser
-// loads it at once and with high priority. The cover gets the
+// loads it at once and with high priority. The cover of a post gets the
 // view-transition-name of its tile on the front page, so the browser
-// animates it from the tile into the post.
+// animates it from the tile into the post. Only posts have tiles.
 $first = $page->firstImageName() === $file->filename();
-$cover = $page->coverImage()?->is($file) === true;
+$cover = $page instanceof PostPage && $page->coverImage()?->is($file) === true;
 // The HTML below must not contain a blank line. Markdown ends an HTML block
 // at a blank line and would treat the rest as Markdown text.
 ?>

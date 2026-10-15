@@ -3,7 +3,7 @@
  * The results of a search, newest first, for the search page and
  * search.json: the posts by month, or the heading "Nothing found".
  *
- * @var Kirby\Cms\Pages $results
+ * @var Kirby\Cms\Pages<Website\Models\PostPage> $results
  */
 ?>
 <?php if ($results->isEmpty()): ?>

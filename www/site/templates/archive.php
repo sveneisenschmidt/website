@@ -4,7 +4,7 @@
  * the photos page as a grid of covers. Variables from controllers/archive.php.
  *
  * @var string $stream all, photos, trips, notes or essays
- * @var Kirby\Cms\Pages $posts The posts that this page lists
+ * @var Kirby\Cms\Pages<Website\Models\PostPage> $posts The posts that this page lists
  */
 ?>
 <?php snippet('layout', slots: true) ?>

@@ -1,6 +1,7 @@
 <?php
 use Website\Blog\Layout;
 use Website\Blog\Site;
+use Website\Models\PostPage;
 
 /**
  * The content of <head>: title, icons, feed link, font preload, meta tags,
@@ -37,7 +38,7 @@ $jsonld = Layout::jsonLd($page, $meta);
 <meta property="og:url" content="<?= $meta['url'] ?>">
 <meta property="og:site_name" content="<?= $site->title()->esc() ?>">
 <?php if ($meta['article']): ?>
-<?php if ($page->date()->isNotEmpty()): ?>
+<?php if ($page instanceof PostPage && $page->date()->isNotEmpty()): ?>
 <meta property="article:published_time" content="<?= $page->date()->toDate('c') ?>">
 <?php endif ?>
 <meta property="article:modified_time" content="<?= date('c', $page->lastModified()) ?>">
