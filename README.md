@@ -45,11 +45,11 @@ backups/         the snapshots of the state
 
 The state is what only a backup can restore: content, accounts, `.salt` and `.license`. `env.php` is the configuration of one host. Kirby makes the generated files (media, cache, sessions) again from the state. `storage/` holds the files of the Panel assistant's chats and the key of the visitor statistics. No backup includes it. A new key gives every visitor a new fingerprint, and older visits then no longer match the own IP addresses in the Panel.
 
-A release has a symlink into `shared/` for each of these paths. The switch replaces `.htaccess` in one rename. Then a health check requests the start page, the RSS feed and the newest post. If one of them does not answer 200, the site switches back to the previous release, the check runs again, and the deploy fails. The newest 5 releases stay. To go back to an older version, run the deploy of its commit again in GitHub Actions.
+A release has a symlink into `shared/` for each of these paths. The switch replaces `.htaccess` in one rename. Then a health check requests the start page, the RSS feed and the newest post. If one of them does not answer 200, the site switches back to the previous release, the check runs again, and the deploy fails. A failed switch also switches back. A failed deploy deletes its release, so the newest 5 releases that stay all worked. To go back to an older version, run the deploy of its commit again in GitHub Actions.
 
 After every deploy the workflow `Speed` measures the live site with PageSpeed Insights (`bin/pagespeed.php`, key in the secret `PAGESPEED_API_KEY`) and shows the scores on the page of the run.
 
-`bin/deploy-test.sh` runs the deploy against a folder on this machine, a switch back after a failed health check included. CI runs it too.
+`bin/deploy-test.sh` runs the deploy against a folder on this machine, a switch back after a failed health check and after a failed switch included, and then a backup and a restore into `shared/`. CI runs it too.
 
 The workflow reads the host key of the server from the secret `DEPLOY_KNOWN_HOSTS` (the output of `ssh-keyscan` for the deploy host) and the key of the Panel assistant from the secret `ANTHROPIC_API_KEY`. The URL of the site comes from the repository variable `SITE_URL`.
 
@@ -57,7 +57,15 @@ The workflow reads the host key of the server from the secret `DEPLOY_KNOWN_HOST
 
 ## Backups
 
-Every deploy and every `make pull` makes a snapshot on the server: a copy of the live state in `backups/`. A file that has not changed since the previous snapshot is a hard link to it and takes no new space. The deploy keeps the newest 30 snapshots. `make backup` writes the local state to an archive in `backups/`. `make restore BACKUP=backups/website-....tar.gz` puts it back. `make restore-test` checks that a backup restores the same site.
+Every deploy and every `make pull` makes a snapshot on the server: a copy of the live state in `backups/`. A file that has not changed since the previous snapshot is a hard link to it and takes no new space. The deploy keeps the newest 30 snapshots. `make backup` writes the local state to an archive in `backups/`. `make restore BACKUP=backups/website-....tar.gz` puts it back. `make restore-test` checks that a backup restores the same site. A backup leaves out the journals of SQLite: next to the copy of a database, a journal would roll the copy back.
+
+To restore a snapshot on the server, run `bin/restore.sh` from this checkout into `shared/`, with `DEPLOY_PATH` from `.env`:
+
+```bash
+ssh website "cd $DEPLOY_PATH && bash -s -- backups/website-<time> shared" < bin/restore.sh
+```
+
+The live site then runs on the restored state at once. Sessions and the page cache start empty, so the Panel asks for a new login. The script refuses `current/www`: the state paths of a release are symlinks into `shared/`.
 
 ## License
 

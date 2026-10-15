@@ -101,16 +101,26 @@ final class Session
     }
 
     /**
-     * Writes the log line for the end of an answer. A stop ("Abbrechen") or
-     * a new chat ("Neuer Chat") during the round writes that line itself as
-     * "stopped". Both raise `ChatState::$run`, and this method then writes
-     * nothing. The lock comes first: otherwise a stop between the
-     * check and the log line would log the answer twice.
+     * Writes the log line for the end of an answer. With $outcome null the
+     * answer goes on with another round, and the line waits. A stop
+     * ("Abbrechen") or a new chat ("Neuer Chat") during the round writes
+     * that line itself as "stopped", from the chat in the session. Both
+     * raise `ChatState::$run`, and this method then writes nothing. In the
+     * first round of an answer ($first) the session does not hold the
+     * answer yet, because `Chat::send()` stores the chat only after the
+     * round. Such a stop writes no line, so this method writes it as
+     * "stopped", with the tokens of the round. The lock comes first:
+     * otherwise a stop between the check and the log line would log the
+     * answer twice or not at all.
      */
-    public static function finish(ChatState $chat, string $outcome): ChatState
+    public static function finish(ChatState $chat, ?string $outcome, bool $first = false): ChatState
     {
         self::lock();
-        if (self::load()->run === $chat->run) {
+        if (self::load()->run !== $chat->run) {
+            if ($first) {
+                Log::end($chat, 'stopped');
+            }
+        } elseif ($outcome !== null) {
             Log::end($chat, $outcome);
         }
         return $chat;

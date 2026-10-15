@@ -21,6 +21,7 @@ use Website\Blog\Text;
  * @method Field text()
  * @method Field cover()
  * @method Field lastmod()
+ * @method Field label()
  */
 class SitePage extends Page
 {

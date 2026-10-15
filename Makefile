@@ -10,7 +10,11 @@ PORT := 8010
 # Local values and keys from .env (template: .env.example). make passes the
 # values to every target as environment variables, and each key only to the
 # target that uses it: ANTHROPIC_API_KEY to dev, PAGESPEED_API_KEY to speed.
--include .env
+# Each line NAME=value of .env counts as it is: a # or a $ stays part of the
+# value. include would read .env as Makefile syntax, where # starts a
+# comment and $ expands. The value of $(shell) in := is not expanded again.
+ENV_NAMES := $(shell sed -n 's/^\([A-Za-z_][A-Za-z0-9_]*\)=.*/\1/p' .env 2>/dev/null)
+$(foreach name,$(ENV_NAMES),$(eval $(name) := $$(shell sed -n 's/^$(name)=//p' .env | tail -n 1)))
 export SITE_URL DEPLOY_HOST DEPLOY_PATH DEBUG
 
 # Once after cloning: dependencies, .env and .salt. Then fill in
@@ -56,7 +60,7 @@ backup:
 .PHONY: restore
 restore:
 	@test -n "$(BACKUP)" || { echo "Usage: make restore BACKUP=backups/website-....tar.gz"; exit 1; }
-	bin/restore.sh $(BACKUP) $(WWW)
+	PHP=$(PHP) bin/restore.sh $(BACKUP) $(WWW)
 
 .PHONY: restore-test
 restore-test:

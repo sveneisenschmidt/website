@@ -39,13 +39,17 @@
 #    SITE_URL, and `assistantKey` to ANTHROPIC_API_KEY when it is set.
 #    Deny web access to shared/ and backups/.
 # 5. Switch: .htaccess and `current` point to the new release. One rename
-#    replaces each of them. Then clear the page cache.
+#    replaces each of them. When one of them fails, switch back to the
+#    previous release and exit with 1. Then clear the page cache.
 #    The page cache holds the HTML of every page that Kirby rendered.
 # 6. Health check: the start page, the RSS feed and the newest post of the
 #    feed must answer HTTP 200. Otherwise switch back to the previous
 #    release, check it the same way and exit with 1.
 # 7. Delete all releases except the newest 5. Fill the page cache again
 #    with bin/warm.php --pages.
+# A deploy that fails after the upload deletes its release, unless .htaccess
+# or `current` names it, so that the newest 5 releases are releases that
+# worked.
 #
 # Environment:
 #   DEPLOY_HOST              required. The ssh target, an alias or user@host.
@@ -91,7 +95,20 @@ fi
 [ -f www/index.php ] && [ -f composer.lock ] && [ -f server/root.htaccess ] || { echo "Run the script from the repository root." >&2; exit 1; }
 
 BUILD="$(mktemp -d)"
-trap 'rm -rf "$BUILD"' EXIT
+# A failed release would count toward the newest 5 releases of the clean up
+# and push out a release that worked. So a deploy that fails after the
+# upload has started deletes its release, unless the site may run on it:
+# .htaccess sends the requests to it, or `current` points to it. A switch
+# back can fail between its two renames, so both count.
+UPLOADED=0
+on_exit() {
+  local status=$?
+  if [ "$status" != 0 ] && [ "$UPLOADED" = 1 ]; then
+    remote "cd '$DEPLOY_PATH' && { grep -qF 'releases/$ID/' .htaccess 2>/dev/null || [ \"\$(readlink current)\" = 'releases/$ID' ] || rm -rf 'releases/$ID'; }" || echo "The failed release $ID is still on the server." >&2
+  fi
+  rm -rf "$BUILD"
+}
+trap on_exit EXIT
 # mktemp creates the folder with mode 0700, and rsync gives that mode to
 # releases/<id>/. Apache runs as another user, could not enter the folder
 # and would answer 403.
@@ -134,13 +151,18 @@ ln -s ../../shared/storage "$BUILD/storage"
 # Switches the site to the release $1. A rename() replaces .htaccess and
 # `current` each in one step, so a request sees the old or the new file and
 # never a missing one. PHP's rename() replaces the symlink `current`; mv would
-# move current.new into the folder that `current` points to.
+# move current.new into the folder that `current` points to. The steps are
+# joined with &&, so the function stops at the first failed step also where
+# set -e does not apply, as in `if ! switch_to`. A failed switch can leave
+# .htaccess.new behind. It has the same size as the new file and can have
+# the same mtime, so rsync compares the content (-c), or it would skip the
+# upload.
 switch_to() {
   # Only the Rewrite lines: the comments name the placeholders too.
-  sed -e "/^Rewrite/s|RELEASE_ID|$1|" -e "/^Rewrite/s|SITE_HOST_PATTERN|${SITE_HOST//./\\\\.}|" -e "/^Rewrite/s|SITE_URL|$SITE_URL|" server/root.htaccess > "$BUILD/htaccess"
-  chmod 644 "$BUILD/htaccess"
-  rsync -tpz ${RSYNC_SSH[@]+"${RSYNC_SSH[@]}"} "$BUILD/htaccess" "$DEST/.htaccess.new"
-  remote "cd '$DEPLOY_PATH' && rm -f current.new && ln -s 'releases/$1' current.new && $RPHP -r 'exit(rename(\"current.new\", \"current\") && rename(\".htaccess.new\", \".htaccess\") ? 0 : 1);'"
+  sed -e "/^Rewrite/s|RELEASE_ID|$1|" -e "/^Rewrite/s|SITE_HOST_PATTERN|${SITE_HOST//./\\\\.}|" -e "/^Rewrite/s|SITE_URL|$SITE_URL|" server/root.htaccess > "$BUILD/htaccess" &&
+    chmod 644 "$BUILD/htaccess" &&
+    rsync -tpzc ${RSYNC_SSH[@]+"${RSYNC_SSH[@]}"} "$BUILD/htaccess" "$DEST/.htaccess.new" &&
+    remote "cd '$DEPLOY_PATH' && rm -f current.new && ln -s 'releases/$1' current.new && $RPHP -r 'exit(rename(\"current.new\", \"current\") && rename(\".htaccess.new\", \".htaccess\") ? 0 : 1);'"
 }
 
 echo "== Snapshot of the state"
@@ -165,6 +187,7 @@ else
 fi
 
 echo "== Release"
+UPLOADED=1
 remote "mkdir -p '$DEPLOY_PATH/releases/$ID'"
 # Every build gives all files a new mtime, so --checksum makes rsync compare
 # the content.
@@ -191,13 +214,26 @@ printf '%s' "${ANTHROPIC_API_KEY:-}" | remote "$RPHP '$DEPLOY_PATH/set-env.php' 
 remote "cd '$config' && chmod 600 env.php .salt && { test ! -e .license || chmod 600 .license; }"
 # Apache must never serve shared/ or backups/. server/deny.htaccess denies
 # every request to them, also when the rewrite rule of .htaccess is lost.
-# Mode 700 keeps Apache, which runs as another user, out of the snapshots
-# and the accounts. PHP runs as the account user and still reads them.
+# Mode 700 keeps Apache, which runs as another user, out of the snapshots,
+# the accounts and storage/ with the key of the visitor statistics. PHP runs
+# as the account user and still reads them.
 rsync -tpz ${RSYNC_SSH[@]+"${RSYNC_SSH[@]}"} server/deny.htaccess "$DEST/shared/.htaccess"
-remote "mkdir -p '$BACKUP_DIR' && cp '$SHARED/.htaccess' '$BACKUP_DIR/.htaccess' && chmod 700 '$BACKUP_DIR' '$SHARED/site/accounts'"
+remote "mkdir -p '$BACKUP_DIR' && cp '$SHARED/.htaccess' '$BACKUP_DIR/.htaccess' && chmod 700 '$BACKUP_DIR' '$SHARED/site/accounts' '$SHARED/storage'"
 
 echo "== Switch to $ID"
-switch_to "$ID"
+# switch_to renames `current` first and .htaccess second. When the second
+# step fails, `current` points to a release that never went live. The
+# switch back puts both on the previous release again; on a new site,
+# `current` goes.
+if ! switch_to "$ID"; then
+  echo "The switch to $ID failed." >&2
+  if [ -n "$previous" ]; then
+    switch_to "$previous" || echo "The switch back to $previous failed too." >&2
+  else
+    remote "rm -f '$DEPLOY_PATH/current'"
+  fi
+  exit 1
+fi
 # The hosting provider puts a placeholder page index.htm into the folder of a
 # new domain.
 remote "rm -f '$DEPLOY_PATH/index.htm'"

@@ -247,13 +247,11 @@ final class Chat
         } catch (Throwable $e) {
             // Nothing is stored yet, so the stored chat stays as it was.
             $e = self::error($e);
-            Session::finish($chat, $e->kind);
+            Session::finish($chat, $e->kind, first: true);
             throw $e;
         }
         Uploads::sent($uploads);
-        if (!$chat->next) {
-            $chat = Session::finish($chat, 'ok');
-        }
+        $chat = Session::finish($chat, $chat->next ? null : 'ok', first: true);
         // Remove the notes that went with this message. A click on a card
         // during the round appended its note after them; that note stays.
         Session::update(Session::NOTES, Session::notes(...), fn(array $now) => array_slice($now, array_slice($now, 0, count($notes)) === $notes ? count($notes) : 0));
@@ -335,6 +333,12 @@ final class Chat
      * model from the settings again.
      */
     public static function reset(): ChatState
+    {
+        // A card that is being applied finishes first (`Apply::exclusive()`).
+        return Apply::exclusive(fn() => self::resetLocked());
+    }
+
+    private static function resetLocked(): ChatState
     {
         $chat = Session::change(function (ChatState $old): ChatState {
             // An answer that still runs ends here like a stop. Without the

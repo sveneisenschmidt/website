@@ -9,6 +9,8 @@ parameters:
         - www/site/plugins/likes
         - www/site/config
         - www/site/controllers
+        - www/site/templates
+        - www/site/snippets
         - bin
         - tests
     excludePaths:
@@ -17,12 +19,22 @@ parameters:
         - vendor/autoload.php
         - www/kirby/bootstrap.php
     ignoreErrors:
-        # Kirby resolves content fields ($page->cover()), field methods
-        # ($field->toDate()), session values ($session->get()) and thumbnail
-        # sizes in the magic method __call. PHPStan cannot see these methods.
+        # Kirby resolves content fields ($page->cover(), $site->title()) and
+        # the methods of a file as an image ($file->dimensions()) in the
+        # magic method __call. PHPStan cannot see these methods. The page
+        # models in src/Models declare their fields with @method, so calls
+        # on a model stay checked.
         -
             identifier: method.notFound
-            message: '#^Call to an undefined method Kirby\\(Cms\\(Page|Pages|Site|File|FileVersion|User|ModelWithContent)|Content\\Field|Session\\Session)(\|Kirby\\Cms\\[A-Za-z]+)?::#'
+            message: '#^Call to an undefined method Kirby\\Cms\\(Page|Site|File|ModelWithContent)(\|Kirby\\Cms\\FileVersion)?::#'
+        # Field methods ($field->toDate()) are registered at runtime.
+        -
+            identifier: method.notFound
+            message: '#^Call to an undefined method Kirby\\Content\\Field::#'
+        # Kirby's Session passes these methods on to its data.
+        -
+            identifier: method.notFound
+            message: '#^Call to an undefined method Kirby\\Session\\Session::(get|set|increment|decrement|pull|remove|clear)\(\)\.$#'
         # Kirby binds a route closure to the route object, so $this exists
         # when the route runs.
         -

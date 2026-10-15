@@ -5,6 +5,6 @@
  * the result list of the search page (snippets/search-results.php).
  *
  * @var string $query
- * @var Kirby\Cms\Pages $results
+ * @var Kirby\Cms\Pages<Website\Models\PostPage> $results
  */
 echo json_encode(['html' => $query === '' ? '' : snippet('search-results', ['results' => $results], true)], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);

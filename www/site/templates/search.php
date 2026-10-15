@@ -5,7 +5,7 @@
  * search.js loads them from search.json. Variables from controllers/search.php.
  *
  * @var string $query
- * @var Kirby\Cms\Pages $results
+ * @var Kirby\Cms\Pages<Website\Models\PostPage> $results
  */
 ?>
 <?php snippet('layout', slots: true) ?>

@@ -38,14 +38,11 @@
 # Installed by Composer
 /www/kirby/
 /vendor/
-# Plugins from Composer. Only the plugins of this site (blog, changelog,
-# analytics, assistant, likes) are in git.
-/www/site/plugins/*
-!/www/site/plugins/blog/
-!/www/site/plugins/changelog/
-!/www/site/plugins/analytics/
-!/www/site/plugins/assistant/
-!/www/site/plugins/likes/
+# The plugin that Composer installs (composer.json). Every other folder in
+# plugins/ is a plugin of this site and belongs in git, so a new one shows
+# in git status. A new Composer plugin needs a line here and in the rsync
+# of bin/deploy.sh.
+/www/site/plugins/markdown-field/
 
 # Files next to www/ that the web server must not serve and no backup
 # includes: the assistant's uploads (src/Assistant/Uploads.php), the key of

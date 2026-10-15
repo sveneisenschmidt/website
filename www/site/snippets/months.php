@@ -8,7 +8,7 @@ use Website\Blog\Posts;
  * day, title and cover.
  *
  * @var Kirby\Cms\Pages<Website\Models\PostPage> $posts Newest first
- * @var bool $sheet True for the grid of covers
+ * @var bool|null $sheet True for the grid of covers, false when left out
  */
 $sheet ??= false;
 ?>

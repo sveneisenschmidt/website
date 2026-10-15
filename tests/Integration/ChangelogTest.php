@@ -293,6 +293,36 @@ final class ChangelogTest extends IntegrationTestCase
         $this->assertNotContains('user.login:failed', array_column(Log::entries(), 'action'));
     }
 
+    /** Failed logins from many addresses have their own limit and push no change out of "Verlauf". */
+    public function testFailedLoginsDoNotPushChangesOut(): void
+    {
+        $photo = $this->kirby->page('photos/test-photo');
+        $photo = $this->kirby->impersonate(self::EMAIL, fn() => $photo->update(['intro' => 'First']));
+        $this->kirby->impersonate(self::EMAIL, fn() => $photo->update(['intro' => 'Second']));
+        for ($i = 0; $i < 5; $i++) {
+            Log::failedLogin("guess$i@website.test");
+        }
+
+        $entries = Log::entries(2);
+
+        $this->assertSame(['user.login:failed', 'user.login:failed', 'page.update', 'page.update'], array_column($entries, 'action'));
+        $this->assertSame(['guess4@website.test', 'guess3@website.test'], array_column(array_slice($entries, 0, 2), 'title'));
+    }
+
+    /** "Verlauf" reads only the files of the newest 12 months. */
+    public function testTheViewReadsTheNewest12Months(): void
+    {
+        foreach (range(1, 12) as $month) {
+            $file = sprintf('%s/2025-%02d.jsonl', Log::dir(), $month);
+            file_put_contents($file, json_encode(['action' => 'page.update', 'title' => basename($file, '.jsonl')]) . "\n");
+        }
+
+        $titles = array_column(Log::entries(), 'title');
+
+        $this->assertContains('2025-02', $titles);
+        $this->assertNotContains('2025-01', $titles, 'The 13th month back is not read.');
+    }
+
     public function testFailedLoginKeepsAtMostTheLengthOfAnAddress(): void
     {
         Log::failedLogin(str_repeat('a', 1000) . '@website.test');

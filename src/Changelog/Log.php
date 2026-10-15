@@ -121,14 +121,34 @@ final class Log
         Jsonl::append(self::dir(), $entry);
     }
 
+    /** The view reads at most the files of this many months. */
+    public const MONTHS = 12;
+
     /**
-     * The newest entries first, at most $limit.
+     * The newest entries first: the newest $limit changes and logins, and
+     * the failed logins among them, at most $limit. Failed logins have their
+     * own limit, because many IP addresses can add many of them (see
+     * failedLogin()). They would otherwise push the changes out of the view.
+     * Only the files of the newest MONTHS months count, so a site with few
+     * changes does not read every month on each view.
      *
      * @return list<array<string, mixed>>
      */
     public static function entries(int $limit = 500): array
     {
-        return Jsonl::read(self::dir(), $limit);
+        $entries = [];
+        $count = ['failed' => 0, 'other' => 0];
+        foreach (Jsonl::newest(self::dir(), self::MONTHS) as $entry) {
+            $kind = ($entry['action'] ?? null) === 'user.login:failed' ? 'failed' : 'other';
+            if ($count[$kind] < $limit) {
+                $entries[] = $entry;
+                $count[$kind]++;
+            }
+            if ($count['other'] >= $limit) {
+                break;
+            }
+        }
+        return $entries;
     }
 
     /** The text in the column "Wo" (where) of the Panel view: the site, a page title, a file with its page, or a person. */

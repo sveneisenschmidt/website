@@ -35,16 +35,26 @@ final class AssistantPostTest extends AssistantTestCase
     /** While true, the upload of "broken.jpg" fails, as a full disk would. */
     public bool $breakUploads = true;
 
+    /** @var list<bool>|null Once a test sets it to [], each new file adds whether a request held the lock of the session meanwhile. */
+    public ?array $lockedOnCreate = null;
+
     protected function setUp(): void
     {
         // Kirby binds a hook closure to the app, so $this in it is the app.
         // The closure reaches the test through $test.
         $test = $this;
-        $this->props['hooks'] = ['file.create:before' => function (File $file) use ($test) {
-            if ($test->breakUploads && $file->filename() === 'broken.jpg') {
-                throw new RuntimeException('Test: the upload fails');
-            }
-        }];
+        $this->props['hooks'] = [
+            'file.create:before' => function (File $file) use ($test) {
+                if ($test->breakUploads && $file->filename() === 'broken.jpg') {
+                    throw new RuntimeException('Test: the upload fails');
+                }
+            },
+            'file.create:after' => function () use ($test) {
+                if ($test->lockedOnCreate !== null) {
+                    $test->lockedOnCreate[] = $test->locked();
+                }
+            },
+        ];
         parent::setUp();
     }
 
@@ -83,6 +93,31 @@ final class AssistantPostTest extends AssistantTestCase
     private function error(): string
     {
         return $this->results(count($this->requests) - 1)[0]['content'];
+    }
+
+    /** sessionLocked() for the hook, which runs bound to the app. */
+    public function locked(): bool
+    {
+        return $this->sessionLocked();
+    }
+
+    /**
+     * The draft renders the thumbnails of its photos. Meanwhile the session
+     * is free, so other requests of the same browser do not wait.
+     */
+    public function testTheSessionIsFreeWhileTheDraftIsCreated(): void
+    {
+        $id = Uploads::accept($this->jpeg(40, 30), 'IMG_1.JPG')['id'];
+        $card = $this->card($this->propose($this->input(['text' => '', 'photos' => [
+            ['upload' => $id, 'filename' => 'aika.jpg', 'alt' => '', 'caption' => '', 'photographer' => ''],
+        ]])));
+        $this->assertTrue($this->sessionLocked(), 'The chat holds the lock before the click.');
+        $this->lockedOnCreate = [];
+
+        Apply::decide($card['id'], 'apply');
+
+        $this->assertSame([false], $this->lockedOnCreate);
+        $this->assertSame('done', Session::decisions()[$card['id']]['state']);
     }
 
     public function testADraftComesWithPhotosAndRouteInOneClick(): void

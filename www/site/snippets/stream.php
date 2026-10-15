@@ -7,8 +7,8 @@ use Website\Blog\Posts;
  * $limit posts with their count, and the summary of the newest one.
  *
  * @var Kirby\Cms\Page|null $current The page beside the timeline
- * @var int $limit
- * @var bool $fit fit.js hides the entries below the end of the pictures beside the list
+ * @var int|null $limit 25 when left out
+ * @var bool|null $fit fit.js hides the entries below the end of the pictures beside the list
  */
 $current ??= null;
 $limit ??= 25;

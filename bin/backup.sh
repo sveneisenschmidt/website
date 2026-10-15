@@ -61,6 +61,16 @@ else
   STATE="$TMP/state"
 fi
 
+# SQLite keeps a journal <name>.sqlite-journal next to a database while a
+# request writes to it. The databases under content/ use this default
+# journal, so the database file holds every finished change. A copy of a
+# journal, restored next to the copy of the database made below in a read
+# transaction, would roll that copy back. The backup leaves journals out:
+# rsync with this pattern, and cp in archive mode copies them and the
+# script removes them after the copy. In WAL mode the file -wal holds
+# finished changes, so -wal and -shm stay in a backup.
+NO_JOURNALS=(--exclude '*.sqlite-journal')
+
 mkdir -p "$STATE"
 for p in "${PATHS[@]}"; do
   if [ -e "$WWW/$p" ]; then
@@ -77,7 +87,7 @@ for p in "${PATHS[@]}"; do
       # rsync resolves a relative --link-dest from the target folder, so the
       # path must be absolute.
       [ -n "$PREV" ] && [ -d "$PREV/state/$dir" ] && LINK=(--link-dest="$(cd "$PREV/state/$dir" && pwd)")
-      rsync -a -c --exclude '.DS_Store' --exclude '._*' ${LINK[@]+"${LINK[@]}"} "$WWW/$p" "$STATE/$dir/"
+      rsync -a -c --exclude '.DS_Store' --exclude '._*' "${NO_JOURNALS[@]}" ${LINK[@]+"${LINK[@]}"} "$WWW/$p" "$STATE/$dir/"
     else
       # -p keeps mtimes and modes. A page without a `lastmod` field gets its
       # date in the sitemap from the mtime of its content file.
@@ -85,6 +95,8 @@ for p in "${PATHS[@]}"; do
     fi
   fi
 done
+
+find "$STATE/content" -type f -name '*.sqlite-journal' -delete
 
 # A request can write to a SQLite database under content/ while rsync or
 # cp copies it, and the copy is then broken. Each database that was

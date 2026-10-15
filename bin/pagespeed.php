@@ -85,13 +85,14 @@ if ($post !== null) {
     $pages = ['Home' => "$site/", 'Newest post' => $post, 'Archive' => "$site/archive/"];
 }
 
-// All six runs at once: one run takes 15 to 40 s at Google.
+// All six runs at once: one run takes 15 to 40 s at Google. The key goes in
+// the header X-Goog-Api-Key, not in the URL, so no log of a URL holds it.
 $multi = curl_multi_init();
 $handles = [];
 foreach ($pages as $name => $url) {
     foreach (['mobile', 'desktop'] as $strategy) {
-        $handle = curl_init(PAGESPEED_API . '?' . http_build_query(['url' => $url, 'strategy' => $strategy, 'category' => 'performance', 'key' => $key]));
-        curl_setopt_array($handle, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 180]);
+        $handle = curl_init(PAGESPEED_API . '?' . http_build_query(['url' => $url, 'strategy' => $strategy, 'category' => 'performance']));
+        curl_setopt_array($handle, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 180, CURLOPT_HTTPHEADER => ['X-Goog-Api-Key: ' . $key]]);
         curl_multi_add_handle($multi, $handle);
         $handles["$name|$strategy"] = $handle;
     }

@@ -2,6 +2,7 @@
 
 namespace Website\Assistant;
 
+use Closure;
 use DateTimeImmutable;
 use DateTimeZone;
 use Kirby\Cms\File;
@@ -9,6 +10,8 @@ use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
 use Kirby\Data\Yaml;
 use Kirby\Filesystem\F;
+use Parsedown;
+use ParsedownExtra;
 use RuntimeException;
 use Website\Blog\Types;
 
@@ -21,8 +24,69 @@ use Website\Blog\Types;
  */
 final class Proposals
 {
-    /** The start of raw HTML: a tag, a closing tag, a comment, a doctype or a processing instruction. */
-    public const HTML = '/<[a-z!\/?]/i';
+    /**
+     * The raw HTML in a text: each piece that Kirby's Markdown parser,
+     * Parsedown, passes on as it is, such as a tag, a comment, or a block
+     * that starts with a tag. Parsedown itself decides, so the check cannot
+     * differ from what the site renders. Plain Parsedown (config.php) and
+     * ParsedownExtra (option markdown.extra) both look. An autolink to a web
+     * or mail address, such as <https://example.com>, is a link and no raw
+     * HTML. An autolink with another scheme, such as <javascript://...>,
+     * counts, because a click on it runs in the site. Entities such as
+     * &amp; do not count.
+     *
+     * @return list<string>
+     */
+    public static function html(string $text): array
+    {
+        $pieces = [];
+        $collect = function (array $element) use (&$pieces): void {
+            $raw = $element['rawHtml'] ?? null;
+            if (is_string($raw) && preg_match('/^&#?\w+;$/', $raw) !== 1) {
+                $pieces[] = $raw;
+            }
+        };
+        $plain = new class ($collect) extends Parsedown {
+            public function __construct(private Closure $collect) {}
+
+            /** @param array<string, mixed> $Element */
+            protected function element(array $Element): string
+            {
+                ($this->collect)($Element);
+                return parent::element($Element);
+            }
+        };
+        $extra = new class ($collect) extends ParsedownExtra {
+            public function __construct(private Closure $collect)
+            {
+                parent::__construct();
+            }
+
+            /** @param array<string, mixed> $Element */
+            protected function element(array $Element): string
+            {
+                ($this->collect)($Element);
+                return parent::element($Element);
+            }
+        };
+        $breaks = (bool) (kirby()->option('markdown')['breaks'] ?? true);
+        $plain->setBreaksEnabled($breaks)->text($text);
+        $extra->setBreaksEnabled($breaks)->text($text);
+        preg_match_all('/<(?!https?:\/\/)\w+:\/\/[^\s>]*>?/i', $text, $links);
+        return [...$pieces, ...$links[0]];
+    }
+
+    /** True when $after has raw HTML (html()) that $before does not have: a new piece, or a piece more often. */
+    public static function addsHtml(string $before, string $after): bool
+    {
+        $old = array_count_values(self::html($before));
+        foreach (array_count_values(self::html($after)) as $piece => $n) {
+            if ($n > ($old[$piece] ?? 0)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Turns a propose tool call into a card. Returns the proposal, or the
@@ -38,7 +102,7 @@ final class Proposals
         // make Claude propose a <script>, and a card highlights links only.
         $html = false;
         array_walk_recursive($input, function ($value) use (&$html) {
-            $html = $html || (is_string($value) && preg_match(self::HTML, $value) === 1);
+            $html = $html || (is_string($value) && self::html($value) !== []);
         });
         if ($html) {
             return 'Raw HTML is not allowed. Use Markdown.';
@@ -248,6 +312,11 @@ final class Proposals
         $marks = [];
         foreach ($versions as $version) {
             $after = str_replace($passage, $version, $current);
+            // A version without raw HTML can still make some together with
+            // the text around it, such as "<b x" before a later ">".
+            if (self::addsHtml($current, $after)) {
+                return 'With this version the field would get raw HTML. Use Markdown.';
+            }
             $marks[] = array_values(array_filter(self::marks($page, $type, $after), fn($mark) => str_contains($version, $mark)));
         }
         return self::card('edit', 'Passage · ' . self::name($page), [

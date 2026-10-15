@@ -2,12 +2,14 @@
 
 namespace Website\Assistant;
 
+use Closure;
 use Kirby\Cms\File;
 use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
 use Kirby\Data\Yaml;
 use Kirby\Filesystem\F;
 use Throwable;
+use Website\Blog\Lock;
 use Website\Blog\Text;
 use Website\Blog\Types;
 
@@ -31,12 +33,41 @@ final class Apply
         }
         // The lock makes a second click on the same card wait for the first.
         // It then sees the first decision and changes nothing.
+        return self::exclusive(fn() => self::decideLocked($id, $action, $version));
+    }
+
+    /**
+     * Runs $action under the lock of the cards: decide() and `Chat::reset()`
+     * run one at a time, so a new chat does not delete the uploads that a
+     * new draft still copies. It is a lock file of its own, not the lock of
+     * the session: a new draft renders the thumbnails of its photos for up
+     * to 20 s (`Website\Blog\Images`), and every other request of the same
+     * browser would wait that long for the session. A request releases the
+     * session before it waits here, because the request that holds this
+     * lock needs the session to store its decision.
+     *
+     * @template T
+     * @param Closure(): T $action
+     * @return T
+     */
+    public static function exclusive(Closure $action): mixed
+    {
+        Session::unlock();
+        return Lock::run(Uploads::root() . '/.decide.lock', LOCK_EX, $action);
+    }
+
+    private static function decideLocked(string $id, string $action, ?int $version): ChatState
+    {
+        // The lock of the session reads the session again, so the check below
+        // sees a decision that another request has just stored. The session
+        // is free again before the change runs.
         Session::lock();
         $chat = Session::load();
         $proposal = $chat->proposals[$id] ?? throw new Error('chat', 'Vorschlag nicht gefunden');
         // Decisions have their own session key, because a request to Claude
         // that runs meanwhile writes the whole chat back but never this key.
         $decisions = Session::decisions();
+        Session::unlock();
         // A card whose change failed can be tried again; any other decision is final.
         if (!in_array($decisions[$id]['state'] ?? 'open', ['open', 'failed'], true)) {
             return Session::load();
@@ -166,7 +197,13 @@ final class Apply
         if (substr_count($current, $in['passage']) !== 1) {
             throw new Stale('Die Passage steht nicht mehr genau einmal im Feld. Nichts geändert.', 'the passage no longer occurs exactly once');
         }
-        $result = self::result(self::write($page, [$in['field'] => str_replace($in['passage'], $text, $current)]));
+        $after = str_replace($in['passage'], $text, $current);
+        // The text around the passage can have changed since the proposal, and
+        // with it the raw HTML that the version makes there (Proposals::edit()).
+        if (Proposals::addsHtml($current, $after)) {
+            throw new Stale('Mit dieser Fassung bekäme das Feld rohes HTML. Nichts geändert.', 'the field would get raw HTML');
+        }
+        $result = self::result(self::write($page, [$in['field'] => $after]));
         $result['claude'] .= count($in['versions']) > 1 ? ' The user took version ' . ($version + 1) . '.' : '';
         return $result;
     }
