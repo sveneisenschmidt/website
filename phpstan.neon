@@ -7,6 +7,7 @@ parameters:
         - www/site/plugins/blog
         - www/site/plugins/changelog
         - www/site/plugins/likes
+        - www/site/plugins/save-retry
         - www/site/config
         - www/site/controllers
         - www/site/templates
