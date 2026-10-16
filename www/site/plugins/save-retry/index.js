@@ -3,8 +3,8 @@
 // The Panel saves the draft while the user types: the first change after a
 // pause at once, then at most once per second. The web server of the host
 // closes an idle connection after 2 seconds (measured in October 2026).
-// Safari 18 and later can send the POST over a connection that the server
-// closes at that moment, and it does not send the POST again
+// Safari can send the POST over a connection that the server closes at that
+// moment, and it does not send a POST again
 // (https://developer.apple.com/forums/thread/796906). fetch() then throws a
 // TypeError, and the Panel shows "Das Panel ist zur Zeit offline". The Panel
 // removes the message only when the browser reports that it is online again.
