@@ -492,7 +492,7 @@ panel.plugin("website/assistant", {
                         </template>
                         <template v-else-if="item.proposal.state === 'done'">
                           <span class="blog-ai-done"><k-icon type="check" />{{ item.proposal.result.text }}</span>
-                          <k-link v-if="item.proposal.result.link" :to="item.proposal.result.link">{{ item.proposal.result.linkText }}</k-link>
+                          <k-link v-if="item.proposal.result.link" :to="item.proposal.result.link" target="_blank">{{ item.proposal.result.linkText }}</k-link>
                         </template>
                         <span v-else-if="item.proposal.state === 'discarded'" class="blog-ai-note">Verworfen.</span>
                       </footer>
@@ -539,7 +539,7 @@ panel.plugin("website/assistant", {
                     @keydown="keydown" @input="grow"></textarea>
                   <k-button type="submit" icon="plane" variant="filled" class="blog-ai-send" :disabled="off || busy || !!uploading" title="Senden"><span class="blog-ai-send-text">Senden</span></k-button>
                 </div>
-                <p v-if="off" class="blog-ai-note">{{ offText }} <k-link :to="settings">Zu den Einstellungen</k-link></p>
+                <p v-if="off" class="blog-ai-note">{{ offText }} <k-link :to="settings" target="_blank">Zu den Einstellungen</k-link></p>
               </form>
             </section>
             <aside class="blog-ai-aside" aria-label="So arbeitet der Assistent" v-html="about"></aside>
