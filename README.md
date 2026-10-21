@@ -33,7 +33,7 @@ make test
 
 Every push to `main` deploys. The workflow `CI` runs the checks and then `bin/deploy.sh` on a self-hosted runner, a machine outside GitHub. There is no deploy by hand.
 
-The site runs on shared hosting with Apache and PHP 8.5. A deploy builds the code once and uploads it as a new release next to the old ones. A release is the code of one deploy. The site folder on the server holds:
+The site runs on shared hosting with Apache and PHP 8.5. PHP runs through FastCGI, which reads `www/.user.ini` and ignores `php_flag` in `.htaccess`. That file turns off PHP's session upload progress, the suspected path of php2shell (CVE-2026-109618, CVE-2026-109619). A deploy builds the code once and uploads it as a new release next to the old ones. A release is the code of one deploy. The site folder on the server holds:
 
 ```
 .htaccess        sends every request to the live release
