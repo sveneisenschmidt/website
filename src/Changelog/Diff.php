@@ -5,10 +5,12 @@ namespace Website\Changelog;
 use Kirby\Cms\File;
 use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
+use Kirby\Cms\Site;
 use Kirby\Data\Yaml;
 use Kirby\Toolkit\Str;
 use Kirby\Uuid\Uuid;
 use Throwable;
+use Website\Blog\Settings;
 
 /**
  * Compares the old and the new version of a page, file, site or user for
@@ -143,12 +145,14 @@ final class Diff
     }
 
     /**
-     * The field label from the blueprint, or the field name with a capital
-     * letter. Of a translated label, the German one wins: the Panel is German.
+     * The field label from the blueprint, from the settings of a module for a
+     * field of the site (Website\Blog\Settings), or the field name with a
+     * capital letter. Of a translated label, the German one wins: the Panel
+     * is German.
      */
     private static function label(ModelWithContent $model, string $key): string
     {
-        $label = $model->blueprint()->field($key)['label'] ?? null;
+        $label = $model->blueprint()->field($key)['label'] ?? ($model instanceof Site ? Settings::label($key) : null);
         if (is_array($label)) {
             $label = $label['de'] ?? $label['en'] ?? reset($label);
         }

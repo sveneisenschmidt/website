@@ -4,6 +4,7 @@ namespace Website\Assistant;
 
 use Closure;
 use Kirby\Cms\Page;
+use Kirby\Panel\Panel as KirbyPanel;
 use Kirby\Panel\Ui\Buttons\ViewButton;
 use Website\Blog\Types;
 
@@ -19,7 +20,7 @@ final class Panel
     /**
      * The props of the Vue component `k-blog-assistant-view` in index.js: the
      * chat, the page whose button opened the view, and the link to the
-     * settings under Website › Assistent.
+     * page Assistent › Einstellungen.
      *
      * @return array<string, mixed>
      */
@@ -28,7 +29,7 @@ final class Panel
         $page = Content::find($ref);
         return Chat::view(Session::load()) + [
             'page' => $page ? ['id' => $page->id(), 'title' => $page->title()->value()] : null,
-            'settings' => site()->panel()->url(true) . '?tab=assistent',
+            'settings' => KirbyPanel::url('assistent/einstellungen'),
         ];
     }
 

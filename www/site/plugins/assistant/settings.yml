@@ -1,0 +1,25 @@
+# The page Assistent › Einstellungen (index.php). The values are fields of
+# the site in content/site.txt. The prompt is stored only in its field, so
+# content/site.txt has it and the repository never does. The field has no
+# default value and the repository has no prompt template, so no copy of
+# the prompt reaches this public repository.
+assistantPrompt:
+  label: Prompt
+  type: textarea
+  buttons: false
+  size: huge
+assistantModel:
+  label: Modell
+  type: radio
+  default: claude-opus-5-5
+  options:
+    - value: claude-opus-5-5
+      text: Claude Opus 5.5
+      info: Stärkstes Modell. Etwa doppelt so teuer wie Sonnet.
+    - value: claude-sonnet-5-5
+      text: Claude Sonnet 5.5
+      info: Mittleres Modell.
+    - value: claude-haiku-5-5
+      text: Claude Haiku 5.5
+      info: Kleinstes Modell. Kostet etwa ein Zwanzigstel von Sonnet.
+  help: Gilt ab dem nächsten neuen Chat. Abgerechnet über den Schlüssel in env.php.

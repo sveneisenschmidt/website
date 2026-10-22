@@ -43,6 +43,20 @@ final class ChangelogTest extends IntegrationTestCase
         $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/', $entry['time']);
     }
 
+    /**
+     * A settings field of a module is a field of the site that the site
+     * blueprint does not name. Its label comes from the settings.yml of the
+     * module (Website\Blog\Settings).
+     */
+    public function testSettingsOfAModuleShowTheirLabel(): void
+    {
+        $this->kirby->impersonate(self::EMAIL, fn() => $this->kirby->site()->update(['ownIps' => '198.51.100.7', 'assistantModel' => 'claude-haiku-5-5']));
+
+        $entry = Log::entries()[0];
+        $this->assertSame('site.update', $entry['action']);
+        $this->assertSame(['Eigene IP-Adressen', 'Modell'], array_column($entry['changes'], 'label'));
+    }
+
     public function testPanelSaveOfChangesVersionIsLogged(): void
     {
         // The Panel stores an edit in the version "changes". The button

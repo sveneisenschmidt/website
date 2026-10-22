@@ -21,7 +21,7 @@ final class Error extends RuntimeException
         'refusal' => 'Darauf antwortet Claude nicht. Nichts geändert.',
         'rounds' => 'Claude ist nach ' . Chat::MAX_ROUNDS . ' Runden nicht fertig geworden. Nichts geändert. Formulier es bitte anders.',
         'chat' => 'Das hat nicht geklappt. Nichts geändert. Beginn am besten einen neuen Chat.',
-        'prompt' => 'Der Prompt unter Website › Assistent ist leer, der Assistent ist aus. Nichts geändert.',
+        'prompt' => 'Der Prompt unter Assistent › Einstellungen ist leer, der Assistent ist aus. Nichts geändert.',
         'upload' => 'Die Datei wurde nicht angenommen. Nichts geändert.',
     ];
 

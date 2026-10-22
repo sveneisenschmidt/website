@@ -1,0 +1,7 @@
+# The page Besucher › Einstellungen (index.php). The value is a field of
+# the site in content/site.txt. Website\Analytics\Fingerprint reads it.
+ownIps:
+  label: Eigene IP-Adressen
+  type: textarea
+  buttons: false
+  help: "Abrufe von diesen Adressen zählen nicht als Besuch, auch rückwirkend. Eine Adresse pro Zeile, oder ein Netz mit /24 bei IPv4 und /64 bei IPv6. Deine Adresse gerade: {{ kirby.visitor.ip }}"

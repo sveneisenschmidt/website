@@ -47,8 +47,8 @@ final class Fingerprint
     }
 
     /**
-     * The fingerprints of the Panel field "Eigene IP-Adressen" (Website ›
-     * Besucher). Each line holds one address, or one network with /24 for
+     * The fingerprints of the Panel field "Eigene IP-Adressen" (Besucher ›
+     * Einstellungen). Each line holds one address, or one network with /24 for
      * IPv4 or /64 for IPv6. Totals ignores other lines.
      *
      * @return array{ips: list<string>, nets: list<string>}
