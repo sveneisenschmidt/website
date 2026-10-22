@@ -6,6 +6,7 @@ parameters:
         - www/site/plugins/assistant
         - www/site/plugins/blog
         - www/site/plugins/changelog
+        - www/site/plugins/gear
         - www/site/plugins/likes
         - www/site/plugins/save-retry
         - www/site/config
@@ -36,14 +37,17 @@ parameters:
         -
             identifier: method.notFound
             message: '#^Call to an undefined method Kirby\\Session\\Session::(get|set|increment|decrement|pull|remove|clear)\(\)\.$#'
-        # Kirby binds a route closure to the route object, so $this exists
-        # when the route runs.
+        # Kirby binds a route closure to an object, so $this exists when the
+        # route runs. Routes in config/routes.php get the route object. API
+        # routes (plugins assistant and gear) get the API object
+        # (Kirby\Api\Api).
         -
             identifier: variable.undefined
             message: '#^Undefined variable: \$this$#'
             paths:
                 - www/site/config/routes.php
                 - www/site/plugins/assistant/index.php
+                - www/site/plugins/gear/index.php
         # PHP sets $argv in every command line script.
         -
             identifier: variable.undefined

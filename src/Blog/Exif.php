@@ -6,6 +6,7 @@ use Kirby\Cms\File;
 use RuntimeException;
 use Throwable;
 use Website\Assistant\Strip;
+use Website\Gear\Gear;
 
 /**
  * Reads the EXIF data of a photo (the camera settings stored in the image
@@ -197,7 +198,9 @@ final class Exif
 
     /**
      * The lines under a photo in snippets/figure.php, label => value with
-     * units. A field without a value gets no line.
+     * units. A field without a value gets no line. Camera and lens show
+     * their names from the Panel view "Ausrüstung" (Website\Gear\Gear). A
+     * camera or lens without a name shows the value from the photo.
      *
      * @return array<string, string>
      */
@@ -217,8 +220,8 @@ final class Exif
             $aperture = floor($f) === $f ? sprintf('ƒ/%.0f', $f) : sprintf('ƒ/%.1f', $f);
         }
         return array_filter([
-            'Camera' => $value('camera'),
-            'Lens' => $value('lens'),
+            'Camera' => Gear::name($value('camera')),
+            'Lens' => Gear::name($value('lens')),
             'Focal length' => $value('focal') === '' ? '' : sprintf('%.0fmm', (float) $value('focal')),
             'Aperture' => $aperture,
             'Exposure' => $exposure,
