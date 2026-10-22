@@ -268,26 +268,6 @@ final class LikeTest extends IntegrationTestCase
         $this->assertStringContainsString('<button type="submit">Like</button></form>', (string) $post->body());
     }
 
-    /**
-     * Runs $action with the PHP error log in a file and returns the result
-     * and the log. phpunit.xml fails a test on any output.
-     *
-     * @template T
-     * @param \Closure(): T $action
-     * @return array{T, string}
-     */
-    private function logged(\Closure $action): array
-    {
-        $log = $this->root . '/php-errors.log';
-        $previous = ini_set('error_log', $log);
-        try {
-            $result = $action();
-        } finally {
-            ini_set('error_log', (string) $previous);
-        }
-        return [$result, is_file($log) ? (string) file_get_contents($log) : ''];
-    }
-
     /** The post as the current Kirby reads it. */
     private function current(): PostPage
     {

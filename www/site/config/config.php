@@ -93,6 +93,8 @@ return array_replace_recursive([
         // site is marked as current only outside these four pages. Areas and
         // tabs have German ids, because the ids appear in Panel URLs such as
         // /panel/besucher. All other names in the code are English.
+        // The view "Ausrüstung" (plugins/gear) follows the post types, because
+        // it names the gear of the photos.
         'menu' => function (Kirby\Cms\App $kirby) {
             $types = array_column(Website\Blog\Types::ALL, null, 'section');
             $path = $kirby->path();
@@ -101,7 +103,7 @@ return array_replace_recursive([
             foreach ($types as $slug => $type) {
                 $menu[$slug] = ['label' => $type['menu'], 'icon' => $type['icon'], 'link' => "pages/$slug", 'current' => fn() => $inType($slug)];
             }
-            return [...$menu, '-', 'besucher', 'likes', 'verlauf', 'assistent', '-', 'users', 'system'];
+            return [...$menu, 'ausruestung', '-', 'besucher', 'likes', 'verlauf', 'assistent', '-', 'users', 'system'];
         },
         // The buttons at the top of a page in the Panel: Kirby's own and the
         // button of the assistant (plugins/assistant), which shows on posts

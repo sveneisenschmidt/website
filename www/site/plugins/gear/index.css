@@ -1,0 +1,15 @@
+/* The tables use the class .blog-log from plugins/changelog/index.css. */
+.gear-list {
+  margin-bottom: var(--spacing-8);
+}
+.gear-list .k-headline {
+  margin-bottom: var(--spacing-3);
+}
+/* The fields are higher than a line of text. */
+.gear-list .blog-log td {
+  vertical-align: middle;
+}
+.gear-retired {
+  width: 1%;
+  white-space: nowrap;
+}
