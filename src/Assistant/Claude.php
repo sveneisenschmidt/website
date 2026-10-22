@@ -21,7 +21,7 @@ final class Claude
 
     /**
      * The models the settings offer. The field `assistantModel` in
-     * www/site/blueprints/tabs/assistant.yml lists the same ids.
+     * www/site/plugins/assistant/settings.yml lists the same ids.
      */
     public const MODELS = [
         'claude-opus-5-5' => 'Claude Opus 5.5',
@@ -62,7 +62,7 @@ final class Claude
         return $key === '' ? null : $key;
     }
 
-    /** The model chosen under Website › Assistent. A saved id that is not in `MODELS` gives the default. */
+    /** The model chosen under Assistent › Einstellungen. A saved id that is not in `MODELS` gives the default. */
     public static function model(): string
     {
         $model = (string) site()->content()->get('assistantModel');
@@ -138,8 +138,8 @@ final class Claude
     }
 
     /**
-     * A short request for the button "Verbindung prüfen" under Website ›
-     * Assistent. It shows whether the key, the credit and the model work.
+     * A short request for the button "Verbindung prüfen" under Assistent ›
+     * Einstellungen. It shows whether the key, the credit and the model work.
      *
      * @return array{ok: bool, text: string}
      */

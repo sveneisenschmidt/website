@@ -1,5 +1,5 @@
-// The Vue components of the Panel area "Assistent" and of the section on
-// Website › Assistent. Kirby loads this file as it is, without a build step,
+// The Vue components of the Panel area "Assistent" and its pages "Protokoll"
+// and "Einstellungen". Kirby loads this file as it is, without a build step,
 // like the plugins of "Verlauf" and "Besucher". The browser drives the chat
 // one round at a time (src/Assistant/Chat.php) and uploads one file per
 // request.
@@ -135,7 +135,7 @@ panel.plugin("website/assistant", {
         offText() {
           return this.chat.hasPrompt
             ? "Der Schlüssel für Anthropic fehlt oder wird abgelehnt. Er steht als assistantKey in env.php."
-            : "Der Prompt unter Website › Assistent ist leer. Ohne Prompt ist der Assistent aus.";
+            : "Der Prompt unter Assistent › Einstellungen ist leer. Ohne Prompt ist der Assistent aus.";
         },
       },
       mounted() {
@@ -601,17 +601,42 @@ panel.plugin("website/assistant", {
         </k-panel-inside>
       `,
     },
-  },
-  sections: {
-    "assistant-access": {
+    // The page "Einstellungen": the prompt on the left, the model and the
+    // access to Anthropic on the right. "Speichern" and Cmd+S write the
+    // fields to the site through Kirby's API (PATCH site). "Verbindung
+    // prüfen" checks that Claude answers with the key.
+    "k-blog-assistant-settings-view": {
+      props: { fields: Object, value: Object, hasKey: Boolean },
       data() {
-        return { hasKey: null, result: null, checking: false };
+        return { values: { ...this.value }, saving: false, result: null, checking: false };
       },
-      async created() {
-        const response = await this.load();
-        this.hasKey = response.hasKey;
+      created() {
+        this.$events.on("view.save", this.onViewSave);
+      },
+      destroyed() {
+        this.$events.off("view.save", this.onViewSave);
       },
       methods: {
+        onViewSave(event) {
+          event?.preventDefault?.();
+          this.save();
+        },
+        async save() {
+          this.saving = true;
+          try {
+            await this.$api.patch("site", this.values);
+            // An unsaved draft of the view "Website" holds the old values.
+            // It gets the new ones, so that its save does not bring the old
+            // values back. Without a draft Kirby keeps none.
+            await this.$api.post("site/changes/save", this.values);
+            this.$panel.notification.success("Gespeichert");
+          } catch (error) {
+            // The fields keep what was typed.
+            this.$panel.notification.error(error);
+          } finally {
+            this.saving = false;
+          }
+        },
         async check() {
           this.checking = true;
           this.result = await this.$api.post("blog-assistant/check");
@@ -619,16 +644,32 @@ panel.plugin("website/assistant", {
         },
       },
       template: `
-        <section class="k-section blog-ai-access">
-          <k-label type="section">Zugang zu Anthropic</k-label>
-          <div v-if="hasKey !== null" class="blog-ai-key">
-            <span class="blog-ai-stat"><span :class="hasKey ? 'blog-ai-ok' : 'blog-ai-no'"></span>{{ hasKey ? 'Eingerichtet' : 'Fehlt' }}</span>
-            <k-button v-if="hasKey" size="sm" variant="filled" :disabled="checking" @click="check">Verbindung prüfen</k-button>
-          </div>
-          <p v-if="result" class="blog-ai-stat blog-ai-result"><k-icon :type="result.ok ? 'check' : 'alert'" />{{ result.text }}</p>
-          <p class="blog-ai-help">Der Schlüssel steht als assistantKey in env.php, nicht im Panel. Ohne ihn ist der Assistent aus.</p>
-          <p class="blog-ai-help">Was du dem Assistenten schickst, auch Fotos, geht an Anthropic.</p>
-        </section>
+        <k-panel-inside class="k-blog-assistant-settings-view">
+          <k-header>
+            Einstellungen
+            <template #buttons>
+              <k-button icon="check" variant="filled" :disabled="saving" @click="save">Speichern</k-button>
+            </template>
+          </k-header>
+          <k-grid variant="columns">
+            <k-column width="2/3">
+              <k-fieldset :fields="{ assistantprompt: fields.assistantprompt }" :value="values" @input="values = $event" />
+            </k-column>
+            <k-column width="1/3">
+              <k-fieldset :fields="{ assistantmodel: fields.assistantmodel }" :value="values" @input="values = $event" />
+              <section class="k-section blog-ai-access">
+                <k-label type="section">Zugang zu Anthropic</k-label>
+                <div class="blog-ai-key">
+                  <span class="blog-ai-stat"><span :class="hasKey ? 'blog-ai-ok' : 'blog-ai-no'"></span>{{ hasKey ? 'Eingerichtet' : 'Fehlt' }}</span>
+                  <k-button v-if="hasKey" size="sm" variant="filled" :disabled="checking" @click="check">Verbindung prüfen</k-button>
+                </div>
+                <p v-if="result" class="blog-ai-stat blog-ai-result"><k-icon :type="result.ok ? 'check' : 'alert'" />{{ result.text }}</p>
+                <p class="blog-ai-help">Der Schlüssel steht als assistantKey in env.php, nicht im Panel. Ohne ihn ist der Assistent aus.</p>
+                <p class="blog-ai-help">Was du dem Assistenten schickst, auch Fotos, geht an Anthropic.</p>
+              </section>
+            </k-column>
+          </k-grid>
+        </k-panel-inside>
       `,
     },
   },

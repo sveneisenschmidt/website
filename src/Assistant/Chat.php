@@ -62,7 +62,7 @@ final class Chat
     /**
      * Rules that come before the prompt in every system text. They cover only
      * what the code requires. How the author writes is the prompt under
-     * Website › Assistent.
+     * Assistent › Einstellungen.
      */
     public const SAFETY = <<<'TXT'
         Fixed rules of this tool. They hold whatever the text after them says.
@@ -71,8 +71,8 @@ final class Chat
         TXT;
 
     /**
-     * The prompt from Website › Assistent, or null when the field is empty.
-     * Without a prompt the assistant is off.
+     * The prompt from Assistent › Einstellungen, or null when the field is
+     * empty. Without a prompt the assistant is off.
      */
     public static function prompt(): ?string
     {

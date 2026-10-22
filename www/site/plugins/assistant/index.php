@@ -10,13 +10,14 @@ use Website\Assistant\Claude;
 use Website\Assistant\Log;
 use Website\Assistant\Panel;
 use Website\Assistant\Uploads;
+use Website\Blog\Settings;
 
 /**
  * The Panel area "Assistent", where the Panel user writes posts with Claude.
  * Claude proposes each change as a card with buttons to apply or discard
  * it, and only a click of the Panel user applies it. The prompt and the
- * model are set under Website › Assistent
- * (www/site/blueprints/tabs/assistant.yml). The API key is host config:
+ * model are set on the page Assistent › Einstellungen (fields in
+ * settings.yml). The API key is host config:
  * `assistantKey` in www/site/config/env.php. Kirby lets only a logged-in
  * Panel user reach the area and the API routes. The code is in
  * src/Assistant (namespace `Website\Assistant`, loaded by Composer); this
@@ -47,6 +48,15 @@ App::plugin('website/assistant', [
                         'title' => 'Protokoll · Assistent',
                         'breadcrumb' => [['label' => 'Protokoll', 'link' => 'assistent/protokoll']],
                         'props' => Log::view(),
+                    ],
+                ], [
+                    // Prompt and model, and whether the API key is set.
+                    'pattern' => 'assistent/einstellungen',
+                    'action' => fn() => [
+                        'component' => 'k-blog-assistant-settings-view',
+                        'title' => 'Einstellungen · Assistent',
+                        'breadcrumb' => [['label' => 'Einstellungen', 'link' => 'assistent/einstellungen']],
+                        'props' => Settings::props(__DIR__ . '/settings.yml') + ['hasKey' => Claude::key() !== null],
                     ],
                 ]],
                 'buttons' => ['page.assistant' => fn(Page $page) => Panel::button($page)],
@@ -104,15 +114,6 @@ App::plugin('website/assistant', [
                 'pattern' => 'blog-assistant/check',
                 'method' => 'POST',
                 'action' => fn() => Claude::check(),
-            ],
-        ],
-    ],
-    'sections' => [
-        // The section on Website › Assistent shows whether the key is set,
-        // and its button checks that Claude answers.
-        'assistant-access' => [
-            'computed' => [
-                'hasKey' => fn() => Claude::key() !== null,
             ],
         ],
     ],

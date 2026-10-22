@@ -364,11 +364,13 @@
   display: none;
 }
 
-/* The section on Website › Assistent */
+/* The access to Anthropic on the page Assistent › Einstellungen, below the
+   field "Modell". */
 .blog-ai-access {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-2);
+  margin-top: var(--spacing-8);
   line-height: 1.5;
 }
 .blog-ai-key {

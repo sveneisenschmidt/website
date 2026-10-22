@@ -3,11 +3,13 @@
 use Kirby\Cms\App;
 use Website\Analytics\Counter;
 use Website\Analytics\Totals;
+use Website\Blog\Settings;
 
 /**
  * Registers the visitor statistics with Kirby: the hook that records every
- * request and the Panel view "Besucher". The classes are in src/Analytics.
- * About shows the totals through snippets/stats.php.
+ * request, the Panel view "Besucher" and its page "Einstellungen" with the
+ * fields of settings.yml. The classes are in src/Analytics. About shows the
+ * totals through snippets/stats.php.
  */
 
 App::plugin('website/analytics', [
@@ -28,6 +30,14 @@ App::plugin('website/analytics', [
                     'component' => 'k-blog-analytics-view',
                     'title' => 'Besucher',
                     'props' => ['summary' => Totals::summary(30)],
+                ],
+            ], [
+                'pattern' => 'besucher/einstellungen',
+                'action' => fn() => [
+                    'component' => 'k-blog-analytics-settings-view',
+                    'title' => 'Einstellungen · Besucher',
+                    'breadcrumb' => [['label' => 'Einstellungen', 'link' => 'besucher/einstellungen']],
+                    'props' => Settings::props(__DIR__ . '/settings.yml'),
                 ],
             ]],
         ],

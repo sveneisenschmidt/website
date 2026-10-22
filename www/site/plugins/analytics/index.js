@@ -1,5 +1,6 @@
 // The Panel view "Besucher": the visits of the last 30 days. A click on the
-// bar of a day shows the pages and origins of that day only. The file needs
+// bar of a day shows the pages and origins of that day only. The page
+// "Einstellungen" edits the own IP addresses (settings.yml). The file needs
 // no build step: the Panel includes the Vue template compiler (option
 // panel.vue.compiler, on by default) and compiles the template in the browser.
 panel.plugin("website/analytics", {
@@ -65,7 +66,12 @@ panel.plugin("website/analytics", {
       },
       template: `
         <k-panel-inside class="k-blog-analytics-view">
-          <k-header>Besucher</k-header>
+          <k-header>
+            Besucher
+            <template #buttons>
+              <k-button icon="cog" size="sm" variant="filled" link="besucher/einstellungen">Einstellungen</k-button>
+            </template>
+          </k-header>
           <k-stats :reports="reports" size="large" class="blog-stats-tiles" />
 
           <section class="blog-stats-section">
@@ -142,9 +148,56 @@ panel.plugin("website/analytics", {
           </section>
 
           <k-text class="blog-stats-note">
-            Ein Besuch ist ein Browser an einem Tag. Wechselt ein Handy das Netz, zählt das als neuer Besuch. Die Zählung setzt keine Cookies und speichert keine IP-Adressen, nur eine verschlüsselte Kennung von Adresse und Netz. Den Schlüssel dafür gibt es nur auf dem Server. Eingeloggte Accounts und die eigenen IP-Adressen (Website › Besucher) zählen nicht mit.
+            Ein Besuch ist ein Browser an einem Tag. Wechselt ein Handy das Netz, zählt das als neuer Besuch. Die Zählung setzt keine Cookies und speichert keine IP-Adressen, nur eine verschlüsselte Kennung von Adresse und Netz. Den Schlüssel dafür gibt es nur auf dem Server. Eingeloggte Accounts und die eigenen IP-Adressen (Besucher › Einstellungen) zählen nicht mit.
             Als Besuch zählt nur ein Browser, der eine Seite öffnet. „Bots mit Namen“ nennen sich selbst, zum Beispiel Googlebot. „Verdacht“ gibt sich als Browser aus, schickt aber nicht die Angaben, die jeder Browser beim Öffnen einer Seite mitschickt.
           </k-text>
+        </k-panel-inside>
+      `,
+    },
+    // The page "Einstellungen". "Speichern" and Cmd+S write the fields to
+    // the site through Kirby's API (PATCH site).
+    "k-blog-analytics-settings-view": {
+      props: { fields: Object, value: Object },
+      data() {
+        return { values: { ...this.value }, saving: false };
+      },
+      created() {
+        this.$events.on("view.save", this.onViewSave);
+      },
+      destroyed() {
+        this.$events.off("view.save", this.onViewSave);
+      },
+      methods: {
+        onViewSave(event) {
+          event?.preventDefault?.();
+          this.save();
+        },
+        async save() {
+          this.saving = true;
+          try {
+            await this.$api.patch("site", this.values);
+            // An unsaved draft of the view "Website" holds the old values.
+            // It gets the new ones, so that its save does not bring the old
+            // values back. Without a draft Kirby keeps none.
+            await this.$api.post("site/changes/save", this.values);
+            this.$panel.notification.success("Gespeichert");
+          } catch (error) {
+            // The fields keep what was typed.
+            this.$panel.notification.error(error);
+          } finally {
+            this.saving = false;
+          }
+        },
+      },
+      template: `
+        <k-panel-inside class="k-blog-analytics-settings-view">
+          <k-header>
+            Einstellungen
+            <template #buttons>
+              <k-button icon="check" variant="filled" :disabled="saving" @click="save">Speichern</k-button>
+            </template>
+          </k-header>
+          <k-fieldset :fields="fields" :value="values" @input="values = $event" />
         </k-panel-inside>
       `,
     },

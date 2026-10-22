@@ -21,8 +21,8 @@ final class ChatState
     /**
      * The system text, set by the first message and kept for the whole chat.
      * The prompt cache of the API matches requests byte by byte, so every
-     * round sends the same bytes. A change of the prompt under Website ›
-     * Assistent reaches new chats only.
+     * round sends the same bytes. A change of the prompt under Assistent ›
+     * Einstellungen reaches new chats only.
      *
      * @var ?list<array<string, mixed>>
      */
