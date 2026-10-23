@@ -1,0 +1,28 @@
+name: PHP
+description: Makes sure the self-hosted runner has the PHP of .php-version, its extensions and Composer.
+
+# Every job that calls php runs this action first. The runner keeps PHP
+# between jobs, but only until its container is recreated: the image of the
+# runner has no PHP. setup-php takes about a minute, so it runs only when
+# Composer, an extension or the PHP version of .php-version is missing.
+runs:
+  using: composite
+  steps:
+    - name: PHP check
+      id: php
+      shell: bash
+      run: |
+        if command -v php > /dev/null && command -v composer > /dev/null \
+          && [ "$(php -r 'echo PHP_MAJOR_VERSION, ".", PHP_MINOR_VERSION;')" = "$(cat .php-version)" ] \
+          && php -r 'foreach (["curl", "gd", "exif", "intl", "mbstring", "pdo_sqlite"] as $e) { if (!extension_loaded($e)) { exit(1); } }'; then
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+        fi
+
+    - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+      if: steps.php.outputs.ready != 'true'
+      with:
+        php-version-file: .php-version
+        extensions: curl, gd, exif, intl, mbstring, pdo_sqlite
+        tools: composer
+      env:
+        runner: self-hosted
