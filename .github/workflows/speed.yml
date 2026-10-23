@@ -21,10 +21,13 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          sparse-checkout: bin
+          sparse-checkout: |
+            .github/actions
+            bin
           persist-credentials: false
 
-      # PHP is on the runner from the workflow CI.
+      - uses: ./.github/actions/php
+
       - name: PageSpeed Insights
         env:
           PAGESPEED_API_KEY: ${{ secrets.PAGESPEED_API_KEY }}

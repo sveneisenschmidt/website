@@ -29,26 +29,7 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      # The runner keeps PHP between jobs. setup-php takes about a minute, so
-      # it runs only when Composer, an extension or the PHP version of
-      # .php-version is missing. The job deploy uses the same PHP.
-      - name: PHP check
-        id: php
-        run: |
-          if command -v php > /dev/null && command -v composer > /dev/null \
-            && [ "$(php -r 'echo PHP_MAJOR_VERSION, ".", PHP_MINOR_VERSION;')" = "$(cat .php-version)" ] \
-            && php -r 'foreach (["curl", "gd", "exif", "intl", "mbstring", "pdo_sqlite"] as $e) { if (!extension_loaded($e)) { exit(1); } }'; then
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
-        if: steps.php.outputs.ready != 'true'
-        with:
-          php-version-file: .php-version
-          extensions: curl, gd, exif, intl, mbstring, pdo_sqlite
-          tools: composer
-        env:
-          runner: self-hosted
+      - uses: ./.github/actions/php
 
       # Composer downloads packages from GitHub with the token of this run.
       # The runner keeps the global Composer config of earlier runs, and a
@@ -119,6 +100,8 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
+
+      - uses: ./.github/actions/php
 
       # The runner keeps its files between jobs, so the key and known_hosts
       # go to $RUNNER_TEMP. The last step deletes them, also after a failed
