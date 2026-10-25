@@ -86,7 +86,7 @@ final class Tools
                 'photo' => $str + ['description' => 'File id from read_post, or upload id'],
                 'crop' => $object(['x' => $num, 'y' => $num, 'w' => $num, 'h' => $num]) + ['description' => 'Fractions of width and height'],
             ]),
-            $tool('propose_post', 'Proposes a new draft in one step: its fields, photos from uploads of this chat and a route. Nothing changes until the user clicks. The slug must be free in all four sections, drafts included. (image: file name) refers to the file names in photos. A route is possible for photo and trip; no stations and no gpx means no route. ' . self::TEXT_RULES, [
+            $tool('propose_post', 'Proposes a new draft in one step: its fields, photos from uploads of this chat and a route. Nothing changes until the user clicks. The slug must be free in all four sections, drafts included, and no redirect may start at the new URL. (image: file name) refers to the file names in photos. A route is possible for photo and trip; no stations and no gpx means no route. ' . self::TEXT_RULES, [
                 'type' => ['type' => 'string', 'enum' => array_keys(Types::ALL)],
                 'slug' => $str + ['description' => 'a-z, 0-9 and single hyphens'],
                 'date' => $str + ['description' => 'YYYY-MM-DD HH:MM:SS, Europe/Berlin, not in the future'],
@@ -126,6 +126,11 @@ final class Tools
             $tool('propose_route', 'Proposes a route for a photo or trip post: stations routed by car through OSRM, or a GPX upload of this chat, plus markers and zoom. It replaces route, map points and zoom.', [
                 'post' => $post,
                 'route' => $route,
+            ]),
+            $tool('propose_slug', 'Proposes a new slug for a post, the last part of its URL /YYYY-MM-DD-slug/. The date in the URL is the saved value of the field date; propose_field changes that field. The page about keeps its slug. The slug must be free in all four sections, drafts included, and no redirect may start at the new URL. The click changes the URL at once, of a published post too.', [
+                'post' => $str + ['description' => 'Post id as find_posts returns it'],
+                'slug' => $str + ['description' => 'a-z, 0-9 and single hyphens'],
+                'redirect' => $bool + ['description' => 'true: the old URL of a published post redirects to the new one. false only when the user asks for no redirect. A draft never gets one.'],
             ]),
             $tool('ask_choice', 'Shows a question with buttons. The pick comes back as the next user message.', [
                 'question' => $str,

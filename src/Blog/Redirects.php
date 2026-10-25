@@ -93,4 +93,10 @@ final class Redirects
         $redirects[] = ['from' => $from, 'to' => $to] + ($guid ? [] : ['rss' => 'keep']);
         self::write($redirects);
     }
+
+    /** Removes the redirect from $from to $to, as `moved()` adds it for a new URL. */
+    public static function remove(string $from, string $to): void
+    {
+        self::write(array_filter(self::all(), fn($redirect) => $redirect['from'] !== $from || $redirect['to'] !== $to));
+    }
 }

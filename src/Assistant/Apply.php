@@ -10,8 +10,10 @@ use Kirby\Data\Yaml;
 use Kirby\Filesystem\F;
 use Throwable;
 use Website\Blog\Lock;
+use Website\Blog\Redirects;
 use Website\Blog\Text;
 use Website\Blog\Types;
+use Website\Models\PostPage;
 
 /**
  * Applies or discards a card when the Panel user clicks it. A card is a
@@ -21,6 +23,8 @@ use Website\Blog\Types;
  * Panel) lists the change like an edit by hand. A draft gets the change at
  * once. A published post and About get it as unsaved changes: it goes live
  * only when the Panel user clicks "Speichern", and it can be discarded there.
+ * A new slug of a published post goes live at once, because Kirby keeps no
+ * unsaved slug.
  * Claude learns the decision with the next message.
  */
 final class Apply
@@ -114,6 +118,7 @@ final class Apply
             'edit' => self::edit($in, $version ?? 0),
             'file' => self::file($in),
             'route' => self::route($in),
+            'slug' => self::slug($in),
             default => throw new Error('chat', 'Unbekannter Vorschlag'),
         };
     }
@@ -308,6 +313,56 @@ final class Apply
     }
 
     /**
+     * Applies a card "URL": a new slug. Kirby moves the folder of the post at
+     * once, so a published post gets its new URL with the click. The hook
+     * `page.changeSlug:after` (plugins/blog) adds the redirect from the old
+     * URL of a published post, also for a change in the Panel. A card
+     * without redirect removes it again. It refuses when the URL or the
+     * status changed since the proposal, because the card text depends on
+     * both, or when another page has the new slug or a redirect starts at the
+     * new URL now. The URL changes with the slug and with the saved date.
+     *
+     * @param array<string, mixed> $in
+     * @return array<string, string>
+     */
+    private static function slug(array $in): array
+    {
+        $page = Content::find($in['page']);
+        if (!$page instanceof PostPage) {
+            throw new Error('chat', 'Seite nicht gefunden');
+        }
+        if ($page->postPath() !== $in['path']) {
+            throw new Stale('Die URL wurde seit dem Vorschlag geändert. Nichts geändert.', 'the URL changed since the proposal');
+        }
+        $draft = $page->isDraft();
+        if ($draft !== $in['draft']) {
+            throw new Stale('Der Status des Beitrags hat sich seit dem Vorschlag geändert. Nichts geändert.', 'the status of the post changed since the proposal');
+        }
+        if (($taken = Content::slugTaken($in['slug'])) !== null) {
+            throw new Stale('Diesen URL-Anhang gibt es inzwischen. Nichts geändert.', "the slug is taken by $taken now");
+        }
+        self::urlFree($page->postPath($in['slug']), $page);
+        $page = $page->changeSlug($in['slug']);
+        if (!$draft && !$in['redirect']) {
+            Redirects::remove($in['path'], $page->postPath());
+        }
+        return [
+            'text' => match (true) {
+                $draft => 'URL des Entwurfs geändert.',
+                $in['redirect'] => 'URL geändert. Die alte URL leitet weiter.',
+                default => 'URL geändert. Die alte URL leitet nicht weiter.',
+            },
+            'link' => $page->panel()->url(true),
+            'linkText' => 'Öffnen',
+            'claude' => ' New id: ' . $page->id() . '.' . match (true) {
+                $draft => '',
+                $in['redirect'] => ' The old URL redirects to the new one.',
+                default => ' The old URL has no redirect.',
+            },
+        ];
+    }
+
+    /**
      * Applies a card "Neuer Entwurf": creates the draft with its photos and
      * route in one click. When a step fails, the draft is deleted again, so
      * the click creates all or nothing. The uploads are deleted only after
@@ -322,6 +377,7 @@ final class Apply
         if (($taken = Content::slugTaken($in['slug'])) !== null) {
             throw new Stale('Diesen URL-Anhang gibt es inzwischen. Nichts geändert.', "the slug is taken by $taken now");
         }
+        self::urlFree('/' . substr($in['content']['date'], 0, 10) . "-{$in['slug']}/", null);
         $sources = [];
         foreach ($in['photos'] as $photo) {
             $sources[$photo['filename']] = Uploads::meta($photo['upload'])['path'] ?? throw new Stale('Ein Foto dieses Vorschlags ist nicht mehr da. Nichts geändert.', 'an upload of the card is gone');
@@ -363,6 +419,14 @@ final class Apply
             'linkText' => 'Entwurf öffnen',
             'claude' => ' New draft: ' . $draft->id() . ' (' . $draft->uuid()->toString() . ').',
         ];
+    }
+
+    /** Refuses a card when a redirect starts at the new post URL now (`Content::redirected()`). */
+    private static function urlFree(string $path, ?PostPage $post): void
+    {
+        if (($to = Content::redirected($path, $post)) !== null) {
+            throw new Stale('Diese URL leitet inzwischen weiter. Nichts geändert.', "the new URL redirects to $to now");
+        }
     }
 
     /** Refuses a card whose GPX upload is gone, for example after 7 days (`Uploads::cleanup()`). */

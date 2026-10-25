@@ -13,6 +13,7 @@ use Website\Assistant\Session;
 use Website\Assistant\Tools;
 use Website\Assistant\Uploads;
 use Website\Blog\Exif;
+use Website\Blog\Redirects;
 use Website\Blog\Types;
 
 /**
@@ -168,6 +169,27 @@ final class AssistantPostTest extends AssistantTestCase
 
         $this->assertSame([], $chat->proposals);
         $this->assertSame('The slug aika is taken by notes/aika. The URL must be unique.', $this->error());
+    }
+
+    /** A redirect from the URL of the new post would hide the post once it is published. */
+    public function testTheUrlMustNotBeAnOldUrl(): void
+    {
+        $redirect = [['from' => '/2026-10-01-aika/', 'to' => '/2026-10-07-test-photo/']];
+        Redirects::write($redirect);
+
+        $chat = $this->propose($this->input(['text' => '']));
+
+        $this->assertSame([], $chat->proposals);
+        $this->assertSame('The URL /2026-10-01-aika/ is an old URL and redirects to /2026-10-07-test-photo/. The URL must be unique.', $this->error());
+
+        Redirects::write([]);
+        $card = $this->card($this->propose($this->input(['text' => ''])));
+        Redirects::write($redirect);
+        Apply::decide($card['id'], 'apply');
+
+        $this->assertSame('stale', Session::decisions()[$card['id']]['state']);
+        $this->assertStringContainsString('the new URL redirects to /2026-10-07-test-photo/ now', $this->kirby->session()->get('blog.assistant.notes')[0]);
+        $this->assertNull(Content::slugTaken('aika'));
     }
 
     public function testTheDateMustNotLieInTheFuture(): void

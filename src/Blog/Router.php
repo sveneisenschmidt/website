@@ -19,9 +19,9 @@ final class Router
     /**
      * Returns, in this order: a redirect from content/.redirects.json; the
      * post for /YYYY-MM-DD-slug/; for /YYYY-MM-DD-slug/<file>, a redirect to
-     * the original file, because older links use that URL; any other page,
-     * only at its URL with the slash at the end. Returns null to let Kirby's
-     * own routes answer.
+     * the original file, because older links use that URL, also after the
+     * post moved to a new URL; any other page, only at its URL with the slash
+     * at the end. Returns null to let Kirby's own routes answer.
      */
     public static function resolve(string $path): Page|Response|null
     {
@@ -32,8 +32,8 @@ final class Router
         }
         if (preg_match('!^(\d{4}-\d{2}-\d{2})-([a-z0-9-]+)(?:/([^/]+))?$!', $path, $m)) {
             $post = self::post($m[1], $m[2]);
-            if ($post !== null && isset($m[3])) {
-                $file = $post->file($m[3]);
+            if (isset($m[3])) {
+                $file = ($post ?? self::moved("$m[1]-$m[2]"))?->file($m[3]);
                 return $file ? Response::redirect($file->url(), 301) : null;
             }
             return $post ? self::canonical($post, $path) : null;
@@ -60,6 +60,13 @@ final class Router
         }
         $query = http_build_query([...$kirby->request()->query()->toArray(), ...Campaign::params()]);
         return Response::redirect($url . ($query === '' ? '' : "?$query"), 301);
+    }
+
+    /** The post that a redirect from an old post path leads to, or null. */
+    private static function moved(string $path): ?PostPage
+    {
+        $to = Redirects::target($path);
+        return $to !== null && preg_match('!^/(\d{4}-\d{2}-\d{2})-([a-z0-9-]+)/?$!', $to, $m) ? self::post($m[1], $m[2]) : null;
     }
 
     /**

@@ -7,7 +7,9 @@ use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
 use Kirby\Data\Yaml;
 use Kirby\Uuid\Uuid;
+use Website\Blog\Redirects;
 use Website\Blog\Types;
+use Website\Models\PostPage;
 
 /**
  * Finds and reads the pages the assistant may work on: the posts of the four
@@ -50,11 +52,17 @@ final class Content
         return $template === 'about' || isset(Types::ALL[$template]) ? $page : null;
     }
 
-    /** A file of a post or of About by its id ("photos/aika/IMG_1.jpg"). */
+    /** A file of a post or of About by its id ("photos/aika/IMG_1.jpg") or by its UUID ("file://…"). */
     public static function file(string $id): ?File
     {
-        $page = self::find(dirname(trim($id)));
-        return $page?->file(basename(trim($id)));
+        $id = trim($id);
+        if (str_starts_with($id, 'file://')) {
+            $model = preg_match('#^file://[a-z0-9]+$#i', $id) ? Uuid::for($id)?->model() : null;
+            $page = $model instanceof File ? $model->page() : null;
+            return $page !== null && self::find($page->id()) !== null ? $model : null;
+        }
+        $page = self::find(dirname($id));
+        return $page?->file(basename($id));
     }
 
     /** A file of a page by its UUID ("file://…") or file name. */
@@ -164,6 +172,18 @@ final class Content
             }
         }
         return site()->childrenAndDrafts()->findBy('slug', $slug)?->id();
+    }
+
+    /**
+     * The target of a redirect from a new post URL, or null. Router answers
+     * a redirect before it looks for a post, so a post at that URL cannot be
+     * reached. For a listed post, a redirect to its current URL does not
+     * count: `Redirects::moved()` removes it with the new slug.
+     */
+    public static function redirected(string $path, ?PostPage $post = null): ?string
+    {
+        $to = Redirects::target($path);
+        return $post !== null && $post->isListed() && $to === $post->postPath() ? null : $to;
     }
 
     /** True for a draft and the files of a draft. */
