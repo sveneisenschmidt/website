@@ -61,6 +61,18 @@ final class RoutingTest extends IntegrationTestCase
         $this->assertSame(404, $this->get('/2026-10-07-test-photo/b.jpg')->code());
     }
 
+    /** A new URL leaves a redirect from the old one (`Redirects::moved()`). The files at the old URL follow it. */
+    public function testAnOriginalImageAtTheOldUrlOfAMovedPost(): void
+    {
+        $this->upload($this->jpeg(8, 8), 'a.jpg');
+        $post = $this->kirby->impersonate('kirby', fn() => $this->kirby->page($this->post->id())->changeSlug('new-name'));
+        $file = $post->file('a.jpg');
+        $this->assertNotNull($file);
+
+        $this->assertRedirect('/2026-10-07-test-photo/a.jpg', $file->url());
+        $this->assertSame(404, $this->get('/2026-10-07-test-photo/b.jpg')->code());
+    }
+
     public function testKirbyAnswersTheRest(): void
     {
         $this->post('notes', 'note', 'a-draft', 'A Draft', 'draft');
