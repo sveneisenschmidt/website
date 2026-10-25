@@ -265,6 +265,51 @@ final class AssistantEditTest extends AssistantTestCase
         $this->assertSame([], Redirects::all());
     }
 
+    /** A draft gets no redirect, so its card removes none, not even an older one with the same two URLs. */
+    public function testANewSlugOfADraftWithoutRedirectKeepsOlderRedirects(): void
+    {
+        $this->post('photos', 'photo', 'draft-photo', 'Draft', 'draft');
+        $older = [['from' => '/2026-10-07-draft-photo/', 'to' => '/2026-10-07-better-draft/', 'rss' => 'keep']];
+        Redirects::write($older);
+        $card = $this->propose('propose_slug', ['post' => 'photos/draft-photo', 'slug' => 'better-draft', 'redirect' => false]);
+
+        Apply::decide($card['id'], 'apply');
+
+        $this->assertTrue($this->page('photos/better-draft')->isDraft());
+        $this->assertSame($older, Redirects::all());
+    }
+
+    /**
+     * Router answers a redirect before it looks for a post. So the new URL
+     * must not be the old URL of a post, else the post is out of reach once
+     * it is published. A published post can take its own old URL back.
+     */
+    public function testANewUrlMustNotBeAnOldUrl(): void
+    {
+        Redirects::write([['from' => '/2026-10-07-free-name/', 'to' => '/2026-10-07-test-photo/', 'rss' => 'keep']]);
+        $this->post('photos', 'photo', 'draft-photo', 'Draft', 'draft');
+
+        $this->assertSame('The URL /2026-10-07-free-name/ is an old URL and redirects to /2026-10-07-test-photo/. The URL must be unique.', $this->refusal('propose_slug', ['post' => 'photos/draft-photo', 'slug' => 'free-name', 'redirect' => true]));
+
+        $card = $this->propose('propose_slug', ['post' => 'photos/test-photo', 'slug' => 'free-name', 'redirect' => true]);
+        Apply::decide($card['id'], 'apply');
+
+        $this->assertSame('done', Session::decisions()[$card['id']]['state']);
+        $this->assertSame([['from' => '/2026-10-07-test-photo/', 'to' => '/2026-10-07-free-name/']], Redirects::all());
+    }
+
+    public function testASlugCardIsStaleWhenItsNewUrlRedirects(): void
+    {
+        $card = $this->propose('propose_slug', ['post' => 'photos/test-photo', 'slug' => 'free-name', 'redirect' => true]);
+        Redirects::write([['from' => '/2026-10-07-free-name/', 'to' => '/2026-10-07-other-post/']]);
+
+        Apply::decide($card['id'], 'apply');
+
+        $this->assertSame('stale', Session::decisions()[$card['id']]['state']);
+        $this->assertStringContainsString('the new URL redirects to /2026-10-07-other-post/ now', $this->kirby->session()->get('blog.assistant.notes')[0]);
+        $this->assertSame('Test Photo', $this->page()->title()->value());
+    }
+
     /** The card shows the old and the new URL, and both have the saved date in them. */
     public function testASlugCardIsStaleAfterANewDate(): void
     {

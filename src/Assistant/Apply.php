@@ -319,8 +319,8 @@ final class Apply
      * URL of a published post, also for a change in the Panel. A card
      * without redirect removes it again. It refuses when the URL or the
      * status changed since the proposal, because the card text depends on
-     * both, or when another page has the new slug now. The URL changes with
-     * the slug and with the saved date.
+     * both, or when another page has the new slug or a redirect starts at the
+     * new URL now. The URL changes with the slug and with the saved date.
      *
      * @param array<string, mixed> $in
      * @return array<string, string>
@@ -341,8 +341,9 @@ final class Apply
         if (($taken = Content::slugTaken($in['slug'])) !== null) {
             throw new Stale('Diesen URL-Anhang gibt es inzwischen. Nichts geändert.', "the slug is taken by $taken now");
         }
+        self::urlFree($page->postPath($in['slug']), $page);
         $page = $page->changeSlug($in['slug']);
-        if (!$in['redirect']) {
+        if (!$draft && !$in['redirect']) {
             Redirects::remove($in['path'], $page->postPath());
         }
         return [
@@ -376,6 +377,7 @@ final class Apply
         if (($taken = Content::slugTaken($in['slug'])) !== null) {
             throw new Stale('Diesen URL-Anhang gibt es inzwischen. Nichts geändert.', "the slug is taken by $taken now");
         }
+        self::urlFree('/' . substr($in['content']['date'], 0, 10) . "-{$in['slug']}/", null);
         $sources = [];
         foreach ($in['photos'] as $photo) {
             $sources[$photo['filename']] = Uploads::meta($photo['upload'])['path'] ?? throw new Stale('Ein Foto dieses Vorschlags ist nicht mehr da. Nichts geändert.', 'an upload of the card is gone');
@@ -417,6 +419,14 @@ final class Apply
             'linkText' => 'Entwurf öffnen',
             'claude' => ' New draft: ' . $draft->id() . ' (' . $draft->uuid()->toString() . ').',
         ];
+    }
+
+    /** Refuses a card when a redirect starts at the new post URL now (`Content::redirected()`). */
+    private static function urlFree(string $path, ?PostPage $post): void
+    {
+        if (($to = Content::redirected($path, $post)) !== null) {
+            throw new Stale('Diese URL leitet inzwischen weiter. Nichts geändert.', "the new URL redirects to $to now");
+        }
     }
 
     /** Refuses a card whose GPX upload is gone, for example after 7 days (`Uploads::cleanup()`). */

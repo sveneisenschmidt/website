@@ -7,7 +7,9 @@ use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
 use Kirby\Data\Yaml;
 use Kirby\Uuid\Uuid;
+use Website\Blog\Redirects;
 use Website\Blog\Types;
+use Website\Models\PostPage;
 
 /**
  * Finds and reads the pages the assistant may work on: the posts of the four
@@ -170,6 +172,18 @@ final class Content
             }
         }
         return site()->childrenAndDrafts()->findBy('slug', $slug)?->id();
+    }
+
+    /**
+     * The target of a redirect from a new post URL, or null. Router answers
+     * a redirect before it looks for a post, so a post at that URL cannot be
+     * reached. For a listed post, a redirect to its current URL does not
+     * count: `Redirects::moved()` removes it with the new slug.
+     */
+    public static function redirected(string $path, ?PostPage $post = null): ?string
+    {
+        $to = Redirects::target($path);
+        return $post !== null && $post->isListed() && $to === $post->postPath() ? null : $to;
     }
 
     /** True for a draft and the files of a draft. */

@@ -222,6 +222,13 @@ final class Proposals
         return $taken === null ? null : "The slug $slug is taken by $taken. The URL must be unique.";
     }
 
+    /** Checks a new post URL: no redirect may start at it (`Content::redirected()`). */
+    private static function pathError(string $path, ?PostPage $post = null): ?string
+    {
+        $to = Content::redirected($path, $post);
+        return $to === null ? null : "The URL $path is an old URL and redirects to $to. The URL must be unique.";
+    }
+
     /** A value as a card shows it: toggles as ja or nein, files by their names. */
     private static function shown(Page $page, string $type, string $value): string
     {
@@ -522,7 +529,7 @@ final class Proposals
         if ($slug === $page->slug()) {
             return "The post has the slug $slug already.";
         }
-        if (($error = self::slugError($slug)) !== null) {
+        if (($error = self::slugError($slug) ?? self::pathError($page->postPath($slug), $page)) !== null) {
             return $error;
         }
         $redirect = (bool) $input['redirect'];
@@ -572,7 +579,7 @@ final class Proposals
             return $error;
         }
         $date = (string) $input['date'];
-        if (($error = self::dateError($date)) !== null) {
+        if (($error = self::dateError($date) ?? self::pathError('/' . substr($date, 0, 10) . "-$slug/")) !== null) {
             return $error;
         }
         $title = trim((string) $input['title']);
