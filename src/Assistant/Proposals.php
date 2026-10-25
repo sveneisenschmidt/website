@@ -14,13 +14,16 @@ use Parsedown;
 use ParsedownExtra;
 use RuntimeException;
 use Website\Blog\Types;
+use Website\Models\PostPage;
 
 /**
  * Runs the propose tools, the tools whose names start with `propose_`. Each
  * turns a tool call into a card, or into an error message that Claude gets
  * back. A card is a change that Claude proposed; the chat shows it with
  * buttons to apply or discard it. This class changes no content; only a
- * click of the Panel user on a card does (`Apply`).
+ * click of the Panel user on a card does (`Apply`). The input of a card
+ * names pages and files by their UUIDs, so an open card still finds its
+ * post after a new slug (`slug()`).
  */
 final class Proposals
 {
@@ -113,6 +116,7 @@ final class Proposals
             'propose_field' => self::field($input),
             'propose_file_fields' => self::fileFields($input),
             'propose_route' => self::route($chat, $input),
+            'propose_slug' => self::slug($input),
             default => 'Unknown tool: ' . $name,
         };
     }
@@ -208,6 +212,16 @@ final class Proposals
         return $date > new DateTimeImmutable('now', $berlin) ? 'The date lies in the future. Posts are not scheduled.' : null;
     }
 
+    /** Checks a new slug: its form, and that no page uses it yet (`Content::slugTaken()`). */
+    private static function slugError(string $slug): ?string
+    {
+        if (!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)) {
+            return 'A slug takes a-z, 0-9 and single hyphens.';
+        }
+        $taken = Content::slugTaken($slug);
+        return $taken === null ? null : "The slug $slug is taken by $taken. The URL must be unique.";
+    }
+
     /** A value as a card shows it: toggles as ja or nein, files by their names. */
     private static function shown(Page $page, string $type, string $value): string
     {
@@ -275,7 +289,7 @@ final class Proposals
                 'marksBefore' => self::marks($page, $type, $before),
                 'marksAfter' => self::marks($page, $type, $stored),
             ]],
-            'input' => ['page' => $page->id(), 'field' => $name, 'value' => $stored, 'before' => $before],
+            'input' => ['page' => $page->uuid()->toString(), 'field' => $name, 'value' => $stored, 'before' => $before],
         ]);
     }
 
@@ -328,7 +342,7 @@ final class Proposals
             // The links that the card highlights in the passage and in each version.
             'passageMarks' => array_values(array_filter(self::marks($page, $type, $current), fn($mark) => str_contains($passage, $mark))),
             'versionMarks' => $marks,
-            'input' => ['page' => $page->id(), 'field' => $name, 'passage' => $passage, 'versions' => $versions],
+            'input' => ['page' => $page->uuid()->toString(), 'field' => $name, 'passage' => $passage, 'versions' => $versions],
         ]);
     }
 
@@ -363,7 +377,7 @@ final class Proposals
         return self::card('file', 'Bildtexte · ' . self::name($file), [
             'where' => self::where($file),
             'diff' => $diff,
-            'input' => ['file' => $file->id(), 'changes' => $changes],
+            'input' => ['file' => $file->uuid()->toString(), 'changes' => $changes],
         ]);
     }
 
@@ -484,7 +498,39 @@ final class Proposals
             'where' => self::where($page),
             'uploads' => array_filter([$route['upload']]),
             'diff' => array_map(fn($label) => ['label' => $label, 'before' => $old[$label], 'after' => $new[$label]], array_keys($new)),
-            'input' => ['page' => $page->id(), 'route' => $route, 'hash' => $before['hash']],
+            'input' => ['page' => $page->uuid()->toString(), 'route' => $route, 'hash' => $before['hash']],
+        ]);
+    }
+
+    /**
+     * propose_slug: a new slug for a post. About keeps its slug, because its
+     * blueprint does not allow a change (`changeSlug: false`).
+     *
+     * @param array<string, mixed> $input
+     * @return array<string, mixed>|string
+     */
+    private static function slug(array $input): array|string
+    {
+        $page = Content::find((string) $input['post']);
+        if (!$page instanceof PostPage) {
+            return 'Only a post gets a new slug; about keeps its slug. find_posts lists the ids.';
+        }
+        $slug = (string) $input['slug'];
+        if ($slug === $page->slug()) {
+            return "The post has the slug $slug already.";
+        }
+        if (($error = self::slugError($slug)) !== null) {
+            return $error;
+        }
+        $redirect = (bool) $input['redirect'];
+        return self::card('slug', 'URL · ' . self::name($page), [
+            'where' => match (true) {
+                $page->isDraft() => 'Übernehmen ändert die URL des Entwurfs.',
+                $redirect => 'Übernehmen ändert die URL sofort, auch live. Die alte URL leitet weiter.',
+                default => 'Übernehmen ändert die URL sofort, auch live. Die alte URL leitet nicht weiter.',
+            },
+            'diff' => [['label' => 'URL', 'before' => $page->postPath(), 'after' => $page->postPath($slug), 'marksBefore' => [], 'marksAfter' => []]],
+            'input' => ['page' => $page->uuid()->toString(), 'slug' => $slug, 'before' => $page->slug(), 'draft' => $page->isDraft(), 'redirect' => $redirect],
         ]);
     }
 
@@ -519,11 +565,8 @@ final class Proposals
             return 'No section for the type ' . $type . '.';
         }
         $slug = (string) $input['slug'];
-        if (!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)) {
-            return 'A slug takes a-z, 0-9 and single hyphens.';
-        }
-        if (($taken = Content::slugTaken($slug)) !== null) {
-            return "The slug $slug is taken by $taken. The URL must be unique.";
+        if (($error = self::slugError($slug)) !== null) {
+            return $error;
         }
         $date = (string) $input['date'];
         if (($error = self::dateError($date)) !== null) {

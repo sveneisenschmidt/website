@@ -85,12 +85,13 @@ const ABOUT = `
     <li>Entwürfe anlegen, mit Fotos und Route</li>
     <li>Passagen, Felder und Bildtexte ändern</li>
     <li>Routen setzen, aus Orten oder einer GPX-Datei</li>
+    <li>Die URL eines Beitrags ändern, mit oder ohne Weiterleitung</li>
     <li>Im Web nachschlagen, immer mit Quelle</li>
   </ul></div>
   <div><h3>Darf nicht</h3><ul>
     <li>Löschen</li><li>Veröffentlichen</li><li>Kameradaten schreiben</li>
   </ul></div>
-  <p class="blog-ai-note">Bei veröffentlichten Beiträgen und About schreibt ein Klick in die Änderungen. Live geht es erst mit deinem Speichern. Was du schickst, auch Fotos, geht an Anthropic. Orte einer Route gehen an OSRM. Von einer GPX-Datei sieht Claude nur die Linie ohne ihre Enden, gut 1 km um Start und Ziel. Ein Halt unterwegs bleibt sichtbar.</p>
+  <p class="blog-ai-note">Bei veröffentlichten Beiträgen und About schreibt ein Klick in die Änderungen. Live geht es erst mit deinem Speichern. Eine neue URL gilt sofort. Was du schickst, auch Fotos, geht an Anthropic. Orte einer Route gehen an OSRM. Von einer GPX-Datei sieht Claude nur die Linie ohne ihre Enden, gut 1 km um Start und Ziel. Ein Halt unterwegs bleibt sichtbar.</p>
 `;
 
 panel.plugin("website/assistant", {

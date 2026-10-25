@@ -10,8 +10,10 @@ use Kirby\Data\Yaml;
 use Kirby\Filesystem\F;
 use Throwable;
 use Website\Blog\Lock;
+use Website\Blog\Redirects;
 use Website\Blog\Text;
 use Website\Blog\Types;
+use Website\Models\PostPage;
 
 /**
  * Applies or discards a card when the Panel user clicks it. A card is a
@@ -21,6 +23,8 @@ use Website\Blog\Types;
  * Panel) lists the change like an edit by hand. A draft gets the change at
  * once. A published post and About get it as unsaved changes: it goes live
  * only when the Panel user clicks "Speichern", and it can be discarded there.
+ * A new slug of a published post goes live at once, because Kirby keeps no
+ * unsaved slug.
  * Claude learns the decision with the next message.
  */
 final class Apply
@@ -114,6 +118,7 @@ final class Apply
             'edit' => self::edit($in, $version ?? 0),
             'file' => self::file($in),
             'route' => self::route($in),
+            'slug' => self::slug($in),
             default => throw new Error('chat', 'Unbekannter Vorschlag'),
         };
     }
@@ -305,6 +310,55 @@ final class Apply
             Uploads::delete($upload);
         }
         return $result;
+    }
+
+    /**
+     * Applies a card "URL": a new slug. Kirby moves the folder of the post at
+     * once, so a published post gets its new URL with the click. The hook
+     * `page.changeSlug:after` (plugins/blog) adds the redirect from the old
+     * URL of a published post, also for a change in the Panel. A card
+     * without redirect removes it again. It refuses when the slug or the
+     * status changed since the proposal, because the card text depends on
+     * both, or when another page has the new slug now.
+     *
+     * @param array<string, mixed> $in
+     * @return array<string, string>
+     */
+    private static function slug(array $in): array
+    {
+        $page = Content::find($in['page']);
+        if (!$page instanceof PostPage) {
+            throw new Error('chat', 'Seite nicht gefunden');
+        }
+        if ($page->slug() !== $in['before']) {
+            throw new Stale('Die URL wurde seit dem Vorschlag geändert. Nichts geändert.', 'the slug changed since the proposal');
+        }
+        $draft = $page->isDraft();
+        if ($draft !== $in['draft']) {
+            throw new Stale('Der Beitrag wurde seit dem Vorschlag veröffentlicht oder zurückgezogen. Nichts geändert.', 'the status of the post changed since the proposal');
+        }
+        if (($taken = Content::slugTaken($in['slug'])) !== null) {
+            throw new Stale('Diesen URL-Anhang gibt es inzwischen. Nichts geändert.', "the slug is taken by $taken now");
+        }
+        $from = $page->postPath();
+        $page = $page->changeSlug($in['slug']);
+        if (!$draft && !$in['redirect']) {
+            Redirects::remove($from);
+        }
+        return [
+            'text' => match (true) {
+                $draft => 'URL des Entwurfs geändert.',
+                $in['redirect'] => 'URL geändert. Die alte URL leitet weiter.',
+                default => 'URL geändert. Die alte URL leitet nicht weiter.',
+            },
+            'link' => $page->panel()->url(true),
+            'linkText' => 'Öffnen',
+            'claude' => ' New id: ' . $page->id() . '.' . match (true) {
+                $draft => '',
+                $in['redirect'] => ' The old URL redirects to the new one.',
+                default => ' The old URL has no redirect.',
+            },
+        ];
     }
 
     /**

@@ -93,4 +93,10 @@ final class Redirects
         $redirects[] = ['from' => $from, 'to' => $to] + ($guid ? [] : ['rss' => 'keep']);
         self::write($redirects);
     }
+
+    /** Removes the redirects from $from. Redirects from other paths stay. */
+    public static function remove(string $from): void
+    {
+        self::write(array_filter(self::all(), fn($redirect) => $redirect['from'] !== $from));
+    }
 }

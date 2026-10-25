@@ -8,11 +8,14 @@ use Website\Assistant\Chat;
 use Website\Assistant\Error;
 use Website\Assistant\Log;
 use Website\Assistant\Session;
+use Website\Blog\Redirects;
 
 /**
- * Cards that change an existing post: a passage, a whole field, or the texts
- * of an image. Applying a card to a published post stores the change as
- * unsaved changes (the version "changes"). A draft gets it at once.
+ * Cards that change an existing post: a passage, a whole field, the texts
+ * of an image, or the slug. Applying a card to a published post stores the
+ * change as unsaved changes (the version "changes"). A draft gets it at
+ * once. A new slug of a published post goes live at once, with or without a
+ * redirect from the old URL.
  */
 final class AssistantEditTest extends AssistantTestCase
 {
@@ -217,6 +220,115 @@ final class AssistantEditTest extends AssistantTestCase
         $file = $this->page()->file('a.jpg');
         $this->assertSame('A dog on a beach', $file->version('changes')->read()['alt']);
         $this->assertSame('TEST-CAM', $file->camera()->value());
+    }
+
+    public function testANewSlugOfAPublishedPostGoesLiveWithARedirect(): void
+    {
+        $card = $this->propose('propose_slug', ['post' => 'photos/test-photo', 'slug' => 'new-name', 'redirect' => true]);
+        $this->assertSame([['label' => 'URL', 'before' => '/2026-10-07-test-photo/', 'after' => '/2026-10-07-new-name/', 'marksBefore' => [], 'marksAfter' => []]], $card['diff']);
+        $this->assertStringContainsString('sofort', $card['where']);
+        $this->assertNull($this->kirby->site()->find('photos')->findPageOrDraft('new-name'), 'Nothing changes before the click.');
+
+        Apply::decide($card['id'], 'apply');
+
+        $this->assertSame('done', Session::decisions()[$card['id']]['state']);
+        $this->assertNull($this->kirby->site()->find('photos')->findPageOrDraft('test-photo'));
+        $this->assertSame('Test Photo', $this->page('photos/new-name')->title()->value());
+        $this->assertSame([['from' => '/2026-10-07-test-photo/', 'to' => '/2026-10-07-new-name/', 'rss' => 'keep']], Redirects::all());
+        $this->assertSame(['(Card "' . $card['title'] . '": applied by the user. New id: photos/new-name. The old URL redirects to the new one.)'], $this->kirby->session()->get('blog.assistant.notes'));
+    }
+
+    /** A post published by mistake gets a new URL at once. Nobody links the old one yet. */
+    public function testANewSlugWithoutRedirect(): void
+    {
+        Redirects::write([['from' => '/posts/daily-photo-test/', 'to' => '/2026-10-07-test-photo/', 'rss' => 'keep']]);
+        $card = $this->propose('propose_slug', ['post' => 'photos/test-photo', 'slug' => 'new-name', 'redirect' => false]);
+        $this->assertStringContainsString('leitet nicht weiter', $card['where']);
+
+        Apply::decide($card['id'], 'apply');
+
+        $this->assertSame('Test Photo', $this->page('photos/new-name')->title()->value());
+        $this->assertSame([['from' => '/posts/daily-photo-test/', 'to' => '/2026-10-07-new-name/', 'rss' => 'keep']], Redirects::all(), 'An older redirect follows the post.');
+        $this->assertStringContainsString('The old URL has no redirect.', $this->kirby->session()->get('blog.assistant.notes')[0]);
+    }
+
+    public function testANewSlugOfADraftLeavesNoRedirect(): void
+    {
+        $this->post('photos', 'photo', 'draft-photo', 'Draft', 'draft');
+        $card = $this->propose('propose_slug', ['post' => 'photos/draft-photo', 'slug' => 'better-draft', 'redirect' => true]);
+        $this->assertStringContainsString('Entwurf', $card['where']);
+
+        Apply::decide($card['id'], 'apply');
+
+        $this->assertTrue($this->page('photos/better-draft')->isDraft());
+        $this->assertSame([], Redirects::all());
+    }
+
+    /** The card of a draft promises no live change. After the author publishes the draft, the click changes nothing. */
+    public function testASlugCardOfADraftIsStaleAfterPublishing(): void
+    {
+        $draft = $this->post('photos', 'photo', 'draft-photo', 'Draft', 'draft');
+        $card = $this->propose('propose_slug', ['post' => 'photos/draft-photo', 'slug' => 'better-draft', 'redirect' => false]);
+        $draft->changeStatus('listed');
+
+        Apply::decide($card['id'], 'apply');
+
+        $this->assertSame('stale', Session::decisions()[$card['id']]['state']);
+        $this->assertStringContainsString('the status of the post changed', $this->kirby->session()->get('blog.assistant.notes')[0]);
+        $this->assertSame('Draft', $this->page('photos/draft-photo')->title()->value());
+    }
+
+    public function testSlugsAreChecked(): void
+    {
+        $this->post('notes', 'note', 'other-post', 'Other');
+        $this->assertStringContainsString('a-z', $this->refusal('propose_slug', ['post' => 'photos/test-photo', 'slug' => 'New Name', 'redirect' => true]));
+        $this->assertStringContainsString('a-z', $this->refusal('propose_slug', ['post' => 'photos/test-photo', 'slug' => 'new--name', 'redirect' => true]));
+        $this->assertStringContainsString('already', $this->refusal('propose_slug', ['post' => 'photos/test-photo', 'slug' => 'test-photo', 'redirect' => true]));
+        $this->assertStringContainsString('notes/other-post', $this->refusal('propose_slug', ['post' => 'photos/test-photo', 'slug' => 'other-post', 'redirect' => true]));
+        $this->assertStringContainsString('taken by notes.', $this->refusal('propose_slug', ['post' => 'photos/test-photo', 'slug' => 'notes', 'redirect' => true]), 'A section is a top-level page.');
+        $this->kirby->site()->createChild(['slug' => 'about', 'template' => 'about', 'draft' => false, 'content' => ['title' => 'About']]);
+        $this->assertStringContainsString('Only a post', $this->refusal('propose_slug', ['post' => 'about', 'slug' => 'new-name', 'redirect' => true]));
+    }
+
+    public function testAStaleSlugCardChangesNothing(): void
+    {
+        $renamed = $this->propose('propose_slug', ['post' => 'photos/test-photo', 'slug' => 'new-name', 'redirect' => true]);
+        $taken = $this->propose('propose_slug', ['post' => 'photos/test-photo', 'slug' => 'free-name', 'redirect' => true]);
+        $this->post('notes', 'note', 'free-name', 'Free');
+        Apply::decide($taken['id'], 'apply');
+        $this->page()->changeSlug('by-hand');
+        Apply::decide($renamed['id'], 'apply');
+
+        $this->assertSame('stale', Session::decisions()[$taken['id']]['state']);
+        $this->assertStringContainsString('the slug is taken by notes/free-name now', $this->kirby->session()->get('blog.assistant.notes')[0]);
+        $this->assertSame('stale', Session::decisions()[$renamed['id']]['state']);
+        $this->assertStringContainsString('the slug changed since the proposal', $this->kirby->session()->get('blog.assistant.notes')[1]);
+        $this->assertSame('Test Photo', $this->page('photos/by-hand')->title()->value());
+        $this->assertSame([['from' => '/2026-10-07-test-photo/', 'to' => '/2026-10-07-by-hand/', 'rss' => 'keep']], Redirects::all());
+    }
+
+    /** Claude can propose a slug and other changes of the same post in one answer. The user can click them in any order. */
+    public function testOpenCardsFindTheirPostAfterANewSlug(): void
+    {
+        $this->upload(__DIR__ . '/../fixtures/exif.jpg', 'a.jpg');
+        $this->reply(
+            'tool_use',
+            $this->tool('t1', 'propose_slug', ['post' => 'photos/test-photo', 'slug' => 'new-name', 'redirect' => true]),
+            $this->tool('t2', 'propose_field', ['post' => 'photos/test-photo', 'field' => 'title', 'value' => 'New Name']),
+            $this->tool('t3', 'propose_file_fields', ['file' => 'photos/test-photo/a.jpg', 'fields' => [['name' => 'alt', 'value' => 'A dog']]]),
+        );
+        $this->reply('end_turn');
+        $chat = $this->chat('Benenne den Beitrag um.');
+        $ids = array_column(array_values(array_filter($chat->items, fn($i) => $i['type'] === 'card')), 'id');
+
+        foreach ($ids as $id) {
+            Apply::decide($id, 'apply');
+            $this->assertSame('done', Session::decisions()[$id]['state'], $chat->proposals[$id]['title']);
+        }
+
+        $page = $this->page('photos/new-name');
+        $this->assertSame('New Name', $page->version('changes')->read()['title']);
+        $this->assertSame('A dog', $page->file('a.jpg')->version('changes')->read()['alt']);
     }
 
     public function testADecisionIsApplyOrDiscard(): void

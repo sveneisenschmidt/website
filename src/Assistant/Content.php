@@ -50,11 +50,17 @@ final class Content
         return $template === 'about' || isset(Types::ALL[$template]) ? $page : null;
     }
 
-    /** A file of a post or of About by its id ("photos/aika/IMG_1.jpg"). */
+    /** A file of a post or of About by its id ("photos/aika/IMG_1.jpg") or by its UUID ("file://…"). */
     public static function file(string $id): ?File
     {
-        $page = self::find(dirname(trim($id)));
-        return $page?->file(basename(trim($id)));
+        $id = trim($id);
+        if (str_starts_with($id, 'file://')) {
+            $model = preg_match('#^file://[a-z0-9]+$#i', $id) ? Uuid::for($id)?->model() : null;
+            $page = $model instanceof File ? $model->page() : null;
+            return $page !== null && self::find($page->id()) !== null ? $model : null;
+        }
+        $page = self::find(dirname($id));
+        return $page?->file(basename($id));
     }
 
     /** A file of a page by its UUID ("file://…") or file name. */

@@ -58,6 +58,16 @@ final class MovedPostTest extends IntegrationTestCase
         $this->assertStringContainsString('<guid isPermaLink="true">http://localhost/2026-10-07-test-photo/?source=rss</guid>', $xml);
     }
 
+    public function testARemovedRedirectLeavesTheOthers(): void
+    {
+        Redirects::write([['from' => '/posts/daily-photo-test/', 'to' => '/2026-10-07-test-photo/', 'rss' => 'keep']]);
+        $this->rename('new-name');
+
+        Redirects::remove('/2026-10-07-test-photo/');
+
+        $this->assertSame([['from' => '/posts/daily-photo-test/', 'to' => '/2026-10-07-new-name/', 'rss' => 'keep']], Redirects::all());
+    }
+
     public function testDraftsAndOtherChangesLeaveNone(): void
     {
         $draft = $this->post('notes', 'note', 'a-draft', 'A Draft', 'draft');
