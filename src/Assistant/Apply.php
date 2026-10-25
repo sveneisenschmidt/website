@@ -317,9 +317,10 @@ final class Apply
      * once, so a published post gets its new URL with the click. The hook
      * `page.changeSlug:after` (plugins/blog) adds the redirect from the old
      * URL of a published post, also for a change in the Panel. A card
-     * without redirect removes it again. It refuses when the slug or the
+     * without redirect removes it again. It refuses when the URL or the
      * status changed since the proposal, because the card text depends on
-     * both, or when another page has the new slug now.
+     * both, or when another page has the new slug now. The URL changes with
+     * the slug and with the saved date.
      *
      * @param array<string, mixed> $in
      * @return array<string, string>
@@ -330,20 +331,19 @@ final class Apply
         if (!$page instanceof PostPage) {
             throw new Error('chat', 'Seite nicht gefunden');
         }
-        if ($page->slug() !== $in['before']) {
-            throw new Stale('Die URL wurde seit dem Vorschlag geändert. Nichts geändert.', 'the slug changed since the proposal');
+        if ($page->postPath() !== $in['path']) {
+            throw new Stale('Die URL wurde seit dem Vorschlag geändert. Nichts geändert.', 'the URL changed since the proposal');
         }
         $draft = $page->isDraft();
         if ($draft !== $in['draft']) {
-            throw new Stale('Der Beitrag wurde seit dem Vorschlag veröffentlicht oder zurückgezogen. Nichts geändert.', 'the status of the post changed since the proposal');
+            throw new Stale('Der Status des Beitrags hat sich seit dem Vorschlag geändert. Nichts geändert.', 'the status of the post changed since the proposal');
         }
         if (($taken = Content::slugTaken($in['slug'])) !== null) {
             throw new Stale('Diesen URL-Anhang gibt es inzwischen. Nichts geändert.', "the slug is taken by $taken now");
         }
-        $from = $page->postPath();
         $page = $page->changeSlug($in['slug']);
-        if (!$draft && !$in['redirect']) {
-            Redirects::remove($from);
+        if (!$in['redirect']) {
+            Redirects::remove($in['path'], $page->postPath());
         }
         return [
             'text' => match (true) {

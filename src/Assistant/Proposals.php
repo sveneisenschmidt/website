@@ -21,9 +21,9 @@ use Website\Models\PostPage;
  * turns a tool call into a card, or into an error message that Claude gets
  * back. A card is a change that Claude proposed; the chat shows it with
  * buttons to apply or discard it. This class changes no content; only a
- * click of the Panel user on a card does (`Apply`). The input of a card
- * names pages and files by their UUIDs, so an open card still finds its
- * post after a new slug (`slug()`).
+ * click of the Panel user on a card does (`Apply`). A card for an existing
+ * post names the post and its files by their UUIDs, so an open card still
+ * finds its post after a new slug (`slug()`).
  */
 final class Proposals
 {
@@ -512,8 +512,11 @@ final class Proposals
     private static function slug(array $input): array|string
     {
         $page = Content::find((string) $input['post']);
+        if ($page === null) {
+            return Tools::NO_POST;
+        }
         if (!$page instanceof PostPage) {
-            return 'Only a post gets a new slug; about keeps its slug. find_posts lists the ids.';
+            return 'Only a post gets a new slug; about keeps its slug.';
         }
         $slug = (string) $input['slug'];
         if ($slug === $page->slug()) {
@@ -530,7 +533,7 @@ final class Proposals
                 default => 'Übernehmen ändert die URL sofort, auch live. Die alte URL leitet nicht weiter.',
             },
             'diff' => [['label' => 'URL', 'before' => $page->postPath(), 'after' => $page->postPath($slug), 'marksBefore' => [], 'marksAfter' => []]],
-            'input' => ['page' => $page->uuid()->toString(), 'slug' => $slug, 'before' => $page->slug(), 'draft' => $page->isDraft(), 'redirect' => $redirect],
+            'input' => ['page' => $page->uuid()->toString(), 'slug' => $slug, 'path' => $page->postPath(), 'draft' => $page->isDraft(), 'redirect' => $redirect],
         ]);
     }
 

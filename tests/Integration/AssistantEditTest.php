@@ -5,6 +5,7 @@ namespace Website\Tests\Integration;
 use Kirby\Cms\Page;
 use Website\Assistant\Apply;
 use Website\Assistant\Chat;
+use Website\Assistant\Content;
 use Website\Assistant\Error;
 use Website\Assistant\Log;
 use Website\Assistant\Session;
@@ -264,6 +265,19 @@ final class AssistantEditTest extends AssistantTestCase
         $this->assertSame([], Redirects::all());
     }
 
+    /** The card shows the old and the new URL, and both have the saved date in them. */
+    public function testASlugCardIsStaleAfterANewDate(): void
+    {
+        $card = $this->propose('propose_slug', ['post' => 'photos/test-photo', 'slug' => 'new-name', 'redirect' => false]);
+        $this->page()->update(['date' => '2026-10-06 20:00:00']);
+
+        Apply::decide($card['id'], 'apply');
+
+        $this->assertSame('stale', Session::decisions()[$card['id']]['state']);
+        $this->assertStringContainsString('the URL changed since the proposal', $this->kirby->session()->get('blog.assistant.notes')[0]);
+        $this->assertSame('/2026-10-06-test-photo/', $this->page()->postPath());
+    }
+
     /** The card of a draft promises no live change. After the author publishes the draft, the click changes nothing. */
     public function testASlugCardOfADraftIsStaleAfterPublishing(): void
     {
@@ -288,6 +302,7 @@ final class AssistantEditTest extends AssistantTestCase
         $this->assertStringContainsString('taken by notes.', $this->refusal('propose_slug', ['post' => 'photos/test-photo', 'slug' => 'notes', 'redirect' => true]), 'A section is a top-level page.');
         $this->kirby->site()->createChild(['slug' => 'about', 'template' => 'about', 'draft' => false, 'content' => ['title' => 'About']]);
         $this->assertStringContainsString('Only a post', $this->refusal('propose_slug', ['post' => 'about', 'slug' => 'new-name', 'redirect' => true]));
+        $this->assertStringContainsString('No post', $this->refusal('propose_slug', ['post' => 'photos/typo', 'slug' => 'new-name', 'redirect' => true]));
     }
 
     public function testAStaleSlugCardChangesNothing(): void
@@ -302,20 +317,27 @@ final class AssistantEditTest extends AssistantTestCase
         $this->assertSame('stale', Session::decisions()[$taken['id']]['state']);
         $this->assertStringContainsString('the slug is taken by notes/free-name now', $this->kirby->session()->get('blog.assistant.notes')[0]);
         $this->assertSame('stale', Session::decisions()[$renamed['id']]['state']);
-        $this->assertStringContainsString('the slug changed since the proposal', $this->kirby->session()->get('blog.assistant.notes')[1]);
+        $this->assertStringContainsString('the URL changed since the proposal', $this->kirby->session()->get('blog.assistant.notes')[1]);
         $this->assertSame('Test Photo', $this->page('photos/by-hand')->title()->value());
         $this->assertSame([['from' => '/2026-10-07-test-photo/', 'to' => '/2026-10-07-by-hand/', 'rss' => 'keep']], Redirects::all());
     }
 
-    /** Claude can propose a slug and other changes of the same post in one answer. The user can click them in any order. */
+    /**
+     * Claude can propose a slug and other changes of the same post in one
+     * answer. Each card of every kind still applies after the slug card.
+     */
     public function testOpenCardsFindTheirPostAfterANewSlug(): void
     {
         $this->upload(__DIR__ . '/../fixtures/exif.jpg', 'a.jpg');
+        $this->osrm[] = [200, json_encode(['code' => 'Ok', 'routes' => [['distance' => 1000, 'duration' => 60, 'geometry' => ['type' => 'LineString', 'coordinates' => [[12.1, 51.1], [12.2, 51.2]]]]]])];
+        $stations = [['lat' => 51.1, 'lon' => 12.1, 'label' => 'A', 'marker' => true], ['lat' => 51.2, 'lon' => 12.2, 'label' => 'B', 'marker' => false]];
         $this->reply(
             'tool_use',
             $this->tool('t1', 'propose_slug', ['post' => 'photos/test-photo', 'slug' => 'new-name', 'redirect' => true]),
             $this->tool('t2', 'propose_field', ['post' => 'photos/test-photo', 'field' => 'title', 'value' => 'New Name']),
             $this->tool('t3', 'propose_file_fields', ['file' => 'photos/test-photo/a.jpg', 'fields' => [['name' => 'alt', 'value' => 'A dog']]]),
+            $this->tool('t4', 'propose_edit', ['post' => 'photos/test-photo', 'field' => 'intro', 'passage' => 'Test intro', 'versions' => ['New intro']]),
+            $this->tool('t5', 'propose_route', ['post' => 'photos/test-photo', 'route' => ['stations' => $stations, 'gpx' => '', 'markers' => [], 'zoom' => false]]),
         );
         $this->reply('end_turn');
         $chat = $this->chat('Benenne den Beitrag um.');
@@ -329,6 +351,17 @@ final class AssistantEditTest extends AssistantTestCase
         $page = $this->page('photos/new-name');
         $this->assertSame('New Name', $page->version('changes')->read()['title']);
         $this->assertSame('A dog', $page->file('a.jpg')->version('changes')->read()['alt']);
+        $this->assertSame('New intro', $page->version('changes')->read()['intro']);
+        $this->assertSame([['label' => 'A', 'lat' => '51.1', 'lon' => '12.1']], Content::list($page->version('changes')->read()['mappoints']));
+    }
+
+    /** A card names a file by its UUID. A UUID of a file outside the posts and About finds nothing. */
+    public function testAFileUuidOutsideThePostsFindsNothing(): void
+    {
+        $file = $this->upload(__DIR__ . '/../fixtures/exif.jpg', 'b.jpg', $this->kirby->page('photos'));
+
+        $this->assertStringContainsString('No image found', $this->refusal('propose_file_fields', ['file' => $file->uuid()->toString(), 'fields' => [['name' => 'alt', 'value' => 'x']]]));
+        $this->assertSame('a.jpg', Content::file($this->upload(__DIR__ . '/../fixtures/exif.jpg', 'a.jpg')->uuid()->toString())?->filename());
     }
 
     public function testADecisionIsApplyOrDiscard(): void

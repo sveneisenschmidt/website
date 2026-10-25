@@ -58,14 +58,21 @@ final class MovedPostTest extends IntegrationTestCase
         $this->assertStringContainsString('<guid isPermaLink="true">http://localhost/2026-10-07-test-photo/?source=rss</guid>', $xml);
     }
 
+    /** remove() takes back the redirect that a new URL added. An older one from the same path to another post stays. */
     public function testARemovedRedirectLeavesTheOthers(): void
     {
-        Redirects::write([['from' => '/posts/daily-photo-test/', 'to' => '/2026-10-07-test-photo/', 'rss' => 'keep']]);
+        Redirects::write([
+            ['from' => '/posts/daily-photo-test/', 'to' => '/2026-10-07-test-photo/', 'rss' => 'keep'],
+            ['from' => '/2026-10-07-test-photo/', 'to' => '/2026-10-07-other-post/'],
+        ]);
         $this->rename('new-name');
 
-        Redirects::remove('/2026-10-07-test-photo/');
+        Redirects::remove('/2026-10-07-test-photo/', '/2026-10-07-new-name/');
 
-        $this->assertSame([['from' => '/posts/daily-photo-test/', 'to' => '/2026-10-07-new-name/', 'rss' => 'keep']], Redirects::all());
+        $this->assertSame([
+            ['from' => '/posts/daily-photo-test/', 'to' => '/2026-10-07-new-name/', 'rss' => 'keep'],
+            ['from' => '/2026-10-07-test-photo/', 'to' => '/2026-10-07-other-post/'],
+        ], Redirects::all());
     }
 
     public function testDraftsAndOtherChangesLeaveNone(): void

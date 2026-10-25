@@ -94,9 +94,9 @@ final class Redirects
         self::write($redirects);
     }
 
-    /** Removes the redirects from $from. Redirects from other paths stay. */
-    public static function remove(string $from): void
+    /** Removes the redirect from $from to $to, as `moved()` adds it for a new URL. */
+    public static function remove(string $from, string $to): void
     {
-        self::write(array_filter(self::all(), fn($redirect) => $redirect['from'] !== $from));
+        self::write(array_filter(self::all(), fn($redirect) => $redirect['from'] !== $from || $redirect['to'] !== $to));
     }
 }
