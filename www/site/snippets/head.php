@@ -31,7 +31,6 @@ $jsonld = Layout::jsonLd($page, $meta);
 <?php if (Site::keywords() !== ''): ?>
 <meta name="keywords" content="<?= esc(Site::keywords()) ?>">
 <?php endif ?>
-<meta name="google-site-verification" content="cNQT6i25KOyhszNP9zuFOD80fbWfvoemf65Z83uQ984">
 <meta property="og:title" content="<?= esc($meta['title']) ?>">
 <meta property="og:description" content="<?= esc($meta['description']) ?>">
 <meta property="og:type" content="<?= $meta['article'] ? 'article' : 'website' ?>">
