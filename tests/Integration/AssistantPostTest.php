@@ -110,7 +110,7 @@ final class AssistantPostTest extends AssistantTestCase
     {
         $id = Uploads::accept($this->jpeg(40, 30), 'IMG_1.JPG')['id'];
         $card = $this->card($this->propose($this->input(['text' => '', 'photos' => [
-            ['upload' => $id, 'filename' => 'aika.jpg', 'alt' => '', 'caption' => '', 'photographer' => ''],
+            ['upload' => $id, 'alt' => '', 'caption' => '', 'photographer' => ''],
         ]])));
         $this->assertTrue($this->sessionLocked(), 'The chat holds the lock before the click.');
         $this->lockedOnCreate = [];
@@ -123,14 +123,14 @@ final class AssistantPostTest extends AssistantTestCase
 
     public function testADraftComesWithPhotosAndRouteInOneClick(): void
     {
-        $a = Uploads::accept($this->gpsJpeg(1, 'a.jpg'), 'IMG_1.JPG')['id'];
-        $b = Uploads::accept($this->jpeg(40, 30), 'IMG_2.JPG')['id'];
+        $a = Uploads::accept($this->gpsJpeg(1, 'a.jpg'), 'Aika.JPG')['id'];
+        $b = Uploads::accept($this->jpeg(40, 30), 'dog.jpg')['id'];
         $this->osrm[] = [200, json_encode(['code' => 'Ok', 'routes' => [['distance' => 1200, 'duration' => 300, 'geometry' => ['coordinates' => [[12.3, 51.3], [12.31, 51.31]]]]]])];
         $chat = $this->propose($this->input([
             'text' => "(image: aika.jpg)\n\n(map:)\n\n(image: dog.jpg)",
             'photos' => [
-                ['upload' => $a, 'filename' => 'aika.jpg', 'alt' => 'Aika at night', 'caption' => 'Dark', 'photographer' => 'Nadine'],
-                ['upload' => $b, 'filename' => 'dog.jpg', 'alt' => 'A dog', 'caption' => '', 'photographer' => ''],
+                ['upload' => $a, 'alt' => 'Aika at night', 'caption' => 'Dark', 'photographer' => 'Nadine'],
+                ['upload' => $b, 'alt' => 'A dog', 'caption' => '', 'photographer' => ''],
             ],
             'cover' => 'dog.jpg',
             'pick' => true,
@@ -201,19 +201,38 @@ final class AssistantPostTest extends AssistantTestCase
         $this->assertStringContainsString('YYYY-MM-DD HH:MM:SS', $this->error());
     }
 
-    public function testFileNamesAndUploadsAreChecked(): void
+    /**
+     * A photo keeps the name of its file on the computer, made safe. A second
+     * upload of the same chat with the same name gets "-2".
+     */
+    public function testPhotosKeepTheNamesOfTheirUploads(): void
+    {
+        $a = Uploads::accept($this->jpeg(8, 8), 'IMG_1.JPG')['id'];
+        $b = Uploads::accept($this->jpeg(8, 8), 'IMG_1.jpeg')['id'];
+        $this->assertSame(['img_1.jpg', 'img_1-2.jpg'], [Uploads::meta($a)['name'], Uploads::meta($b)['name']]);
+        $card = $this->card($this->propose($this->input(['text' => '(image: img_1-2.jpg)', 'cover' => 'img_1.jpg', 'photos' => [
+            ['upload' => $a, 'alt' => '', 'caption' => '', 'photographer' => ''],
+            ['upload' => $b, 'alt' => '', 'caption' => '', 'photographer' => ''],
+        ]])));
+
+        Apply::decide($card['id'], 'apply');
+
+        $draft = $this->kirby->site()->find('photos')->draft('aika');
+        $this->assertSame(['img_1-2.jpg', 'img_1.jpg'], $draft->files()->pluck('filename'));
+        $this->assertSame('img_1.jpg', $draft->cover()->toFile()->filename());
+    }
+
+    public function testUploadsAreChecked(): void
     {
         $id = Uploads::accept($this->jpeg(8, 8), 'IMG_1.JPG')['id'];
-        $photo = ['upload' => $id, 'filename' => 'IMG 1.JPG', 'alt' => '', 'caption' => '', 'photographer' => ''];
-        $this->propose($this->input(['text' => '', 'photos' => [$photo]]));
-        $this->assertStringContainsString('as in img_1.jpg', $this->error());
-        $this->propose($this->input(['text' => '', 'photos' => [['filename' => 'x.jpg'] + $photo, ['filename' => 'x.jpg'] + $photo]]));
+        $photo = ['upload' => $id, 'alt' => '', 'caption' => '', 'photographer' => ''];
+        $this->propose($this->input(['text' => '', 'photos' => [$photo, $photo]]));
         $this->assertStringContainsString('twice', $this->error());
         $this->propose($this->input(['text' => '', 'photos' => [['upload' => 'u0000000000000000'] + $photo]]));
         $this->assertStringContainsString('No image upload', $this->error());
 
-        $card = $this->card($this->propose($this->input(['text' => '', 'photos' => [['filename' => 'x.jpg'] + $photo]])));
-        $this->propose($this->input(['slug' => 'other', 'text' => '', 'photos' => [['filename' => 'x.jpg'] + $photo]]));
+        $card = $this->card($this->propose($this->input(['text' => '', 'photos' => [$photo]])));
+        $this->propose($this->input(['slug' => 'other', 'text' => '', 'photos' => [$photo]]));
 
         $this->assertStringContainsString('another open card', $this->error());
         $this->assertSame([$id], $card['uploads']);
@@ -225,8 +244,8 @@ final class AssistantPostTest extends AssistantTestCase
         $ok = Uploads::accept($this->jpeg(8, 8, 'ok.jpg'), 'ok.jpg')['id'];
         $broken = Uploads::accept($this->jpeg(8, 8, 'broken.jpg'), 'broken.jpg')['id'];
         $card = $this->card($this->propose($this->input(['text' => '', 'photos' => [
-            ['upload' => $ok, 'filename' => 'ok.jpg', 'alt' => '', 'caption' => '', 'photographer' => ''],
-            ['upload' => $broken, 'filename' => 'broken.jpg', 'alt' => '', 'caption' => '', 'photographer' => ''],
+            ['upload' => $ok, 'alt' => '', 'caption' => '', 'photographer' => ''],
+            ['upload' => $broken, 'alt' => '', 'caption' => '', 'photographer' => ''],
         ]])));
 
         Apply::decide($card['id'], 'apply');

@@ -9,7 +9,6 @@ use Kirby\Cms\File;
 use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
 use Kirby\Data\Yaml;
-use Kirby\Filesystem\F;
 use Parsedown;
 use ParsedownExtra;
 use RuntimeException;
@@ -594,7 +593,6 @@ final class Proposals
         $photos = [];
         foreach ($input['photos'] as $photo) {
             $id = (string) $photo['upload'];
-            $filename = (string) $photo['filename'];
             $meta = Uploads::meta($id);
             if ($meta === null || $meta['kind'] !== 'image' || $meta['path'] === null) {
                 return "No image upload $id in this chat.";
@@ -602,13 +600,7 @@ final class Proposals
             if (in_array($id, $needed, true) || in_array($id, array_column($photos, 'upload'), true)) {
                 return "The upload $id is used by another open card or twice here.";
             }
-            if (F::safeName($filename) !== $filename || F::extension($filename) !== $meta['ext']) {
-                return "The file name $filename takes a-z, 0-9, - and _ and the extension .{$meta['ext']}, as in {$meta['name']}.";
-            }
-            if (in_array($filename, array_column($photos, 'filename'), true)) {
-                return "The file name $filename comes twice.";
-            }
-            $photos[] = ['upload' => $id, 'filename' => $filename, 'alt' => (string) $photo['alt'], 'caption' => (string) $photo['caption'], 'photographer' => (string) $photo['photographer'], 'exif' => $meta['exif'], 'marks' => Marks::of((string) $photo['caption'], null, true)];
+            $photos[] = ['upload' => $id, 'filename' => $meta['name'], 'alt' => (string) $photo['alt'], 'caption' => (string) $photo['caption'], 'photographer' => (string) $photo['photographer'], 'exif' => $meta['exif'], 'marks' => Marks::of((string) $photo['caption'], null, true)];
         }
         $names = array_column($photos, 'filename');
         $cover = (string) $input['cover'];
