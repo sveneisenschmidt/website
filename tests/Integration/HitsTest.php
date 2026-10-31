@@ -16,12 +16,12 @@ final class HitsTest extends IntegrationTestCase
 
     public function testARowKeepsTheRequestAsItCame(): void
     {
-        $hit = $this->hit(query: '?source=rss&utm_medium=social', referer: 'https://kagi.com/smallweb');
+        $hit = $this->hit(query: '?source=rss&utm_medium=social', referer: 'https://kagi.com/smallweb', country: 'DE');
         $hit['headers']['sec-ch-ua'] = '"Chromium";v="141"';
         Hits::add($hit);
 
         $statement = (new Sqlite('sqlite:' . $this->root . '/content/.analytics/2026-10.sqlite'))
-            ->query('SELECT time, ip_hash, net_hash, method, uri, protocol, page, status, session, headers, agent, visitor, referer, fetch_dest, language, purpose FROM hits');
+            ->query('SELECT time, ip_hash, net_hash, method, uri, protocol, page, status, session, headers, country, agent, visitor, referer, fetch_dest, language, purpose FROM hits');
         $this->assertNotFalse($statement);
 
         $this->assertSame([
@@ -35,6 +35,7 @@ final class HitsTest extends IntegrationTestCase
             'status' => 200,
             'session' => 0,
             'headers' => json_encode($hit['headers'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+            'country' => 'DE',
             'agent' => self::SAFARI,
             'visitor' => 'ip-a ' . self::SAFARI,
             'referer' => 'https://kagi.com/smallweb',
@@ -68,7 +69,7 @@ final class HitsTest extends IntegrationTestCase
         Hits::add($this->hit(visitor: 'i', session: true));
 
         $this->assertSame(
-            ['2026-10-15' => ['visits' => 1, 'views' => 2, 'pages' => ['about' => 1, 'photos' => 1], 'referrers' => []]],
+            ['2026-10-15' => ['visits' => 1, 'views' => 2, 'pages' => ['about' => 1, 'photos' => 1], 'referrers' => [], 'countries' => ['' => 1]]],
             Hits::days('2026-10-15', '2026-10-15'),
         );
     }
@@ -98,7 +99,60 @@ final class HitsTest extends IntegrationTestCase
 
         $this->assertSame(['RSS' => 1, 'kagi.com' => 1], $days['2026-10-15']['referrers']);
         $this->assertSame(['instagram.com' => 1], $days['2026-10-16']['referrers']);
-        $this->assertSame([], Hits::days('2026-10-15', '2026-10-15', origins: false)['2026-10-15']['referrers']);
+        $this->assertSame([], Hits::days('2026-10-15', '2026-10-15', details: false)['2026-10-15']['referrers']);
+    }
+
+    public function testAVisitCountsInTheCountryOfItsAddress(): void
+    {
+        Hits::add($this->hit(country: 'DE'));
+        Hits::add($this->hit(page: 'about', country: 'DE'));
+        Hits::add($this->hit(visitor: 'b', country: 'AT'));
+        Hits::add($this->hit(visitor: 'c', country: 'DE'));
+        Hits::add($this->hit(visitor: 'd'));
+        Hits::add($this->hit(visitor: 'e', time: '2026-10-16T09:00:00.000+02:00', country: 'FR'));
+
+        $days = Hits::days('2026-10-15', '2026-10-16');
+
+        $this->assertEqualsCanonicalizing(['DE' => 2, 'AT' => 1, '' => 1], $days['2026-10-15']['countries']);
+        $this->assertSame(['FR' => 1], $days['2026-10-16']['countries']);
+        $this->assertSame([], Hits::days('2026-10-15', '2026-10-16', details: false)['2026-10-15']['countries']);
+    }
+
+    public function testADatabaseFromBeforeTheCountryGetsTheColumn(): void
+    {
+        $file = $this->root . '/content/.analytics/2026-10.sqlite';
+        mkdir(dirname($file), 0777, true);
+        $old = new Sqlite('sqlite:' . $file);
+        // The schema as Hits created it before the country.
+        $old->exec(<<<'SQL'
+            CREATE TABLE hits (
+                time TEXT NOT NULL,
+                ip_hash TEXT NOT NULL,
+                net_hash TEXT NOT NULL,
+                method TEXT NOT NULL,
+                uri TEXT NOT NULL,
+                protocol TEXT NOT NULL,
+                page TEXT,
+                status INTEGER NOT NULL,
+                session INTEGER NOT NULL,
+                headers TEXT NOT NULL,
+                agent TEXT GENERATED ALWAYS AS (COALESCE(json_extract(headers, '$."user-agent"'), '')) VIRTUAL,
+                visitor TEXT GENERATED ALWAYS AS (ip_hash || ' ' || agent) VIRTUAL,
+                referer TEXT GENERATED ALWAYS AS (json_extract(headers, '$.referer')) VIRTUAL,
+                fetch_dest TEXT GENERATED ALWAYS AS (json_extract(headers, '$."sec-fetch-dest"')) VIRTUAL,
+                language TEXT GENERATED ALWAYS AS (json_extract(headers, '$."accept-language"')) VIRTUAL,
+                purpose TEXT GENERATED ALWAYS AS (COALESCE(json_extract(headers, '$."sec-purpose"'), json_extract(headers, '$.purpose'))) VIRTUAL
+            );
+            CREATE INDEX hits_time ON hits (time);
+            SQL);
+        $old->prepare('INSERT INTO hits (time, ip_hash, net_hash, method, uri, protocol, page, status, session, headers) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+            ->execute(['2026-10-15T09:00:00.000+02:00', 'ip-old', 'net-old', 'GET', '/photos', 'HTTP/2.0', 'photos', 200, 0, json_encode(['accept-language' => 'de', 'sec-fetch-dest' => 'document', 'user-agent' => self::SAFARI])]);
+        unset($old);
+
+        Hits::add($this->hit(country: 'DE'));
+
+        $this->assertSame([null, 'DE'], array_column(Hits::rows('2026-10'), 'country'));
+        $this->assertEqualsCanonicalizing(['' => 1, 'DE' => 1], Hits::days('2026-10-15', '2026-10-15')['2026-10-15']['countries']);
     }
 
     public function testOwnAddressesAndNetworksCountForNothing(): void
@@ -169,6 +223,7 @@ final class HitsTest extends IntegrationTestCase
         ?string $fetchDest = 'document',
         ?string $language = 'de-DE',
         ?string $purpose = null,
+        ?string $country = null,
     ): array {
         return [
             'time' => $time,
@@ -187,6 +242,7 @@ final class HitsTest extends IntegrationTestCase
                 'sec-purpose' => $purpose,
                 'user-agent' => $agent,
             ], fn($value) => $value !== null),
+            'country' => $country,
         ];
     }
 }

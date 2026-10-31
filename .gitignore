@@ -44,6 +44,10 @@
 # of bin/deploy.sh.
 /www/site/plugins/markdown-field/
 
+# Downloaded by bin/countries.php: the country database of the visitor
+# statistics
+/countries/
+
 # Files next to www/ that the web server must not serve and no backup
 # includes: the assistant's uploads (src/Assistant/Uploads.php), the key of
 # the visitor statistics (src/Analytics/Fingerprint.php) and, locally, the

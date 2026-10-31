@@ -16,5 +16,7 @@ Website\Analytics\Campaign::strip();
 // the content of the original www/. The root storage is the folder next to
 // www/ for files that the web server must not serve and no backup includes:
 // the uploads of the assistant, the key of the visitor statistics and,
-// locally, the mails of bin/mail-catcher.php.
-echo (new Kirby(['roots' => ['index' => __DIR__, 'storage' => dirname(__DIR__) . '/storage']]))->render();
+// locally, the mails of bin/mail-catcher.php. The root countries is the
+// folder next to www/ with the country database of the visitor statistics
+// (src/Analytics/Country.php).
+echo (new Kirby(['roots' => ['index' => __DIR__, 'storage' => dirname(__DIR__) . '/storage', 'countries' => dirname(__DIR__) . '/countries']]))->render();

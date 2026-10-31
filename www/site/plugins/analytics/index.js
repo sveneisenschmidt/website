@@ -1,5 +1,5 @@
 // The Panel view "Besucher": the visits of the last 30 days. A click on the
-// bar of a day shows the pages and origins of that day only. The page
+// bar of a day shows the pages, origins and countries of that day only. The page
 // "Einstellungen" edits the own IP addresses (settings.yml). The file needs
 // no build step: the Panel includes the Vue template compiler (option
 // panel.vue.compiler, on by default) and compiles the template in the browser.
@@ -43,6 +43,9 @@ panel.plugin("website/analytics", {
         referrers() {
           return this.pickedDay ? this.pickedDay.referrers : this.summary.referrers;
         },
+        countries() {
+          return this.pickedDay ? this.pickedDay.countries : this.summary.countries;
+        },
         scope() {
           return this.pickedDay ? "am " + this.day(this.pickedDay.date) : "letzte 30 Tage";
         },
@@ -53,6 +56,10 @@ panel.plugin("website/analytics", {
           // Noon local time keeps the date the same in every time zone; a
           // date without a time would be parsed as midnight UTC.
           return new Date(date + "T12:00:00").toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
+        },
+        country(code) {
+          // The German name of an ISO 3166 code, from the browser.
+          return code === "" ? "Unbekannt" : new Intl.DisplayNames(["de"], { type: "region" }).of(code);
         },
         height(visits) {
           return (visits / this.max) * 100 + "%";
@@ -84,7 +91,7 @@ panel.plugin("website/analytics", {
             </header>
             <div class="blog-stats-chart">
               <div class="blog-stats-scale" aria-hidden="true"><span>{{ max }}</span><span>0</span></div>
-              <div class="blog-stats-bars" role="group" aria-label="Besuche pro Tag. Ein Tag zeigt nur seine Seiten und Herkunft.">
+              <div class="blog-stats-bars" role="group" aria-label="Besuche pro Tag. Ein Tag zeigt nur seine Seiten, Herkunft und Länder.">
                 <button
                   v-for="(d, i) in summary.days"
                   :key="d.date"
@@ -130,6 +137,19 @@ panel.plugin("website/analytics", {
                 </tbody>
               </table>
             </div>
+            <div>
+              <k-headline>Länder <span class="blog-stats-scope">{{ scope }}</span></k-headline>
+              <k-empty v-if="countries.length === 0" icon="globe">{{ pickedDay ? "An diesem Tag keine Besuche." : "Noch keine Besuche." }}</k-empty>
+              <table v-else class="blog-log">
+                <thead><tr><th>Land</th><th class="blog-stats-num">Besuche</th></tr></thead>
+                <tbody>
+                  <tr v-for="c in countries" :key="c.code">
+                    <td>{{ country(c.code) }}</td>
+                    <td class="blog-stats-num">{{ c.visits }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </section>
 
           <section class="blog-stats-section">
@@ -148,7 +168,7 @@ panel.plugin("website/analytics", {
           </section>
 
           <k-text class="blog-stats-note">
-            Ein Besuch ist ein Browser an einem Tag. Wechselt ein Handy das Netz, zählt das als neuer Besuch. Die Zählung setzt keine Cookies und speichert keine IP-Adressen, nur eine verschlüsselte Kennung von Adresse und Netz. Den Schlüssel dafür gibt es nur auf dem Server. Eingeloggte Accounts und die eigenen IP-Adressen (Besucher › Einstellungen) zählen nicht mit.
+            Ein Besuch ist ein Browser an einem Tag. Wechselt ein Handy das Netz, zählt das als neuer Besuch. Die Zählung setzt keine Cookies und speichert keine IP-Adressen, nur eine verschlüsselte Kennung von Adresse und Netz. Den Schlüssel dafür gibt es nur auf dem Server. Eingeloggte Accounts und die eigenen IP-Adressen (Besucher › Einstellungen) zählen nicht mit. Das Land kommt aus der IP-Adresse, nachgeschlagen in der Länderliste von <a href="https://db-ip.com" target="_blank">DB-IP</a>.
             Als Besuch zählt nur ein Browser, der eine Seite öffnet. „Bots mit Namen“ nennen sich selbst, zum Beispiel Googlebot. „Verdacht“ gibt sich als Browser aus, schickt aber nicht die Angaben, die jeder Browser beim Öffnen einer Seite mitschickt.
           </k-text>
         </k-panel-inside>

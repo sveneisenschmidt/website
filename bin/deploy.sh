@@ -11,8 +11,8 @@
 #                   to the www/ folder of the live release.
 #   current         a symlink to the live release, for the scripts.
 #   releases/<id>/  the releases. A release is the code of one deploy: www/,
-#                   src/ and vendor/. The id is the UTC time and the short
-#                   commit hash.
+#                   src/, vendor/ and countries/. The id is the UTC time and
+#                   the short commit hash.
 #   shared/         the files that every release uses and no deploy replaces.
 #   backups/        the snapshots. A snapshot is a copy of the state, made by
 #                   bin/backup.sh --snapshot.
@@ -31,7 +31,8 @@
 #
 # Steps:
 # 1. Build the release in a temporary folder: www/ without the paths of
-#    shared/, src/, composer install --no-dev, and the symlinks.
+#    shared/, src/, composer install --no-dev, the symlinks and the country
+#    database (bin/countries.php).
 # 2. Make a snapshot of the state. The newest 30 snapshots stay.
 # 3. Upload the release. A file that is unchanged since the live release
 #    becomes a hard link to it and takes no new space.
@@ -147,6 +148,11 @@ for f in env.php .salt .license; do ln -s "../../../../../shared/site/config/$f"
 # (src/Assistant/Uploads.php) and the key of the visitor statistics
 # (src/Analytics/Fingerprint.php).
 ln -s ../../shared/storage "$BUILD/storage"
+# countries/ next to www/ holds the country database of the visitor
+# statistics (src/Analytics/Country.php), in the release, as DB-IP published
+# it at the build. A failed download stops no deploy: the release then
+# stores no country until the next deploy.
+php bin/countries.php "$BUILD/countries" || echo "::warning title=No country database::The release stores no country (bin/countries.php failed)."
 
 # Switches the site to the release $1. A rename() replaces .htaccess and
 # `current` each in one step, so a request sees the old or the new file and

@@ -58,8 +58,8 @@ final class Counter
     /**
      * Stores one request in Hits: the time in ISO 8601 with milliseconds and
      * offset, as Website\Blog\Jsonl writes it, the fingerprints of the IP
-     * address and its network, the URI with its query, the protocol and the
-     * headers.
+     * address and its network, the URI with its query, the protocol, the
+     * headers and the country of the address.
      * `session` marks a browser with a Panel session. The method reads
      * $_COOKIE directly: Kirby's user() or Cookie::get() would mark the
      * response as private, and Kirby would not cache the page.
@@ -78,6 +78,7 @@ final class Counter
             'status' => self::status($result),
             'session' => isset($_COOKIE['kirby_session']),
             'headers' => self::headers($ip),
+            'country' => Country::of($ip),
         ]);
     }
 
