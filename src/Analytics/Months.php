@@ -10,7 +10,7 @@ use Throwable;
  * month in the folder of Hits: content/.analytics/<year>-<month>.json.
  * Totals adds them to the days in Hits.
  *
- * @phpstan-type Day array{visits?: int, views?: int, pages?: array<string, int>, referrers?: array<string, int>}
+ * @phpstan-type Day array{visits?: int, views?: int, pages?: array<string, int>, referrers?: array<string, int>, countries?: array<string, int>}
  */
 final class Months
 {

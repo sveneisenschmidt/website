@@ -8,6 +8,7 @@ use Website\Analytics\Campaign;
 use Website\Analytics\Counter;
 use Website\Analytics\Hits;
 use Website\Analytics\Totals;
+use Website\Tests\Support\TestSite;
 
 final class AnalyticsTest extends IntegrationTestCase
 {
@@ -276,14 +277,32 @@ final class AnalyticsTest extends IntegrationTestCase
             ['id' => 'photos', 'title' => 'Photos', 'url' => 'http://localhost/photos/', 'visits' => 1],
         ];
         $referrers = [['host' => 'instagram.com', 'visits' => 1]];
+        $countries = [['code' => '', 'visits' => 2]];
 
         $this->assertCount(30, $summary['days']);
-        $this->assertSame(['date' => date('Y-m-d'), 'visits' => 2, 'views' => 3, 'pages' => $pages, 'referrers' => $referrers], end($summary['days']));
-        $this->assertSame(['date' => date('Y-m-d', strtotime('-29 days')), 'visits' => 0, 'views' => 0, 'pages' => [], 'referrers' => []], $summary['days'][0]);
+        $this->assertSame(['date' => date('Y-m-d'), 'visits' => 2, 'views' => 3, 'pages' => $pages, 'referrers' => $referrers, 'countries' => $countries], end($summary['days']));
+        $this->assertSame(['date' => date('Y-m-d', strtotime('-29 days')), 'visits' => 0, 'views' => 0, 'pages' => [], 'referrers' => [], 'countries' => []], $summary['days'][0]);
         $this->assertSame(['today' => 2, 'week' => 2, 'month' => 2, 'views' => 3], $summary['totals']);
         $this->assertSame($pages, $summary['pages']);
         $this->assertSame($referrers, $summary['referrers']);
+        $this->assertSame($countries, $summary['countries']);
         $this->assertSame(['named' => 1, 'suspect' => 1, 'names' => [['name' => 'Googlebot', 'hits' => 1]]], $summary['bots']);
+    }
+
+    public function testEveryRequestStoresTheCountryOfItsAddress(): void
+    {
+        TestSite::countries($this->root);
+        $this->visit('photos', ip: '198.51.100.7');
+        $this->visit('photos', ip: '198.51.100.8');
+        $this->visit('photos', ip: '2001:db8:1:2::abcd');
+        $this->visit('photos', ip: '192.0.2.1');
+        $this->visit('photos', ip: '203.0.113.9', ua: self::GOOGLEBOT, browser: false);
+
+        $this->assertSame(['DE', 'DE', 'NL', null, 'FR'], array_column($this->rows('country'), 'country'));
+        $summary = Totals::summary(30);
+        $countries = [['code' => 'DE', 'visits' => 2], ['code' => 'NL', 'visits' => 1], ['code' => '', 'visits' => 1]];
+        $this->assertSame($countries, $summary['countries']);
+        $this->assertSame($countries, end($summary['days'])['countries']);
     }
 
     public function testSummaryNamesHomeRenamedAndDeletedPages(): void

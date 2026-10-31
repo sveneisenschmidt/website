@@ -17,16 +17,24 @@ ENV_NAMES := $(shell sed -n 's/^\([A-Za-z_][A-Za-z0-9_]*\)=.*/\1/p' .env 2>/dev/
 $(foreach name,$(ENV_NAMES),$(eval $(name) := $$(shell sed -n 's/^$(name)=//p' .env | tail -n 1)))
 export SITE_URL DEPLOY_HOST DEPLOY_PATH DEBUG
 
-# Once after cloning: dependencies, .env and .salt. Then fill in
-# the values in .env, and make pull fetches the content from the server.
+# Once after cloning: dependencies, .env, .salt and the country database.
+# Then fill in the values in .env, and make pull fetches the content from
+# the server.
 .PHONY: setup
 setup:
 	composer install
 	@$(MAKE) --no-print-directory config
+	@$(MAKE) --no-print-directory countries
 
 .PHONY: config
 config:
 	@$(PHP) bin/init-config.php $(WWW)
+
+# The country database of the visitor statistics (src/Analytics/Country.php)
+# in countries/. DB-IP publishes a new one each month.
+.PHONY: countries
+countries:
+	@$(PHP) bin/countries.php countries
 
 .PHONY: test
 test:

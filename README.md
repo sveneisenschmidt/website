@@ -16,7 +16,7 @@ make pull
 make dev
 ```
 
-`make setup` runs `composer install`, creates `.env` from `.env.example` and the local `.salt`. `.env` holds every local value and key under the same names as the secrets and variables of the workflows: `SITE_URL`, `DEPLOY_HOST`, `DEPLOY_PATH`, `DEBUG`, `ANTHROPIC_API_KEY` and `PAGESPEED_API_KEY`. make passes them to every target, and Kirby reads `DEBUG` and `ANTHROPIC_API_KEY` from there. `make speed` measures the live site with PageSpeed Insights. `make pull` replaces the content and accounts in `www/` with the state of the server. `make dev` serves the site at http://localhost:8010; `make` alone does the same. Locally, Kirby sends no mail: `bin/mail-catcher.php` saves every mail in `storage/mail/` and prints it in the terminal of `make dev`. The code of a Panel login is there.
+`make setup` runs `composer install`, creates `.env` from `.env.example` and the local `.salt`, and downloads the country database (`make countries`). `.env` holds every local value and key under the same names as the secrets and variables of the workflows: `SITE_URL`, `DEPLOY_HOST`, `DEPLOY_PATH`, `DEBUG`, `ANTHROPIC_API_KEY` and `PAGESPEED_API_KEY`. make passes them to every target, and Kirby reads `DEBUG` and `ANTHROPIC_API_KEY` from there. `make speed` measures the live site with PageSpeed Insights. `make pull` replaces the content and accounts in `www/` with the state of the server. `make dev` serves the site at http://localhost:8010; `make` alone does the same. Locally, Kirby sends no mail: `bin/mail-catcher.php` saves every mail in `storage/mail/` and prints it in the terminal of `make dev`. The code of a Panel login is there.
 
 ## Tests
 
@@ -38,12 +38,14 @@ The site runs on shared hosting with Apache and PHP 8.5. A deploy builds the cod
 ```
 .htaccess        sends every request to the live release
 current          a symlink to the live release, for the scripts
-releases/<id>/   the releases: www/, src/, vendor/
+releases/<id>/   the releases: www/, src/, vendor/, countries/
 shared/          the files that no deploy replaces: state, env.php, generated files, storage
 backups/         the snapshots of the state
 ```
 
 The state is what only a backup can restore: content, accounts, `.salt` and `.license`. `env.php` is the configuration of one host. Kirby makes the generated files (media, cache, sessions) again from the state. `storage/` holds the files of the Panel assistant's chats and the key of the visitor statistics. No backup includes it. A new key gives every visitor a new fingerprint, and older visits then no longer match the own IP addresses in the Panel.
+
+The visitor statistics store the country of each address, never the address. The country comes from the free list "IP to Country Lite" of [DB-IP](https://db-ip.com) (CC BY 4.0). `bin/countries.php` downloads it into `countries/` next to `www/`: the deploy into every release, `make countries` locally. Without the list a request has no country. A failed download stops no deploy and shows as a warning. `bin/countries-from-log.php` fills the country of older requests from the access log of the host. The log keeps only the first two numbers of an IPv4 address, so the script matches each request to its log line by second, method, URI, status and user agent. On the server: `ssh <host> "php85 -- <site folder>/current/www <log folder>/access_log_<site>_*.gz" < bin/countries-from-log.php`.
 
 A release has a symlink into `shared/` for each of these paths. The switch replaces `.htaccess` in one rename. Then a health check requests the start page, the RSS feed and the newest post. If one of them does not answer 200, the site switches back to the previous release, the check runs again, and the deploy fails. A failed switch also switches back. A failed deploy deletes its release, so the newest 5 releases that stay all worked. To go back to an older version, run the deploy of its commit again in GitHub Actions.
 

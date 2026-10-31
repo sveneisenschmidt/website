@@ -91,6 +91,7 @@ bin/deploy.sh >/dev/null
 second="$(current)"
 [ "$second" != "$first" ] || fail "current did not move"
 [ -f "$SITE/releases/$second/www/index.php" ] && [ -L "$SITE/releases/$second/www/content" ] || fail "the release has no code or no symlink to the content"
+[ -s "$SITE/releases/$second/countries/ranges.bin" ] || fail "the release has no country database"
 [ "$(status)" = 200 ] || fail "the second release does not answer 200"
 unreadable="$(find "$SITE/releases/$second" \( -type d ! -perm -o+rx \) -o \( -type f ! -perm -o+r \) | head -3)"
 [ -z "$unreadable" ] || fail "the web server cannot read: $unreadable"

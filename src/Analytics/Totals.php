@@ -14,18 +14,21 @@ use Website\Models\PostPage;
  * @phpstan-import-type Day from Months
  * @phpstan-type PageRow array{id: string, title: string, url: ?string, visits: int}
  * @phpstan-type OriginRow array{host: string, visits: int}
+ * @phpstan-type CountryRow array{code: string, visits: int}
  */
 final class Totals
 {
     /**
      * Totals for the Panel over the last $days days, today included. Every
-     * day has its own pages and origins, so the Panel can show one day.
+     * day has its own pages, origins and countries, so the Panel can show
+     * one day.
      *
      * @return array{
-     *     days: list<array{date: string, visits: int, views: int, pages: list<PageRow>, referrers: list<OriginRow>}>,
+     *     days: list<array{date: string, visits: int, views: int, pages: list<PageRow>, referrers: list<OriginRow>, countries: list<CountryRow>}>,
      *     totals: array{today: int, week: int, month: int, views: int},
      *     pages: list<PageRow>,
      *     referrers: list<OriginRow>,
+     *     countries: list<CountryRow>,
      *     bots: array{named: int, suspect: int, names: list<array{name: string, hits: int}>},
      * }
      */
@@ -37,6 +40,7 @@ final class Totals
         $list = [];
         $pages = [];
         $referrers = [];
+        $countries = [];
         for ($i = $days - 1; $i >= 0; $i--) {
             $date = date('Y-m-d', strtotime("-$i days"));
             $day = $byDate[$date] ?? [];
@@ -46,12 +50,16 @@ final class Totals
                 'views' => $day['views'] ?? 0,
                 'pages' => self::pages($day['pages'] ?? []),
                 'referrers' => self::origins($day['referrers'] ?? []),
+                'countries' => self::countries($day['countries'] ?? []),
             ];
             foreach ($day['pages'] ?? [] as $id => $n) {
                 $pages[$id] = ($pages[$id] ?? 0) + $n;
             }
             foreach ($day['referrers'] ?? [] as $host => $n) {
                 $referrers[$host] = ($referrers[$host] ?? 0) + $n;
+            }
+            foreach ($day['countries'] ?? [] as $code => $n) {
+                $countries[$code] = ($countries[$code] ?? 0) + $n;
             }
         }
         $sum = fn(array $days) => array_sum(array_column($days, 'visits'));
@@ -65,6 +73,7 @@ final class Totals
             ],
             'pages' => self::pages($pages),
             'referrers' => self::origins($referrers),
+            'countries' => self::countries($countries),
             'bots' => self::bots($from, $today),
         ];
     }
@@ -81,7 +90,7 @@ final class Totals
         $visits = 0;
         $views = 0;
         $pages = [];
-        foreach (self::days("$first-01", date('Y-m-d'), origins: false) as $day) {
+        foreach (self::days("$first-01", date('Y-m-d'), details: false) as $day) {
             $visits += $day['visits'] ?? 0;
             $views += $day['views'] ?? 0;
             foreach ($day['pages'] ?? [] as $id => $n) {
@@ -152,12 +161,27 @@ final class Totals
     }
 
     /**
+     * Every country with its visits, the most first, countries with the same
+     * visits by code. "" stands for the visits without a country and comes
+     * last among them.
+     *
+     * @param array<string, int> $visits
+     * @return list<CountryRow>
+     */
+    private static function countries(array $visits): array
+    {
+        uksort($visits, fn($a, $b) => [$visits[$b], $a === ''] <=> [$visits[$a], $b === ''] ?: strcmp((string) $a, (string) $b));
+        return array_map(fn($code) => ['code' => (string) $code, 'visits' => $visits[$code]], array_keys($visits));
+    }
+
+    /**
      * The days from $from to $to from Months and Hits, keyed by date.
-     * Without $origins, the days from Hits have no referrers (Hits::days()).
+     * Without $details, the days from Hits have no referrers and no
+     * countries (Hits::days()).
      *
      * @return array<string, Day>
      */
-    private static function days(string $from, string $to, bool $origins = true): array
+    private static function days(string $from, string $to, bool $details = true): array
     {
         $days = [];
         foreach (Months::all() as $month) {
@@ -170,7 +194,7 @@ final class Totals
                 }
             }
         }
-        foreach (Hits::days($from, $to, $origins) as $date => $day) {
+        foreach (Hits::days($from, $to, $details) as $date => $day) {
             $days[$date] = self::add($days[$date] ?? [], $day);
         }
         return $days;
@@ -194,6 +218,7 @@ final class Totals
             'views' => ($a['views'] ?? 0) + ($b['views'] ?? 0),
             'pages' => $sum($a['pages'] ?? [], $b['pages'] ?? []),
             'referrers' => $sum($a['referrers'] ?? [], $b['referrers'] ?? []),
+            'countries' => $sum($a['countries'] ?? [], $b['countries'] ?? []),
         ];
     }
 
