@@ -145,7 +145,7 @@ final class Uploads
         $meta = [
             'kind' => 'image',
             'ext' => $ext,
-            'name' => self::name($name, $ext),
+            'name' => self::unique(self::name($name, $ext)),
             'width' => $turned ? $height : $width,
             'height' => $turned ? $width : $height,
             'orientation' => $orientation,
@@ -488,11 +488,30 @@ final class Uploads
         return ['id' => $id] + $meta;
     }
 
-    /** The final file name an upload suggests: its name made safe, the extension of its type. */
+    /** The file name of an image upload in a post: its original name made safe, the extension of its type. */
     private static function name(string $name, string $ext): string
     {
         $base = F::safeName(pathinfo($name, PATHINFO_FILENAME));
         return ($base === '' ? 'photo' : $base) . '.' . $ext;
+    }
+
+    /**
+     * $name, or with "-2", "-3" … before the extension when an image upload
+     * of this chat has that name already. A draft takes its photos under
+     * these names, so two photos of one chat never share a name.
+     */
+    private static function unique(string $name): string
+    {
+        $taken = [];
+        foreach (array_keys(self::state()['items'], 'image', true) as $id) {
+            $taken[] = self::meta($id)['name'] ?? null;
+        }
+        $base = pathinfo($name, PATHINFO_FILENAME);
+        $ext = pathinfo($name, PATHINFO_EXTENSION);
+        for ($n = 2, $candidate = $name; in_array($candidate, $taken, true); $n++) {
+            $candidate = "$base-$n.$ext";
+        }
+        return $candidate;
     }
 
     /**

@@ -86,7 +86,7 @@ final class Tools
                 'photo' => $str + ['description' => 'File id from read_post, or upload id'],
                 'crop' => $object(['x' => $num, 'y' => $num, 'w' => $num, 'h' => $num]) + ['description' => 'Fractions of width and height'],
             ]),
-            $tool('propose_post', 'Proposes a new draft in one step: its fields, photos from uploads of this chat and a route. Nothing changes until the user clicks. The slug must be free in all four sections, drafts included, and no redirect may start at the new URL. (image: file name) refers to the file names in photos. A route is possible for photo and trip; no stations and no gpx means no route. ' . self::TEXT_RULES, [
+            $tool('propose_post', 'Proposes a new draft in one step: its fields, photos from uploads of this chat and a route. Nothing changes until the user clicks. The slug must be free in all four sections, drafts included, and no redirect may start at the new URL. Each photo keeps the file name of its upload, as the message with the upload states it; (image: file name) and cover refer to these names. A route is possible for photo and trip; no stations and no gpx means no route. ' . self::TEXT_RULES, [
                 'type' => ['type' => 'string', 'enum' => array_keys(Types::ALL)],
                 'slug' => $str + ['description' => 'a-z, 0-9 and single hyphens'],
                 'date' => $str + ['description' => 'YYYY-MM-DD HH:MM:SS, Europe/Berlin, not in the future'],
@@ -97,12 +97,11 @@ final class Tools
                 'trip' => $str + ['description' => 'Field "Reise" of trip posts, else empty'],
                 'photos' => ['type' => 'array', 'items' => $object([
                     'upload' => $str + ['description' => 'Upload id'],
-                    'filename' => $str + ['description' => 'Final file name: a-z, 0-9, - and _, with the extension of the upload'],
                     'alt' => $str,
                     'caption' => $str,
                     'photographer' => $str,
                 ])],
-                'cover' => $str + ['description' => 'One of the file names, or empty'],
+                'cover' => $str + ['description' => 'The file name of one of the photos, or empty'],
                 'route' => $route,
             ]),
             $tool('propose_edit', 'Proposes new text for one passage of a text field of a post or of about. The passage must occur exactly once in the field as the Panel shows it. With several versions the user picks one. ' . self::TEXT_RULES, [
