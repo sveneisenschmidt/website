@@ -1,5 +1,5 @@
 /* The archive has no side column and spans the full grid width. The
-   auto-fit lists fill the space with more columns. */
+   lists fill the space with more columns. */
 .archive {
     grid-column: 1 / -1;
 }
@@ -62,9 +62,11 @@
     text-transform: uppercase;
 }
 
+/* auto-fill keeps the empty columns, so a month with few photos has tiles of
+   the same size as every other month. */
 .archive-sheet {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(var(--width-tile), 100%), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(var(--width-tile), 100%), 1fr));
     gap: var(--space-tile);
     padding: 0;
     padding-top: var(--space-title);
