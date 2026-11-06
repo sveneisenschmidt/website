@@ -121,6 +121,16 @@ final class AssistantPostTest extends AssistantTestCase
         $this->assertSame('done', Session::decisions()[$card['id']]['state']);
     }
 
+    /** The card opens the link in a new tab, where only a whole URL reaches the Panel. */
+    public function testTheLinkOfANewDraftOpensThePanel(): void
+    {
+        $card = $this->card($this->propose($this->input(['text' => ''])));
+
+        Apply::decide($card['id'], 'apply');
+
+        $this->assertStringStartsWith($this->kirby->url('panel') . '/pages/', Session::decisions()[$card['id']]['result']['link']);
+    }
+
     public function testADraftComesWithPhotosAndRouteInOneClick(): void
     {
         $a = Uploads::accept($this->gpsJpeg(1, 'a.jpg'), 'Aika.JPG')['id'];

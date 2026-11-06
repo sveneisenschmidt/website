@@ -118,6 +118,7 @@ panel.plugin("website/assistant", {
           context: this.page,
           text: "",
           busy: false,
+          deciding: null,
           uploading: null,
           dragging: false,
           error: null,
@@ -293,10 +294,22 @@ panel.plugin("website/assistant", {
           await this.post("stop");
         },
         async decide(id, action, version = null) {
-          // A card that is gone, for example after "Neuer Chat" in another tab,
-          // comes back with the key error.
-          const state = await this.post("decide", { id, action, version });
-          this.error = state.error ?? null;
+          this.deciding = { id, action, version };
+          try {
+            // A card that is gone, for example after "Neuer Chat" in another
+            // tab, comes back with the key error.
+            const state = await this.post("decide", { id, action, version });
+            this.error = state.error ?? null;
+          } catch (e) {
+            this.$panel.error(e);
+          } finally {
+            this.deciding = null;
+          }
+        },
+        // A button of a card shows the loader while its own click runs.
+        decideIcon(id, action, version = null) {
+          const click = this.deciding;
+          return click && click.id === id && click.action === action && click.version === version ? "loader" : undefined;
         },
         reset() {
           if (this.chat.open === 0) {
@@ -478,7 +491,7 @@ panel.plugin("website/assistant", {
                           <span>{{ item.proposal.versions.length > 1 ? 'Fassung ' + (v + 1) : 'Nachher' }}</span>
                           <div class="blog-ai-version">
                             <p v-html="marked(version, (item.proposal.versionMarks || [])[v])"></p>
-                            <k-button v-if="item.proposal.versions.length > 1 && ['open', 'failed'].includes(item.proposal.state)" size="sm" variant="filled" theme="positive" :disabled="busy" @click="decide(item.id, 'apply', v)">Diese Fassung übernehmen</k-button>
+                            <k-button v-if="item.proposal.versions.length > 1 && ['open', 'failed'].includes(item.proposal.state)" size="sm" variant="filled" theme="positive" :disabled="busy || !!deciding" :icon="decideIcon(item.id, 'apply', v)" @click="decide(item.id, 'apply', v)">Diese Fassung übernehmen</k-button>
                           </div>
                         </div>
                       </template>
@@ -487,8 +500,8 @@ panel.plugin("website/assistant", {
                       <p v-if="item.proposal.state === 'failed'" class="blog-ai-warn">Das hat nicht geklappt. Nichts geändert.</p>
                       <footer class="blog-ai-card-foot">
                         <template v-if="['open', 'failed'].includes(item.proposal.state)">
-                          <k-button v-if="!(item.proposal.versions && item.proposal.versions.length > 1)" size="sm" variant="filled" theme="positive" :disabled="busy" @click="decide(item.id, 'apply')">{{ item.proposal.state === 'failed' ? 'Nochmal versuchen' : (item.proposal.kind === 'post' ? 'Anlegen' : 'Übernehmen') }}</k-button>
-                          <k-button size="sm" variant="filled" :disabled="busy" @click="decide(item.id, 'discard')">Verwerfen</k-button>
+                          <k-button v-if="!(item.proposal.versions && item.proposal.versions.length > 1)" size="sm" variant="filled" theme="positive" :disabled="busy || !!deciding" :icon="decideIcon(item.id, 'apply')" @click="decide(item.id, 'apply')">{{ item.proposal.state === 'failed' ? 'Nochmal versuchen' : (item.proposal.kind === 'post' ? 'Anlegen' : 'Übernehmen') }}</k-button>
+                          <k-button size="sm" variant="filled" :disabled="busy || !!deciding" :icon="decideIcon(item.id, 'discard')" @click="decide(item.id, 'discard')">Verwerfen</k-button>
                           <span class="blog-ai-note">{{ item.proposal.where }}</span>
                         </template>
                         <template v-else-if="item.proposal.state === 'done'">
