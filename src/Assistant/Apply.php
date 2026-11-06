@@ -165,7 +165,7 @@ final class Apply
         $draft = Content::isDraft($model);
         return [
             'text' => $draft ? 'Im Entwurf gespeichert.' : 'In den Änderungen gespeichert. Live erst mit deinem Speichern.',
-            'link' => $model->panel()->url(true),
+            'link' => $model->panel()->url(),
             'linkText' => $model instanceof File ? 'Datei öffnen' : 'Öffnen',
             'claude' => $draft ? '' : ' It waits in the unsaved changes until the user saves in the Panel.',
         ];
@@ -352,7 +352,7 @@ final class Apply
                 $in['redirect'] => 'URL geändert. Die alte URL leitet weiter.',
                 default => 'URL geändert. Die alte URL leitet nicht weiter.',
             },
-            'link' => $page->panel()->url(true),
+            'link' => $page->panel()->url(),
             'linkText' => 'Öffnen',
             'claude' => ' New id: ' . $page->id() . '.' . match (true) {
                 $draft => '',
@@ -415,7 +415,7 @@ final class Apply
         }
         return [
             'text' => 'Als Entwurf angelegt.',
-            'link' => $draft->panel()->url(true),
+            'link' => $draft->panel()->url(),
             'linkText' => 'Entwurf öffnen',
             'claude' => ' New draft: ' . $draft->id() . ' (' . $draft->uuid()->toString() . ').',
         ];

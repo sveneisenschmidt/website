@@ -66,6 +66,7 @@ final class AssistantEditTest extends AssistantTestCase
         $this->assertSame('done', Session::decisions()[$card['id']]['state']);
         $this->assertSame('Test intro', $this->page()->version('latest')->read()['intro'], 'Live stays as it was.');
         $this->assertSame('A new intro.', $this->page()->version('changes')->read()['intro']);
+        $this->assertStringStartsWith($this->kirby->url('panel') . '/pages/', Session::decisions()[$card['id']]['result']['link']);
         $this->assertSame(['(Card "' . $card['title'] . '": applied by the user. It waits in the unsaved changes until the user saves in the Panel.)'], $this->kirby->session()->get('blog.assistant.notes'));
     }
 
@@ -235,6 +236,7 @@ final class AssistantEditTest extends AssistantTestCase
         $this->assertSame('done', Session::decisions()[$card['id']]['state']);
         $this->assertNull($this->kirby->site()->find('photos')->findPageOrDraft('test-photo'));
         $this->assertSame('Test Photo', $this->page('photos/new-name')->title()->value());
+        $this->assertStringStartsWith($this->kirby->url('panel') . '/pages/', Session::decisions()[$card['id']]['result']['link']);
         $this->assertSame([['from' => '/2026-10-07-test-photo/', 'to' => '/2026-10-07-new-name/', 'rss' => 'keep']], Redirects::all());
         $this->assertSame(['(Card "' . $card['title'] . '": applied by the user. New id: photos/new-name. The old URL redirects to the new one.)'], $this->kirby->session()->get('blog.assistant.notes'));
     }
