@@ -11,9 +11,9 @@ use Kirby\Text\KirbyTag;
  * renders a figure (snippets/figure.php), (map:) the map of a photo or trip
  * post. The HTML of each tag contains no blank line: Markdown ends an HTML
  * block at a blank line and would treat the rest as Markdown text. The HTML
- * of each tag ends with a line end. With the line end after
- * the tag it makes a blank line, so the line below the tag is Markdown and
- * no part of the HTML block.
+ * of each tag ends with a line end. With the line end after a tag that
+ * ends its line, it makes a blank line, so the line below the tag is
+ * Markdown and no part of the HTML block.
  */
 final class Tags
 {

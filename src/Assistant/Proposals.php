@@ -36,17 +36,19 @@ final class Proposals
     /**
      * The raw HTML in a text: each piece that the Markdown parser of the
      * site passes on as it is, such as a tag, a comment, or a block that
-     * starts with a tag. The parsers of the site themselves decide. They
-     * read the text with its KirbyText tags as written. The HTML of (image:)
-     * and of (map:) ends with a line end, so the line below such a tag reads
-     * as the check reads it (`Tags`). The HTML of a tag of Kirby that renders
-     * a block, such as (video:), takes the line directly below it into its
-     * block; the check does not see that.
-     * `Markdown` and `MarkdownExtra` (option markdown.extra) both look. With $inline they
-     * read the text as one line, as the site renders a caption: there an
-     * indented line is text and no code block. An autolink to a web
-     * or mail address, such as <https://example.com>, is a link and no raw
-     * HTML. An autolink with another scheme, such as <javascript://...>,
+     * starts with a tag. The parsers of the site themselves decide;
+     * `Markdown` and `MarkdownExtra` (option markdown.extra) both look.
+     * With $inline they read the text as one line, as the site renders a
+     * caption: there an indented line is text and no code block.
+     *
+     * The check reads each KirbyText tag as text. Kirby puts the HTML of a
+     * tag into the text before Markdown reads it, and Markdown passes on
+     * the text in the same block as that HTML as it is. The check does not
+     * see such text: a code span on the line of a tag is code here and a
+     * tag on the page.
+     *
+     * An autolink to a web or mail address, such as <https://example.com>,
+     * is a link and no raw HTML. An autolink with another scheme, such as <javascript://...>,
      * counts, because a click on it runs in the site. Entities such as
      * &amp; do not count.
      *

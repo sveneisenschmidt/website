@@ -38,7 +38,7 @@ final class Tools
      * `SpoilerBlock`. A change here changes the tool definitions and reaches
      * new chats only.
      */
-    public const TEXT_RULES = 'Texts: Markdown, no raw HTML. KirbyText tags: (image: file name), (map:) and (link: page://<uuid> text: …). Spoiler, only when the user asks for one and only in the fields intro and text: a line (spoiler) before a section and a line (/spoiler) after it, each marker alone on its line; the page covers the section until the reader clicks it, and previews leave it out.';
+    public const TEXT_RULES = 'Texts: Markdown, no raw HTML. KirbyText tags: (image: file name), (map:) and (link: page://<uuid> text: …). Spoiler: the line (spoiler) starts a covered section, the line (/spoiler) ends it. The reader uncovers the section with a click. Write a spoiler only when the user asks for a spoiler, and only in the fields intro and text.';
 
     /**
      * The tool definitions for the request. They are not strict (no
