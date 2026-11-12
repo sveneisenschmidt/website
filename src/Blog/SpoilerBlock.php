@@ -20,7 +20,8 @@ namespace Website\Blog;
  *
  * Kirby has two parser classes, Parsedown and ParsedownExtra, and selects
  * one with the option `extra`. Markdown and MarkdownExtra extend them and
- * use this trait, so both know the section.
+ * use this trait, so both know the section. Each class also ends the
+ * blocks that only its parser has at a start marker.
  */
 trait SpoilerBlock
 {
@@ -68,20 +69,6 @@ trait SpoilerBlock
         unset($Block['interrupted']);
         $Block['element']['handler']['argument'] = [...$Block['element']['handler']['argument'], ...$blank, $Line['body']];
         return $Block;
-    }
-
-    /**
-     * A block of HTML, such as the map of (map:), takes every line up to
-     * the next blank line. A start marker ends it, so the section below a
-     * map needs no blank line.
-     *
-     * @param array{body: string, indent: int, text: string} $Line
-     * @param array<string, mixed> $Block
-     * @return array<string, mixed>|null
-     */
-    protected function blockMarkupContinue($Line, array $Block)
-    {
-        return self::isMarker($Line, '(spoiler)') ? null : parent::blockMarkupContinue($Line, $Block);
     }
 
     /**

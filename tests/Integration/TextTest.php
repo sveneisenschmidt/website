@@ -256,6 +256,25 @@ final class TextTest extends IntegrationTestCase
         $this->assertSame("<blockquote>\n<p>Quote.</p>\n</blockquote>\n$section", $extra("> Quote.\n(spoiler)\nSecret.\n(/spoiler)"));
         $this->assertStringEndsWith("</div>\n$section", $extra("(map:)\n(spoiler)\nSecret.\n(/spoiler)"));
         $this->assertSame("<pre><code>(spoiler)\ntext</code></pre>", $extra("```\n(spoiler)\ntext\n```"));
+        // It also ends the definition list and the footnote above it.
+        $this->assertSame("<dl>\n<dt>Term</dt>\n<dd>Meaning</dd>\n</dl>\n$section", $extra("Term\n: Meaning\n(spoiler)\nSecret.\n(/spoiler)"));
+        $this->assertStringStartsWith("<p>Text<sup", $html = $extra("Text[^1]\n\n[^1]: Note\n(spoiler)\nSecret.\n(/spoiler)"));
+        $this->assertStringContainsString("</p>\n$section\n<div class=\"footnotes\">", $html);
+        // A section in HTML with markdown="1" stays inside that HTML.
+        $this->assertSame("<div>\n<p>Intro</p>\n$section\n</div>", $extra("<div markdown=\"1\">\nIntro\n\n(spoiler)\nSecret.\n(/spoiler)\n</div>"));
+    }
+
+    public function testTheMarkdownOptionsCountAsInKirby(): void
+    {
+        $render = fn(array $options) => $this->kirby->kirbytext("Term\n: Meaning", ['markdown' => $options]);
+
+        // Only `extra` set to true selects the parser with definition lists.
+        $this->assertStringContainsString('<dl>', $render(['extra' => true]));
+        $this->assertStringNotContainsString('<dl>', $render(['extra' => 'true']));
+        $this->assertStringNotContainsString('<dl>', $render(['extra' => 1]));
+        // `breaks` makes a <br> of a line end, and null turns it off.
+        $this->assertStringContainsString('<br', $render(['breaks' => true]));
+        $this->assertStringNotContainsString('<br', $render(['breaks' => null]));
     }
 
     public function testTwoSpoilersInOneText(): void
