@@ -176,3 +176,49 @@
     background: var(--color-panel);
     color: var(--color-ink-inverted);
 }
+
+/* A spoiler section covers each of its words with a bar in the color of the
+   text and leaves the spaces free. A selection shows the words, and a click
+   uncovers the section (spoiler.js). An image and a map are a bar of their
+   own size, and a heading has no anchor link, because its address holds
+   the words of the heading. */
+.spoiler:not(.is-open) {
+    cursor: pointer;
+}
+
+.spoiler:not(.is-open) .spoiler-word {
+    background: var(--color-ink);
+    color: var(--color-ink);
+}
+
+.spoiler:not(.is-open) .spoiler-word::selection {
+    background: var(--color-placeholder);
+    color: var(--color-ink);
+}
+
+.spoiler:not(.is-open) a {
+    text-decoration: none;
+}
+
+.spoiler:not(.is-open) code {
+    background: none;
+}
+
+.spoiler:not(.is-open) .frame {
+    background: var(--color-ink);
+}
+
+/* map.js sets the background of the map in its style attribute, so the bar
+   of a map is an element above it. */
+.spoiler:not(.is-open) .map::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--color-ink);
+}
+
+.spoiler:not(.is-open) .frame-picture,
+.spoiler:not(.is-open) .map > *,
+.spoiler:not(.is-open) .heading-anchor {
+    visibility: hidden;
+}

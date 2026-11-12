@@ -78,4 +78,47 @@ final class TextTest extends IntegrationTestCase
         $this->assertSame("Cliff’s new blog.\nGo check it out!", $note->summary());
         $this->assertSame('Cliff’s new blog. Go check it out!', $note->metaDescription());
     }
+
+    public function testASpoilerCoversEachWordOfItsSection(): void
+    {
+        $html = Text::html("Before.\n\n(spoiler)\n\nHe is *his father*, [see](https://example.com).\n\nFox & wagtail.\n\n(/spoiler)\n\nAfter.", $this->post);
+
+        $word = fn(string $text) => "<span class=\"spoiler-word\">$text</span>";
+        $this->assertSame(
+            "<p>Before.</p>\n<div class=\"spoiler\">\n"
+            . "<p>{$word('He')} {$word('is')} <em>{$word('his')} {$word('father')}</em>{$word(',')} <a href=\"https://example.com\">{$word('see')}</a>{$word('.')}</p>\n"
+            . "<p>{$word('Fox')} {$word('&amp;')} {$word('wagtail.')}</p>\n"
+            . "</div>\n<p>After.</p>",
+            $html,
+        );
+    }
+
+    public function testASpoilerLeavesScriptsAndAttributesAsTheyAre(): void
+    {
+        $html = Text::spoilers("<p>(spoiler)</p>\n<div class=\"map\"><script type=\"application/json\">{\"a\": \"b c\"}</script>\n</div>\n<p><img alt=\"two words\" src=\"a.webp\"> one</p>\n<p>(/spoiler)</p>");
+
+        $this->assertSame(
+            "<div class=\"spoiler\">\n<div class=\"map\"><script type=\"application/json\">{\"a\": \"b c\"}</script>\n</div>\n"
+            . "<p><img alt=\"two words\" src=\"a.webp\"> <span class=\"spoiler-word\">one</span></p>\n</div>",
+            $html,
+        );
+    }
+
+    public function testASpoilerWithoutItsEndStaysText(): void
+    {
+        $this->assertSame("<p>(spoiler)</p>\n<p>Open end.</p>", Text::html("(spoiler)\n\nOpen end.", $this->post));
+    }
+
+    public function testTheSummaryLeavesOutSpoilersAndTheWordCountKeepsThem(): void
+    {
+        $note = $this->post('notes', 'note', 'spoiled', 'Spoiled');
+        $note = $this->kirby->impersonate('kirby', fn() => $note->update([
+            'intro' => '',
+            'text' => "One two.\n\n(spoiler)\n\nThree four.\n\n(/spoiler)\n\nFive.",
+        ]));
+
+        $this->assertSame("One two.\nFive.", $note->summary());
+        $this->assertSame('One two. Five.', $note->metaDescription());
+        $this->assertSame(5, $note->wordCount());
+    }
 }

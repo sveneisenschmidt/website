@@ -55,6 +55,42 @@ final class Text
     }
 
     /**
+     * Removes each spoiler section, the markers included, from Markdown. The
+     * summary of a page goes into link previews and the feed, where nothing
+     * covers the words.
+     */
+    public static function withoutSpoilers(string $markdown): string
+    {
+        return preg_replace('!^\(spoiler\)\h*$.*?^\(/spoiler\)\h*$!ms', '', $markdown);
+    }
+
+    /**
+     * Turns each section between the paragraphs (spoiler) and (/spoiler) of
+     * rendered HTML into a div with the class spoiler. Every word of the
+     * section gets a span, so the style sheet covers the words and leaves
+     * the spaces between them free. spoiler.js uncovers a section on a
+     * click. A (spoiler) without a (/spoiler) stays text.
+     */
+    public static function spoilers(string $html): string
+    {
+        return preg_replace_callback('!<p>\(spoiler\)</p>(.*?)<p>\(/spoiler\)</p>!s', function (array $m) {
+            $section = '';
+            $code = false;
+            // The pieces are tags and the text between them. The content of
+            // a script or style element is code, and a span would break it.
+            foreach (preg_split('!(<[^>]*>)!', $m[1], -1, PREG_SPLIT_DELIM_CAPTURE) as $piece) {
+                if (str_starts_with($piece, '<')) {
+                    $code = preg_match('!^<(/?)(?:script|style)\b!i', $piece, $tag) ? $tag[1] === '' : $code;
+                    $section .= $piece;
+                } else {
+                    $section .= $code ? $piece : preg_replace('!\S+!u', '<span class="spoiler-word">$0</span>', $piece);
+                }
+            }
+            return '<div class="spoiler">' . $section . '</div>';
+        }, $html);
+    }
+
+    /**
      * Rendered HTML as plain text: tags removed, entities decoded. The EXIF
      * lines of figures and the route scripts of maps are removed first,
      * because they are not text that a reader reads.

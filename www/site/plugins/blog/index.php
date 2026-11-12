@@ -12,6 +12,7 @@ use Website\Blog\Posts;
 use Website\Blog\Redirects;
 use Website\Blog\SrgbGd;
 use Website\Blog\Tags;
+use Website\Blog\Text;
 use Website\Blog\Types;
 use Website\Models\EssayPage;
 use Website\Models\PostPage;
@@ -66,6 +67,9 @@ Kirby::plugin('website/blog', [
         // thumbnail URLs and renders the thumbnails before the first visit.
         'file.*:after' => fn(Event $event) => Images::renderAfter($event),
         'page.*:after' => fn(Event $event) => Images::renderAfter($event),
+        // Every text that Kirby renders gets its spoiler sections, so the
+        // markers never show as words.
+        'kirbytext:after' => fn(?string $text) => Text::spoilers((string) $text),
     ],
     'tags' => [
         'image' => [
