@@ -101,10 +101,12 @@ final class Text
     /**
      * A piece of HTML as the content of an element, read by the HTML parser
      * of PHP. innerHTML of the element is the piece as the parser writes it.
+     * The parser reads a piece of HTML only as the content of an element:
+     * its DocumentFragment takes XML, where <br> is an error.
      */
     private static function fragment(string $html): \Dom\Element
     {
-        $root = \Dom\HTMLDocument::createEmpty('UTF-8')->createElement('body');
+        $root = \Dom\HTMLDocument::createEmpty('UTF-8')->createElement('div');
         $root->innerHTML = $html;
         return $root;
     }
