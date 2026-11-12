@@ -58,7 +58,13 @@
     background: none;
 }
 
+/* The map is the positioned parent of its layers, and of the bar that
+   covers it in a spoiler section, also before map.js runs. Its layers have
+   z-index values of their own. isolation keeps them inside the map, so
+   they scroll below the sticky head of the article. */
 .body .map {
+    position: relative;
+    isolation: isolate;
     height: var(--height-map);
     margin-block: var(--space-figure);
     border-radius: var(--radius-image);
@@ -209,13 +215,16 @@
     text-decoration: none;
 }
 
-.spoiler:not(.is-open) code {
+.spoiler:not(.is-open) code,
+.spoiler:not(.is-open) pre {
     background: none;
 }
 
 /* The picture of an image is moved out of its box, and the box shows its
-   background. This covers every image, with or without a frame. */
-.spoiler:not(.is-open) img {
+   background. This covers every image, with or without a frame. The tiles
+   of a map are images too and keep their style: the bar of the map covers
+   them. */
+.spoiler:not(.is-open) img:not(.map img) {
     object-fit: none;
     object-position: 100vw 100vh;
     background: var(--color-ink);
@@ -231,6 +240,7 @@
 }
 
 .spoiler:not(.is-open) .map > *,
-.spoiler:not(.is-open) .heading-anchor {
+.spoiler:not(.is-open) .heading-anchor,
+.spoiler:not(.is-open) .copy-button {
     visibility: hidden;
 }

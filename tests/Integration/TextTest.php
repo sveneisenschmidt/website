@@ -126,9 +126,52 @@ final class TextTest extends IntegrationTestCase
         $this->assertSame("<pre><code>(spoiler)\ntext\n(/spoiler)</code></pre>", $html);
     }
 
-    public function testASpoilerWithoutItsEndStaysText(): void
+    public function testASpoilerWithoutItsEndRunsToTheEndOfItsParent(): void
     {
-        $this->assertSame("<p>(spoiler)</p>\n<p>Open end.</p>", Text::html("(spoiler)\n\nOpen end.", $this->post));
+        $word = fn(string $text) => "<span class=\"spoiler-word\">$text</span>";
+
+        $this->assertSame(
+            "<p>Before.</p>\n<div class=\"spoiler\">\n<p>{$word('Open')} {$word('end.')}</p></div>",
+            Text::html("Before.\n\n(spoiler)\n\nOpen end.", $this->post),
+        );
+        // The section starts in the quote and its end marker is outside:
+        // it ends with the quote, and the HTML stays well-formed.
+        $this->assertSame(
+            "<blockquote>\n<div class=\"spoiler\">\n<p>{$word('Secret.')}</p>\n</div></blockquote>\n<p>More.</p>\n<p>(/spoiler)</p>",
+            Text::html("> (spoiler)\n> Secret.\n\nMore.\n\n(/spoiler)", $this->post),
+        );
+    }
+
+    public function testASpoilerInAQuoteAndWithOtherLineFormats(): void
+    {
+        $word = fn(string $text) => "<span class=\"spoiler-word\">$text</span>";
+        $section = "<div class=\"spoiler\">\n<p>{$word('Secret.')}</p>\n</div>";
+
+        $this->assertSame("<blockquote>\n$section\n</blockquote>", Text::html("> (spoiler)\n> Secret.\n> (/spoiler)", $this->post));
+        $this->assertSame($section, Text::html(" (spoiler)\nSecret.\n (/spoiler)", $this->post), 'a space before the markers');
+        $this->assertSame($section, Text::html("(spoiler)\r\n\r\nSecret.\r\n\r\n(/spoiler)", $this->post), 'Windows line ends');
+    }
+
+    public function testAMarkerThatIsNoLineOfItsOwnStaysText(): void
+    {
+        $this->assertSame('<p>A (spoiler) in a sentence, no (/spoiler) line.</p>', Text::html('A (spoiler) in a sentence, no (/spoiler) line.', $this->post));
+        $this->assertSame("<p><em>a\n(spoiler)\nb</em></p>", Text::html("*a\n(spoiler)\nb*", $this->post));
+        $this->assertSame("<p><em>a</em>(spoiler)</p>", Text::html('*a*(spoiler)', $this->post));
+    }
+
+    public function testASpoilerKeepsAttributesAndCommentsAsTheyAre(): void
+    {
+        $html = Text::spoilers("<p>(spoiler)</p>\n<p><a title=\"x > y\" href=\"/a\">one</a><!-- a > b --></p>\n<p>(/spoiler)</p>");
+
+        $this->assertSame("<div class=\"spoiler\">\n<p><a title=\"x > y\" href=\"/a\"><span class=\"spoiler-word\">one</span></a><!-- a > b --></p>\n</div>", $html);
+    }
+
+    public function testTwoSpoilersInOneText(): void
+    {
+        $html = Text::html("(spoiler)\nOne.\n(/spoiler)\n\nBetween.\n\n(spoiler)\nTwo.\n(/spoiler)", $this->post);
+
+        $this->assertSame(2, substr_count($html, '<div class="spoiler">'));
+        $this->assertStringContainsString('<p>Between.</p>', $html);
     }
 
     public function testTheSummaryLeavesOutSpoilersAndTheWordCountKeepsThem(): void
@@ -142,5 +185,23 @@ final class TextTest extends IntegrationTestCase
         $this->assertSame("One two.\nFive.", $note->summary());
         $this->assertSame('One two. Five.', $note->metaDescription());
         $this->assertSame(5, $note->wordCount());
+    }
+
+    public function testTheSummaryLeavesOutEverySpoilerThatThePageCovers(): void
+    {
+        $note = $this->post('notes', 'note', 'spoiled-summary', 'Spoiled summary');
+        $summary = function (string $intro, string $text) use (&$note) {
+            $note = $this->kirby->impersonate('kirby', fn() => $note->update(['intro' => $intro, 'text' => $text]));
+            return $note->summary();
+        };
+
+        $this->assertSame('One.', $summary('', "One.\n(spoiler)\nSecret.\n(/spoiler)"), 'no blank lines');
+        $this->assertSame('One.', $summary('', "One.\n\n> (spoiler)\n> Secret.\n> (/spoiler)"), 'in a quote');
+        $this->assertSame("One.\nTwo.", $summary('', "One.\r\n\r\n(spoiler)\r\n\r\nSecret.\r\n\r\n(/spoiler)\r\n\r\nTwo."), 'Windows line ends');
+        // The section starts in the intro and ends in the text.
+        $this->assertSame('Teaser.', $summary("Teaser.\n\n(spoiler)\n\nIntro secret.", "Text secret.\n\n(/spoiler)\n\nEnd."));
+        $this->assertStringNotContainsString('secret', $note->metaDescription());
+        $this->assertStringContainsString('<p>End.</p>', $note->bodyHtml());
+        $this->assertStringNotContainsString('(/spoiler)', $note->bodyHtml());
     }
 }

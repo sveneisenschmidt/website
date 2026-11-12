@@ -57,7 +57,7 @@ class SitePage extends Page
     public function summary(): string
     {
         $field = $this->intro()->or($this->text());
-        return Text::plain($field->value(Text::withoutMedia(Text::withoutSpoilers($field->value())))->kirbytext()->value());
+        return Text::plain(Text::withoutSpoilers($field->value(Text::withoutMedia($field->value()))->kirbytext()->value()));
     }
 
     /**

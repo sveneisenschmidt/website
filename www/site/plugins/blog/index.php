@@ -67,8 +67,8 @@ Kirby::plugin('website/blog', [
         // thumbnail URLs and renders the thumbnails before the first visit.
         'file.*:after' => fn(Event $event) => Images::renderAfter($event),
         'page.*:after' => fn(Event $event) => Images::renderAfter($event),
-        // Every text that Kirby renders gets its spoiler sections, so the
-        // markers never show as words.
+        // Every text that Kirby renders gets its spoiler sections: the
+        // body, the summary and the text for the word count.
         'kirbytext:after' => fn(?string $text) => Text::spoilers((string) $text),
     ],
     'tags' => [
