@@ -95,7 +95,7 @@ final class TextTest extends IntegrationTestCase
 
     public function testASpoilerLeavesScriptsAndAttributesAsTheyAre(): void
     {
-        $html = Text::spoilers("<p>(spoiler)</p>\n<div class=\"map\"><script type=\"application/json\">{\"a\": \"b c\"}</script>\n</div>\n<p><img alt=\"two words\" src=\"a.webp\"> one</p>\n<p>(/spoiler)</p>");
+        $html = Text::spoilers("<div class=\"spoiler\">\n<div class=\"map\"><script type=\"application/json\">{\"a\": \"b c\"}</script>\n</div>\n<p><img alt=\"two words\" src=\"a.webp\"> one</p>\n</div>");
 
         $this->assertSame(
             "<div class=\"spoiler\">\n<div class=\"map\"><script type=\"application/json\">{\"a\": \"b c\"}</script>\n</div>\n"
@@ -104,9 +104,187 @@ final class TextTest extends IntegrationTestCase
         );
     }
 
-    public function testASpoilerWithoutItsEndStaysText(): void
+    public function testASpoilerMarkerNeedsNoBlankLineAroundIt(): void
     {
-        $this->assertSame("<p>(spoiler)</p>\n<p>Open end.</p>", Text::html("(spoiler)\n\nOpen end.", $this->post));
+        $word = fn(string $text) => "<span class=\"spoiler-word\">$text</span>";
+        $section = "<div class=\"spoiler\">\n<p>{$word('Secret.')}</p>\n</div>";
+
+        $this->assertSame($section, Text::html("(spoiler)\nSecret.\n\n(/spoiler)", $this->post), 'no blank line after (spoiler)');
+        $this->assertSame($section, Text::html("(spoiler)\n\nSecret.\n(/spoiler)", $this->post), 'no blank line before (/spoiler)');
+        $this->assertSame(
+            "<p>Before.</p>\n$section\n<p>After.</p>",
+            Text::html("Before.\n(spoiler)\nSecret.\n(/spoiler)\nAfter.", $this->post),
+            'the markers inside one paragraph',
+        );
+        $this->assertSame($section, Text::html("(spoiler)  \nSecret.\n(/spoiler)  \n", $this->post), 'two spaces after a marker');
+    }
+
+    public function testASpoilerMarkerEndsTheMarkdownBlockNextToIt(): void
+    {
+        $word = fn(string $text) => "<span class=\"spoiler-word\">$text</span>";
+
+        // The line "---" makes a heading of the line above it, inside the
+        // section.
+        $html = Text::html("(spoiler)\nThe butler.\n---\n\n(/spoiler)", $this->post);
+        $this->assertStringStartsWith("<div class=\"spoiler\">\n<h2 id=\"the-butler\">{$word('The')} {$word('butler.')}", $html);
+        $this->assertStringNotContainsString('(spoiler)', $html);
+
+        // The HTML of a map takes the lines below it as its own, up to a
+        // blank line or a marker.
+        $html = Text::html("(map:)\n(spoiler)\nThe butler.\n(/spoiler)\nAfter.", $this->post);
+        $this->assertStringContainsString("</div>\n<div class=\"spoiler\">\n<p>{$word('The')} {$word('butler.')}</p>\n</div>\n<p>After.</p>", $html);
+
+        // A list and a quote take an unindented line below them as their
+        // own text. A start marker ends them.
+        $section = "<div class=\"spoiler\">\n<p>{$word('Secret.')}</p>\n<p>{$word('More.')}</p>\n</div>\n<p>After.</p>";
+        $this->assertSame("<ul>\n<li>one</li>\n<li>two</li>\n</ul>\n$section", Text::html("- one\n- two\n(spoiler)\nSecret.\n\nMore.\n\n(/spoiler)\n\nAfter.", $this->post));
+        $this->assertSame("<ol>\n<li>one</li>\n</ol>\n$section", Text::html("1. one\n(spoiler)\nSecret.\n\nMore.\n(/spoiler)\nAfter.", $this->post));
+        $this->assertSame("<blockquote>\n<p>Quote.</p>\n</blockquote>\n$section", Text::html("> Quote.\n(spoiler)\nSecret.\n\nMore.\n(/spoiler)\nAfter.", $this->post));
+        // Indented to the text of a list item, the section is in the item.
+        $this->assertSame(
+            "<ul>\n<li>one<div class=\"spoiler\">\n<p>{$word('Secret.')}</p>\n</div>\n</li>\n<li>two</li>\n</ul>",
+            Text::html("- one\n  (spoiler)\n  Secret.\n  (/spoiler)\n- two", $this->post),
+        );
+
+        // A list would take the end marker as text of its last item.
+        $html = Text::html("(spoiler)\n- one\n- two\n(/spoiler)\nAfter.", $this->post);
+        $this->assertStringEndsWith("</ul>\n</div>\n<p>After.</p>", $html);
+        $this->assertStringNotContainsString('(/spoiler)', $html);
+    }
+
+    public function testASpoilerWithoutContentIsNoSection(): void
+    {
+        $this->assertSame('', Text::html("(spoiler)\n\n(/spoiler)", $this->post));
+        $this->assertSame('<p>Before.</p>', Text::html("Before.\n(spoiler)", $this->post));
+        // An image without a word is content.
+        $this->assertSame("<div class=\"spoiler\">\n<p><img src=\"x.png\" alt=\"\"></p>\n</div>", Text::html("(spoiler)\n![](x.png)\n(/spoiler)", $this->post));
+        // A no-break space is no content.
+        $this->assertSame('', Text::html("(spoiler)\n\u{00A0}\n(/spoiler)", $this->post));
+    }
+
+    public function testASpoilerMarkerInACodeBlockStaysCode(): void
+    {
+        $html = Text::html("```\n(spoiler)\ntext\n(/spoiler)\n```", $this->post);
+
+        $this->assertSame("<pre><code>(spoiler)\ntext\n(/spoiler)</code></pre>", $html);
+        $this->assertSame("<pre><code>(spoiler)\ntext\n(/spoiler)</code></pre>", Text::html("~~~\n(spoiler)\ntext\n(/spoiler)\n~~~", $this->post));
+        $this->assertSame("<p>Code:</p>\n<pre><code>(spoiler)\ntext</code></pre>", Text::html("Code:\n\n    (spoiler)\n    text", $this->post));
+        // A block with four backticks holds a line with three.
+        $this->assertSame("<pre><code>```\n(spoiler)\n```</code></pre>", Text::html("````\n```\n(spoiler)\n```\n````", $this->post));
+    }
+
+    public function testASpoilerWithoutItsEndRunsToTheEndOfItsParent(): void
+    {
+        $word = fn(string $text) => "<span class=\"spoiler-word\">$text</span>";
+
+        $this->assertSame(
+            "<p>Before.</p>\n<div class=\"spoiler\">\n<p>{$word('Open')} {$word('end.')}</p>\n</div>",
+            Text::html("Before.\n\n(spoiler)\n\nOpen end.", $this->post),
+        );
+        // The section starts in the quote and its end marker is outside:
+        // it ends with the quote, and the HTML stays well-formed.
+        $this->assertSame(
+            "<blockquote>\n<div class=\"spoiler\">\n<p>{$word('Secret.')}</p>\n</div>\n</blockquote>\n<p>More.</p>\n<p>(/spoiler)</p>",
+            Text::html("> (spoiler)\n> Secret.\n\nMore.\n\n(/spoiler)", $this->post),
+        );
+    }
+
+    public function testASpoilerInAQuoteAndWithOtherLineFormats(): void
+    {
+        $word = fn(string $text) => "<span class=\"spoiler-word\">$text</span>";
+        $section = "<div class=\"spoiler\">\n<p>{$word('Secret.')}</p>\n</div>";
+
+        $this->assertSame("<blockquote>\n$section\n</blockquote>", Text::html("> (spoiler)\n> Secret.\n> (/spoiler)", $this->post));
+        $this->assertSame($section, Text::html(" (spoiler)\nSecret.\n (/spoiler)", $this->post), 'a space before the markers');
+        $this->assertSame($section, Text::html("(spoiler)\r\n\r\nSecret.\r\n\r\n(/spoiler)", $this->post), 'Windows line ends');
+    }
+
+    public function testAMarkerThatIsNoLineOfItsOwnStaysText(): void
+    {
+        $this->assertSame('<p>A (spoiler) in a sentence, no (/spoiler) line.</p>', Text::html('A (spoiler) in a sentence, no (/spoiler) line.', $this->post));
+        $this->assertSame("<p><em>a</em>(spoiler)</p>", Text::html('*a*(spoiler)', $this->post));
+        // A post that explains the markers writes them as code or emphasis.
+        $this->assertSame("<p><code>(spoiler)</code></p>\n<p>Shown.</p>\n<p><code>(/spoiler)</code></p>", Text::html("`(spoiler)`\n\nShown.\n\n`(/spoiler)`", $this->post));
+        $this->assertSame("<p><em>(spoiler)</em></p>\n<p>Shown.</p>", Text::html("*(spoiler)*\n\nShown.", $this->post));
+        $this->assertSame("<p><a href=\"https://example.com\">(spoiler)</a></p>\n<p>Shown.</p>", Text::html("[(spoiler)](https://example.com)\n\nShown.", $this->post));
+    }
+
+    public function testASpoilerKeepsLineBreaksAndSpecialSpacesOutOfItsBars(): void
+    {
+        $word = fn(string $text) => "<span class=\"spoiler-word\">$text</span>";
+
+        // Two spaces at the end of a line are a line break in Markdown.
+        $this->assertSame(
+            "<p>Before.</p>\n<div class=\"spoiler\">\n<p>{$word('Secret.')}<br>\n{$word('more')}</p>\n</div>",
+            Text::html("Before.\n(spoiler)  \nSecret.  \nmore\n(/spoiler)  ", $this->post),
+        );
+        // A no-break space and a thin space are spaces between two bars.
+        $this->assertSame(
+            "<div class=\"spoiler\">\n<p>{$word('a')}&nbsp;{$word('b')} {$word('c')}\u{2009}{$word('d')}</p>\n</div>",
+            Text::html("(spoiler)\n\na\u{00A0}b c\u{2009}d\n\n(/spoiler)", $this->post),
+        );
+    }
+
+    public function testASpoilerKeepsAttributesAndCommentsAsTheyAre(): void
+    {
+        $html = Text::spoilers("<div class=\"spoiler\">\n<p><a title=\"x > y\" href=\"/a\">one</a><!-- a > b --></p>\n</div>");
+
+        $this->assertSame("<div class=\"spoiler\">\n<p><a title=\"x > y\" href=\"/a\"><span class=\"spoiler-word\">one</span></a><!-- a > b --></p>\n</div>", $html);
+    }
+
+    public function testASpoilerInsideASpoilerCoversEachWordOnce(): void
+    {
+        $html = Text::html("(spoiler)\nOuter.\n(spoiler)\nInner.\n(/spoiler)", $this->post);
+
+        $this->assertSame(2, substr_count($html, '<span class="spoiler-word">'));
+        $this->assertStringNotContainsString('<span class="spoiler-word"><span', $html);
+    }
+
+    public function testTheMarkdownOptionExtraKnowsTheSpoilerToo(): void
+    {
+        $word = fn(string $text) => "<span class=\"spoiler-word\">$text</span>";
+        $extra = fn(string $text) => $this->kirby->kirbytext($text, ['parent' => $this->post, 'markdown' => ['extra' => true, 'breaks' => false]]);
+
+        // A definition list is Markdown of the option extra.
+        $this->assertSame(
+            "<div class=\"spoiler\">\n<dl>\n<dt>{$word('Term')}</dt>\n<dd>{$word('Meaning')}</dd>\n</dl>\n</div>\n<p>After.</p>",
+            $extra("(spoiler)\nTerm\n: Meaning\n(/spoiler)\nAfter."),
+        );
+        // The start marker ends the list, the quote and the map above it.
+        $section = "<div class=\"spoiler\">\n<p>{$word('Secret.')}</p>\n</div>";
+        $this->assertSame("<ul>\n<li>one</li>\n</ul>\n$section", $extra("- one\n(spoiler)\nSecret.\n(/spoiler)"));
+        $this->assertSame("<blockquote>\n<p>Quote.</p>\n</blockquote>\n$section", $extra("> Quote.\n(spoiler)\nSecret.\n(/spoiler)"));
+        $this->assertStringEndsWith("</div>\n$section", $extra("(map:)\n(spoiler)\nSecret.\n(/spoiler)"));
+        $this->assertSame("<pre><code>(spoiler)\ntext</code></pre>", $extra("```\n(spoiler)\ntext\n```"));
+        // It also ends the definition list and the footnote above it.
+        $this->assertSame("<dl>\n<dt>Term</dt>\n<dd>Meaning</dd>\n</dl>\n$section", $extra("Term\n: Meaning\n(spoiler)\nSecret.\n(/spoiler)"));
+        $this->assertStringStartsWith("<p>Text<sup", $html = $extra("Text[^1]\n\n[^1]: Note\n(spoiler)\nSecret.\n(/spoiler)"));
+        $this->assertStringContainsString("</p>\n$section\n<div class=\"footnotes\">", $html);
+        // A section in HTML with markdown="1" stays inside that HTML.
+        $this->assertSame("<div>\n<p>Intro</p>\n$section\n</div>", $extra("<div markdown=\"1\">\nIntro\n\n(spoiler)\nSecret.\n(/spoiler)\n</div>"));
+    }
+
+    public function testTheMarkdownOptionsCountAsInKirby(): void
+    {
+        $render = fn(array $options) => $this->kirby->kirbytext("Term\n: Meaning", ['markdown' => $options]);
+
+        // Only `extra` set to true selects the parser with definition lists.
+        $this->assertStringContainsString('<dl>', $render(['extra' => true]));
+        $this->assertStringNotContainsString('<dl>', $render(['extra' => 'true']));
+        $this->assertStringNotContainsString('<dl>', $render(['extra' => 1]));
+        // `breaks` makes a <br> of a line end, and null turns it off.
+        $this->assertStringContainsString('<br', $render(['breaks' => true]));
+        $this->assertStringNotContainsString('<br', $render(['breaks' => null]));
+        // Any true value of `inline` renders without a paragraph.
+        $this->assertSame('Term : Meaning', str_replace("\n", ' ', $render(['inline' => 1, 'breaks' => false])));
+    }
+
+    public function testTwoSpoilersInOneText(): void
+    {
+        $html = Text::html("(spoiler)\nOne.\n(/spoiler)\n\nBetween.\n\n(spoiler)\nTwo.\n(/spoiler)", $this->post);
+
+        $this->assertSame(2, substr_count($html, '<div class="spoiler">'));
+        $this->assertStringContainsString('<p>Between.</p>', $html);
     }
 
     public function testTheSummaryLeavesOutSpoilersAndTheWordCountKeepsThem(): void
@@ -120,5 +298,26 @@ final class TextTest extends IntegrationTestCase
         $this->assertSame("One two.\nFive.", $note->summary());
         $this->assertSame('One two. Five.', $note->metaDescription());
         $this->assertSame(5, $note->wordCount());
+    }
+
+    public function testTheSummaryLeavesOutEverySpoilerThatThePageCovers(): void
+    {
+        $note = $this->post('notes', 'note', 'spoiled-summary', 'Spoiled summary');
+        $summary = function (string $intro, string $text) use (&$note) {
+            $note = $this->kirby->impersonate('kirby', fn() => $note->update(['intro' => $intro, 'text' => $text]));
+            return $note->summary();
+        };
+
+        $this->assertSame('One.', $summary('', "One.\n(spoiler)\nSecret.\n(/spoiler)"), 'no blank lines');
+        $this->assertSame('One.', $summary('', "One.\n\n(spoiler)\nSecret.\n---\n\n(/spoiler)"), 'a heading line below the text');
+        $this->assertSame('One.', $summary('', "One.\n\n> (spoiler)\n> Secret.\n> (/spoiler)"), 'in a quote');
+        $this->assertSame("One.\nTwo.", $summary('', "One.\r\n\r\n(spoiler)\r\n\r\nSecret.\r\n\r\n(/spoiler)\r\n\r\nTwo."), 'Windows line ends');
+        // The texts before and after a section in a list item stay apart.
+        $this->assertSame("Item text\nMore item.", $summary('', "- Item text\n  (spoiler)\n  Secret.\n  (/spoiler)\n  More item."));
+        // The section starts in the intro and ends in the text.
+        $this->assertSame('Teaser.', $summary("Teaser.\n\n(spoiler)\n\nIntro secret.", "Text secret.\n\n(/spoiler)\n\nEnd."));
+        $this->assertStringNotContainsString('secret', $note->metaDescription());
+        $this->assertStringContainsString('<p>End.</p>', $note->bodyHtml());
+        $this->assertStringNotContainsString('(/spoiler)', $note->bodyHtml());
     }
 }

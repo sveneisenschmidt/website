@@ -55,39 +55,105 @@ final class Text
     }
 
     /**
-     * Removes each spoiler section, the markers included, from Markdown. The
-     * summary of a page goes into link previews and the feed, where nothing
-     * covers the words.
-     */
-    public static function withoutSpoilers(string $markdown): string
-    {
-        return preg_replace('!^\(spoiler\)\h*$.*?^\(/spoiler\)\h*$!ms', '', $markdown);
-    }
-
-    /**
-     * Turns each section between the paragraphs (spoiler) and (/spoiler) of
-     * rendered HTML into a div with the class spoiler. Every word of the
-     * section gets a span, so the style sheet covers the words and leaves
-     * the spaces between them free. spoiler.js uncovers a section on a
-     * click. A (spoiler) without a (/spoiler) stays text.
+     * Covers the spoiler sections of rendered HTML: every word of a
+     * div.spoiler (Website\Blog\Markdown writes it) gets a span, so the
+     * style sheet covers the words and leaves the spaces between them free.
+     * spoiler.js uncovers a section on a click. A section without a word,
+     * an image or a map is left out.
+     *
+     * The HTML of a text with a section comes from the HTML parser, which
+     * writes <br> for <br /> and all attributes of an element on one line.
+     * A text without a section stays as it is.
      */
     public static function spoilers(string $html): string
     {
-        return preg_replace_callback('!<p>\(spoiler\)</p>(.*?)<p>\(/spoiler\)</p>!s', function (array $m) {
-            $section = '';
-            $code = false;
-            // The pieces are tags and the text between them. The content of
-            // a script or style element is code, and a span would break it.
-            foreach (preg_split('!(<[^>]*>)!', $m[1], -1, PREG_SPLIT_DELIM_CAPTURE) as $piece) {
-                if (str_starts_with($piece, '<')) {
-                    $code = preg_match('!^<(/?)(?:script|style)\b!i', $piece, $tag) ? $tag[1] === '' : $code;
-                    $section .= $piece;
-                } else {
-                    $section .= $code ? $piece : preg_replace('!\S+!u', '<span class="spoiler-word">$0</span>', $piece);
-                }
+        if (!str_contains($html, '<div class="spoiler">')) {
+            return $html;
+        }
+        $root = self::fragment($html);
+        foreach ($root->querySelectorAll('div.spoiler') as $section) {
+            if (self::words($section->textContent) === 0 && $section->querySelector('img, .map') === null) {
+                self::remove($section);
+            } elseif ($section->parentElement?->closest('div.spoiler') === null) {
+                // A section inside a section already has its spans.
+                self::cover($section);
             }
-            return '<div class="spoiler">' . $section . '</div>';
-        }, $html);
+        }
+        return $root->innerHTML;
+    }
+
+    /**
+     * Rendered HTML without its spoiler sections. The summary of a page goes
+     * into link previews and the feed, where nothing covers the words.
+     */
+    public static function withoutSpoilers(string $html): string
+    {
+        if (!str_contains($html, '<div class="spoiler">')) {
+            return $html;
+        }
+        $root = self::fragment($html);
+        foreach ($root->querySelectorAll('div.spoiler') as $section) {
+            self::remove($section);
+        }
+        return $root->innerHTML;
+    }
+
+    /**
+     * A piece of HTML as the content of an element, read by the HTML parser
+     * of PHP. innerHTML of the element is the piece as the parser writes it.
+     * The parser reads a piece of HTML only as the content of an element:
+     * its DocumentFragment takes XML, where <br> is an error.
+     */
+    private static function fragment(string $html): \Dom\Element
+    {
+        $root = \Dom\HTMLDocument::createEmpty('UTF-8')->createElement('div');
+        $root->innerHTML = $html;
+        return $root;
+    }
+
+    /**
+     * Removes a section. Between two blocks, the line end after the section
+     * goes with it, so one line end stays between them. At the end of its
+     * parent, the line end before it goes. Next to text, both stay.
+     */
+    private static function remove(\Dom\Element $section): void
+    {
+        $before = $section->previousSibling;
+        $after = $section->nextSibling;
+        $spaceBefore = $before instanceof \Dom\Text && trim($before->data) === '';
+        $spaceAfter = $after instanceof \Dom\Text && trim($after->data) === '';
+        if ($spaceAfter && ($before === null || $spaceBefore)) {
+            $after->remove();
+        } elseif ($after === null && $spaceBefore) {
+            $before->remove();
+        }
+        $section->remove();
+    }
+
+    /**
+     * Puts each word in the text of $node into a span. The spaces between
+     * the words stay outside, a no-break space included. The content of a
+     * script or style element is code and stays.
+     */
+    private static function cover(\Dom\Node $node): void
+    {
+        foreach (iterator_to_array($node->childNodes) as $child) {
+            if ($child instanceof \Dom\Element && !in_array($child->localName, ['script', 'style'], true)) {
+                self::cover($child);
+            } elseif ($child instanceof \Dom\Text) {
+                // The pieces are words and the white space between them, in
+                // turns, and the first piece is a word or empty.
+                $pieces = preg_split('!(\s+)!u', $child->data, -1, PREG_SPLIT_DELIM_CAPTURE);
+                foreach ($pieces as $i => $piece) {
+                    if ($i % 2 === 0 && $piece !== '') {
+                        $pieces[$i] = $node->ownerDocument->createElement('span');
+                        $pieces[$i]->className = 'spoiler-word';
+                        $pieces[$i]->textContent = $piece;
+                    }
+                }
+                $child->replaceWith(...$pieces);
+            }
+        }
     }
 
     /**

@@ -58,7 +58,13 @@
     background: none;
 }
 
+/* The map is the positioned parent of its layers, and of the bar that
+   covers it in a spoiler section, also before map.js runs. Its layers have
+   z-index values of their own. isolation keeps them inside the map, so
+   they scroll below the sticky head of the article. */
 .body .map {
+    position: relative;
+    isolation: isolate;
     height: var(--height-map);
     margin-block: var(--space-figure);
     border-radius: var(--radius-image);
@@ -181,7 +187,16 @@
    text and leaves the spaces free. A selection shows the words, and a click
    uncovers the section (spoiler.js). An image and a map are a bar of their
    own size, and a heading has no anchor link, because its address holds
-   the words of the heading. */
+   the words of the heading. The last paragraph of a section has no margin
+   (.body p:last-child), so the section has the margin of a paragraph. */
+.body .spoiler {
+    margin-bottom: var(--space-block);
+}
+
+.body .spoiler:last-child {
+    margin-bottom: 0;
+}
+
 .spoiler:not(.is-open) {
     cursor: pointer;
 }
@@ -200,25 +215,33 @@
     text-decoration: none;
 }
 
-.spoiler:not(.is-open) code {
+.spoiler:not(.is-open) code,
+.spoiler:not(.is-open) pre {
     background: none;
 }
 
-.spoiler:not(.is-open) .frame {
+/* The picture of an image is moved out of its box, and the box shows its
+   background. This covers every image, with or without a frame. The tiles
+   of a map are images too and keep their style: the bar of the map covers
+   them. */
+.spoiler:not(.is-open) img:not(.map img) {
+    object-fit: none;
+    object-position: 100vw 100vh;
     background: var(--color-ink);
 }
 
 /* map.js sets the background of the map in its style attribute, so the bar
-   of a map is an element above it. */
+   of a map is an element above it, with the corners of the map. */
 .spoiler:not(.is-open) .map::after {
     content: "";
     position: absolute;
     inset: 0;
+    border-radius: inherit;
     background: var(--color-ink);
 }
 
-.spoiler:not(.is-open) .frame-picture,
 .spoiler:not(.is-open) .map > *,
-.spoiler:not(.is-open) .heading-anchor {
+.spoiler:not(.is-open) .heading-anchor,
+.spoiler:not(.is-open) .copy-button {
     visibility: hidden;
 }
