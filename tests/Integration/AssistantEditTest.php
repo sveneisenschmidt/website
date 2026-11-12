@@ -105,6 +105,60 @@ final class AssistantEditTest extends AssistantTestCase
     }
 
     /**
+     * The HTML check reads a spoiler section as the site does. A code fence
+     * that starts in a section ends with the section, so the tag after the
+     * end marker is raw HTML.
+     */
+    public function testTheHtmlCheckReadsASpoilerSectionAsTheSiteDoes(): void
+    {
+        $this->assertSame('field', $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => "Before.\n\n(spoiler)\nThe butler.\n(/spoiler)\n\nAfter."])['kind']);
+        foreach (["(spoiler)\n<b>bold</b>\n(/spoiler)", "(spoiler)\n```\n(/spoiler)\n<script>x</script>\n```"] as $value) {
+            $this->assertStringContainsString('HTML', $this->refusal('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => $value]), $value);
+        }
+    }
+
+    /**
+     * The site renders a caption as one line, where an indented line is text
+     * and no code block. The HTML check reads a caption the same way; in the
+     * text of a post the same line stays a code block.
+     */
+    public function testACaptionIsCheckedAsOneLine(): void
+    {
+        $this->upload(__DIR__ . '/../fixtures/exif.jpg', 'a.jpg');
+        foreach (['    <script>x</script>', "(spoiler)\n    <b>x</b>\n(/spoiler)"] as $value) {
+            $this->assertStringContainsString('HTML', $this->refusal('propose_file_fields', ['file' => 'photos/test-photo/a.jpg', 'fields' => [['name' => 'caption', 'value' => $value]]]), $value);
+        }
+        $this->assertSame('field', $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => "Code:\n\n    <script>x</script>"])['kind']);
+    }
+
+    /**
+     * The site renders intro and text as one text. A list that the intro
+     * leaves open turns an indented line of the text from code into raw
+     * HTML. The proposal refuses it, and so does the click, because the
+     * intro can change after the proposal.
+     */
+    public function testIntroAndTextAreCheckedAsOneText(): void
+    {
+        $code = '    <script>x</script>';
+        $card = $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => $code]);
+        $this->page()->update(['intro' => '* a']);
+        $this->assertStringContainsString('one text', $this->refusal('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => $code]));
+
+        Apply::decide($card['id'], 'apply');
+        $this->assertSame('stale', Session::decisions()[$card['id']]['state']);
+        $this->assertStringContainsString('rohes HTML', Session::decisions()[$card['id']]['warn']);
+
+        $this->page()->update(['text' => 'It rained all day.']);
+        $this->assertStringContainsString('one text', $this->refusal('propose_edit', ['post' => 'photos/test-photo', 'field' => 'text', 'passage' => 'It rained all day.', 'versions' => [$code]]));
+
+        $this->page()->update(['intro' => '']);
+        $card = $this->propose('propose_edit', ['post' => 'photos/test-photo', 'field' => 'text', 'passage' => 'It rained all day.', 'versions' => ["  b\n\n$code"]]);
+        $this->page()->update(['intro' => '* a']);
+        Apply::decide($card['id'], 'apply');
+        $this->assertSame('stale', Session::decisions()[$card['id']]['state']);
+    }
+
+    /**
      * A version without raw HTML can still make some with the text around
      * the passage: "<b x" before a later ">" is a tag, and a version inside
      * an attribute changes an existing tag. The proposal refuses it, and so

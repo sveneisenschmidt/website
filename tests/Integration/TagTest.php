@@ -108,6 +108,8 @@ final class TagTest extends IntegrationTestCase
         $html = Text::html("(image: d.jpg imgclass: inline)\n\nHello", $this->post);
 
         $this->assertSame("<img src=\"{$file->url()}\" alt=\"A portrait\" class=\"inline\">\n<p>Hello</p>", $html);
+        // The line below the tag is Markdown and no part of the HTML block of the image.
+        $this->assertStringEndsWith("class=\"inline\">\n<p><code>&lt;b&gt;</code></p>", Text::html("(image: d.jpg imgclass: inline)\n`<b>`", $this->post));
     }
 
     public function testMapWithPointsAndRoute(): void
@@ -125,6 +127,8 @@ final class TagTest extends IntegrationTestCase
         ]));
 
         $html = Text::html("Before\n\n(map:)", $trip);
+        // The line below the tag is Markdown and no part of the HTML block of the map.
+        $this->assertStringEndsWith("</div>\n<p><code>&lt;b&gt;</code></p>", Text::html("(map:)\n`<b>`", $trip));
 
         // Points as numbers, the JSON escaped for the attribute.
         $this->assertStringContainsString('<div class="map" data-zoomable="true" data-points="[{&quot;label&quot;:&quot;Pegau&quot;,&quot;lat&quot;:51.166,&quot;lon&quot;:12.248},{&quot;label&quot;:&quot;St Michael&#039;s ', $html);

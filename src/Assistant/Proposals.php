@@ -9,11 +9,12 @@ use Kirby\Cms\File;
 use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
 use Kirby\Data\Yaml;
-use Parsedown;
-use ParsedownExtra;
 use RuntimeException;
+use Website\Blog\Markdown;
+use Website\Blog\MarkdownExtra;
 use Website\Blog\Types;
 use Website\Models\PostPage;
+use Website\Models\SitePage;
 
 /**
  * Runs the propose tools, the tools whose names start with `propose_`. Each
@@ -26,20 +27,34 @@ use Website\Models\PostPage;
  */
 final class Proposals
 {
+    /** The error for a text with raw HTML. */
+    private const NO_HTML = 'Raw HTML is not allowed. Use Markdown.';
+
+    /** The error for an intro and a text that make raw HTML as one text. */
+    private const NO_BODY_HTML = 'The page renders intro and text as one text, and as one text they would get raw HTML. Use Markdown, close each list and code fence, and do not indent the first line.';
+
     /**
-     * The raw HTML in a text: each piece that Kirby's Markdown parser,
-     * Parsedown, passes on as it is, such as a tag, a comment, or a block
-     * that starts with a tag. Parsedown itself decides, so the check cannot
-     * differ from what the site renders. Plain Parsedown (config.php) and
-     * ParsedownExtra (option markdown.extra) both look. An autolink to a web
-     * or mail address, such as <https://example.com>, is a link and no raw
-     * HTML. An autolink with another scheme, such as <javascript://...>,
-     * counts, because a click on it runs in the site. Entities such as
-     * &amp; do not count.
+     * The raw HTML in a text: each piece that the Markdown parser of the
+     * site passes on as it is, such as a tag, a comment, or a block that
+     * starts with a tag. The parsers of the site themselves decide;
+     * `Markdown` and `MarkdownExtra` (option markdown.extra) both look.
+     * With $inline they read the text as one line, as the site renders a
+     * caption: there an indented line is text and no code block.
+     *
+     * The check reads each KirbyText tag as text. Kirby puts the HTML of a
+     * tag into the text before Markdown reads it, and Markdown passes on
+     * the text in the same block as that HTML as it is. The check does not
+     * see such text: a code span on the line of a tag is code here and a
+     * tag on the page.
+     *
+     * An autolink to a web or mail address, such as <https://example.com>,
+     * is a link and no raw HTML. An autolink with another scheme, such as
+     * <javascript://...>, counts, because a click on it runs in the site.
+     * Entities such as &amp; do not count.
      *
      * @return list<string>
      */
-    public static function html(string $text): array
+    public static function html(string $text, bool $inline = false): array
     {
         $pieces = [];
         $collect = function (array $element) use (&$pieces): void {
@@ -48,8 +63,11 @@ final class Proposals
                 $pieces[] = $raw;
             }
         };
-        $plain = new class ($collect) extends Parsedown {
-            public function __construct(private Closure $collect) {}
+        $plain = new class ($collect) extends Markdown {
+            public function __construct(private Closure $collect)
+            {
+                parent::__construct();
+            }
 
             /** @param array<string, mixed> $Element */
             protected function element(array $Element): string
@@ -58,7 +76,7 @@ final class Proposals
                 return parent::element($Element);
             }
         };
-        $extra = new class ($collect) extends ParsedownExtra {
+        $extra = new class ($collect) extends MarkdownExtra {
             public function __construct(private Closure $collect)
             {
                 parent::__construct();
@@ -72,8 +90,10 @@ final class Proposals
             }
         };
         $breaks = (bool) (kirby()->option('markdown')['breaks'] ?? true);
-        $plain->setBreaksEnabled($breaks)->text($text);
-        $extra->setBreaksEnabled($breaks)->text($text);
+        foreach ([$plain, $extra] as $parser) {
+            $parser->setBreaksEnabled($breaks);
+            $inline ? $parser->line($text) : $parser->text($text);
+        }
         preg_match_all('/<(?!https?:\/\/)\w+:\/\/[^\s>]*>?/i', $text, $links);
         return [...$pieces, ...$links[0]];
     }
@@ -88,6 +108,23 @@ final class Proposals
             }
         }
         return false;
+    }
+
+    /**
+     * True when the new value $after of the field $field gives intro and
+     * text of $page together raw HTML that they do not have. The site
+     * renders both as one text (`SitePage::body()`): a list or a code fence
+     * that the intro leaves open reaches into the text, and with an empty
+     * intro the text loses the indent of its first line.
+     */
+    public static function addsBodyHtml(Page $page, string $field, string $after): bool
+    {
+        if (!in_array($field, ['intro', 'text'], true)) {
+            return false;
+        }
+        $now = ['intro' => Content::current($page, 'intro'), 'text' => Content::current($page, 'text')];
+        $new = [$field => $after] + $now;
+        return self::addsHtml(SitePage::body($now['intro'], $now['text']), SitePage::body($new['intro'], $new['text']));
     }
 
     /**
@@ -107,7 +144,7 @@ final class Proposals
             $html = $html || (is_string($value) && self::html($value) !== []);
         });
         if ($html) {
-            return 'Raw HTML is not allowed. Use Markdown.';
+            return self::NO_HTML;
         }
         return match ($name) {
             'propose_post' => self::post($chat, $input),
@@ -283,6 +320,9 @@ final class Proposals
         if ($error !== null) {
             return $error;
         }
+        if (self::addsBodyHtml($page, $name, $value)) {
+            return self::NO_BODY_HTML;
+        }
         return self::card('field', 'Feld · ' . self::name($page), [
             'where' => self::where($page),
             'unsaved' => Content::unsaved($page, $name),
@@ -337,6 +377,9 @@ final class Proposals
             if (self::addsHtml($current, $after)) {
                 return 'With this version the field would get raw HTML. Use Markdown.';
             }
+            if (self::addsBodyHtml($page, $name, $after)) {
+                return self::NO_BODY_HTML;
+            }
             $marks[] = array_values(array_filter(self::marks($page, $type, $after), fn($mark) => str_contains($version, $mark)));
         }
         return self::card('edit', 'Passage · ' . self::name($page), [
@@ -371,6 +414,9 @@ final class Proposals
             $value = (string) $field['value'];
             if (!in_array($name, Tools::IMAGE_TEXTS, true) || isset($changes[$name])) {
                 return "Each of alt, caption and photographer at most once; $name is not possible here.";
+            }
+            if ($name === 'caption' && self::html($value, true) !== []) {
+                return self::NO_HTML;
             }
             $before = Content::current($file, $name);
             $changes[$name] = ['before' => $before, 'after' => $value];
@@ -585,6 +631,9 @@ final class Proposals
         if ($title === '') {
             return 'title: A post needs a title.';
         }
+        if (self::html(SitePage::body((string) $input['intro'], (string) $input['text'])) !== []) {
+            return self::NO_BODY_HTML;
+        }
         $trip = trim((string) $input['trip']);
         if ($trip !== '' && $type !== 'trip') {
             return 'trip: only trip posts have this field.';
@@ -599,6 +648,9 @@ final class Proposals
             }
             if (in_array($id, $needed, true) || in_array($id, array_column($photos, 'upload'), true)) {
                 return "The upload $id is used by another open card or twice here.";
+            }
+            if (self::html((string) $photo['caption'], true) !== []) {
+                return self::NO_HTML;
             }
             $photos[] = ['upload' => $id, 'filename' => $meta['name'], 'alt' => (string) $photo['alt'], 'caption' => (string) $photo['caption'], 'photographer' => (string) $photo['photographer'], 'exif' => $meta['exif'], 'marks' => Marks::of((string) $photo['caption'], null, true)];
         }

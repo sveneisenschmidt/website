@@ -1,8 +1,8 @@
 <?php
 /**
  * An image in a text without a figure and without EXIF lines: the tag
- * (image: … imgclass: …), as on About. `Website\Blog\Tags::image()`
- * removes the line end after the element.
+ * (image: … imgclass: …), as on About. The output ends with a line
+ * end (`Website\Blog\Tags`).
  *
  * @var Kirby\Cms\File $file
  * @var string $class

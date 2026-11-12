@@ -34,10 +34,11 @@ final class Tools
 
     /**
      * The text rules for the tool descriptions: the HTML check of
-     * `Proposals` and the KirbyText tags of the site. A change here changes
-     * the tool definitions and reaches new chats only.
+     * `Proposals`, the KirbyText tags of the site and the spoiler section of
+     * `SpoilerBlock`. A change here changes the tool definitions and reaches
+     * new chats only.
      */
-    public const TEXT_RULES = 'Texts: Markdown, no raw HTML. KirbyText tags: (image: file name), (map:) and (link: page://<uuid> text: …).';
+    public const TEXT_RULES = 'Texts: Markdown, no raw HTML. KirbyText tags: (image: file name), (map:) and (link: page://<uuid> text: …). Spoiler: the line (spoiler) starts a covered section, the line (/spoiler) ends it. The reader uncovers the section with a click. Write a spoiler only when the user asks for a spoiler, and only in the fields intro and text.';
 
     /**
      * The tool definitions for the request. They are not strict (no

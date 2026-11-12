@@ -16,7 +16,7 @@ use ParsedownExtra;
  * The text of a footnote stands in the footnote list at the end of the
  * page. A footnote that a section defines shows its text there, uncovered.
  */
-final class MarkdownExtra extends ParsedownExtra
+class MarkdownExtra extends ParsedownExtra
 {
     use SpoilerBlock;
 
