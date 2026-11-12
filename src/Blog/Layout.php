@@ -123,7 +123,7 @@ final class Layout
      * The names of the scripts under assets/js that snippets/head.php puts
      * inline into a page, in this order. scroll.js keeps the scroll position
      * when the visitor changes the filter. Pages with a text (posts, About,
-     * default) get back.js and copy.js, the archive gets back.js too. fit.js
+     * default) get back.js, copy.js and spoiler.js, the archive gets back.js too. fit.js
      * shortens the timeline on the home page to the height of the pictures.
      * search.js loads the results while the visitor types.
      *
@@ -138,6 +138,7 @@ final class Layout
             'back' => $text || $template === 'archive',
             'fit' => $template === 'home',
             'copy' => $text,
+            'spoiler' => $text,
             'search' => $template === 'search',
         ]));
     }

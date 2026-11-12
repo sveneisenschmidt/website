@@ -53,11 +53,11 @@ class SitePage extends Page
         return Text::html(trim($this->intro()->value() . "\n\n" . $this->text()->value()), $this);
     }
 
-    /** The summary as plain text: the intro, or the text when the intro is empty. */
+    /** The summary as plain text: the intro, or the text when the intro is empty, without its spoiler sections. */
     public function summary(): string
     {
         $field = $this->intro()->or($this->text());
-        return Text::plain($field->value(Text::withoutMedia($field->value()))->kirbytext()->value());
+        return Text::plain($field->value(Text::withoutMedia(Text::withoutSpoilers($field->value())))->kirbytext()->value());
     }
 
     /**
