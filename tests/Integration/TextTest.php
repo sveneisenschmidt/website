@@ -123,8 +123,8 @@ final class TextTest extends IntegrationTestCase
     {
         $word = fn(string $text) => "<span class=\"spoiler-word\">$text</span>";
 
-        // Without the blank lines, "---" would make a heading of the marker
-        // and the line below it.
+        // The line "---" makes a heading of the line above it, inside the
+        // section.
         $html = Text::html("(spoiler)\nThe butler.\n---\n\n(/spoiler)", $this->post);
         $this->assertStringStartsWith("<div class=\"spoiler\">\n<h2 id=\"the-butler\">{$word('The')} {$word('butler.')}", $html);
         $this->assertStringNotContainsString('(spoiler)', $html);
@@ -133,6 +133,18 @@ final class TextTest extends IntegrationTestCase
         // blank line or a marker.
         $html = Text::html("(map:)\n(spoiler)\nThe butler.\n(/spoiler)\nAfter.", $this->post);
         $this->assertStringContainsString("</div>\n<div class=\"spoiler\">\n<p>{$word('The')} {$word('butler.')}</p>\n</div>\n<p>After.</p>", $html);
+
+        // A list and a quote take an unindented line below them as their
+        // own text. A start marker ends them.
+        $section = "<div class=\"spoiler\">\n<p>{$word('Secret.')}</p>\n<p>{$word('More.')}</p>\n</div>\n<p>After.</p>";
+        $this->assertSame("<ul>\n<li>one</li>\n<li>two</li>\n</ul>\n$section", Text::html("- one\n- two\n(spoiler)\nSecret.\n\nMore.\n\n(/spoiler)\n\nAfter.", $this->post));
+        $this->assertSame("<ol>\n<li>one</li>\n</ol>\n$section", Text::html("1. one\n(spoiler)\nSecret.\n\nMore.\n(/spoiler)\nAfter.", $this->post));
+        $this->assertSame("<blockquote>\n<p>Quote.</p>\n</blockquote>\n$section", Text::html("> Quote.\n(spoiler)\nSecret.\n\nMore.\n(/spoiler)\nAfter.", $this->post));
+        // Indented to the text of a list item, the section is in the item.
+        $this->assertSame(
+            "<ul>\n<li>one<div class=\"spoiler\">\n<p>{$word('Secret.')}</p>\n</div>\n</li>\n<li>two</li>\n</ul>",
+            Text::html("- one\n  (spoiler)\n  Secret.\n  (/spoiler)\n- two", $this->post),
+        );
 
         // A list would take the end marker as text of its last item.
         $html = Text::html("(spoiler)\n- one\n- two\n(/spoiler)\nAfter.", $this->post);
@@ -214,6 +226,14 @@ final class TextTest extends IntegrationTestCase
         $html = Text::spoilers("<div class=\"spoiler\">\n<p><a title=\"x > y\" href=\"/a\">one</a><!-- a > b --></p>\n</div>");
 
         $this->assertSame("<div class=\"spoiler\">\n<p><a title=\"x > y\" href=\"/a\"><span class=\"spoiler-word\">one</span></a><!-- a > b --></p>\n</div>", $html);
+    }
+
+    public function testASpoilerInsideASpoilerCoversEachWordOnce(): void
+    {
+        $html = Text::html("(spoiler)\nOuter.\n(spoiler)\nInner.\n(/spoiler)", $this->post);
+
+        $this->assertSame(2, substr_count($html, '<span class="spoiler-word">'));
+        $this->assertStringNotContainsString('<span class="spoiler-word"><span', $html);
     }
 
     public function testTwoSpoilersInOneText(): void

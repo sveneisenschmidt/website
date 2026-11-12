@@ -74,7 +74,8 @@ final class Text
         foreach ($document->querySelectorAll('div.spoiler') as $section) {
             if (trim($section->textContent) === '' && $section->firstElementChild === null) {
                 self::remove($section);
-            } else {
+            } elseif ($section->parentElement?->closest('div.spoiler') === null) {
+                // A section inside a section already has its spans.
                 self::cover($section);
             }
         }

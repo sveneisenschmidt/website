@@ -11,9 +11,9 @@ use Parsedown;
  * and its lines are Markdown: paragraphs, headings, lists, images.
  *
  * The parser decides what a marker line is, by the rules it has for every
- * block. A marker ends the paragraph or list above it without a blank line.
- * A marker in a code block is code, and a marker inside a sentence is text.
- * Without an end marker the section runs to the end of the text, or to the
+ * block. A start marker ends the paragraph, list, quote or HTML block above
+ * it without a blank line. A marker in a code block is code, and a marker
+ * inside a sentence is text. Without an end marker the section runs to the end of the text, or to the
  * end of the quote or list item that holds it: a forgotten (/spoiler)
  * covers too much and never shows the words.
  *
@@ -63,7 +63,7 @@ final class Markdown extends Parsedown
         // The section needs them back: they separate its paragraphs.
         $blank = array_fill(0, $Block['interrupted'] ?? 0, '');
         unset($Block['interrupted']);
-        array_push($Block['element']['handler']['argument'], ...$blank, ...[$Line['body']]);
+        $Block['element']['handler']['argument'] = [...$Block['element']['handler']['argument'], ...$blank, $Line['body']];
         return $Block;
     }
 
@@ -79,6 +79,35 @@ final class Markdown extends Parsedown
     protected function blockMarkupContinue($Line, array $Block)
     {
         return self::isMarker($Line, '(spoiler)') ? null : parent::blockMarkupContinue($Line, $Block);
+    }
+
+    /**
+     * A quote takes a line without ">" below it as more text of its last
+     * paragraph. A start marker ends the quote. A marker of the quote
+     * itself is a line "> (spoiler)".
+     *
+     * @param array{body: string, indent: int, text: string} $Line
+     * @param array<string, mixed> $Block
+     * @return array<string, mixed>|null
+     */
+    protected function blockQuoteContinue($Line, array $Block)
+    {
+        return self::isMarker($Line, '(spoiler)') ? null : parent::blockQuoteContinue($Line, $Block);
+    }
+
+    /**
+     * A list takes a line below it as more text of its last item. A start
+     * marker ends the list, unless it is indented to the text of the item:
+     * then the section is in the item.
+     *
+     * @param array{body: string, indent: int, text: string} $Line
+     * @param array<string, mixed> $Block
+     * @return array<string, mixed>|null
+     */
+    protected function blockListContinue($Line, array $Block)
+    {
+        $inItem = $Line['indent'] >= $Block['indent'] + strlen($Block['data']['marker']);
+        return !$inItem && self::isMarker($Line, '(spoiler)') ? null : parent::blockListContinue($Line, $Block);
     }
 
     /**
