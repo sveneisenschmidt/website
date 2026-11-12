@@ -240,6 +240,14 @@ final class TextTest extends IntegrationTestCase
         $this->assertStringNotContainsString('<span class="spoiler-word"><span', $html);
     }
 
+    public function testTheMarkdownOptionExtraStopsWithAnError(): void
+    {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('"extra" is not supported');
+
+        $this->kirby->kirbytext('Text', ['markdown' => ['extra' => true]]);
+    }
+
     public function testTwoSpoilersInOneText(): void
     {
         $html = Text::html("(spoiler)\nOne.\n(/spoiler)\n\nBetween.\n\n(spoiler)\nTwo.\n(/spoiler)", $this->post);

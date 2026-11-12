@@ -75,9 +75,14 @@ Kirby::plugin('website/blog', [
     ],
     // Kirby's Markdown component with the parser of the site, which knows
     // the spoiler section (Website\Blog\Markdown). `inline` renders a
-    // single line without a paragraph around it.
+    // single line without a paragraph around it. Kirby's option `extra`
+    // selects another parser class, which has no spoiler section: the
+    // option stops with an error, so nobody turns it on without effect.
     'components' => [
         'markdown' => function (Kirby $kirby, ?string $text = null, array $options = []): string {
+            if ($options['extra'] ?? false) {
+                throw new LogicException('The Markdown option "extra" is not supported: Website\\Blog\\Markdown extends Parsedown, not ParsedownExtra.');
+            }
             $parser = new Markdown();
             $parser->setBreaksEnabled($options['breaks'] ?? true);
             $parser->setSafeMode($options['safe'] ?? false);
