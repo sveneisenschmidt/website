@@ -159,6 +159,23 @@ final class AssistantEditTest extends AssistantTestCase
     }
 
     /**
+     * Kirby puts the HTML of a tag into the text before Markdown reads it.
+     * The HTML of a tag at the start of a line opens an HTML block, and a
+     * code span in that block reaches the page as a tag. A code span in a
+     * block of its own stays code.
+     */
+    public function testACodeSpanInTheBlockOfATagIsHtml(): void
+    {
+        $code = '`<script>x</script>`';
+        foreach (["(image: a.jpg) $code", "(map:) $code", "(video: https://example.com/v.mp4)\n$code", "* (image: a.jpg) $code", "> (map:) $code", "Text\n(image: a.jpg imgclass: inline) $code"] as $value) {
+            $this->assertStringContainsString('HTML', $this->refusal('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => $value]), $value);
+        }
+        foreach (["(image: a.jpg)\n\n$code", "(map:)\n\nSee (link: https://example.com text: this) and $code.", "(note: this is no tag) $code"] as $value) {
+            $this->assertSame('field', $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => $value])['kind'], $value);
+        }
+    }
+
+    /**
      * A version without raw HTML can still make some with the text around
      * the passage: "<b x" before a later ">" is a tag, and a version inside
      * an attribute changes an existing tag. The proposal refuses it, and so

@@ -9,6 +9,7 @@ use Kirby\Cms\File;
 use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
 use Kirby\Data\Yaml;
+use Kirby\Text\KirbyTag;
 use RuntimeException;
 use Website\Blog\Markdown;
 use Website\Blog\MarkdownExtra;
@@ -27,6 +28,9 @@ use Website\Models\SitePage;
  */
 final class Proposals
 {
+    /** Stands for the HTML of a KirbyText tag in `html()`: an element that Markdown reads as a block, as it reads a figure. */
+    private const TAG_HTML = '<kirby-tag></kirby-tag>';
+
     /** The error for a text with raw HTML. */
     private const NO_HTML = 'Raw HTML is not allowed. Use Markdown.';
 
@@ -36,13 +40,17 @@ final class Proposals
     /**
      * The raw HTML in a text: each piece that the Markdown parser of the
      * site passes on as it is, such as a tag, a comment, or a block that
-     * starts with a tag. The parsers of the site themselves decide. They
-     * read the text with its KirbyText tags as written. The HTML of (image:)
-     * and of (map:) ends with a line end, so the line below such a tag reads
-     * as the check reads it (`Tags`). The HTML of a tag of Kirby that renders
-     * a block, such as (video:), takes the line directly below it into its
-     * block; the check does not see that.
-     * `Markdown` and `MarkdownExtra` (option markdown.extra) both look. With $inline they
+     * starts with a tag. The parsers of the site themselves decide;
+     * `Markdown` and `MarkdownExtra` (option markdown.extra) both look.
+     *
+     * They read the text twice. First as written, with each KirbyText tag
+     * as text. Then with an empty element (`TAG_HTML`) in place of each tag,
+     * because Kirby puts the HTML of a tag into the text before Markdown
+     * reads it: the HTML of a tag at the start of a line opens an HTML
+     * block, and the rest of that block reaches the page as it is, a code
+     * span with a tag in it included. A piece of the second reading counts
+     * when it holds a tag besides the element.
+     * With $inline they
      * read the text as one line, as the site renders a caption: there an
      * indented line is text and no code block. An autolink to a web
      * or mail address, such as <https://example.com>, is a link and no raw
@@ -53,6 +61,29 @@ final class Proposals
      * @return list<string>
      */
     public static function html(string $text, bool $inline = false): array
+    {
+        $pieces = self::raw($text, $inline);
+        $types = KirbyTag::$types + KirbyTag::$aliases;
+        $tagless = (string) preg_replace_callback(Marks::TAG, function (array $match) use ($types) {
+            $type = strtolower(trim((string) strstr(substr($match[0], 1), ':', true)));
+            return isset($types[$type]) ? self::TAG_HTML : $match[0];
+        }, $text);
+        foreach ($tagless === $text ? [] : self::raw($tagless, $inline) as $piece) {
+            $rest = str_replace(['<kirby-tag>', '</kirby-tag>'], '', $piece);
+            if (preg_match('/<[a-z\/!?]/i', $rest) === 1) {
+                $pieces[] = $rest;
+            }
+        }
+        preg_match_all('/<(?!https?:\/\/)\w+:\/\/[^\s>]*>?/i', $text, $links);
+        return [...$pieces, ...$links[0]];
+    }
+
+    /**
+     * The pieces that the Markdown parsers of the site pass on as they are.
+     *
+     * @return list<string>
+     */
+    private static function raw(string $text, bool $inline): array
     {
         $pieces = [];
         $collect = function (array $element) use (&$pieces): void {
@@ -92,8 +123,7 @@ final class Proposals
             $parser->setBreaksEnabled($breaks);
             $inline ? $parser->line($text) : $parser->text($text);
         }
-        preg_match_all('/<(?!https?:\/\/)\w+:\/\/[^\s>]*>?/i', $text, $links);
-        return [...$pieces, ...$links[0]];
+        return $pieces;
     }
 
     /** True when $after has raw HTML (html()) that $before does not have: a new piece, or a piece more often. */
