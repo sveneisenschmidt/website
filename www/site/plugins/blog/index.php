@@ -9,6 +9,7 @@ use Website\Blog\Exif;
 use Website\Blog\FileCache;
 use Website\Blog\Images;
 use Website\Blog\Markdown;
+use Website\Blog\MarkdownExtra;
 use Website\Blog\Posts;
 use Website\Blog\Redirects;
 use Website\Blog\SrgbGd;
@@ -73,17 +74,13 @@ Kirby::plugin('website/blog', [
         // word count.
         'kirbytext:after' => fn(?string $text) => Text::spoilers((string) $text),
     ],
-    // Kirby's Markdown component with the parser of the site, which knows
-    // the spoiler section (Website\Blog\Markdown). `inline` renders a
-    // single line without a paragraph around it. Kirby's option `extra`
-    // selects another parser class, which has no spoiler section: the
-    // option stops with an error, so nobody turns it on without effect.
+    // Kirby's Markdown component with the parsers of the site, which know
+    // the spoiler section (Website\Blog\SpoilerBlock). As in Kirby, the
+    // option `extra` selects the parser with footnotes and definition
+    // lists, and `inline` renders a single line without a paragraph.
     'components' => [
         'markdown' => function (Kirby $kirby, ?string $text = null, array $options = []): string {
-            if ($options['extra'] ?? false) {
-                throw new LogicException('The Markdown option "extra" is not supported: Website\\Blog\\Markdown extends Parsedown, not ParsedownExtra.');
-            }
-            $parser = new Markdown();
+            $parser = ($options['extra'] ?? false) ? new MarkdownExtra() : new Markdown();
             $parser->setBreaksEnabled($options['breaks'] ?? true);
             $parser->setSafeMode($options['safe'] ?? false);
             return ($options['inline'] ?? false) ? $parser->line((string) $text) : $parser->text((string) $text);

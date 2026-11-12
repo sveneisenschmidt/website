@@ -240,12 +240,22 @@ final class TextTest extends IntegrationTestCase
         $this->assertStringNotContainsString('<span class="spoiler-word"><span', $html);
     }
 
-    public function testTheMarkdownOptionExtraStopsWithAnError(): void
+    public function testTheMarkdownOptionExtraKnowsTheSpoilerToo(): void
     {
-        $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage('"extra" is not supported');
+        $word = fn(string $text) => "<span class=\"spoiler-word\">$text</span>";
+        $extra = fn(string $text) => $this->kirby->kirbytext($text, ['parent' => $this->post, 'markdown' => ['extra' => true, 'breaks' => false]]);
 
-        $this->kirby->kirbytext('Text', ['markdown' => ['extra' => true]]);
+        // A definition list is Markdown of the option extra.
+        $this->assertSame(
+            "<div class=\"spoiler\">\n<dl>\n<dt>{$word('Term')}</dt>\n<dd>{$word('Meaning')}</dd>\n</dl>\n</div>\n<p>After.</p>",
+            $extra("(spoiler)\nTerm\n: Meaning\n(/spoiler)\nAfter."),
+        );
+        // The start marker ends the list, the quote and the map above it.
+        $section = "<div class=\"spoiler\">\n<p>{$word('Secret.')}</p>\n</div>";
+        $this->assertSame("<ul>\n<li>one</li>\n</ul>\n$section", $extra("- one\n(spoiler)\nSecret.\n(/spoiler)"));
+        $this->assertSame("<blockquote>\n<p>Quote.</p>\n</blockquote>\n$section", $extra("> Quote.\n(spoiler)\nSecret.\n(/spoiler)"));
+        $this->assertStringEndsWith("</div>\n$section", $extra("(map:)\n(spoiler)\nSecret.\n(/spoiler)"));
+        $this->assertSame("<pre><code>(spoiler)\ntext</code></pre>", $extra("```\n(spoiler)\ntext\n```"));
     }
 
     public function testTwoSpoilersInOneText(): void
