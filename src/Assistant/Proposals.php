@@ -37,9 +37,12 @@ final class Proposals
      * The raw HTML in a text: each piece that the Markdown parser of the
      * site passes on as it is, such as a tag, a comment, or a block that
      * starts with a tag. The parsers of the site themselves decide. They
-     * read the text with its KirbyText tags as written; the HTML of a tag
-     * does not change how the lines around it read (`Tags`). `Markdown` and
-     * `MarkdownExtra` (option markdown.extra) both look. With $inline they
+     * read the text with its KirbyText tags as written. The HTML of (image:)
+     * and of (map:) ends with a line end, so the line below such a tag reads
+     * as the check reads it (`Tags`). The HTML of a tag of Kirby that renders
+     * a block, such as (video:), takes the line directly below it into its
+     * block; the check does not see that.
+     * `Markdown` and `MarkdownExtra` (option markdown.extra) both look. With $inline they
      * read the text as one line, as the site renders a caption: there an
      * indented line is text and no code block. An autolink to a web
      * or mail address, such as <https://example.com>, is a link and no raw

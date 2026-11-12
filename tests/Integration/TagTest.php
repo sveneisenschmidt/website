@@ -108,6 +108,8 @@ final class TagTest extends IntegrationTestCase
         $html = Text::html("(image: d.jpg imgclass: inline)\n\nHello", $this->post);
 
         $this->assertSame("<img src=\"{$file->url()}\" alt=\"A portrait\" class=\"inline\">\n<p>Hello</p>", $html);
+        // The line below the tag is Markdown and no part of the HTML block of the image.
+        $this->assertStringEndsWith("class=\"inline\">\n<p><code>&lt;b&gt;</code></p>", Text::html("(image: d.jpg imgclass: inline)\n`<b>`", $this->post));
     }
 
     public function testMapWithPointsAndRoute(): void

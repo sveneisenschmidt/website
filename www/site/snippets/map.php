@@ -2,7 +2,7 @@
 /**
  * The container that assets/js/map.js turns into a map: the points as JSON
  * in data-points, the route (GeoJSON) in a JSON script element.
- * `Website\Blog\Tags::map()` removes the line end after the element.
+ * The line end after the element ends its HTML block (`Website\Blog\Tags`).
  *
  * @var bool $zoomable
  * @var list<array{label: string, lat: float, lon: float}> $points
