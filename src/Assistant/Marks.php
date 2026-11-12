@@ -17,7 +17,7 @@ final class Marks
      * A KirbyText tag, with the pattern of `Kirby\Text\KirbyTags::parse()`,
      * so the marks match the tags that Kirby renders.
      */
-    public const TAG = '!(?=[^\]])(?=\([a-z0-9_-]+:)(\((?:[^()]+|(?1))*+\))!is';
+    private const TAG = '!(?=[^\]])(?=\([a-z0-9_-]+:)(\((?:[^()]+|(?1))*+\))!is';
 
     /**
      * Each link target as the text writes it, and each (link:) tag. The text
