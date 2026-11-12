@@ -26,12 +26,17 @@ use Website\Models\PostPage;
  */
 final class Proposals
 {
+    /** The error for a text with raw HTML. */
+    private const NO_HTML = 'Raw HTML is not allowed. Use Markdown.';
+
     /**
      * The raw HTML in a text: each piece that the Markdown parser of the
      * site passes on as it is, such as a tag, a comment, or a block that
      * starts with a tag. The parsers of the site themselves decide, so the
-     * check cannot differ from what the site renders. `Markdown`
-     * (config.php) and `MarkdownExtra` (option markdown.extra) both look. An autolink to a web
+     * check cannot differ from what the site renders. `Markdown` and
+     * `MarkdownExtra` (option markdown.extra) both look. With $inline they
+     * read the text as one line, as the site renders a caption: there an
+     * indented line is text and no code block. An autolink to a web
      * or mail address, such as <https://example.com>, is a link and no raw
      * HTML. An autolink with another scheme, such as <javascript://...>,
      * counts, because a click on it runs in the site. Entities such as
@@ -39,7 +44,7 @@ final class Proposals
      *
      * @return list<string>
      */
-    public static function html(string $text): array
+    public static function html(string $text, bool $inline = false): array
     {
         $pieces = [];
         $collect = function (array $element) use (&$pieces): void {
@@ -75,8 +80,10 @@ final class Proposals
             }
         };
         $breaks = (bool) (kirby()->option('markdown')['breaks'] ?? true);
-        $plain->setBreaksEnabled($breaks)->text($text);
-        $extra->setBreaksEnabled($breaks)->text($text);
+        foreach ([$plain, $extra] as $parser) {
+            $parser->setBreaksEnabled($breaks);
+            $inline ? $parser->line($text) : $parser->text($text);
+        }
         preg_match_all('/<(?!https?:\/\/)\w+:\/\/[^\s>]*>?/i', $text, $links);
         return [...$pieces, ...$links[0]];
     }
@@ -110,7 +117,7 @@ final class Proposals
             $html = $html || (is_string($value) && self::html($value) !== []);
         });
         if ($html) {
-            return 'Raw HTML is not allowed. Use Markdown.';
+            return self::NO_HTML;
         }
         return match ($name) {
             'propose_post' => self::post($chat, $input),
@@ -375,6 +382,9 @@ final class Proposals
             if (!in_array($name, Tools::IMAGE_TEXTS, true) || isset($changes[$name])) {
                 return "Each of alt, caption and photographer at most once; $name is not possible here.";
             }
+            if ($name === 'caption' && self::html($value, true) !== []) {
+                return self::NO_HTML;
+            }
             $before = Content::current($file, $name);
             $changes[$name] = ['before' => $before, 'after' => $value];
             $marks = fn(string $text) => $name === 'caption' ? Marks::of($text, null, true) : [];
@@ -602,6 +612,9 @@ final class Proposals
             }
             if (in_array($id, $needed, true) || in_array($id, array_column($photos, 'upload'), true)) {
                 return "The upload $id is used by another open card or twice here.";
+            }
+            if (self::html((string) $photo['caption'], true) !== []) {
+                return self::NO_HTML;
             }
             $photos[] = ['upload' => $id, 'filename' => $meta['name'], 'alt' => (string) $photo['alt'], 'caption' => (string) $photo['caption'], 'photographer' => (string) $photo['photographer'], 'exif' => $meta['exif'], 'marks' => Marks::of((string) $photo['caption'], null, true)];
         }

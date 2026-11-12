@@ -118,6 +118,20 @@ final class AssistantEditTest extends AssistantTestCase
     }
 
     /**
+     * The site renders a caption as one line, where an indented line is text
+     * and no code block. The HTML check reads a caption the same way; in the
+     * text of a post the same line stays a code block.
+     */
+    public function testACaptionIsCheckedAsOneLine(): void
+    {
+        $this->upload(__DIR__ . '/../fixtures/exif.jpg', 'a.jpg');
+        foreach (['    <script>x</script>', "(spoiler)\n    <b>x</b>\n(/spoiler)"] as $value) {
+            $this->assertStringContainsString('HTML', $this->refusal('propose_file_fields', ['file' => 'photos/test-photo/a.jpg', 'fields' => [['name' => 'caption', 'value' => $value]]]), $value);
+        }
+        $this->assertSame('field', $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => "Code:\n\n    <script>x</script>"])['kind']);
+    }
+
+    /**
      * A version without raw HTML can still make some with the text around
      * the passage: "<b x" before a later ">" is a tag, and a version inside
      * an attribute changes an existing tag. The proposal refuses it, and so
