@@ -156,6 +156,8 @@ final class TextTest extends IntegrationTestCase
     {
         $this->assertSame('', Text::html("(spoiler)\n\n(/spoiler)", $this->post));
         $this->assertSame('<p>Before.</p>', Text::html("Before.\n(spoiler)", $this->post));
+        // An image without a word is content.
+        $this->assertSame("<div class=\"spoiler\">\n<p><img src=\"x.png\" alt=\"\"></p>\n</div>", Text::html("(spoiler)\n![](x.png)\n(/spoiler)", $this->post));
         // A no-break space is no content.
         $this->assertSame('', Text::html("(spoiler)\n\u{00A0}\n(/spoiler)", $this->post));
     }

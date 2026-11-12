@@ -100,7 +100,7 @@ final class Text
 
     /**
      * A piece of HTML as the content of an element, read by the HTML parser
-     * of PHP. innerHTML of the element is the piece again.
+     * of PHP. innerHTML of the element is the piece as the parser writes it.
      */
     private static function fragment(string $html): \Dom\Element
     {
