@@ -156,6 +156,8 @@ final class TextTest extends IntegrationTestCase
     {
         $this->assertSame('', Text::html("(spoiler)\n\n(/spoiler)", $this->post));
         $this->assertSame('<p>Before.</p>', Text::html("Before.\n(spoiler)", $this->post));
+        // A no-break space is no content.
+        $this->assertSame('', Text::html("(spoiler)\n\u{00A0}\n(/spoiler)", $this->post));
     }
 
     public function testASpoilerMarkerInACodeBlockStaysCode(): void
@@ -269,6 +271,8 @@ final class TextTest extends IntegrationTestCase
         $this->assertSame('One.', $summary('', "One.\n\n(spoiler)\nSecret.\n---\n\n(/spoiler)"), 'a heading line below the text');
         $this->assertSame('One.', $summary('', "One.\n\n> (spoiler)\n> Secret.\n> (/spoiler)"), 'in a quote');
         $this->assertSame("One.\nTwo.", $summary('', "One.\r\n\r\n(spoiler)\r\n\r\nSecret.\r\n\r\n(/spoiler)\r\n\r\nTwo."), 'Windows line ends');
+        // The texts before and after a section in a list item stay apart.
+        $this->assertSame("Item text\nMore item.", $summary('', "- Item text\n  (spoiler)\n  Secret.\n  (/spoiler)\n  More item."));
         // The section starts in the intro and ends in the text.
         $this->assertSame('Teaser.', $summary("Teaser.\n\n(spoiler)\n\nIntro secret.", "Text secret.\n\n(/spoiler)\n\nEnd."));
         $this->assertStringNotContainsString('secret', $note->metaDescription());

@@ -58,8 +58,8 @@ final class Text
      * Covers the spoiler sections of rendered HTML: every word of a
      * div.spoiler (Website\Blog\Markdown writes it) gets a span, so the
      * style sheet covers the words and leaves the spaces between them free.
-     * spoiler.js uncovers a section on a click. A section without content
-     * is left out.
+     * spoiler.js uncovers a section on a click. A section without a word,
+     * an image or a map is left out.
      *
      * The HTML of a text with a section comes from the HTML parser, which
      * writes <br> for <br /> and all attributes of an element on one line.
@@ -70,16 +70,16 @@ final class Text
         if (!str_contains($html, '<div class="spoiler">')) {
             return $html;
         }
-        $document = self::document($html);
-        foreach ($document->querySelectorAll('div.spoiler') as $section) {
-            if (trim($section->textContent) === '' && $section->firstElementChild === null) {
+        $root = self::fragment($html);
+        foreach ($root->querySelectorAll('div.spoiler') as $section) {
+            if (self::words($section->textContent) === 0 && $section->querySelector('img, .map') === null) {
                 self::remove($section);
             } elseif ($section->parentElement?->closest('div.spoiler') === null) {
                 // A section inside a section already has its spans.
                 self::cover($section);
             }
         }
-        return $document->body->innerHTML;
+        return $root->innerHTML;
     }
 
     /**
@@ -91,25 +91,39 @@ final class Text
         if (!str_contains($html, '<div class="spoiler">')) {
             return $html;
         }
-        $document = self::document($html);
-        foreach ($document->querySelectorAll('div.spoiler') as $section) {
+        $root = self::fragment($html);
+        foreach ($root->querySelectorAll('div.spoiler') as $section) {
             self::remove($section);
         }
-        return $document->body->innerHTML;
+        return $root->innerHTML;
     }
 
-    /** A piece of HTML as the body of a document. */
-    private static function document(string $html): \Dom\HTMLDocument
+    /**
+     * A piece of HTML as the content of an element, read by the HTML parser
+     * of PHP. innerHTML of the element is the piece again.
+     */
+    private static function fragment(string $html): \Dom\Element
     {
-        return \Dom\HTMLDocument::createFromString('<!DOCTYPE html><body>' . $html . '</body>', LIBXML_NOERROR, 'UTF-8');
+        $root = \Dom\HTMLDocument::createEmpty('UTF-8')->createElement('body');
+        $root->innerHTML = $html;
+        return $root;
     }
 
-    /** Removes a section and one line end next to it, so the text around it keeps one line end. */
+    /**
+     * Removes a section. Between two blocks, the line end after the section
+     * goes with it, so one line end stays between them. At the end of its
+     * parent, the line end before it goes. Next to text, both stay.
+     */
     private static function remove(\Dom\Element $section): void
     {
-        $space = $section->nextSibling ?? $section->previousSibling;
-        if ($space instanceof \Dom\Text && trim($space->data) === '') {
-            $space->remove();
+        $before = $section->previousSibling;
+        $after = $section->nextSibling;
+        $spaceBefore = $before instanceof \Dom\Text && trim($before->data) === '';
+        $spaceAfter = $after instanceof \Dom\Text && trim($after->data) === '';
+        if ($spaceAfter && ($before === null || $spaceBefore)) {
+            $after->remove();
+        } elseif ($after === null && $spaceBefore) {
+            $before->remove();
         }
         $section->remove();
     }

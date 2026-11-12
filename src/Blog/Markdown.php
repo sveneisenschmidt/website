@@ -13,9 +13,9 @@ use Parsedown;
  * The parser decides what a marker line is, by the rules it has for every
  * block. A start marker ends the paragraph, list, quote or HTML block above
  * it without a blank line. A marker in a code block is code, and a marker
- * inside a sentence is text. Without an end marker the section runs to the end of the text, or to the
- * end of the quote or list item that holds it: a forgotten (/spoiler)
- * covers too much and never shows the words.
+ * inside a sentence is text. Without an end marker the section runs to the
+ * end of the text, or to the end of the quote or list item that holds it:
+ * a forgotten (/spoiler) covers too much and never shows the words.
  *
  * The first (/spoiler) line ends the section, also when the section shows
  * it in a code block of its own.
