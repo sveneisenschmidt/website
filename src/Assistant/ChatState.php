@@ -37,12 +37,6 @@ final class ChatState
     public ?array $tools = null;
 
     /**
-     * The day of the last message in Europe/Berlin. A message on a later day
-     * tells Claude the new date (`Chat::send()`).
-     */
-    public ?string $date = null;
-
-    /**
      * The history in the format of the Messages API. Claude's answers go back
      * unchanged, thinking blocks included: the API invalidates a thinking
      * block when the history before it changes.
@@ -122,7 +116,6 @@ final class ChatState
         $chat->model = $data['model'] ?? null;
         $chat->system = $data['system'] ?? null;
         $chat->tools = $data['tools'] ?? null;
-        $chat->date = $data['date'] ?? null;
         $chat->messages = $data['messages'] ?? [];
         $chat->items = $data['items'] ?? [];
         $chat->proposals = $data['proposals'] ?? [];

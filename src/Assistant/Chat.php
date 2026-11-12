@@ -203,13 +203,11 @@ final class Chat
         $chat->system ??= self::system($prompt);
         $chat->tools ??= [...Tools::definitions(), self::webSearch($chat->model)];
 
-        // The date goes into the message, because a date in the system text
+        // The time goes into the message, because a time in the system text
         // would change it and lose the prompt cache.
-        $today = (new DateTimeImmutable('now', new DateTimeZone('Europe/Berlin')))->format('Y-m-d');
-        $date = $chat->date === $today ? [] : ["Today is $today (Europe/Berlin)."];
-        $chat->date = $today;
+        $now = (new DateTimeImmutable('now', new DateTimeZone('Europe/Berlin')))->format('Y-m-d H:i');
         $notes = Session::notes();
-        $lines = array_merge($notes, $date, array_filter([self::context($context)]), [$text]);
+        $lines = array_merge($notes, ["It is $now (Europe/Berlin)."], array_filter([self::context($context)]), [$text]);
 
         $uploads = Uploads::state()['pending'];
         $blocks = [];

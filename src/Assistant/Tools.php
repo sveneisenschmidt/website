@@ -90,7 +90,7 @@ final class Tools
             $tool('propose_post', 'Proposes a new draft in one step: its fields, photos from uploads of this chat and a route. Nothing changes until the user clicks. The slug must be free in all four sections, drafts included, and no redirect may start at the new URL. Each photo keeps the file name of its upload, as the message with the upload states it; (image: file name) and cover refer to these names. A route is possible for photo and trip; no stations and no gpx means no route. ' . self::TEXT_RULES, [
                 'type' => ['type' => 'string', 'enum' => array_keys(Types::ALL)],
                 'slug' => $str + ['description' => 'a-z, 0-9 and single hyphens'],
-                'date' => $str + ['description' => 'YYYY-MM-DD HH:MM:SS, Europe/Berlin, not in the future'],
+                'date' => $str + ['description' => 'YYYY-MM-DD HH:MM:SS, Europe/Berlin, not in the future. The current time, unless the user gives another date or time.'],
                 'title' => $str,
                 'intro' => $str + ['description' => 'Markdown, field "Anriss"'],
                 'text' => $str + ['description' => 'Markdown'],
