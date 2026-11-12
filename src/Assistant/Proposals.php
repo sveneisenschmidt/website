@@ -48,9 +48,9 @@ final class Proposals
      * tag on the page.
      *
      * An autolink to a web or mail address, such as <https://example.com>,
-     * is a link and no raw HTML. An autolink with another scheme, such as <javascript://...>,
-     * counts, because a click on it runs in the site. Entities such as
-     * &amp; do not count.
+     * is a link and no raw HTML. An autolink with another scheme, such as
+     * <javascript://...>, counts, because a click on it runs in the site.
+     * Entities such as &amp; do not count.
      *
      * @return list<string>
      */
@@ -114,8 +114,8 @@ final class Proposals
      * True when the new value $after of the field $field gives intro and
      * text of $page together raw HTML that they do not have. The site
      * renders both as one text (`SitePage::body()`): a list or a code fence
-     * that the intro leaves open reaches into the text, and the text loses
-     * the indent of its first line.
+     * that the intro leaves open reaches into the text, and with an empty
+     * intro the text loses the indent of its first line.
      */
     public static function addsBodyHtml(Page $page, string $field, string $after): bool
     {
