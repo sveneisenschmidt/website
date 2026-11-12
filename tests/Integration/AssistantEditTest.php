@@ -104,6 +104,15 @@ final class AssistantEditTest extends AssistantTestCase
         }
     }
 
+    /** The spoiler markers are text for the HTML check; raw HTML between them still counts. */
+    public function testASpoilerSectionIsNoHtml(): void
+    {
+        $this->assertSame('field', $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => "Before.\n\n(spoiler)\nThe butler.\n(/spoiler)\n\nAfter."])['kind']);
+        foreach (["(spoiler)\n<b>bold</b>\n(/spoiler)", "(spoiler)\n\n<iframe src=\"x\"></iframe>\n\n(/spoiler)"] as $value) {
+            $this->assertStringContainsString('HTML', $this->refusal('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => $value]), $value);
+        }
+    }
+
     /**
      * A version without raw HTML can still make some with the text around
      * the passage: "<b x" before a later ">" is a tag, and a version inside
