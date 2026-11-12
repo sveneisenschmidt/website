@@ -8,6 +8,7 @@ use Kirby\Image\Darkroom;
 use Website\Blog\Exif;
 use Website\Blog\FileCache;
 use Website\Blog\Images;
+use Website\Blog\Markdown;
 use Website\Blog\Posts;
 use Website\Blog\Redirects;
 use Website\Blog\SrgbGd;
@@ -67,11 +68,21 @@ Kirby::plugin('website/blog', [
         // thumbnail URLs and renders the thumbnails before the first visit.
         'file.*:after' => fn(Event $event) => Images::renderAfter($event),
         'page.*:after' => fn(Event $event) => Images::renderAfter($event),
-        // Every text that Kirby renders gets its spoiler sections: the
-        // body, the summary and the text for the word count. The markers
-        // become paragraphs before Markdown runs, and sections after it.
-        'kirbytext:before' => fn(?string $text) => Text::markerLines((string) $text),
+        // The words of each spoiler section get their spans in every text
+        // that Kirby renders: the body, the summary and the text for the
+        // word count.
         'kirbytext:after' => fn(?string $text) => Text::spoilers((string) $text),
+    ],
+    // Kirby's Markdown component with the parser of the site, which knows
+    // the spoiler section (Website\Blog\Markdown). `inline` renders a
+    // single line without a paragraph around it.
+    'components' => [
+        'markdown' => function (Kirby $kirby, ?string $text = null, array $options = []): string {
+            $parser = new Markdown();
+            $parser->setBreaksEnabled($options['breaks'] ?? true);
+            $parser->setSafeMode($options['safe'] ?? false);
+            return ($options['inline'] ?? false) ? $parser->line((string) $text) : $parser->text((string) $text);
+        },
     ],
     'tags' => [
         'image' => [

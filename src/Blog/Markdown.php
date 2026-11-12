@@ -1,0 +1,94 @@
+<?php
+
+namespace Website\Blog;
+
+use Parsedown;
+
+/**
+ * Kirby's Markdown parser with one more block: the spoiler section. A line
+ * (spoiler) starts the section and a line (/spoiler) ends it, as ">" marks
+ * the lines of a quote. The section becomes a div with the class spoiler,
+ * and its lines are Markdown: paragraphs, headings, lists, images.
+ *
+ * The parser decides what a marker line is, by the rules it has for every
+ * block. A marker ends the paragraph or list above it without a blank line.
+ * A marker in a code block is code, and a marker inside a sentence is text.
+ * Without an end marker the section runs to the end of the text, or to the
+ * end of the quote or list item that holds it: a forgotten (/spoiler)
+ * covers too much and never shows the words.
+ *
+ * The first (/spoiler) line ends the section, also when the section shows
+ * it in a code block of its own.
+ */
+final class Markdown extends Parsedown
+{
+    public function __construct()
+    {
+        $this->BlockTypes['('][] = 'Spoiler';
+    }
+
+    /**
+     * @param array{body: string, indent: int, text: string} $Line
+     * @return array<string, mixed>|null
+     */
+    protected function blockSpoiler(array $Line): ?array
+    {
+        if (!self::isMarker($Line, '(spoiler)')) {
+            return null;
+        }
+        return [
+            'element' => [
+                'name' => 'div',
+                'attributes' => ['class' => 'spoiler'],
+                'handler' => ['function' => 'linesElements', 'argument' => [], 'destination' => 'elements'],
+            ],
+        ];
+    }
+
+    /**
+     * @param array{body: string, indent: int, text: string} $Line
+     * @param array<string, mixed> $Block
+     * @return array<string, mixed>|null
+     */
+    protected function blockSpoilerContinue(array $Line, array $Block): ?array
+    {
+        if (isset($Block['complete'])) {
+            return null;
+        }
+        if (self::isMarker($Line, '(/spoiler)')) {
+            $Block['complete'] = true;
+            return $Block;
+        }
+        // The parser skips blank lines and counts them in `interrupted`.
+        // The section needs them back: they separate its paragraphs.
+        $blank = array_fill(0, $Block['interrupted'] ?? 0, '');
+        unset($Block['interrupted']);
+        array_push($Block['element']['handler']['argument'], ...$blank, ...[$Line['body']]);
+        return $Block;
+    }
+
+    /**
+     * A block of HTML, such as the map of (map:), takes every line up to
+     * the next blank line. A start marker ends it, so the section below a
+     * map needs no blank line.
+     *
+     * @param array{body: string, indent: int, text: string} $Line
+     * @param array<string, mixed> $Block
+     * @return array<string, mixed>|null
+     */
+    protected function blockMarkupContinue($Line, array $Block)
+    {
+        return self::isMarker($Line, '(spoiler)') ? null : parent::blockMarkupContinue($Line, $Block);
+    }
+
+    /**
+     * A marker line holds the marker and nothing else. Indented by four or
+     * more spaces, the line is code.
+     *
+     * @param array{body: string, indent: int, text: string} $Line
+     */
+    private static function isMarker(array $Line, string $marker): bool
+    {
+        return $Line['indent'] < 4 && rtrim($Line['text']) === $marker;
+    }
+}

@@ -55,105 +55,30 @@ final class Text
     }
 
     /**
-     * Puts a blank line before and after each spoiler marker line of
-     * Markdown, so the marker becomes a paragraph of its own. Without the
-     * blank lines the marker would belong to the block next to it: a "---"
-     * line makes a heading of the lines above it, a list takes the next
-     * line into its last item, and the HTML of a map takes the lines below
-     * it. A marker in a code block stays as it is: between two fence lines,
-     * or indented by four or more spaces.
-     */
-    public static function markerLines(string $markdown): string
-    {
-        if (!str_contains($markdown, 'spoiler)')) {
-            return $markdown;
-        }
-        $lines = [];
-        $fence = null;
-        foreach (explode("\n", $markdown) as $line) {
-            $text = trim($line);
-            $indent = strlen($line) - strlen(ltrim($line, ' '));
-            // A fence line starts with three or more ` or ~. The block
-            // ends at a line with at least as many of the same character.
-            $run = substr($text, 0, strspn($text, $text === '' ? '' : $text[0]));
-            $run = strlen($run) >= 3 && ($run[0] === '`' || $run[0] === '~') ? $run : '';
-            if ($fence !== null) {
-                $fence = str_starts_with($run, $fence) ? null : $fence;
-            } elseif ($run !== '') {
-                $fence = $run;
-            } elseif ($indent < 4 && in_array($text, ['(spoiler)', '(/spoiler)'], true)) {
-                // Two spaces at the end of the line above are a line break,
-                // and the paragraph ends there.
-                if ($lines !== []) {
-                    $lines[array_key_last($lines)] = rtrim($lines[array_key_last($lines)]);
-                }
-                array_push($lines, '', $text, '');
-                continue;
-            }
-            $lines[] = $line;
-        }
-        return implode("\n", $lines);
-    }
-
-    /**
-     * Turns each spoiler section of rendered HTML into a div with the class
-     * spoiler. In the Markdown, a line (spoiler) starts a section and a line
-     * (/spoiler) ends it. Every word of the section gets a span, so the
+     * Covers the spoiler sections of rendered HTML: every word of a
+     * div.spoiler (Website\Blog\Markdown writes it) gets a span, so the
      * style sheet covers the words and leaves the spaces between them free.
-     * spoiler.js uncovers a section on a click.
-     *
-     * A section holds the elements between its two markers that have the
-     * same parent, so the HTML stays well-formed. Without an end marker the
-     * section runs to the end of its parent: a forgotten (/spoiler) covers
-     * too much and never shows the words. A section without content is
-     * left out. A marker that is no line of its own stays text, as does
-     * one in a code block or one written as code, as a link or in an
-     * emphasis.
+     * spoiler.js uncovers a section on a click. A section without content
+     * is left out.
      *
      * The HTML of a text with a section comes from the HTML parser, which
      * writes <br> for <br /> and all attributes of an element on one line.
+     * A text without a section stays as it is.
      */
     public static function spoilers(string $html): string
     {
-        if (!str_contains($html, '(spoiler)')) {
+        if (!str_contains($html, '<div class="spoiler">')) {
             return $html;
         }
         $document = self::document($html);
-        foreach ($document->querySelectorAll('p') as $paragraph) {
-            self::markerParagraphs($paragraph);
-        }
-        $sections = 0;
-        foreach ($document->querySelectorAll('p') as $start) {
-            // A start marker inside a section is covered text of it.
-            if (!self::isMarker($start, '(spoiler)') || $start->closest('.spoiler') !== null) {
-                continue;
-            }
-            $section = $document->createElement('div');
-            $section->className = 'spoiler';
-            $start->before($section);
-            $node = $start->nextSibling;
-            while ($node !== null && !self::isMarker($node, '(/spoiler)')) {
-                $next = $node->nextSibling;
-                $section->append($node);
-                $node = $next;
-            }
-            if ($node instanceof \Dom\Element) {
-                $node->remove();
-            }
-            $start->remove();
+        foreach ($document->querySelectorAll('div.spoiler') as $section) {
             if (trim($section->textContent) === '' && $section->firstElementChild === null) {
-                // One line end next to the section goes with it.
-                $space = $section->nextSibling ?? $section->previousSibling;
-                if ($space instanceof \Dom\Text && trim($space->data) === '') {
-                    $space->remove();
-                }
-                $section->remove();
+                self::remove($section);
             } else {
                 self::cover($section);
             }
-            $sections++;
         }
-        return $sections === 0 ? $html : $document->body->innerHTML;
+        return $document->body->innerHTML;
     }
 
     /**
@@ -167,12 +92,7 @@ final class Text
         }
         $document = self::document($html);
         foreach ($document->querySelectorAll('div.spoiler') as $section) {
-            // The line end after the section goes with it, so the text
-            // around it keeps one line end.
-            if ($section->nextSibling instanceof \Dom\Text && trim($section->nextSibling->data) === '') {
-                $section->nextSibling->remove();
-            }
-            $section->remove();
+            self::remove($section);
         }
         return $document->body->innerHTML;
     }
@@ -183,93 +103,14 @@ final class Text
         return \Dom\HTMLDocument::createFromString('<!DOCTYPE html><body>' . $html . '</body>', LIBXML_NOERROR, 'UTF-8');
     }
 
-    /**
-     * True for a paragraph that holds the marker as plain text and nothing
-     * else. A marker written as code, as a link or in an emphasis is text
-     * of the post, so a post can show the markers.
-     */
-    private static function isMarker(\Dom\Node $node, string $marker): bool
+    /** Removes a section and one line end next to it, so the text around it keeps one line end. */
+    private static function remove(\Dom\Element $section): void
     {
-        return $node instanceof \Dom\Element
-            && $node->localName === 'p'
-            && $node->childNodes->length === 1
-            && $node->firstChild instanceof \Dom\Text
-            && trim($node->firstChild->data) === $marker;
-    }
-
-    private static function isLineBreak(\Dom\Node $node): bool
-    {
-        return $node instanceof \Dom\Element && $node->localName === 'br';
-    }
-
-    /**
-     * Makes each marker line of a paragraph a paragraph of its own. Without
-     * a blank line next to a marker, Markdown puts the marker into the
-     * paragraph of the neighbour line.
-     */
-    private static function markerParagraphs(\Dom\Element $paragraph): void
-    {
-        if (!str_contains($paragraph->textContent, 'spoiler)')) {
-            return;
+        $space = $section->nextSibling ?? $section->previousSibling;
+        if ($space instanceof \Dom\Text && trim($space->data) === '') {
+            $space->remove();
         }
-        $document = $paragraph->ownerDocument;
-        // The lines of the paragraph, each a list of nodes.
-        $lines = [[]];
-        foreach (iterator_to_array($paragraph->childNodes) as $child) {
-            if (!$child instanceof \Dom\Text) {
-                $lines[array_key_last($lines)][] = $child;
-                continue;
-            }
-            foreach (explode("\n", $child->data) as $i => $text) {
-                if ($i > 0) {
-                    $lines[] = [];
-                }
-                if ($text !== '') {
-                    $lines[array_key_last($lines)][] = $document->createTextNode($text);
-                }
-            }
-        }
-        // A marker line holds the marker and nothing else. Two spaces at
-        // the end of a line give a <br>.
-        $marker = function (array $line): ?string {
-            $line = array_values(array_filter($line, fn(\Dom\Node $node) => !self::isLineBreak($node)));
-            $text = count($line) === 1 && $line[0] instanceof \Dom\Text ? trim($line[0]->data) : '';
-            return in_array($text, ['(spoiler)', '(/spoiler)'], true) ? $text : null;
-        };
-        $markers = array_map($marker, $lines);
-        if (array_filter($markers) === []) {
-            return;
-        }
-        $new = null;
-        foreach ($lines as $i => $line) {
-            $text = $markers[$i];
-            if ($text !== null) {
-                // The paragraph before the marker ends here, and the line
-                // break at the end of its last line has no line to break.
-                $last = $new?->lastChild;
-                if ($last instanceof \Dom\Element && self::isLineBreak($last)) {
-                    $last->remove();
-                }
-                $new = null;
-                $own = $document->createElement('p');
-                $own->textContent = $text;
-                $paragraph->before($own, "\n");
-            } elseif ($line !== []) {
-                if ($new === null) {
-                    $new = $document->createElement('p');
-                    $paragraph->before($new, "\n");
-                } else {
-                    $new->append("\n");
-                }
-                $new->append(...$line);
-            }
-        }
-        // The line end after the last new paragraph is the one that follows
-        // the old paragraph.
-        if ($paragraph->previousSibling instanceof \Dom\Text) {
-            $paragraph->previousSibling->remove();
-        }
-        $paragraph->remove();
+        $section->remove();
     }
 
     /**

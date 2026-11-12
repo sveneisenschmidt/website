@@ -95,7 +95,7 @@ final class TextTest extends IntegrationTestCase
 
     public function testASpoilerLeavesScriptsAndAttributesAsTheyAre(): void
     {
-        $html = Text::spoilers("<p>(spoiler)</p>\n<div class=\"map\"><script type=\"application/json\">{\"a\": \"b c\"}</script>\n</div>\n<p><img alt=\"two words\" src=\"a.webp\"> one</p>\n<p>(/spoiler)</p>");
+        $html = Text::spoilers("<div class=\"spoiler\">\n<div class=\"map\"><script type=\"application/json\">{\"a\": \"b c\"}</script>\n</div>\n<p><img alt=\"two words\" src=\"a.webp\"> one</p>\n</div>");
 
         $this->assertSame(
             "<div class=\"spoiler\">\n<div class=\"map\"><script type=\"application/json\">{\"a\": \"b c\"}</script>\n</div>\n"
@@ -129,9 +129,10 @@ final class TextTest extends IntegrationTestCase
         $this->assertStringStartsWith("<div class=\"spoiler\">\n<h2 id=\"the-butler\">{$word('The')} {$word('butler.')}", $html);
         $this->assertStringNotContainsString('(spoiler)', $html);
 
-        // The HTML of a map would take the lines below it as its own.
+        // The HTML of a map takes the lines below it as its own, up to a
+        // blank line or a marker.
         $html = Text::html("(map:)\n(spoiler)\nThe butler.\n(/spoiler)\nAfter.", $this->post);
-        $this->assertStringContainsString("<div class=\"spoiler\">\n<p>{$word('The')} {$word('butler.')}</p>\n</div>\n<p>After.</p>", $html);
+        $this->assertStringContainsString("</div>\n<div class=\"spoiler\">\n<p>{$word('The')} {$word('butler.')}</p>\n</div>\n<p>After.</p>", $html);
 
         // A list would take the end marker as text of its last item.
         $html = Text::html("(spoiler)\n- one\n- two\n(/spoiler)\nAfter.", $this->post);
@@ -161,13 +162,13 @@ final class TextTest extends IntegrationTestCase
         $word = fn(string $text) => "<span class=\"spoiler-word\">$text</span>";
 
         $this->assertSame(
-            "<p>Before.</p>\n<div class=\"spoiler\">\n<p>{$word('Open')} {$word('end.')}</p></div>",
+            "<p>Before.</p>\n<div class=\"spoiler\">\n<p>{$word('Open')} {$word('end.')}</p>\n</div>",
             Text::html("Before.\n\n(spoiler)\n\nOpen end.", $this->post),
         );
         // The section starts in the quote and its end marker is outside:
         // it ends with the quote, and the HTML stays well-formed.
         $this->assertSame(
-            "<blockquote>\n<div class=\"spoiler\">\n<p>{$word('Secret.')}</p>\n</div></blockquote>\n<p>More.</p>\n<p>(/spoiler)</p>",
+            "<blockquote>\n<div class=\"spoiler\">\n<p>{$word('Secret.')}</p>\n</div>\n</blockquote>\n<p>More.</p>\n<p>(/spoiler)</p>",
             Text::html("> (spoiler)\n> Secret.\n\nMore.\n\n(/spoiler)", $this->post),
         );
     }
@@ -199,7 +200,7 @@ final class TextTest extends IntegrationTestCase
         // Two spaces at the end of a line are a line break in Markdown.
         $this->assertSame(
             "<p>Before.</p>\n<div class=\"spoiler\">\n<p>{$word('Secret.')}<br>\n{$word('more')}</p>\n</div>",
-            Text::html("Before.  \n(spoiler)  \nSecret.  \nmore\n(/spoiler)", $this->post),
+            Text::html("Before.\n(spoiler)  \nSecret.  \nmore\n(/spoiler)  ", $this->post),
         );
         // A no-break space and a thin space are spaces between two bars.
         $this->assertSame(
@@ -210,7 +211,7 @@ final class TextTest extends IntegrationTestCase
 
     public function testASpoilerKeepsAttributesAndCommentsAsTheyAre(): void
     {
-        $html = Text::spoilers("<p>(spoiler)</p>\n<p><a title=\"x > y\" href=\"/a\">one</a><!-- a > b --></p>\n<p>(/spoiler)</p>");
+        $html = Text::spoilers("<div class=\"spoiler\">\n<p><a title=\"x > y\" href=\"/a\">one</a><!-- a > b --></p>\n</div>");
 
         $this->assertSame("<div class=\"spoiler\">\n<p><a title=\"x > y\" href=\"/a\"><span class=\"spoiler-word\">one</span></a><!-- a > b --></p>\n</div>", $html);
     }
