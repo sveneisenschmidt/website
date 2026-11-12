@@ -104,11 +104,15 @@ final class AssistantEditTest extends AssistantTestCase
         }
     }
 
-    /** The spoiler markers are text for the HTML check; raw HTML between them still counts. */
-    public function testASpoilerSectionIsNoHtml(): void
+    /**
+     * The HTML check reads a spoiler section as the site does. A code fence
+     * that starts in a section ends with the section, so the tag after the
+     * end marker is raw HTML.
+     */
+    public function testTheHtmlCheckReadsASpoilerSectionAsTheSiteDoes(): void
     {
         $this->assertSame('field', $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => "Before.\n\n(spoiler)\nThe butler.\n(/spoiler)\n\nAfter."])['kind']);
-        foreach (["(spoiler)\n<b>bold</b>\n(/spoiler)", "(spoiler)\n\n<iframe src=\"x\"></iframe>\n\n(/spoiler)"] as $value) {
+        foreach (["(spoiler)\n<b>bold</b>\n(/spoiler)", "(spoiler)\n```\n(/spoiler)\n<script>x</script>\n```"] as $value) {
             $this->assertStringContainsString('HTML', $this->refusal('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => $value]), $value);
         }
     }

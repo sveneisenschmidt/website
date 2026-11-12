@@ -9,9 +9,9 @@ use Kirby\Cms\File;
 use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
 use Kirby\Data\Yaml;
-use Parsedown;
-use ParsedownExtra;
 use RuntimeException;
+use Website\Blog\Markdown;
+use Website\Blog\MarkdownExtra;
 use Website\Blog\Types;
 use Website\Models\PostPage;
 
@@ -27,11 +27,11 @@ use Website\Models\PostPage;
 final class Proposals
 {
     /**
-     * The raw HTML in a text: each piece that Kirby's Markdown parser,
-     * Parsedown, passes on as it is, such as a tag, a comment, or a block
-     * that starts with a tag. Parsedown itself decides, so the check cannot
-     * differ from what the site renders. Plain Parsedown (config.php) and
-     * ParsedownExtra (option markdown.extra) both look. An autolink to a web
+     * The raw HTML in a text: each piece that the Markdown parser of the
+     * site passes on as it is, such as a tag, a comment, or a block that
+     * starts with a tag. The parsers of the site themselves decide, so the
+     * check cannot differ from what the site renders. `Markdown`
+     * (config.php) and `MarkdownExtra` (option markdown.extra) both look. An autolink to a web
      * or mail address, such as <https://example.com>, is a link and no raw
      * HTML. An autolink with another scheme, such as <javascript://...>,
      * counts, because a click on it runs in the site. Entities such as
@@ -48,8 +48,11 @@ final class Proposals
                 $pieces[] = $raw;
             }
         };
-        $plain = new class ($collect) extends Parsedown {
-            public function __construct(private Closure $collect) {}
+        $plain = new class ($collect) extends Markdown {
+            public function __construct(private Closure $collect)
+            {
+                parent::__construct();
+            }
 
             /** @param array<string, mixed> $Element */
             protected function element(array $Element): string
@@ -58,7 +61,7 @@ final class Proposals
                 return parent::element($Element);
             }
         };
-        $extra = new class ($collect) extends ParsedownExtra {
+        $extra = new class ($collect) extends MarkdownExtra {
             public function __construct(private Closure $collect)
             {
                 parent::__construct();
