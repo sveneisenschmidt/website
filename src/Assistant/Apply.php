@@ -187,7 +187,7 @@ final class Apply
         // The other one of intro and text can have changed since the proposal
         // (Proposals::addsBodyHtml()).
         if (Proposals::addsBodyHtml($page, $in['field'], $in['value'])) {
-            throw new Stale('Mit diesem Wert bekämen Anriss und Text zusammen rohes HTML. Nichts geändert.', 'intro and text together would get raw HTML');
+            throw new Stale('Mit diesem Wert bekäme die Seite rohes HTML. Nichts geändert.', 'intro and text together would get raw HTML');
         }
         return self::result(self::write($page, [$in['field'] => $in['value']]));
     }

@@ -10,7 +10,10 @@ use Kirby\Text\KirbyTag;
  * Markdown with tags in parentheses, such as (image: photo.jpg). (image:)
  * renders a figure (snippets/figure.php), (map:) the map of a photo or trip
  * post. The HTML of each tag contains no blank line: Markdown ends an HTML
- * block at a blank line and would treat the rest as Markdown text.
+ * block at a blank line and would treat the rest as Markdown text. The HTML
+ * of a figure and of a map ends with a line end. With the line end after
+ * the tag it makes a blank line, so the line below the tag is Markdown and
+ * no part of the HTML block.
  */
 final class Tags
 {
@@ -48,6 +51,6 @@ final class Tags
         // is no JSON gives no route; map.js could not read it either.
         $data = json_decode((string) ($page->route()->toFile()?->read() ?? ''));
         $route = $data === null ? '' : (string) json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP);
-        return rtrim(snippet('map', ['zoomable' => $page->mapzoom()->toBool(), 'points' => $points, 'route' => $route], true), "\n");
+        return rtrim(snippet('map', ['zoomable' => $page->mapzoom()->toBool(), 'points' => $points, 'route' => $route], true), "\n") . "\n";
     }
 }

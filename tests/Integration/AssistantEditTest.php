@@ -150,6 +150,12 @@ final class AssistantEditTest extends AssistantTestCase
 
         $this->page()->update(['text' => 'It rained all day.']);
         $this->assertStringContainsString('one text', $this->refusal('propose_edit', ['post' => 'photos/test-photo', 'field' => 'text', 'passage' => 'It rained all day.', 'versions' => [$code]]));
+
+        $this->page()->update(['intro' => '']);
+        $card = $this->propose('propose_edit', ['post' => 'photos/test-photo', 'field' => 'text', 'passage' => 'It rained all day.', 'versions' => ["  b\n\n$code"]]);
+        $this->page()->update(['intro' => '* a']);
+        Apply::decide($card['id'], 'apply');
+        $this->assertSame('stale', Session::decisions()[$card['id']]['state']);
     }
 
     /**

@@ -47,10 +47,16 @@ class SitePage extends Page
         return $this->intendedTemplate()->name() === 'about';
     }
 
+    /** Intro and text as the one text that the site renders. */
+    public static function body(?string $intro, ?string $text): string
+    {
+        return trim($intro . "\n\n" . $text);
+    }
+
     /** Intro and text as HTML, every heading with an id and an anchor. */
     public function bodyHtml(): string
     {
-        return Text::html(trim($this->intro()->value() . "\n\n" . $this->text()->value()), $this);
+        return Text::html(self::body($this->intro()->value(), $this->text()->value()), $this);
     }
 
     /** The summary as plain text: the intro, or the text when the intro is empty, without its spoiler sections. */
@@ -67,7 +73,7 @@ class SitePage extends Page
      */
     public function plainText(): string
     {
-        $text = trim($this->intro()->value() . "\n\n" . $this->text()->value());
+        $text = self::body($this->intro()->value(), $this->text()->value());
         return Text::plain(kirby()->kirbytext(Text::withoutMedia($text), ['parent' => $this]));
     }
 

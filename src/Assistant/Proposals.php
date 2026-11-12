@@ -14,6 +14,7 @@ use Website\Blog\Markdown;
 use Website\Blog\MarkdownExtra;
 use Website\Blog\Types;
 use Website\Models\PostPage;
+use Website\Models\SitePage;
 
 /**
  * Runs the propose tools, the tools whose names start with `propose_`. Each
@@ -30,13 +31,14 @@ final class Proposals
     private const NO_HTML = 'Raw HTML is not allowed. Use Markdown.';
 
     /** The error for an intro and a text that make raw HTML as one text. */
-    private const NO_BODY_HTML = 'The page renders intro and text as one text, and together they would get raw HTML. Close lists and code fences in the intro, and use Markdown.';
+    private const NO_BODY_HTML = 'The page renders intro and text as one text, and as one text they would get raw HTML. Use Markdown, close each list and code fence, and do not indent the first line.';
 
     /**
      * The raw HTML in a text: each piece that the Markdown parser of the
      * site passes on as it is, such as a tag, a comment, or a block that
-     * starts with a tag. The parsers of the site themselves decide, so the
-     * check cannot differ from what the site renders. `Markdown` and
+     * starts with a tag. The parsers of the site themselves decide. They
+     * read the text with its KirbyText tags as written; the HTML of a tag
+     * does not change how the lines around it read (`Tags`). `Markdown` and
      * `MarkdownExtra` (option markdown.extra) both look. With $inline they
      * read the text as one line, as the site renders a caption: there an
      * indented line is text and no code block. An autolink to a web
@@ -106,17 +108,18 @@ final class Proposals
     /**
      * True when the new value $after of the field $field gives intro and
      * text of $page together raw HTML that they do not have. The site
-     * renders both as one text (`SitePage::bodyHtml()`), so a list or a code
-     * fence that the intro leaves open reaches into the text.
+     * renders both as one text (`SitePage::body()`): a list or a code fence
+     * that the intro leaves open reaches into the text, and the text loses
+     * the indent of its first line.
      */
     public static function addsBodyHtml(Page $page, string $field, string $after): bool
     {
         if (!in_array($field, ['intro', 'text'], true)) {
             return false;
         }
-        $body = fn(array $values) => trim($values['intro'] . "\n\n" . $values['text']);
         $now = ['intro' => Content::current($page, 'intro'), 'text' => Content::current($page, 'text')];
-        return self::addsHtml($body($now), $body([$field => $after] + $now));
+        $new = [$field => $after] + $now;
+        return self::addsHtml(SitePage::body($now['intro'], $now['text']), SitePage::body($new['intro'], $new['text']));
     }
 
     /**
@@ -623,7 +626,7 @@ final class Proposals
         if ($title === '') {
             return 'title: A post needs a title.';
         }
-        if (self::html(trim($input['intro'] . "\n\n" . $input['text'])) !== []) {
+        if (self::html(SitePage::body((string) $input['intro'], (string) $input['text'])) !== []) {
             return self::NO_BODY_HTML;
         }
         $trip = trim((string) $input['trip']);
