@@ -231,11 +231,12 @@
 }
 
 /* map.js sets the background of the map in its style attribute, so the bar
-   of a map is an element above it. */
+   of a map is an element above it, with the corners of the map. */
 .spoiler:not(.is-open) .map::after {
     content: "";
     position: absolute;
     inset: 0;
+    border-radius: inherit;
     background: var(--color-ink);
 }
 

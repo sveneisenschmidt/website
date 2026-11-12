@@ -69,7 +69,7 @@ final class Text
      * list or inside an emphasis.
      *
      * The HTML of a text with a section comes from the HTML parser, which
-     * writes <br> for <br /> and each attribute on one line.
+     * writes <br> for <br /> and all attributes of an element on one line.
      */
     public static function spoilers(string $html): string
     {
@@ -132,9 +132,23 @@ final class Text
         return \Dom\HTMLDocument::createFromString('<!DOCTYPE html><body>' . $html . '</body>', LIBXML_NOERROR, 'UTF-8');
     }
 
+    /**
+     * True for a paragraph that holds the marker as plain text and nothing
+     * else. A marker written as code, as a link or in an emphasis is text
+     * of the post, so a post can show the markers.
+     */
     private static function isMarker(\Dom\Node $node, string $marker): bool
     {
-        return $node instanceof \Dom\Element && $node->localName === 'p' && trim($node->textContent) === $marker;
+        return $node instanceof \Dom\Element
+            && $node->localName === 'p'
+            && $node->childNodes->length === 1
+            && $node->firstChild instanceof \Dom\Text
+            && trim($node->firstChild->data) === $marker;
+    }
+
+    private static function isLineBreak(\Dom\Node $node): bool
+    {
+        return $node instanceof \Dom\Element && $node->localName === 'br';
     }
 
     /**
@@ -165,9 +179,9 @@ final class Text
             }
         }
         // A marker line holds the marker and nothing else. Two spaces at
-        // its end give a <br>.
+        // the end of a line give a <br>.
         $marker = function (array $line): ?string {
-            $line = array_values(array_filter($line, fn(\Dom\Node $node) => !($node instanceof \Dom\Element && $node->localName === 'br')));
+            $line = array_values(array_filter($line, fn(\Dom\Node $node) => !self::isLineBreak($node)));
             $text = count($line) === 1 && $line[0] instanceof \Dom\Text ? trim($line[0]->data) : '';
             return in_array($text, ['(spoiler)', '(/spoiler)'], true) ? $text : null;
         };
@@ -178,6 +192,12 @@ final class Text
         foreach ($lines as $line) {
             $text = $marker($line);
             if ($text !== null) {
+                // The paragraph before the marker ends here, and the line
+                // break at the end of its last line has no line to break.
+                $last = $new?->lastChild;
+                if ($last instanceof \Dom\Element && self::isLineBreak($last)) {
+                    $last->remove();
+                }
                 $new = null;
                 $own = $document->createElement('p');
                 $own->textContent = $text;
@@ -200,21 +220,25 @@ final class Text
         $paragraph->remove();
     }
 
-    /** Puts each word in the text of $node into a span. The content of a script or style element is code and stays. */
+    /**
+     * Puts each word in the text of $node into a span. The spaces between
+     * the words stay outside, a no-break space included. The content of a
+     * script or style element is code and stays.
+     */
     private static function cover(\Dom\Node $node): void
     {
         foreach (iterator_to_array($node->childNodes) as $child) {
             if ($child instanceof \Dom\Element && !in_array($child->localName, ['script', 'style'], true)) {
                 self::cover($child);
-            } elseif ($child instanceof \Dom\Text && trim($child->data) !== '') {
-                $pieces = [];
-                foreach (preg_split('!(\S+)!u', $child->data, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY) as $piece) {
-                    if (trim($piece) === '') {
-                        $pieces[] = $piece;
-                    } else {
-                        $pieces[] = $word = $node->ownerDocument->createElement('span');
-                        $word->className = 'spoiler-word';
-                        $word->textContent = $piece;
+            } elseif ($child instanceof \Dom\Text) {
+                // The pieces are words and the white space between them, in
+                // turns, and the first piece is a word or empty.
+                $pieces = preg_split('!(\s+)!u', $child->data, -1, PREG_SPLIT_DELIM_CAPTURE);
+                foreach ($pieces as $i => $piece) {
+                    if ($i % 2 === 0 && $piece !== '') {
+                        $pieces[$i] = $node->ownerDocument->createElement('span');
+                        $pieces[$i]->className = 'spoiler-word';
+                        $pieces[$i]->textContent = $piece;
                     }
                 }
                 $child->replaceWith(...$pieces);

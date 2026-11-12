@@ -157,6 +157,26 @@ final class TextTest extends IntegrationTestCase
         $this->assertSame('<p>A (spoiler) in a sentence, no (/spoiler) line.</p>', Text::html('A (spoiler) in a sentence, no (/spoiler) line.', $this->post));
         $this->assertSame("<p><em>a\n(spoiler)\nb</em></p>", Text::html("*a\n(spoiler)\nb*", $this->post));
         $this->assertSame("<p><em>a</em>(spoiler)</p>", Text::html('*a*(spoiler)', $this->post));
+        // A post that explains the markers writes them as code or emphasis.
+        $this->assertSame("<p><code>(spoiler)</code></p>\n<p>Shown.</p>\n<p><code>(/spoiler)</code></p>", Text::html("`(spoiler)`\n\nShown.\n\n`(/spoiler)`", $this->post));
+        $this->assertSame("<p><em>(spoiler)</em></p>\n<p>Shown.</p>", Text::html("*(spoiler)*\n\nShown.", $this->post));
+        $this->assertSame("<p><a href=\"https://example.com\">(spoiler)</a></p>\n<p>Shown.</p>", Text::html("[(spoiler)](https://example.com)\n\nShown.", $this->post));
+    }
+
+    public function testASpoilerKeepsLineBreaksAndSpecialSpacesOutOfItsBars(): void
+    {
+        $word = fn(string $text) => "<span class=\"spoiler-word\">$text</span>";
+
+        // Two spaces at the end of a line are a line break in Markdown.
+        $this->assertSame(
+            "<p>Before.</p>\n<div class=\"spoiler\">\n<p>{$word('Secret.')}<br>\n{$word('more')}</p>\n</div>",
+            Text::html("Before.  \n(spoiler)  \nSecret.  \nmore\n(/spoiler)", $this->post),
+        );
+        // A no-break space and a thin space are spaces between two bars.
+        $this->assertSame(
+            "<div class=\"spoiler\">\n<p>{$word('a')}&nbsp;{$word('b')} {$word('c')}\u{2009}{$word('d')}</p>\n</div>",
+            Text::html("(spoiler)\n\na\u{00A0}b c\u{2009}d\n\n(/spoiler)", $this->post),
+        );
     }
 
     public function testASpoilerKeepsAttributesAndCommentsAsTheyAre(): void

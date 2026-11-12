@@ -4,13 +4,14 @@ document.addEventListener("DOMContentLoaded", function () {
     var spoilers = document.querySelectorAll(".spoiler");
 
     Array.prototype.forEach.call(spoilers, function (spoiler) {
-        // While the section is covered, its links, buttons and map are
-        // inert: no pointer, key or screen reader reaches them. The Copy
+        // While the section is covered, its links, buttons, images and map
+        // are inert: no pointer, key or screen reader reaches them, and an
+        // image has no context menu and cannot be dragged out. The Copy
         // button of copy.js is one of the buttons, so copy.js runs first
         // (Layout::scripts()). The words of an inert link cannot be
         // selected.
         function setInert(inert) {
-            var elements = spoiler.querySelectorAll("a, button, .map");
+            var elements = spoiler.querySelectorAll("a, button, img, .map");
 
             Array.prototype.forEach.call(elements, function (element) {
                 element.inert = inert;
@@ -44,7 +45,10 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!isSelected()) uncover();
         }
 
+        // The keys count only on the section itself. A code block that
+        // scrolls sideways can have the focus too, and Space scrolls it.
         function onKey(event) {
+            if (event.target !== spoiler) return;
             if (event.key !== "Enter" && event.key !== " ") return;
             event.preventDefault();
             uncover();
