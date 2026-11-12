@@ -104,6 +104,28 @@ final class TextTest extends IntegrationTestCase
         );
     }
 
+    public function testASpoilerMarkerNeedsNoBlankLineAroundIt(): void
+    {
+        $word = fn(string $text) => "<span class=\"spoiler-word\">$text</span>";
+        $section = "<div class=\"spoiler\">\n<p>{$word('Secret.')}</p>\n</div>";
+
+        $this->assertSame($section, Text::html("(spoiler)\nSecret.\n\n(/spoiler)", $this->post), 'no blank line after (spoiler)');
+        $this->assertSame($section, Text::html("(spoiler)\n\nSecret.\n(/spoiler)", $this->post), 'no blank line before (/spoiler)');
+        $this->assertSame(
+            "<p>Before.</p>\n$section\n<p>After.</p>",
+            Text::html("Before.\n(spoiler)\nSecret.\n(/spoiler)\nAfter.", $this->post),
+            'the markers inside one paragraph',
+        );
+        $this->assertSame($section, Text::html("(spoiler)  \nSecret.\n(/spoiler)  \n", $this->post), 'two spaces after a marker');
+    }
+
+    public function testASpoilerMarkerInACodeBlockStaysCode(): void
+    {
+        $html = Text::html("```\n(spoiler)\ntext\n(/spoiler)\n```", $this->post);
+
+        $this->assertSame("<pre><code>(spoiler)\ntext\n(/spoiler)</code></pre>", $html);
+    }
+
     public function testASpoilerWithoutItsEndStaysText(): void
     {
         $this->assertSame("<p>(spoiler)</p>\n<p>Open end.</p>", Text::html("(spoiler)\n\nOpen end.", $this->post));

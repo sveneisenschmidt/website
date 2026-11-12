@@ -70,9 +70,26 @@ final class Text
      * section gets a span, so the style sheet covers the words and leaves
      * the spaces between them free. spoiler.js uncovers a section on a
      * click. A (spoiler) without a (/spoiler) stays text.
+     *
+     * A marker is a line of its own in the Markdown. Without a blank line
+     * next to it, Markdown puts the marker into the paragraph of its
+     * neighbour line, and the words of the section would show. So a marker
+     * line inside a paragraph first becomes a paragraph of its own. A code
+     * block is no paragraph, and a marker in it stays code.
      */
     public static function spoilers(string $html): string
     {
+        $html = preg_replace_callback('!<p>(.*?)</p>!s', function (array $m) {
+            // The pieces are the lines before, between and after the marker
+            // lines, and the markers. Two spaces at the end of a marker
+            // line give a <br />.
+            $pieces = preg_split('!^\h*(\(/?spoiler\))\h*(?:<br />)?$!m', $m[1], -1, PREG_SPLIT_DELIM_CAPTURE);
+            if (count($pieces) === 1) {
+                return $m[0];
+            }
+            $pieces = array_filter(array_map(fn(string $piece) => trim($piece, "\n"), $pieces), fn(string $piece) => $piece !== '');
+            return '<p>' . implode("</p>\n<p>", $pieces) . '</p>';
+        }, $html);
         return preg_replace_callback('!<p>\(spoiler\)</p>(.*?)<p>\(/spoiler\)</p>!s', function (array $m) {
             $section = '';
             $code = false;
