@@ -118,7 +118,7 @@ final class AssistantChatTest extends AssistantTestCase
 
         $state = $this->kirby->api()->call('blog-assistant/send', 'POST', ['body' => ['choice' => 0]]);
 
-        $this->assertSame('Ja, mit Quelle', $this->lastText($this->requests[1]));
+        $this->assertStringEndsWith("\n\nJa, mit Quelle", $this->lastText($this->requests[1]));
         $this->assertSame(['type' => 'me', 'text' => 'Ja, mit Quelle'], array_intersect_key(array_values(array_filter($state['items'], fn($i) => $i['type'] === 'me'))[1], ['type' => 1, 'text' => 1]));
 
         // A second pick has no open choice. The Panel gets this message and not
@@ -498,31 +498,24 @@ final class AssistantChatTest extends AssistantTestCase
 
         $this->chat('Zweite Nachricht.');
 
-        $keys = ['model', 'system', 'tools', 'date', 'messages', 'items', 'proposals', 'rounds', 'next', 'paused', 'run', 'images', 'sources', 'id', 'asked', 'turn'];
+        $keys = ['model', 'system', 'tools', 'messages', 'items', 'proposals', 'rounds', 'next', 'paused', 'run', 'images', 'sources', 'id', 'asked', 'turn'];
         $this->assertSame($keys, array_keys($this->kirby->session()->get('blog.assistant')));
         $this->assertSame(['me', 'ai', 'me', 'ai'], array_column(Session::load()->items, 'type'));
         $this->assertSame($this->requests[0]['system'], $this->requests[1]['system']);
         $this->assertSame(1, Log::read()[0]['message']);
     }
 
-    public function testTheDateComesAsANoteOncePerDay(): void
+    public function testEachMessageStatesTheTime(): void
     {
-        $this->reply('end_turn');
         $this->reply('end_turn');
         $this->reply('end_turn');
         $this->chat('Eins.');
         $this->chat('Zwei.');
-        Session::change(function (ChatState $chat): ChatState {
-            $chat->date = '2000-01-01';
-            return $chat;
-        });
 
-        $this->chat('Drei.');
-
-        $this->assertStringStartsWith('Today is ', $this->lastText($this->requests[0]));
-        $this->assertSame('Zwei.', $this->lastText($this->requests[1]));
-        $this->assertStringStartsWith('Today is ', $this->lastText($this->requests[2]));
-        $this->assertSame($this->requests[0]['system'], $this->requests[2]['system']);
+        $now = '/^It is \\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2} \\(Europe\\/Berlin\\)\\.\\n/';
+        $this->assertMatchesRegularExpression($now, $this->lastText($this->requests[0]));
+        $this->assertMatchesRegularExpression($now, $this->lastText($this->requests[1]));
+        $this->assertSame($this->requests[0]['system'], $this->requests[1]['system']);
     }
 
     public function testUploadsGoWithTheNextMessageOnce(): void
