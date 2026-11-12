@@ -242,6 +242,8 @@ final class AssistantPostTest extends AssistantTestCase
         $this->assertStringContainsString('No image upload', $this->error());
         $this->propose($this->input(['text' => '', 'photos' => [['caption' => '    <script>x</script>'] + $photo]]));
         $this->assertStringContainsString('HTML', $this->error());
+        $this->propose($this->input(['intro' => '```', 'text' => "```\n<script>x</script>", 'photos' => [$photo]]));
+        $this->assertStringContainsString('one text', $this->error());
 
         $card = $this->card($this->propose($this->input(['text' => '', 'photos' => [$photo]])));
         $this->propose($this->input(['slug' => 'other', 'text' => '', 'photos' => [$photo]]));

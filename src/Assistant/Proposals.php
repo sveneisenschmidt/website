@@ -29,6 +29,9 @@ final class Proposals
     /** The error for a text with raw HTML. */
     private const NO_HTML = 'Raw HTML is not allowed. Use Markdown.';
 
+    /** The error for an intro and a text that make raw HTML as one text. */
+    private const NO_BODY_HTML = 'The page renders intro and text as one text, and together they would get raw HTML. Close lists and code fences in the intro, and use Markdown.';
+
     /**
      * The raw HTML in a text: each piece that the Markdown parser of the
      * site passes on as it is, such as a tag, a comment, or a block that
@@ -98,6 +101,22 @@ final class Proposals
             }
         }
         return false;
+    }
+
+    /**
+     * True when the new value $after of the field $field gives intro and
+     * text of $page together raw HTML that they do not have. The site
+     * renders both as one text (`SitePage::bodyHtml()`), so a list or a code
+     * fence that the intro leaves open reaches into the text.
+     */
+    public static function addsBodyHtml(Page $page, string $field, string $after): bool
+    {
+        if (!in_array($field, ['intro', 'text'], true)) {
+            return false;
+        }
+        $body = fn(array $values) => trim($values['intro'] . "\n\n" . $values['text']);
+        $now = ['intro' => Content::current($page, 'intro'), 'text' => Content::current($page, 'text')];
+        return self::addsHtml($body($now), $body([$field => $after] + $now));
     }
 
     /**
@@ -293,6 +312,9 @@ final class Proposals
         if ($error !== null) {
             return $error;
         }
+        if (self::addsBodyHtml($page, $name, $value)) {
+            return self::NO_BODY_HTML;
+        }
         return self::card('field', 'Feld · ' . self::name($page), [
             'where' => self::where($page),
             'unsaved' => Content::unsaved($page, $name),
@@ -346,6 +368,9 @@ final class Proposals
             // the text around it, such as "<b x" before a later ">".
             if (self::addsHtml($current, $after)) {
                 return 'With this version the field would get raw HTML. Use Markdown.';
+            }
+            if (self::addsBodyHtml($page, $name, $after)) {
+                return self::NO_BODY_HTML;
             }
             $marks[] = array_values(array_filter(self::marks($page, $type, $after), fn($mark) => str_contains($version, $mark)));
         }
@@ -597,6 +622,9 @@ final class Proposals
         $title = trim((string) $input['title']);
         if ($title === '') {
             return 'title: A post needs a title.';
+        }
+        if (self::html(trim($input['intro'] . "\n\n" . $input['text'])) !== []) {
+            return self::NO_BODY_HTML;
         }
         $trip = trim((string) $input['trip']);
         if ($trip !== '' && $type !== 'trip') {

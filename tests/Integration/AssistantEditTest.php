@@ -132,6 +132,27 @@ final class AssistantEditTest extends AssistantTestCase
     }
 
     /**
+     * The site renders intro and text as one text. A list that the intro
+     * leaves open turns an indented line of the text from code into raw
+     * HTML. The proposal refuses it, and so does the click, because the
+     * intro can change after the proposal.
+     */
+    public function testIntroAndTextAreCheckedAsOneText(): void
+    {
+        $code = '    <script>x</script>';
+        $card = $this->propose('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => $code]);
+        $this->page()->update(['intro' => '* a']);
+        $this->assertStringContainsString('one text', $this->refusal('propose_field', ['post' => 'photos/test-photo', 'field' => 'text', 'value' => $code]));
+
+        Apply::decide($card['id'], 'apply');
+        $this->assertSame('stale', Session::decisions()[$card['id']]['state']);
+        $this->assertStringContainsString('rohes HTML', Session::decisions()[$card['id']]['warn']);
+
+        $this->page()->update(['text' => 'It rained all day.']);
+        $this->assertStringContainsString('one text', $this->refusal('propose_edit', ['post' => 'photos/test-photo', 'field' => 'text', 'passage' => 'It rained all day.', 'versions' => [$code]]));
+    }
+
+    /**
      * A version without raw HTML can still make some with the text around
      * the passage: "<b x" before a later ">" is a tag, and a version inside
      * an attribute changes an existing tag. The proposal refuses it, and so

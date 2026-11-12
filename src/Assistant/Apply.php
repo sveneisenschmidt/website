@@ -184,6 +184,11 @@ final class Apply
         if (Content::current($page, $in['field']) !== $in['before']) {
             throw new Stale('Das Feld wurde seit dem Vorschlag bearbeitet. Nichts geändert.', 'the field changed since the proposal');
         }
+        // The other one of intro and text can have changed since the proposal
+        // (Proposals::addsBodyHtml()).
+        if (Proposals::addsBodyHtml($page, $in['field'], $in['value'])) {
+            throw new Stale('Mit diesem Wert bekämen Anriss und Text zusammen rohes HTML. Nichts geändert.', 'intro and text together would get raw HTML');
+        }
         return self::result(self::write($page, [$in['field'] => $in['value']]));
     }
 
@@ -205,7 +210,7 @@ final class Apply
         $after = str_replace($in['passage'], $text, $current);
         // The text around the passage can have changed since the proposal, and
         // with it the raw HTML that the version makes there (Proposals::edit()).
-        if (Proposals::addsHtml($current, $after)) {
+        if (Proposals::addsHtml($current, $after) || Proposals::addsBodyHtml($page, $in['field'], $after)) {
             throw new Stale('Mit dieser Fassung bekäme das Feld rohes HTML. Nichts geändert.', 'the field would get raw HTML');
         }
         $result = self::result(self::write($page, [$in['field'] => $after]));
