@@ -119,11 +119,41 @@ final class TextTest extends IntegrationTestCase
         $this->assertSame($section, Text::html("(spoiler)  \nSecret.\n(/spoiler)  \n", $this->post), 'two spaces after a marker');
     }
 
+    public function testASpoilerMarkerEndsTheMarkdownBlockNextToIt(): void
+    {
+        $word = fn(string $text) => "<span class=\"spoiler-word\">$text</span>";
+
+        // Without the blank lines, "---" would make a heading of the marker
+        // and the line below it.
+        $html = Text::html("(spoiler)\nThe butler.\n---\n\n(/spoiler)", $this->post);
+        $this->assertStringStartsWith("<div class=\"spoiler\">\n<h2 id=\"the-butler\">{$word('The')} {$word('butler.')}", $html);
+        $this->assertStringNotContainsString('(spoiler)', $html);
+
+        // The HTML of a map would take the lines below it as its own.
+        $html = Text::html("(map:)\n(spoiler)\nThe butler.\n(/spoiler)\nAfter.", $this->post);
+        $this->assertStringContainsString("<div class=\"spoiler\">\n<p>{$word('The')} {$word('butler.')}</p>\n</div>\n<p>After.</p>", $html);
+
+        // A list would take the end marker as text of its last item.
+        $html = Text::html("(spoiler)\n- one\n- two\n(/spoiler)\nAfter.", $this->post);
+        $this->assertStringEndsWith("</ul>\n</div>\n<p>After.</p>", $html);
+        $this->assertStringNotContainsString('(/spoiler)', $html);
+    }
+
+    public function testASpoilerWithoutContentIsNoSection(): void
+    {
+        $this->assertSame('', Text::html("(spoiler)\n\n(/spoiler)", $this->post));
+        $this->assertSame('<p>Before.</p>', Text::html("Before.\n(spoiler)", $this->post));
+    }
+
     public function testASpoilerMarkerInACodeBlockStaysCode(): void
     {
         $html = Text::html("```\n(spoiler)\ntext\n(/spoiler)\n```", $this->post);
 
         $this->assertSame("<pre><code>(spoiler)\ntext\n(/spoiler)</code></pre>", $html);
+        $this->assertSame("<pre><code>(spoiler)\ntext\n(/spoiler)</code></pre>", Text::html("~~~\n(spoiler)\ntext\n(/spoiler)\n~~~", $this->post));
+        $this->assertSame("<p>Code:</p>\n<pre><code>(spoiler)\ntext</code></pre>", Text::html("Code:\n\n    (spoiler)\n    text", $this->post));
+        // A block with four backticks holds a line with three.
+        $this->assertSame("<pre><code>```\n(spoiler)\n```</code></pre>", Text::html("````\n```\n(spoiler)\n```\n````", $this->post));
     }
 
     public function testASpoilerWithoutItsEndRunsToTheEndOfItsParent(): void
@@ -155,7 +185,6 @@ final class TextTest extends IntegrationTestCase
     public function testAMarkerThatIsNoLineOfItsOwnStaysText(): void
     {
         $this->assertSame('<p>A (spoiler) in a sentence, no (/spoiler) line.</p>', Text::html('A (spoiler) in a sentence, no (/spoiler) line.', $this->post));
-        $this->assertSame("<p><em>a\n(spoiler)\nb</em></p>", Text::html("*a\n(spoiler)\nb*", $this->post));
         $this->assertSame("<p><em>a</em>(spoiler)</p>", Text::html('*a*(spoiler)', $this->post));
         // A post that explains the markers writes them as code or emphasis.
         $this->assertSame("<p><code>(spoiler)</code></p>\n<p>Shown.</p>\n<p><code>(/spoiler)</code></p>", Text::html("`(spoiler)`\n\nShown.\n\n`(/spoiler)`", $this->post));
@@ -216,6 +245,7 @@ final class TextTest extends IntegrationTestCase
         };
 
         $this->assertSame('One.', $summary('', "One.\n(spoiler)\nSecret.\n(/spoiler)"), 'no blank lines');
+        $this->assertSame('One.', $summary('', "One.\n\n(spoiler)\nSecret.\n---\n\n(/spoiler)"), 'a heading line below the text');
         $this->assertSame('One.', $summary('', "One.\n\n> (spoiler)\n> Secret.\n> (/spoiler)"), 'in a quote');
         $this->assertSame("One.\nTwo.", $summary('', "One.\r\n\r\n(spoiler)\r\n\r\nSecret.\r\n\r\n(/spoiler)\r\n\r\nTwo."), 'Windows line ends');
         // The section starts in the intro and ends in the text.

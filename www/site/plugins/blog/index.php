@@ -68,7 +68,9 @@ Kirby::plugin('website/blog', [
         'file.*:after' => fn(Event $event) => Images::renderAfter($event),
         'page.*:after' => fn(Event $event) => Images::renderAfter($event),
         // Every text that Kirby renders gets its spoiler sections: the
-        // body, the summary and the text for the word count.
+        // body, the summary and the text for the word count. The markers
+        // become paragraphs before Markdown runs, and sections after it.
+        'kirbytext:before' => fn(?string $text) => Text::markerLines((string) $text),
         'kirbytext:after' => fn(?string $text) => Text::spoilers((string) $text),
     ],
     'tags' => [

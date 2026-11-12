@@ -55,6 +55,47 @@ final class Text
     }
 
     /**
+     * Puts a blank line before and after each spoiler marker line of
+     * Markdown, so the marker becomes a paragraph of its own. Without the
+     * blank lines the marker would belong to the block next to it: a "---"
+     * line makes a heading of the lines above it, a list takes the next
+     * line into its last item, and the HTML of a map takes the lines below
+     * it. A marker in a code block stays as it is: between two fence lines,
+     * or indented by four or more spaces.
+     */
+    public static function markerLines(string $markdown): string
+    {
+        if (!str_contains($markdown, 'spoiler)')) {
+            return $markdown;
+        }
+        $lines = [];
+        $fence = null;
+        foreach (explode("\n", $markdown) as $line) {
+            $text = trim($line);
+            $indent = strlen($line) - strlen(ltrim($line, ' '));
+            // A fence line starts with three or more ` or ~. The block
+            // ends at a line with at least as many of the same character.
+            $run = substr($text, 0, strspn($text, $text === '' ? '' : $text[0]));
+            $run = strlen($run) >= 3 && ($run[0] === '`' || $run[0] === '~') ? $run : '';
+            if ($fence !== null) {
+                $fence = str_starts_with($run, $fence) ? null : $fence;
+            } elseif ($run !== '') {
+                $fence = $run;
+            } elseif ($indent < 4 && in_array($text, ['(spoiler)', '(/spoiler)'], true)) {
+                // Two spaces at the end of the line above are a line break,
+                // and the paragraph ends there.
+                if ($lines !== []) {
+                    $lines[array_key_last($lines)] = rtrim($lines[array_key_last($lines)]);
+                }
+                array_push($lines, '', $text, '');
+                continue;
+            }
+            $lines[] = $line;
+        }
+        return implode("\n", $lines);
+    }
+
+    /**
      * Turns each spoiler section of rendered HTML into a div with the class
      * spoiler. In the Markdown, a line (spoiler) starts a section and a line
      * (/spoiler) ends it. Every word of the section gets a span, so the
@@ -64,9 +105,10 @@ final class Text
      * A section holds the elements between its two markers that have the
      * same parent, so the HTML stays well-formed. Without an end marker the
      * section runs to the end of its parent: a forgotten (/spoiler) covers
-     * too much and never shows the words. A marker that is no line of its
-     * own in a paragraph stays text, as does one in a code block, in a tight
-     * list or inside an emphasis.
+     * too much and never shows the words. A section without content is
+     * left out. A marker that is no line of its own stays text, as does
+     * one in a code block or one written as code, as a link or in an
+     * emphasis.
      *
      * The HTML of a text with a section comes from the HTML parser, which
      * writes <br> for <br /> and all attributes of an element on one line.
@@ -99,7 +141,16 @@ final class Text
                 $node->remove();
             }
             $start->remove();
-            self::cover($section);
+            if (trim($section->textContent) === '' && $section->firstElementChild === null) {
+                // One line end next to the section goes with it.
+                $space = $section->nextSibling ?? $section->previousSibling;
+                if ($space instanceof \Dom\Text && trim($space->data) === '') {
+                    $space->remove();
+                }
+                $section->remove();
+            } else {
+                self::cover($section);
+            }
             $sections++;
         }
         return $sections === 0 ? $html : $document->body->innerHTML;
@@ -185,12 +236,13 @@ final class Text
             $text = count($line) === 1 && $line[0] instanceof \Dom\Text ? trim($line[0]->data) : '';
             return in_array($text, ['(spoiler)', '(/spoiler)'], true) ? $text : null;
         };
-        if (array_filter(array_map($marker, $lines)) === []) {
+        $markers = array_map($marker, $lines);
+        if (array_filter($markers) === []) {
             return;
         }
         $new = null;
-        foreach ($lines as $line) {
-            $text = $marker($line);
+        foreach ($lines as $i => $line) {
+            $text = $markers[$i];
             if ($text !== null) {
                 // The paragraph before the marker ends here, and the line
                 // break at the end of its last line has no line to break.
