@@ -275,6 +275,8 @@ final class TextTest extends IntegrationTestCase
         // `breaks` makes a <br> of a line end, and null turns it off.
         $this->assertStringContainsString('<br', $render(['breaks' => true]));
         $this->assertStringNotContainsString('<br', $render(['breaks' => null]));
+        // Any true value of `inline` renders without a paragraph.
+        $this->assertSame('Term : Meaning', str_replace("\n", ' ', $render(['inline' => 1, 'breaks' => false])));
     }
 
     public function testTwoSpoilersInOneText(): void

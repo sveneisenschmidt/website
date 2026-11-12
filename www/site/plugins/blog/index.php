@@ -76,16 +76,16 @@ Kirby::plugin('website/blog', [
     ],
     // Kirby's Markdown component with the parsers of the site, which know
     // the spoiler section (Website\Blog\SpoilerBlock). The options and
-    // their defaults are those of Kirby\Text\Markdown: `extra` set to true
-    // selects the parser with footnotes and definition lists, and `inline`
-    // renders a single line without a paragraph.
+    // their defaults are those of Kirby's own component: `extra` set to
+    // true selects the parser with footnotes and definition lists, and
+    // `inline` renders a single line without a paragraph.
     'components' => [
         'markdown' => function (Kirby $kirby, ?string $text = null, array $options = []): string {
             $options = ['breaks' => true, 'extra' => false, 'safe' => false, 'inline' => false, ...$options];
             $parser = $options['extra'] === true ? new MarkdownExtra() : new Markdown();
             $parser->setBreaksEnabled($options['breaks']);
             $parser->setSafeMode($options['safe']);
-            return $options['inline'] === true ? $parser->line((string) $text) : $parser->text((string) $text);
+            return $options['inline'] ? $parser->line((string) $text) : $parser->text((string) $text);
         },
     ],
     'tags' => [
