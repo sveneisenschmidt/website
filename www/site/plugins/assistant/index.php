@@ -10,13 +10,12 @@ use Website\Assistant\Claude;
 use Website\Assistant\Log;
 use Website\Assistant\Panel;
 use Website\Assistant\Uploads;
-use Website\Blog\Settings;
 
 /**
  * The Panel area "Assistent", where the Panel user writes posts with Claude.
  * Claude proposes each change as a card with buttons to apply or discard
- * it, and only a click of the Panel user applies it. The prompt and the
- * model are set on the page Assistent › Einstellungen (fields in
+ * it, and only a click of the Panel user applies it. The prompt, the model
+ * and the effort are set on the page Assistent › Einstellungen (fields in
  * settings.yml). The API key is host config:
  * `assistantKey` in www/site/config/env.php. Kirby lets only a logged-in
  * Panel user reach the area and the API routes. The code is in
@@ -50,13 +49,13 @@ App::plugin('website/assistant', [
                         'props' => Log::view(),
                     ],
                 ], [
-                    // Prompt and model, and whether the API key is set.
+                    // Prompt, model and effort, and whether the API key is set.
                     'pattern' => 'assistent/einstellungen',
                     'action' => fn() => [
                         'component' => 'k-blog-assistant-settings-view',
                         'title' => 'Einstellungen · Assistent',
                         'breadcrumb' => [['label' => 'Einstellungen', 'link' => 'assistent/einstellungen']],
-                        'props' => Settings::props(__DIR__ . '/settings.yml') + ['hasKey' => Claude::key() !== null],
+                        'props' => Panel::settings(__DIR__ . '/settings.yml'),
                     ],
                 ]],
                 'buttons' => ['page.assistant' => fn(Page $page) => Panel::button($page)],

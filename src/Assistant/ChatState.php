@@ -19,6 +19,13 @@ final class ChatState
     public ?string $model = null;
 
     /**
+     * How much Claude thinks before it answers (`output_config.effort` of the
+     * API). Set by the first message and kept for the whole chat, because
+     * another effort loses the prompt cache of the history.
+     */
+    public ?string $effort = null;
+
+    /**
      * The system text, set by the first message and kept for the whole chat.
      * The prompt cache of the API matches requests byte by byte, so every
      * round sends the same bytes. A change of the prompt under Assistent ›
@@ -114,6 +121,8 @@ final class ChatState
     {
         $chat = new self();
         $chat->model = $data['model'] ?? null;
+        // A chat from before the effort became a setting ran with the default.
+        $chat->effort = $data['effort'] ?? (isset($data['model']) ? Claude::DEFAULT_EFFORT : null);
         $chat->system = $data['system'] ?? null;
         $chat->tools = $data['tools'] ?? null;
         $chat->messages = $data['messages'] ?? [];

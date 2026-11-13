@@ -8,18 +8,24 @@ assistantPrompt:
   type: textarea
   buttons: false
   size: huge
+# index.js fills the options of the model from the Models API
+# (Claude::models()) and shows the effort levels the chosen model supports.
+# Without a saved value, the page shows the defaults of Claude::model() and
+# Claude::effort().
 assistantModel:
   label: Modell
-  type: radio
-  default: claude-opus-5-5
+  type: select
+  required: true
+  help: Abgerechnet über den Schlüssel in env.php.
+assistantEffort:
+  label: Aufwand
+  type: select
+  required: true
+  default: medium
   options:
-    - value: claude-opus-5-5
-      text: Claude Opus 5.5
-      info: Stärkstes Modell. Etwa doppelt so teuer wie Sonnet.
-    - value: claude-sonnet-5-5
-      text: Claude Sonnet 5.5
-      info: Mittleres Modell.
-    - value: claude-haiku-5-5
-      text: Claude Haiku 5.5
-      info: Kleinstes Modell. Kostet etwa ein Zwanzigstel von Sonnet.
-  help: Gilt ab dem nächsten neuen Chat. Abgerechnet über den Schlüssel in env.php.
+    low: Niedrig
+    medium: Mittel
+    high: Hoch
+    xhigh: Sehr hoch
+    max: Maximal
+  help: Mehr Aufwand heißt mehr Nachdenken und mehr Tokens. Modell und Aufwand gelten ab dem nächsten neuen Chat.

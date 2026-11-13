@@ -364,8 +364,14 @@
   display: none;
 }
 
+/* "Modell" and "Aufwand" are required, so their lists have no empty entry.
+   Both always have a value, so the mark of a required field says nothing. */
+.k-blog-assistant-settings-view .k-field-label abbr {
+  display: none;
+}
+
 /* The access to Anthropic on the page Assistent › Einstellungen, below the
-   field "Modell". */
+   fields "Modell" and "Aufwand". */
 .blog-ai-access {
   display: flex;
   flex-direction: column;
