@@ -78,7 +78,8 @@ final class Claude
      * The models the settings offer, newest first, each with the effort
      * levels it supports. They come from the Models API, so a new model
      * needs no change here. The list holds the models that take the request
-     * of `Chat::request()`: adaptive thinking with an effort level. When the
+     * of `Chat::request()`: `thinking` of the type adaptive and an effort
+     * level. When the
      * API does not answer, the list is empty.
      *
      * @return list<array{id: string, name: string, efforts: list<string>}>

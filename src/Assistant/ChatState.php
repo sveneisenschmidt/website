@@ -121,7 +121,8 @@ final class ChatState
     {
         $chat = new self();
         $chat->model = $data['model'] ?? null;
-        $chat->effort = $data['effort'] ?? null;
+        // A chat from before the effort became a setting ran with the default.
+        $chat->effort = $data['effort'] ?? (isset($data['model']) ? Claude::DEFAULT_EFFORT : null);
         $chat->system = $data['system'] ?? null;
         $chat->tools = $data['tools'] ?? null;
         $chat->messages = $data['messages'] ?? [];

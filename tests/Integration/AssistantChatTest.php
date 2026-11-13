@@ -487,6 +487,7 @@ final class AssistantChatTest extends AssistantTestCase
         foreach ([0, 1] as $i) {
             $this->assertSame('claude-sonnet-5-5', $this->requests[$i]['model']);
             $this->assertSame(['effort' => 'high'], $this->requests[$i]['output_config']);
+            $this->assertSame(['type' => 'adaptive'], $this->requests[$i]['thinking']);
         }
 
         Chat::reset();
@@ -553,7 +554,8 @@ final class AssistantChatTest extends AssistantTestCase
         $this->assertSame($keys, array_keys($this->kirby->session()->get('blog.assistant')));
         $this->assertSame(['me', 'ai', 'me', 'ai'], array_column(Session::load()->items, 'type'));
         $this->assertSame($this->requests[0]['system'], $this->requests[1]['system']);
-        $this->assertSame(['effort' => 'high'], $this->requests[1]['output_config']);
+        // The chat ran with the default effort before, and it keeps it.
+        $this->assertSame(['effort' => 'medium'], $this->requests[1]['output_config']);
         $this->assertSame(1, Log::read()[0]['message']);
     }
 

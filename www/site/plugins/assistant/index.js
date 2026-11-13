@@ -624,19 +624,16 @@ panel.plugin("website/assistant", {
     "k-blog-assistant-settings-view": {
       props: { fields: Object, value: Object, models: Array, hasKey: Boolean },
       data() {
-        return { values: { ...this.value }, saving: false, result: null, checking: false };
+        return { values: this.fit({ ...this.value }), saving: false, result: null, checking: false };
       },
       computed: {
         modelField() {
           return { ...this.fields.assistantmodel, options: this.models.map((model) => ({ value: model.id, text: model.name })) };
         },
-        // The effort levels of the chosen model.
-        efforts() {
-          return this.models.find((model) => model.id === this.values.assistantmodel)?.efforts ?? [];
-        },
         effortField() {
           const field = this.fields.assistanteffort;
-          return { ...field, options: field.options.filter((option) => this.efforts.includes(option.value)) };
+          const efforts = this.efforts(this.values.assistantmodel);
+          return { ...field, options: field.options.filter((option) => efforts.includes(option.value)) };
         },
       },
       created() {
@@ -650,12 +647,22 @@ panel.plugin("website/assistant", {
           event?.preventDefault?.();
           this.save();
         },
-        // A model that lacks the chosen effort gets the default effort.
-        input(values) {
-          this.values = values;
-          if (!this.efforts.includes(values.assistanteffort)) {
-            this.values = { ...values, assistanteffort: this.fields.assistanteffort.default };
+        // The effort levels of a model.
+        efforts(id) {
+          return this.models.find((model) => model.id === id)?.efforts ?? [];
+        },
+        // A model that lacks the chosen effort gets the default effort, or
+        // its lowest level when it lacks the default too.
+        fit(values) {
+          const efforts = this.efforts(values.assistantmodel);
+          if (efforts.includes(values.assistanteffort)) {
+            return values;
           }
+          const fallback = this.fields.assistanteffort.default;
+          return { ...values, assistanteffort: efforts.includes(fallback) ? fallback : efforts[0] };
+        },
+        input(values) {
+          this.values = this.fit(values);
         },
         async save() {
           this.saving = true;

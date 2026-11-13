@@ -554,8 +554,11 @@ final class Chat
             'system' => $chat->system,
             'tools' => $chat->tools,
             'messages' => Uploads::expand($chat->messages),
-            // A chat from before the effort became a setting has none.
-            'output_config' => ['effort' => $chat->effort ?? Claude::DEFAULT_EFFORT],
+            // Claude decides per answer how much it thinks, within the effort.
+            // Without the field, the older models of `Claude::models()` do
+            // not think at all.
+            'thinking' => ['type' => 'adaptive'],
+            'output_config' => ['effort' => $chat->effort],
             // Caches the history for one hour like the system text, so after
             // a pause the photos in it do not cost a new cache write.
             'cache_control' => ['type' => 'ephemeral', 'ttl' => '1h'],
