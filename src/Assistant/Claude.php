@@ -215,6 +215,9 @@ final class Claude
                 'model' => self::model(),
                 // The answer to "ping" needs a few tokens only.
                 'max_tokens' => 64,
+                // The same fields as in `Chat::request()`, so the check
+                // fails when the chat would.
+                'thinking' => ['type' => 'adaptive'],
                 'output_config' => ['effort' => self::effort()],
                 'messages' => [['role' => 'user', 'content' => 'ping']],
             ]);

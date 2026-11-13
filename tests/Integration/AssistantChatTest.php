@@ -473,6 +473,19 @@ final class AssistantChatTest extends AssistantTestCase
         $this->assertSame('medium', Claude::effort());
     }
 
+    /** "Verbindung prüfen" sends the saved model and effort with the thinking field of the chat. */
+    public function testTheConnectionCheckUsesTheSettingsOfTheChat(): void
+    {
+        $this->kirby->site()->update(['assistantModel' => 'claude-sonnet-5-5', 'assistantEffort' => 'high']);
+        $this->reply('end_turn');
+
+        $this->assertTrue(Claude::check()['ok']);
+
+        $this->assertSame('claude-sonnet-5-5', $this->requests[0]['model']);
+        $this->assertSame(['type' => 'adaptive'], $this->requests[0]['thinking']);
+        $this->assertSame(['effort' => 'high'], $this->requests[0]['output_config']);
+    }
+
     /** Another model drops the thinking blocks of the history, and another effort loses the prompt cache. */
     public function testModelAndEffortStayTheSameForTheWholeChat(): void
     {
