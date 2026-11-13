@@ -94,9 +94,25 @@ final class AssistantChatTest extends AssistantTestCase
     public function testARequestThatCannotWorkSuggestsANewChat(): void
     {
         $this->expectErrorLog();
-        $this->replies[] = [404, ['error' => ['message' => 'model not found']]];
-        $this->expectExceptionMessage('neuen Chat');
+        $this->replies[] = [413, ['error' => ['message' => 'request too large']]];
+        $this->expectExceptionMessage('Beginn am besten einen neuen Chat');
         Chat::send('Hallo');
+    }
+
+    /** The API answers 404 for a model it does not know, such as a retired one. */
+    public function testAnUnknownModelPointsToTheSettings(): void
+    {
+        $this->expectErrorLog();
+        $this->kirby->site()->update(['assistantModel' => 'claude-retired-1']);
+        $this->replies[] = [404, ['error' => ['message' => 'model: claude-retired-1']]];
+        try {
+            Chat::send('Hallo');
+            $this->fail('no error');
+        } catch (Error $e) {
+            $this->assertSame('model', $e->kind);
+            $this->assertStringContainsString('Einstellungen', $e->getMessage());
+        }
+        $this->assertSame('claude-retired-1', $this->requests[0]['model']);
     }
 
     public function testAChoiceWaitsForTheAuthor(): void
@@ -443,8 +459,42 @@ final class AssistantChatTest extends AssistantTestCase
         $this->assertSame('claude-opus-5-5', Claude::model());
         $this->kirby->site()->update(['assistantModel' => 'claude-haiku-5-5']);
         $this->assertSame('claude-haiku-5-5', Claude::model());
-        $this->kirby->site()->update(['assistantModel' => 'claude-retired-1']);
-        $this->assertSame('claude-opus-5-5', Claude::model());
+        // The model list of the API changes, so any saved id counts.
+        $this->kirby->site()->update(['assistantModel' => 'claude-next-9']);
+        $this->assertSame('claude-next-9', Claude::model());
+    }
+
+    public function testTheEffortComesFromTheSettings(): void
+    {
+        $this->assertSame('medium', Claude::effort());
+        $this->kirby->site()->update(['assistantEffort' => 'xhigh']);
+        $this->assertSame('xhigh', Claude::effort());
+        $this->kirby->site()->update(['assistantEffort' => 'extreme']);
+        $this->assertSame('medium', Claude::effort());
+    }
+
+    /** Another model drops the thinking blocks of the history, and another effort loses the prompt cache. */
+    public function testModelAndEffortStayTheSameForTheWholeChat(): void
+    {
+        $this->kirby->site()->update(['assistantModel' => 'claude-sonnet-5-5', 'assistantEffort' => 'high']);
+        $this->reply('end_turn', $this->text('Eins.'));
+        $this->reply('end_turn', $this->text('Zwei.'));
+        $this->chat('Erste Nachricht.');
+        $this->kirby->site()->update(['assistantModel' => 'claude-haiku-5-5', 'assistantEffort' => 'low']);
+
+        $this->chat('Zweite Nachricht.');
+
+        foreach ([0, 1] as $i) {
+            $this->assertSame('claude-sonnet-5-5', $this->requests[$i]['model']);
+            $this->assertSame(['effort' => 'high'], $this->requests[$i]['output_config']);
+        }
+
+        Chat::reset();
+        $this->reply('end_turn');
+        $this->chat('Neuer Chat.');
+
+        $this->assertSame('claude-haiku-5-5', $this->requests[2]['model']);
+        $this->assertSame(['effort' => 'low'], $this->requests[2]['output_config']);
     }
 
     public function testWithoutPromptTheAssistantIsOff(): void
@@ -492,16 +542,18 @@ final class AssistantChatTest extends AssistantTestCase
         $this->reply('end_turn', $this->text('Eins.'));
         $this->chat('Erste Nachricht.');
         $stored = $this->kirby->session()->get('blog.assistant');
-        unset($stored['paused'], $stored['sources'], $stored['id'], $stored['asked'], $stored['turn']);
+        unset($stored['effort'], $stored['paused'], $stored['sources'], $stored['id'], $stored['asked'], $stored['turn']);
+        $this->kirby->site()->update(['assistantEffort' => 'high']);
         $this->kirby->session()->set('blog.assistant', $stored);
         $this->reply('end_turn', $this->text('Zwei.'));
 
         $this->chat('Zweite Nachricht.');
 
-        $keys = ['model', 'system', 'tools', 'messages', 'items', 'proposals', 'rounds', 'next', 'paused', 'run', 'images', 'sources', 'id', 'asked', 'turn'];
+        $keys = ['model', 'effort', 'system', 'tools', 'messages', 'items', 'proposals', 'rounds', 'next', 'paused', 'run', 'images', 'sources', 'id', 'asked', 'turn'];
         $this->assertSame($keys, array_keys($this->kirby->session()->get('blog.assistant')));
         $this->assertSame(['me', 'ai', 'me', 'ai'], array_column(Session::load()->items, 'type'));
         $this->assertSame($this->requests[0]['system'], $this->requests[1]['system']);
+        $this->assertSame(['effort' => 'high'], $this->requests[1]['output_config']);
         $this->assertSame(1, Log::read()[0]['message']);
     }
 

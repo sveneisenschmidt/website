@@ -129,7 +129,7 @@ final class Log
             'rounds' => (int) ($e['rounds'] ?? 0),
             'tools' => (object) ($e['tools'] ?? []),
             'outcome' => (string) ($e['outcome'] ?? ''),
-            'model' => Claude::MODELS[$e['model'] ?? ''] ?? (string) ($e['model'] ?? ''),
+            'model' => (string) ($e['model'] ?? ''),
             'tokensIn' => (int) ($e['tokensIn'] ?? 0),
             'tokensOut' => (int) ($e['tokensOut'] ?? 0),
             // The share of the input tokens that came from the prompt cache, in percent.

@@ -6,6 +6,7 @@ use Closure;
 use Kirby\Cms\Page;
 use Kirby\Panel\Panel as KirbyPanel;
 use Kirby\Panel\Ui\Buttons\ViewButton;
+use Website\Blog\Settings;
 use Website\Blog\Types;
 
 /**
@@ -31,6 +32,27 @@ final class Panel
             'page' => $page ? ['id' => $page->id(), 'title' => $page->title()->value()] : null,
             'settings' => KirbyPanel::url('assistent/einstellungen'),
         ];
+    }
+
+    /**
+     * The props of the Vue component `k-blog-assistant-settings-view` in
+     * index.js: the fields of the YAML file $file with their values, the
+     * models of `Claude::models()` and whether the API key is set. The saved
+     * model is always in the list, so the page shows it also when the API
+     * does not answer or no longer lists it.
+     *
+     * @return array<string, mixed>
+     */
+    public static function settings(string $file): array
+    {
+        $props = Settings::props($file);
+        $model = Claude::model();
+        $models = Claude::models();
+        if (!in_array($model, array_column($models, 'id'), true)) {
+            array_unshift($models, ['id' => $model, 'name' => $model, 'efforts' => Claude::EFFORTS]);
+        }
+        $props['value'] = ['assistantmodel' => $model, 'assistanteffort' => Claude::effort()] + $props['value'];
+        return $props + ['models' => $models, 'hasKey' => Claude::key() !== null];
     }
 
     /**

@@ -36,9 +36,6 @@ final class Chat
     /** The most tokens one answer of Claude may have, thinking included. */
     public const MAX_TOKENS = 16000;
 
-    /** How much Claude thinks before it answers (`output_config.effort` of the API). */
-    public const EFFORT = 'medium';
-
     /** Web searches per request. The API bills each search, and the assistant only looks facts up. */
     public const SEARCHES = 5;
 
@@ -100,12 +97,9 @@ final class Chat
      *
      * @return array<string, mixed>
      */
-    public static function webSearch(string $model): array
+    public static function webSearch(): array
     {
-        // Haiku supports only the basic version without dynamic filtering
-        // (`Claude::fullModel()`).
-        $type = Claude::fullModel($model) ? 'web_search_20260209' : 'web_search_20250305';
-        return ['type' => $type, 'name' => 'web_search', 'max_uses' => self::SEARCHES];
+        return ['type' => 'web_search_20260209', 'name' => 'web_search', 'max_uses' => self::SEARCHES];
     }
 
     /**
@@ -197,11 +191,12 @@ final class Chat
         }
         $prompt = self::prompt() ?? throw new Error('prompt');
         $chat = Session::load();
-        // The first message sets model, system text and tools for the whole
-        // chat (see `ChatState`).
+        // The first message sets model, effort, system text and tools for the
+        // whole chat (see `ChatState`).
         $chat->model ??= Claude::model();
+        $chat->effort ??= Claude::effort();
         $chat->system ??= self::system($prompt);
-        $chat->tools ??= [...Tools::definitions(), self::webSearch($chat->model)];
+        $chat->tools ??= [...Tools::definitions(), self::webSearch()];
 
         // The time goes into the message, because a time in the system text
         // would change it and lose the prompt cache.
@@ -327,8 +322,8 @@ final class Chat
 
     /**
      * Starts a new chat ("Neuer Chat"): deletes the old chat with its
-     * decisions, notes and uploads. The next message reads the prompt and the
-     * model from the settings again.
+     * decisions, notes and uploads. The next message reads the prompt, the
+     * model and the effort from the settings again.
      */
     public static function reset(): ChatState
     {
@@ -559,7 +554,8 @@ final class Chat
             'system' => $chat->system,
             'tools' => $chat->tools,
             'messages' => Uploads::expand($chat->messages),
-            'output_config' => ['effort' => self::EFFORT],
+            // A chat from before the effort became a setting has none.
+            'output_config' => ['effort' => $chat->effort ?? Claude::DEFAULT_EFFORT],
             // Caches the history for one hour like the system text, so after
             // a pause the photos in it do not cost a new cache write.
             'cache_control' => ['type' => 'ephemeral', 'ttl' => '1h'],

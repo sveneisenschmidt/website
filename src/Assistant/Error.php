@@ -20,6 +20,7 @@ final class Error extends RuntimeException
         'busy' => 'Anthropic antwortet gerade nicht. Nichts geändert, deine Nachricht steht wieder im Eingabefeld.',
         'refusal' => 'Darauf antwortet Claude nicht. Nichts geändert.',
         'rounds' => 'Claude ist nach ' . Chat::MAX_ROUNDS . ' Runden nicht fertig geworden. Nichts geändert. Formulier es bitte anders.',
+        'model' => 'Anthropic kennt das Modell nicht. Nichts geändert. Wähl unter Assistent › Einstellungen ein anderes und beginn einen neuen Chat.',
         'chat' => 'Das hat nicht geklappt. Nichts geändert. Beginn am besten einen neuen Chat.',
         'prompt' => 'Der Prompt unter Assistent › Einstellungen ist leer, der Assistent ist aus. Nichts geändert.',
         'upload' => 'Die Datei wurde nicht angenommen. Nichts geändert.',

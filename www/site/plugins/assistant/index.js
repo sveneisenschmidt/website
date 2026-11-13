@@ -615,14 +615,29 @@ panel.plugin("website/assistant", {
         </k-panel-inside>
       `,
     },
-    // The page "Einstellungen": the prompt on the left, the model and the
-    // access to Anthropic on the right. "Speichern" and Cmd+S write the
-    // fields to the site through Kirby's API (PATCH site). "Verbindung
-    // prüfen" checks that Claude answers with the key.
+    // The page "Einstellungen": the prompt on the left, the model, the
+    // effort and the access to Anthropic on the right. "Speichern" and Cmd+S
+    // write the fields to the site through Kirby's API (PATCH site).
+    // "Verbindung prüfen" checks that Claude answers with the key and the
+    // saved model and effort. `models` is the list of Claude::models(): each
+    // model with the effort levels it supports.
     "k-blog-assistant-settings-view": {
-      props: { fields: Object, value: Object, hasKey: Boolean },
+      props: { fields: Object, value: Object, models: Array, hasKey: Boolean },
       data() {
         return { values: { ...this.value }, saving: false, result: null, checking: false };
+      },
+      computed: {
+        modelField() {
+          return { ...this.fields.assistantmodel, options: this.models.map((model) => ({ value: model.id, text: model.name })) };
+        },
+        // The effort levels of the chosen model.
+        efforts() {
+          return this.models.find((model) => model.id === this.values.assistantmodel)?.efforts ?? [];
+        },
+        effortField() {
+          const field = this.fields.assistanteffort;
+          return { ...field, options: field.options.filter((option) => this.efforts.includes(option.value)) };
+        },
       },
       created() {
         this.$events.on("view.save", this.onViewSave);
@@ -634,6 +649,13 @@ panel.plugin("website/assistant", {
         onViewSave(event) {
           event?.preventDefault?.();
           this.save();
+        },
+        // A model that lacks the chosen effort gets the default effort.
+        input(values) {
+          this.values = values;
+          if (!this.efforts.includes(values.assistanteffort)) {
+            this.values = { ...values, assistanteffort: this.fields.assistanteffort.default };
+          }
         },
         async save() {
           this.saving = true;
@@ -670,7 +692,7 @@ panel.plugin("website/assistant", {
               <k-fieldset :fields="{ assistantprompt: fields.assistantprompt }" :value="values" @input="values = $event" />
             </k-column>
             <k-column width="1/3">
-              <k-fieldset :fields="{ assistantmodel: fields.assistantmodel }" :value="values" @input="values = $event" />
+              <k-fieldset :fields="{ assistantmodel: modelField, assistanteffort: effortField }" :value="values" @input="input" />
               <section class="k-section blog-ai-access">
                 <k-label type="section">Zugang zu Anthropic</k-label>
                 <div class="blog-ai-key">
