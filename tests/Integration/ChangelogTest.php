@@ -142,6 +142,20 @@ final class ChangelogTest extends IntegrationTestCase
         $this->assertCount($before, Log::entries());
     }
 
+    /**
+     * Kirby keeps the fields of a page that it creates as published in
+     * memory as arrays where the file holds text, such as an empty
+     * structure. A later save logs only the changed field.
+     */
+    public function testAPageCreatedAsPublishedLogsOnlyTheChangedField(): void
+    {
+        $about = $this->kirby->impersonate('kirby', fn() => $this->kirby->site()->createChild(['slug' => 'about', 'template' => 'about', 'draft' => false, 'content' => ['title' => 'About', 'label' => 'Personal blog', 'lastmod' => '2026-09-12', 'text' => 'Hello.']]));
+
+        $this->kirby->impersonate(self::EMAIL, fn() => $about->update(['text' => 'Hello again.']));
+
+        $this->assertSame(['text'], array_column(Log::entries(1)[0]['changes'], 'field'));
+    }
+
     public function testListFieldsShowAddedAndRemovedRows(): void
     {
         $trip = $this->post('trips', 'trip', 'test-trip', 'Test Trip');

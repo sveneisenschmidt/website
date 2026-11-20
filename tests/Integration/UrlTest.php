@@ -13,8 +13,8 @@ final class UrlTest extends IntegrationTestCase
         $pages = $this->kirby->impersonate('kirby', function () {
             $site = $this->kirby->site();
             $home = $site->createChild(['slug' => 'home', 'template' => 'home', 'draft' => false, 'content' => ['title' => 'Home']]);
-            $archive = $site->createChild(['slug' => 'archive', 'template' => 'archive', 'draft' => false, 'content' => ['title' => 'Archive']]);
-            return [$home, $archive->createChild(['slug' => 'photos', 'template' => 'archive', 'draft' => false, 'content' => ['title' => 'Archive · Photos']])];
+            $archive = $site->createChild(['slug' => 'archive', 'template' => 'archive', 'draft' => false, 'content' => ['title' => 'Archive', 'stream' => 'all']]);
+            return [$home, $archive->createChild(['slug' => 'photos', 'template' => 'archive', 'draft' => false, 'content' => ['title' => 'Archive · Photos', 'stream' => 'photos']])];
         });
 
         $this->assertSame('http://localhost/2026-10-07-test-photo/', $this->post->url());
