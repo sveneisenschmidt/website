@@ -63,6 +63,11 @@ $local = is_file(__DIR__ . '/env.php') ? [] : [
 return array_replace_recursive([
     'locale' => 'en_US.utf-8',
     'content' => array_filter(['salt' => $salt]),
+    // Kirby signs every cookie it sets, such as the session cookie of the
+    // Panel, with this key. Kirby's default key is public. The key here is
+    // an HMAC of the salt, so each host has a secret key of its own and no
+    // second secret file. A new key ends every Panel session.
+    'cookie' => array_filter(['key' => $salt ? hash_hmac('sha256', 'cookie.key', $salt) : null]),
     // A single line break in Markdown does not become a <br>. The posts are
     // written for this setting.
     'markdown' => ['breaks' => false],
@@ -88,6 +93,11 @@ return array_replace_recursive([
     'auth' => ['methods' => ['password' => ['2fa' => true]]],
     'panel' => [
         'language' => 'de',
+        // The views of the plugins analytics, assistant, changelog, gear and
+        // likes are template strings without a build step. Only Vue's
+        // template compiler turns them into views; without it they stay
+        // empty. Kirby warns about the compiler until this option is set.
+        'vue' => ['compiler' => true],
         // Each post type gets its own entry in the Panel menu, which links to
         // its parent page (for example /panel/pages/photos). The entry of the
         // site is marked as current only outside these four pages. Areas and
