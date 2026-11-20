@@ -98,11 +98,11 @@ final class Diff
      * Kirby creates as published keeps the values of its fields in memory
      * as they come from the blueprint, so an empty structure field is an
      * empty array there and an empty string in the file. Kirby writes an
-     * array as YAML (Kirby\Data\Txt).
+     * array as YAML without the line break at the end (Kirby\Data\Txt).
      */
     private static function text(mixed $value): string
     {
-        return is_array($value) ? Yaml::encode($value) : (string) $value;
+        return is_array($value) ? trim(Yaml::encode($value)) : (string) $value;
     }
 
     /**
