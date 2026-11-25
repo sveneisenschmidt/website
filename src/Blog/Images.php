@@ -272,6 +272,8 @@ final class Images
     /**
      * The seconds of BUDGET that are left for this Kirby instance. Before
      * the first render() with work, the whole budget is left.
+     *
+     * @phpstan-impure The result changes with the time between two calls.
      */
     private static function left(App $kirby): float
     {
